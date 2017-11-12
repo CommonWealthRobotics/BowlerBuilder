@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ACE in Action</title>
+    <style type="text/css" media="screen">
+        #editor {
+            position: absolute;
+            /*width: 128px;*/
+            /*height: 128px;*/
+            width: 1920px;
+            height: 1080px;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="editor">function foo(items) {
+    var x = "All this is syntax highlighted";
+    return x;
+    }</div>
+
+<script src="../web/ace-builds-1.2.9/src/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/eclipse");
+    editor.getSession().setMode("ace/mode/groovy");
+    editor.getSession().setUseSoftTabs(true);
+    document.getElementById('editor').style.fontSize='16px';
+    editor.resize();
+</script>
+</body>
+</html>

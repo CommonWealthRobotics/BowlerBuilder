@@ -30,7 +30,7 @@ class BowlerBuilderTest extends FxRobot {
   void preferencesContinueToViewTest() {
     clickOn("3D CAD").clickOn("New File");
 
-    assertTrue(lookup("#textArea").tryQuery().isPresent());
+    assertTrue(lookup("#webView").tryQuery().isPresent());
   }
 
 }

@@ -25,13 +25,13 @@ public final class LoggerUtilities {
   static {
     String path = FileUtils.getUserDirectoryPath()
         + File.separator
-        + "OutlineViewer"
+        + "BowlerBuilder"
         + File.separator;
     File testFile = new File(path);
     try {
       if (testFile.exists() || testFile.mkdirs()) {
         FileHandler fileHandler = new FileHandler(
-            path + new SimpleDateFormat("yyyyMMddHHmm'.txt'", new Locale("en", "US"))
+            path + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
                 .format(new Date()),
             true);
         fileHandler.setFormatter(new SimpleFormatter());

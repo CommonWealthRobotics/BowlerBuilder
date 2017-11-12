@@ -12,9 +12,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
 
 public class MainWindowController implements Initializable {
 
+  @FXML
+  private BorderPane root;
   @FXML
   private TabPane tabPane;
 
@@ -29,14 +32,17 @@ public class MainWindowController implements Initializable {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
       Node content = loader.load();
-      FileEditorController controller = loader.getController();
-      controller.setInitialText("Text!");
       tab.setContent(content);
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE, "Couldn't load FileEditor.fxml");
     }
     tabPane.getTabs().add(tab);
     tabPane.getSelectionModel().select(tab);
+  }
+
+  @FXML
+  private void exitProgram(ActionEvent actionEvent) {
+    root.getScene().getWindow().hide();
   }
 
 }
