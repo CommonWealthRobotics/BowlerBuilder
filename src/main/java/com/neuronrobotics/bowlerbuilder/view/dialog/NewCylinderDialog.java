@@ -18,11 +18,11 @@ public class NewCylinderDialog extends Dialog<List<String>> {
 
   private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
 
-  private TextField nameField;
-  private TextField topRadiusField;
-  private TextField bottomRadiusField;
-  private TextField heightField;
-  private TextField resolutionField;
+  private final TextField nameField;
+  private final TextField topRadiusField;
+  private final TextField bottomRadiusField;
+  private final TextField heightField;
+  private final TextField resolutionField;
 
   public NewCylinderDialog() {
     super();
@@ -85,11 +85,16 @@ public class NewCylinderDialog extends Dialog<List<String>> {
     });
   }
 
+  /**
+   * Return the inputs to this dialog as a line of code. Validation is not performed.
+   *
+   * @return The code form of the dialog's inputs
+   */
   public String getResultAsScript() {
-    return "CSG " + nameField.getText() + " = new Cylinder(" +
-        topRadiusField.getText() + ", " +
-        bottomRadiusField.getText() + ", " +
-        heightField.getText() + ", " +
-        resolutionField.getText() + ").toCSG();";
+    return "CSG " + nameField.getText() + " = new Cylinder("
+        + topRadiusField.getText() + ", "
+        + bottomRadiusField.getText() + ", "
+        + heightField.getText() + ", "
+        + resolutionField.getText() + ").toCSG();";
   }
 }

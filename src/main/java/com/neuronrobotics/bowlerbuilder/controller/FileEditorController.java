@@ -39,7 +39,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private TextField gistNameField;
 
-//  private ObjectProperty<GitHub> gitHub;
+  //  private ObjectProperty<GitHub> gitHub;
 
   private static final Glyph FONTAWESOME_PLAY = new FontAwesome().create(FontAwesome.Glyph.PLAY);
   private static final Glyph FONTAWESOME_PAUSE = new FontAwesome().create(FontAwesome.Glyph.PAUSE);
@@ -73,9 +73,9 @@ public class FileEditorController implements Initializable {
     //TODO: GitHub integration & publish changes to gist
   }
 
-//  public void setGitHub(GitHub gitHub) {
-//    this.gitHub.set(gitHub);
-//  }
+  //  public void setGitHub(GitHub gitHub) {
+  //    this.gitHub.set(gitHub);
+  //  }
 
   @FXML
   private void newCube(ActionEvent actionEvent) {
@@ -88,7 +88,8 @@ public class FileEditorController implements Initializable {
     Platform.runLater(webView::requestFocus);
   }
 
-  public void newRoundedCube(ActionEvent actionEvent) {
+  @FXML
+  private void newRoundedCube(ActionEvent actionEvent) {
     NewRoundedCubeDialog dialog = new NewRoundedCubeDialog();
 
     if (dialog.showAndWait().isPresent()) {
@@ -98,7 +99,8 @@ public class FileEditorController implements Initializable {
     Platform.runLater(webView::requestFocus);
   }
 
-  public void newSphere(ActionEvent actionEvent) {
+  @FXML
+  private void newSphere(ActionEvent actionEvent) {
     NewSphereDialog dialog = new NewSphereDialog();
 
     if (dialog.showAndWait().isPresent()) {
@@ -108,7 +110,8 @@ public class FileEditorController implements Initializable {
     Platform.runLater(webView::requestFocus);
   }
 
-  public void newCylinder(ActionEvent actionEvent) {
+  @FXML
+  private void newCylinder(ActionEvent actionEvent) {
     NewCylinderDialog dialog = new NewCylinderDialog();
 
     if (dialog.showAndWait().isPresent()) {
@@ -117,4 +120,5 @@ public class FileEditorController implements Initializable {
 
     Platform.runLater(webView::requestFocus);
   }
+
 }

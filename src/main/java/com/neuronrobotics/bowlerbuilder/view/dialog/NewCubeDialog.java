@@ -18,10 +18,10 @@ public class NewCubeDialog extends Dialog<List<String>> {
 
   private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
 
-  private TextField nameField;
-  private TextField widthField;
-  private TextField lengthField;
-  private TextField heightField;
+  private final TextField nameField;
+  private final TextField widthField;
+  private final TextField lengthField;
+  private final TextField heightField;
 
   public NewCubeDialog() {
     super();
@@ -78,10 +78,15 @@ public class NewCubeDialog extends Dialog<List<String>> {
     });
   }
 
+  /**
+   * Return the inputs to this dialog as a line of code. Validation is not performed.
+   *
+   * @return The code form of the dialog's inputs
+   */
   public String getResultAsScript() {
-    return "CSG " + nameField.getText() + " = new Cube(" +
-        widthField.getText() + ", " +
-        lengthField.getText() + ", " +
-        heightField.getText() + ").toCSG();";
+    return "CSG " + nameField.getText() + " = new Cube("
+        + widthField.getText() + ", "
+        + lengthField.getText() + ", "
+        + heightField.getText() + ").toCSG();";
   }
 }

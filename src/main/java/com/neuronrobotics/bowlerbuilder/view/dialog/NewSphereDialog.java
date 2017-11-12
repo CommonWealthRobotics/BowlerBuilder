@@ -18,8 +18,8 @@ public class NewSphereDialog extends Dialog<List<String>> {
 
   private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
 
-  private TextField nameField;
-  private TextField radiusField;
+  private final TextField nameField;
+  private final TextField radiusField;
 
   public NewSphereDialog() {
     super();
@@ -62,6 +62,11 @@ public class NewSphereDialog extends Dialog<List<String>> {
     });
   }
 
+  /**
+   * Return the inputs to this dialog as a line of code. Validation is not performed.
+   *
+   * @return The code form of the dialog's inputs
+   */
   public String getResultAsScript() {
     return "CSG " + nameField.getText() + " = new Sphere(" + radiusField.getText() + ").toCSG();";
   }

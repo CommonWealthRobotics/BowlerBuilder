@@ -18,11 +18,11 @@ public class NewRoundedCubeDialog extends Dialog<List<String>> {
 
   private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
 
-  private TextField nameField;
-  private TextField widthField;
-  private TextField lengthField;
-  private TextField heightField;
-  private TextField cornerRadiusField;
+  private final TextField nameField;
+  private final TextField widthField;
+  private final TextField lengthField;
+  private final TextField heightField;
+  private final TextField cornerRadiusField;
 
   public NewRoundedCubeDialog() {
     super();
@@ -84,10 +84,15 @@ public class NewRoundedCubeDialog extends Dialog<List<String>> {
     });
   }
 
+  /**
+   * Return the inputs to this dialog as a line of code. Validation is not performed.
+   *
+   * @return The code form of the dialog's inputs
+   */
   public String getResultAsScript() {
-    return "CSG " + nameField.getText() + " = new RoundedCube(" +
-        widthField.getText() + ", " +
-        lengthField.getText() + ", " +
-        heightField.getText() + ").cornerRadius(" + cornerRadiusField.getText() + ").toCSG();";
+    return "CSG " + nameField.getText() + " = new RoundedCube("
+        + widthField.getText() + ", "
+        + lengthField.getText() + ", "
+        + heightField.getText() + ").cornerRadius(" + cornerRadiusField.getText() + ").toCSG();";
   }
 }
