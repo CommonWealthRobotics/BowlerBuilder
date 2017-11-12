@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
+import org.kohsuke.github.GitHub;
 
 public class FileEditorController implements Initializable {
 
@@ -32,6 +34,8 @@ public class FileEditorController implements Initializable {
   private TextField fileNameField;
   @FXML
   private TextField gistNameField;
+
+  private ObjectProperty<GitHub> gitHub;
 
   private static final Glyph FONTAWESOME_PLAY = new FontAwesome().create(FontAwesome.Glyph.PLAY);
   private static final Glyph FONTAWESOME_PAUSE = new FontAwesome().create(FontAwesome.Glyph.PAUSE);
@@ -65,4 +69,7 @@ public class FileEditorController implements Initializable {
     //TODO: GitHub integration & publish changes to gist
   }
 
+  public void setGitHub(GitHub gitHub) {
+    this.gitHub.set(gitHub);
+  }
 }

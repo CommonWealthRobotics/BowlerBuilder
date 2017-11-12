@@ -52,4 +52,9 @@ public class MainWindowController implements Initializable {
     root.getScene().getWindow().hide();
   }
 
+  @FXML
+  private void logInToGitHub(ActionEvent actionEvent) {
+    //TODO: Use ScriptingEngine's GitHub to log in
+  }
+
 }
