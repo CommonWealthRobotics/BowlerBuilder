@@ -5,6 +5,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.TilePane?>
@@ -48,4 +49,7 @@
          </tabs>
       </TabPane>
    </center>
+   <bottom>
+      <TextArea fx:id="console" editable="false" prefHeight="100.0" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>
