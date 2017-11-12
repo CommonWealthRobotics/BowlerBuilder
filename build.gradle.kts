@@ -66,7 +66,7 @@ dependencies {
     compile(group = "commons-io", name = "commons-io", version = "2.6")
     compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")
 //    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.28.0")
-    compile(group = "org.kohsuke", name = "github-api", version = "1.90")
+//    compile(group = "org.kohsuke", name = "github-api", version = "1.90")
 
     fun junitJupiter(name: String, version: String = "5.0.0") =
             create(group = "org.junit.jupiter", name = name, version = version)

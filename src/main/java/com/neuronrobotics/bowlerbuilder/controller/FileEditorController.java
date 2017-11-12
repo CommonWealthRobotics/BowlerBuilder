@@ -1,11 +1,15 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.NewCylinderDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.NewRoundedCubeDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.NewSphereDialog;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import javafx.beans.property.ObjectProperty;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +21,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
-import org.kohsuke.github.GitHub;
+//import org.kohsuke.github.GitHub;
 
 public class FileEditorController implements Initializable {
 
@@ -35,7 +39,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private TextField gistNameField;
 
-  private ObjectProperty<GitHub> gitHub;
+//  private ObjectProperty<GitHub> gitHub;
 
   private static final Glyph FONTAWESOME_PLAY = new FontAwesome().create(FontAwesome.Glyph.PLAY);
   private static final Glyph FONTAWESOME_PAUSE = new FontAwesome().create(FontAwesome.Glyph.PAUSE);
@@ -69,7 +73,48 @@ public class FileEditorController implements Initializable {
     //TODO: GitHub integration & publish changes to gist
   }
 
-  public void setGitHub(GitHub gitHub) {
-    this.gitHub.set(gitHub);
+//  public void setGitHub(GitHub gitHub) {
+//    this.gitHub.set(gitHub);
+//  }
+
+  @FXML
+  private void newCube(ActionEvent actionEvent) {
+    NewCubeDialog dialog = new NewCubeDialog();
+
+    if (dialog.showAndWait().isPresent()) {
+      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+    }
+
+    Platform.runLater(webView::requestFocus);
+  }
+
+  public void newRoundedCube(ActionEvent actionEvent) {
+    NewRoundedCubeDialog dialog = new NewRoundedCubeDialog();
+
+    if (dialog.showAndWait().isPresent()) {
+      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+    }
+
+    Platform.runLater(webView::requestFocus);
+  }
+
+  public void newSphere(ActionEvent actionEvent) {
+    NewSphereDialog dialog = new NewSphereDialog();
+
+    if (dialog.showAndWait().isPresent()) {
+      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+    }
+
+    Platform.runLater(webView::requestFocus);
+  }
+
+  public void newCylinder(ActionEvent actionEvent) {
+    NewCylinderDialog dialog = new NewCylinderDialog();
+
+    if (dialog.showAndWait().isPresent()) {
+      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+    }
+
+    Platform.runLater(webView::requestFocus);
   }
 }
