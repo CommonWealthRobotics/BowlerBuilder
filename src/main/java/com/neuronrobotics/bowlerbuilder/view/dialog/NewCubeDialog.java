@@ -31,6 +31,11 @@ public class NewCubeDialog extends Dialog<List<String>> {
     lengthField = new TextField();
     heightField = new TextField();
 
+    nameField.setId("nameField");
+    widthField.setId("widthField");
+    lengthField.setId("lengthField");
+    heightField.setId("heightField");
+
     setTitle("New Cube");
 
     GridPane pane = new GridPane();

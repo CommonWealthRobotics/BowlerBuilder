@@ -33,6 +33,12 @@ public class NewCylinderDialog extends Dialog<List<String>> {
     heightField = new TextField();
     resolutionField = new TextField();
 
+    nameField.setId("nameField");
+    topRadiusField.setId("topRadiusField");
+    bottomRadiusField.setId("bottomRadiusField");
+    heightField.setId("heightField");
+    resolutionField.setId("resolutionField");
+
     setTitle("New Cube");
 
     GridPane pane = new GridPane();

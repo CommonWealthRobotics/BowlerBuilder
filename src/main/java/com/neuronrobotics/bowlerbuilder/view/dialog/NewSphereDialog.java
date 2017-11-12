@@ -27,6 +27,9 @@ public class NewSphereDialog extends Dialog<List<String>> {
     nameField = new TextField();
     radiusField = new TextField();
 
+    nameField.setId("nameField");
+    radiusField.setId("radiusField");
+
     setTitle("New Sphere");
 
     GridPane pane = new GridPane();

@@ -33,6 +33,12 @@ public class NewRoundedCubeDialog extends Dialog<List<String>> {
     heightField = new TextField();
     cornerRadiusField = new TextField();
 
+    nameField.setId("nameField");
+    widthField.setId("widthField");
+    lengthField.setId("lengthField");
+    heightField.setId("heightField");
+    cornerRadiusField.setId("cornerRadiusField");
+
     setTitle("New Cube");
 
     GridPane pane = new GridPane();
