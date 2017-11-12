@@ -29,7 +29,7 @@ public class CADModelViewerController implements Initializable {
 
     // Create and position camera
     PerspectiveCamera camera = new PerspectiveCamera(true);
-    camera.getTransforms().addAll (
+    camera.getTransforms().addAll(
         new Rotate(-20, Rotate.Y_AXIS),
         new Rotate(-20, Rotate.X_AXIS),
         new Translate(0, 0, -15));
@@ -40,7 +40,7 @@ public class CADModelViewerController implements Initializable {
     sceneGraph.getChildren().add(testBox);
 
     // Use a SubScene
-    SubScene subScene = new SubScene(sceneGraph, 300,300);
+    SubScene subScene = new SubScene(sceneGraph, 300, 300);
     subScene.setFill(Color.ALICEBLUE);
     subScene.setCamera(camera);
     Group scenes = new Group();

@@ -41,7 +41,7 @@ public class MainWindowController implements Initializable {
       Node content = loader.load();
       tab.setContent(content);
     } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE, "Couldn't load FileEditor.fxml");
+      LoggerUtilities.getLogger().log(Level.SEVERE, "Could not load FileEditor.fxml");
     }
     tabPane.getTabs().add(tab);
     tabPane.getSelectionModel().select(tab);

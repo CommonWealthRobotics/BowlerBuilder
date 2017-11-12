@@ -1,8 +1,10 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,12 +56,13 @@ public class FileEditorController implements Initializable {
       root.getItems().add(loader.load());
       root.setDividerPosition(0, 0.8);
     } catch (IOException e) {
-      e.printStackTrace();
+      LoggerUtilities.getLogger().log(Level.SEVERE, "Could not load CADModelViewer");
     }
   }
 
   @FXML
   private void publishFile(ActionEvent actionEvent) {
+    //TODO: GitHub integration & publish changes to gist
   }
 
 }
