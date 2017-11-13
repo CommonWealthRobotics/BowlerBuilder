@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCylinderDialog;
@@ -64,7 +65,8 @@ public class FileEditorController implements Initializable {
       root.getItems().add(loader.load());
       root.setDividerPosition(0, 0.8);
     } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE, "Could not load CADModelViewer");
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 

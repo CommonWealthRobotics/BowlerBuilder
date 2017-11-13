@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.io.IOException;
 import java.net.URL;
@@ -41,7 +42,8 @@ public class MainWindowController implements Initializable {
       Node content = loader.load();
       tab.setContent(content);
     } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE, "Could not load FileEditor.fxml");
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
     tabPane.getTabs().add(tab);
     tabPane.getSelectionModel().select(tab);
