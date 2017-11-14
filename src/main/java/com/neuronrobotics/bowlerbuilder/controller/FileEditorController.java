@@ -31,6 +31,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private WebView webView;
   private WebEngine webEngine; //NOPMD
+  private AceInterface aceInterface;
   @FXML
   private Button runButton;
   @FXML
@@ -53,6 +54,7 @@ public class FileEditorController implements Initializable {
     webEngine = webView.getEngine();
     webEngine.setJavaScriptEnabled(true);
     webEngine.load(getClass().getResource("../web/ace.html").toString());
+    aceInterface = new AceInterface(webEngine);
 
     runButton.setGraphic(FONTAWESOME_PLAY);
     publishButton.setGraphic(FONTAWESOME_CLOUD_UPLOAD);
@@ -84,7 +86,7 @@ public class FileEditorController implements Initializable {
     NewCubeDialog dialog = new NewCubeDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+      aceInterface.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -95,7 +97,7 @@ public class FileEditorController implements Initializable {
     NewRoundedCubeDialog dialog = new NewRoundedCubeDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+      aceInterface.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -106,7 +108,7 @@ public class FileEditorController implements Initializable {
     NewSphereDialog dialog = new NewSphereDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+      aceInterface.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -117,7 +119,7 @@ public class FileEditorController implements Initializable {
     NewCylinderDialog dialog = new NewCylinderDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      webEngine.executeScript("editor.insert(\"" + dialog.getResultAsScript() + "\");");
+      aceInterface.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
