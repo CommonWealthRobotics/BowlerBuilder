@@ -16,8 +16,6 @@ import javafx.scene.layout.GridPane;
 
 public class NewSphereDialog extends Dialog<List<String>> {
 
-  private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
-
   private final TextField nameField;
   private final TextField radiusField;
 
@@ -33,6 +31,7 @@ public class NewSphereDialog extends Dialog<List<String>> {
     setTitle("New Sphere");
 
     GridPane pane = new GridPane();
+    pane.setId("newSphereRoot");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);
     pane.setVgap(5);
@@ -43,18 +42,18 @@ public class NewSphereDialog extends Dialog<List<String>> {
     pane.add(radiusField, 1, 1);
 
     getDialogPane().setContent(pane);
-    getDialogPane().getButtonTypes().addAll(ADD, ButtonType.CANCEL);
+    getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     Platform.runLater(nameField::requestFocus);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ADD);
+    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
             !(!nameField.getText().isEmpty() && !radiusField.getText().isEmpty()),
         nameField.textProperty(), radiusField.textProperty()));
     addButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
-      if (buttonType == ADD) {
+      if (buttonType == ButtonType.OK) {
         List<String> data = new ArrayList<>();
         Collections.addAll(data,
             nameField.getText(),

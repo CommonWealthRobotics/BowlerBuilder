@@ -18,18 +18,18 @@
          <bottom>
             <HBox alignment="CENTER_LEFT" maxHeight="30.0" nodeOrientation="LEFT_TO_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
                <children>
-                <Button fx:id="runButton" mnemonicParsing="false" onAction="#runFile" text="Run" />
-                  <Button fx:id="publishButton" mnemonicParsing="false" onAction="#publishFile" text="Publish" />
+                <Button fx:id="runButton" id="runButton" mnemonicParsing="false" onAction="#runFile" text="Run" />
+                  <Button fx:id="publishButton" id="publishButton" mnemonicParsing="false" onAction="#publishFile" text="Publish" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="File:" />
-                        <TextField fx:id="fileNameField" />
+                        <TextField fx:id="fileNameField" id="fileNameField" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gist:" />
-                        <TextField fx:id="gistNameField" />
+                        <TextField fx:id="gistNameField" id="gistNameField" />
                      </children>
                   </HBox>
                </children>
@@ -41,10 +41,10 @@
          <top>
             <HBox maxHeight="30.0" spacing="5.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button mnemonicParsing="false" onAction="#newCube" text="Cube" />
-                  <Button mnemonicParsing="false" onAction="#newRoundedCube" text="Rounded Cube" />
-                  <Button mnemonicParsing="false" onAction="#newSphere" text="Sphere" />
-                  <Button mnemonicParsing="false" onAction="#newCylinder" text="Cylinder" />
+                  <Button id="newCubeButton" mnemonicParsing="false" onAction="#newCube" text="Cube" />
+                  <Button id="newRoundedCubeButton" mnemonicParsing="false" onAction="#newRoundedCube" text="Rounded Cube" />
+                  <Button id="newSphereButton" mnemonicParsing="false" onAction="#newSphere" text="Sphere" />
+                  <Button id="newCylinderButton" mnemonicParsing="false" onAction="#newCylinder" text="Cylinder" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" top="5.0" />

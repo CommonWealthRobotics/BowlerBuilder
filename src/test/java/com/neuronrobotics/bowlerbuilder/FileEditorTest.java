@@ -1,48 +1,67 @@
 package com.neuronrobotics.bowlerbuilder;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.concurrent.TimeoutException;
-import javafx.scene.input.MouseButton;
-import org.junit.jupiter.api.BeforeEach;
+import com.neuronrobotics.bowlerbuilder.controller.FileEditorController;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
+import javafx.stage.Stage;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.testfx.api.FxRobot;
-import org.testfx.api.FxToolkit;
-import org.testfx.util.WaitForAsyncUtils;
+import org.testfx.framework.junit5.ApplicationTest;
 
-class FileEditorTest extends FxRobot {
+public class FileEditorTest extends ApplicationTest {
 
-  @BeforeEach
-  void before() throws Exception {
-    FxToolkit.registerPrimaryStage();
-    Thread fxThread = new Thread(() -> {
-      try {
-        FxToolkit.setupApplication(BowlerBuilder::new);
-      } catch (TimeoutException ex) {
-        fail();
-      }
-    });
-    fxThread.start();
-    WaitForAsyncUtils.waitForFxEvents();
+  private FileEditorController controller;
+
+  @Override
+  public void start(Stage stage) throws Exception {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("view/FileEditor.fxml"));
+    SplitPane mainWindow = loader.load();
+    controller = loader.getController();
+    stage.setScene(new Scene(mainWindow));
+    stage.show();
+  }
+
+  @AfterEach
+  void afterEach() {
+    closeCurrentWindow();
   }
 
   @Test
-  void cadViewerTest() {
-    clickOn("3D CAD").clickOn("New File").clickOn("Run");
+  void runFileTest() {
+    clickOn("#runButton");
 
     assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
   }
 
   @Test
-  void cadViewerHomeCameraTest() {
-    clickOn("3D CAD").clickOn("New File").clickOn("Run");
-    clickOn("#cadViewerSubScene")
-        .drag(MouseButton.PRIMARY)
-        .dropTo(lookup("#cadViewerSubScene").query().localToScreen(20, 20));
-    clickOn("Home Camera");
+  void newCubeTest() {
+    clickOn("#newCubeButton");
 
-    assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
+    assertTrue(lookup("#newCubeRoot").tryQuery().isPresent());
+  }
+
+  @Test
+  void newRoundedCubeTest() {
+    clickOn("#newRoundedCubeButton");
+
+    assertTrue(lookup("#newRoundedCubeRoot").tryQuery().isPresent());
+  }
+
+  @Test
+  void newCylinderTest() {
+    clickOn("#newCylinderButton");
+
+    assertTrue(lookup("#newCylinderRoot").tryQuery().isPresent());
+  }
+
+  @Test
+  void newSphereTest() {
+    clickOn("#newSphereButton");
+
+    assertTrue(lookup("#newSphereRoot").tryQuery().isPresent());
   }
 
 }

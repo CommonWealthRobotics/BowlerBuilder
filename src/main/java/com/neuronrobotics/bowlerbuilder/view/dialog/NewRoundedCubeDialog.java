@@ -16,8 +16,6 @@ import javafx.scene.layout.GridPane;
 
 public class NewRoundedCubeDialog extends Dialog<List<String>> {
 
-  private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
-
   private final TextField nameField;
   private final TextField widthField;
   private final TextField lengthField;
@@ -39,9 +37,10 @@ public class NewRoundedCubeDialog extends Dialog<List<String>> {
     heightField.setId("heightField");
     cornerRadiusField.setId("cornerRadiusField");
 
-    setTitle("New Cube");
+    setTitle("New Rounded Cube");
 
     GridPane pane = new GridPane();
+    pane.setId("newRoundedCubeRoot");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);
     pane.setVgap(5);
@@ -58,11 +57,11 @@ public class NewRoundedCubeDialog extends Dialog<List<String>> {
     pane.add(cornerRadiusField, 1, 4);
 
     getDialogPane().setContent(pane);
-    getDialogPane().getButtonTypes().addAll(ADD, ButtonType.CANCEL);
+    getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     Platform.runLater(nameField::requestFocus);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ADD);
+    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
             !(!nameField.getText().isEmpty()
                 && !widthField.getText().isEmpty()
@@ -77,13 +76,14 @@ public class NewRoundedCubeDialog extends Dialog<List<String>> {
     addButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
-      if (buttonType == ADD) {
+      if (buttonType == ButtonType.OK) {
         List<String> data = new ArrayList<>();
         Collections.addAll(data,
             nameField.getText(),
             widthField.getText(),
             lengthField.getText(),
-            heightField.getText());
+            heightField.getText(),
+            cornerRadiusField.getText());
         return data;
       }
       return null;

@@ -181,4 +181,19 @@ public class CADModelViewerController implements Initializable {
     translate.setZ(-15);
   }
 
+  public Rotate getCameraRotateX() {
+    return rotateX;
+  }
+
+  public Rotate getCameraRotateY() {
+    return rotateY;
+  }
+
+  public Rotate getCameraRotateZ() {
+    return rotateZ;
+  }
+
+  public Translate getCameraTranslate() {
+    return translate;
+  }
 }
