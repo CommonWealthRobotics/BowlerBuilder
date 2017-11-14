@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import com.neuronrobotics.bowlerbuilder.controller.FileEditorController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
@@ -31,35 +32,35 @@ public class FileEditorTest extends ApplicationTest {
 
   @Test
   void runFileTest() {
-    clickOn("#runButton");
+    FxHelper.runAndWait(() -> ((Button)lookup("#runButton").query()).fire());
 
     assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
   }
 
   @Test
   void newCubeTest() {
-    clickOn("#newCubeButton");
+    FxHelper.runAndWait(() -> ((Button)lookup("#newCubeButton").query()).fire());
 
     assertTrue(lookup("#newCubeRoot").tryQuery().isPresent());
   }
 
   @Test
   void newRoundedCubeTest() {
-    clickOn("#newRoundedCubeButton");
+    FxHelper.runAndWait(() -> ((Button)lookup("#newRoundedCubeButton").query()).fire());
 
     assertTrue(lookup("#newRoundedCubeRoot").tryQuery().isPresent());
   }
 
   @Test
   void newCylinderTest() {
-    clickOn("#newCylinderButton");
+    FxHelper.runAndWait(() -> ((Button)lookup("#newCylinderButton").query()).fire());
 
     assertTrue(lookup("#newCylinderRoot").tryQuery().isPresent());
   }
 
   @Test
   void newSphereTest() {
-    clickOn("#newSphereButton");
+    FxHelper.runAndWait(() -> ((Button)lookup("#newSphereButton").query()).fire());
 
     assertTrue(lookup("#newSphereRoot").tryQuery().isPresent());
   }
