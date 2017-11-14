@@ -22,6 +22,7 @@ import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 
 public class CADModelViewerController implements Initializable {
@@ -31,16 +32,15 @@ public class CADModelViewerController implements Initializable {
   @FXML
   private Button homeCameraButton;
 
-  //Viewing camera and its transforms
-  private final PerspectiveCamera camera; //NOPMD
-  private final Rotate rotateX;
-  private final Rotate rotateY;
-  private final Rotate rotateZ;
+  //Real camera
+  private final XFormCamera cameraXForm;
   private final Translate translate;
   private double mousePosX; //NOPMD
   private double mousePosY; //NOPMD
-  private static final double mouseXSens = 10;
-  private static final double mouseYSens = 10;
+  private static final double mouseXSens = 15;
+  private static final double mouseYSens = 15;
+  private static final double zoomSens = 0.2;
+  private static final double zoomFineSens = 0.05;
 
   //Main scene graph for all CAD objects
   private final Group sceneGraph;
@@ -49,40 +49,44 @@ public class CADModelViewerController implements Initializable {
   private final SubScene subScene;
 
   public CADModelViewerController() {
-    rotateX = new Rotate(0, Rotate.X_AXIS);
-    rotateY = new Rotate(0, Rotate.Y_AXIS);
-    rotateZ = new Rotate(0, Rotate.Z_AXIS);
     translate = new Translate(0, 0, -15);
-    camera = new PerspectiveCamera(true);
-    camera.getTransforms().addAll(
-        rotateX,
-        rotateY,
-        rotateZ,
-        translate);
+    PerspectiveCamera camera = new PerspectiveCamera(true);
+    cameraXForm = new XFormCamera();
+    cameraXForm.getChildren().add(camera);
+    camera.getTransforms().addAll(translate);
 
     sceneGraph = new Group();
-    sceneGraph.getChildren().add(camera);
-
+    sceneGraph.getChildren().add(cameraXForm);
     subScene = new SubScene(sceneGraph, 300, 300);
     subScene.setManaged(false);
     subScene.setFill(Color.ALICEBLUE);
     subScene.setCamera(camera);
     subScene.setId("cadViewerSubScene");
 
+    //Keep track of drag start location
     subScene.setOnMousePressed((MouseEvent me) -> {
       mousePosX = me.getSceneX();
       mousePosY = me.getSceneY();
     });
 
+    //Keep track of drag movement and update rotation
     subScene.setOnMouseDragged((MouseEvent me) -> {
       double dx = mousePosX - me.getSceneX();
       double dy = mousePosY - me.getSceneY();
       if (me.isPrimaryButtonDown()) {
-        rotateX.setAngle(rotateX.getAngle() + (dy / mouseYSens * 360) * (Math.PI / 180));
-        rotateY.setAngle(rotateY.getAngle() + (dx / mouseXSens * -360) * (Math.PI / 180));
+        //Primary button is rotate
+        cameraXForm.rotateY((dx / mouseXSens * -360) * (Math.PI / 180));
+        cameraXForm.rotateX((dy / mouseYSens * 360) * (Math.PI / 180));
+      } else if (me.isMiddleButtonDown()) {
+        //Middle button is fine zoom
+        translateCamera(0, 0, dy * zoomFineSens);
       }
       mousePosX = me.getSceneX();
       mousePosY = me.getSceneY();
+    });
+
+    subScene.setOnScroll(event -> {
+      translateCamera(0, 0, event.getDeltaY() * zoomSens);
     });
   }
 
@@ -106,7 +110,7 @@ public class CADModelViewerController implements Initializable {
   }
 
   /**
-   * Add a CSG to the scene graph. All meshes in the CSG will be added
+   * Add a CSG to the scene graph. All meshes in the CSG will be added.
    *
    * @param csg CSG to add
    */
@@ -146,9 +150,9 @@ public class CADModelViewerController implements Initializable {
    * @param rotZ Z axis rotation
    */
   public void rotateCamera(double rotX, double rotY, double rotZ) {
-    rotateX.setAngle(rotateX.getAngle() + rotX);
-    rotateY.setAngle(rotateY.getAngle() + rotY);
-    rotateZ.setAngle(rotateZ.getAngle() + rotZ);
+    cameraXForm.rotateX(rotX);
+    cameraXForm.rotateY(rotY);
+    cameraXForm.rotateZ(rotZ);
   }
 
   /**
@@ -173,27 +177,91 @@ public class CADModelViewerController implements Initializable {
    * Homes the camera rotation and translation.
    */
   public void homeCamera() {
-    rotateX.setAngle(0);
-    rotateY.setAngle(0);
-    rotateZ.setAngle(0);
+    cameraXForm.home();
     translate.setX(0);
     translate.setY(0);
     translate.setZ(-15);
   }
 
-  public Rotate getCameraRotateX() {
-    return rotateX;
+  public double getCameraRotateX() {
+    return cameraXForm.getRotX();
   }
 
-  public Rotate getCameraRotateY() {
-    return rotateY;
+  public double getCameraRotateY() {
+    return cameraXForm.getRotY();
   }
 
-  public Rotate getCameraRotateZ() {
-    return rotateZ;
+  public double getCameraRotateZ() {
+    return cameraXForm.getRotZ();
   }
 
   public Translate getCameraTranslate() {
     return translate;
   }
+
+  /**
+   * Apply rotations iteratively to a group so the camera stays locked to azimuth rotations.
+   */
+  private static class XFormCamera extends Group {
+    private Rotate rotation;
+    private double rotX;
+    private double rotY;
+    private double rotZ;
+    private Transform transform = new Rotate();
+
+    XFormCamera() {
+      super();
+      rotX = 0;
+      rotY = 0;
+      rotZ = 0;
+    }
+
+    void rotateX(double angle) {
+      rotation = new Rotate(angle, Rotate.X_AXIS);
+      rotX += angle;
+      transform = transform.createConcatenation(rotation);
+      this.getTransforms().clear();
+      this.getTransforms().addAll(transform);
+    }
+
+    void rotateY(double angle) {
+      rotation = new Rotate(angle, Rotate.Y_AXIS);
+      rotY += angle;
+      transform = transform.createConcatenation(rotation);
+      this.getTransforms().clear();
+      this.getTransforms().addAll(transform);
+    }
+
+    void rotateZ(double angle) {
+      rotation = new Rotate(angle, Rotate.Z_AXIS);
+      rotZ += angle;
+      transform = transform.createConcatenation(rotation);
+      this.getTransforms().clear();
+      this.getTransforms().addAll(transform);
+    }
+
+    void home() {
+      rotX = 0;
+      rotY = 0;
+      rotZ = 0;
+      transform = new Rotate(0, Rotate.X_AXIS);
+      transform = transform.createConcatenation(new Rotate(0, Rotate.Y_AXIS));
+      transform = transform.createConcatenation(new Rotate(0, Rotate.Z_AXIS));
+      this.getTransforms().clear();
+      this.getTransforms().addAll(transform);
+    }
+
+    public double getRotX() {
+      return rotX;
+    }
+
+    public double getRotY() {
+      return rotY;
+    }
+
+    public double getRotZ() {
+      return rotZ;
+    }
+  }
+
 }

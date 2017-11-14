@@ -22,19 +22,19 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
     stage.setScene(new Scene(mainWindow));
     stage.show();
   }
-  
+
   @Test
   void dragTest() {
     clickOn("#cadViewerSubScene")
         .drag(MouseButton.PRIMARY)
         .dropTo(lookup("#cadViewerSubScene").query().localToScreen(20, 20));
 
-    assertEquals(controller.getCameraRotateX().getAngle(), 39.58, 1);
-    assertEquals(controller.getCameraRotateY().getAngle(), -50.89, 1);
-    assertEquals(controller.getCameraRotateZ().getAngle(), 0, 0);
-    assertEquals(controller.getCameraTranslate().getX(), 0, 0);
-    assertEquals(controller.getCameraTranslate().getY(), 0, 0);
-    assertEquals(controller.getCameraTranslate().getZ(), -15, 0);
+    assertEquals(26.39, controller.getCameraRotateX(), 1);
+    assertEquals(-33.93, controller.getCameraRotateY(), 1);
+    assertEquals(0, controller.getCameraRotateZ(), 0);
+    assertEquals(0, controller.getCameraTranslate().getX(), 0);
+    assertEquals(0, controller.getCameraTranslate().getY(), 0);
+    assertEquals(-15, controller.getCameraTranslate().getZ(), 0);
   }
 
   @Test
@@ -44,30 +44,30 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
         .dropTo(lookup("#cadViewerSubScene").query().localToScreen(20, 20));
     clickOn("Home Camera");
 
-    assertEquals(controller.getCameraRotateX().getAngle(), 0, 0);
-    assertEquals(controller.getCameraRotateY().getAngle(), 0, 0);
-    assertEquals(controller.getCameraRotateZ().getAngle(), 0, 0);
-    assertEquals(controller.getCameraTranslate().getX(), 0, 0);
-    assertEquals(controller.getCameraTranslate().getY(), 0, 0);
-    assertEquals(controller.getCameraTranslate().getZ(), -15, 0);
+    assertEquals(0, controller.getCameraRotateX(), 0);
+    assertEquals(0, controller.getCameraRotateY(), 0);
+    assertEquals(0, controller.getCameraRotateZ(), 0);
+    assertEquals(0, controller.getCameraTranslate().getX(), 0);
+    assertEquals(0, controller.getCameraTranslate().getY(), 0);
+    assertEquals(-15, controller.getCameraTranslate().getZ(), 0);
   }
 
   @Test
   void rotateCameraTest() {
     controller.rotateCamera(1, 2, 3);
 
-    assertEquals(controller.getCameraRotateX().getAngle(), 1, 0);
-    assertEquals(controller.getCameraRotateY().getAngle(), 2, 0);
-    assertEquals(controller.getCameraRotateZ().getAngle(), 3, 0);
+    assertEquals(1, controller.getCameraRotateX(), 0);
+    assertEquals(2, controller.getCameraRotateY(), 0);
+    assertEquals(3, controller.getCameraRotateZ(), 0);
   }
 
   @Test
   void translateCameraTest() {
     controller.translateCamera(1, 2, 3);
 
-    assertEquals(controller.getCameraTranslate().getX(), 1, 0);
-    assertEquals(controller.getCameraTranslate().getY(), 2, 0);
-    assertEquals(controller.getCameraTranslate().getZ(), -12, 0);
+    assertEquals(1, controller.getCameraTranslate().getX(), 0);
+    assertEquals(2, controller.getCameraTranslate().getY(), 0);
+    assertEquals(-12, controller.getCameraTranslate().getZ(), 0);
   }
 
 }
