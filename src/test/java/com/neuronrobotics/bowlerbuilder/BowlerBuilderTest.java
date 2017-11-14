@@ -8,9 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
-import org.testfx.framework.junit5.ApplicationTest;
 
-class BowlerBuilderTest extends ApplicationTest {
+class BowlerBuilderTest extends AutoClosingApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {

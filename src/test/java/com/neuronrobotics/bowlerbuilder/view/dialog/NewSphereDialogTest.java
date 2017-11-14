@@ -17,8 +17,8 @@ class NewSphereDialogTest extends CADAcceleratorDialogTest<NewSphereDialog> {
 
   private void fillValues() {
     FxHelper.runAndWait(() -> {
-      ((TextField)lookup("#nameField").query()).setText("foo");
-      ((TextField)lookup("#radiusField").query()).setText("1");
+      ((TextField) lookup("#nameField").query()).setText("foo");
+      ((TextField) lookup("#radiusField").query()).setText("1");
     });
   }
 

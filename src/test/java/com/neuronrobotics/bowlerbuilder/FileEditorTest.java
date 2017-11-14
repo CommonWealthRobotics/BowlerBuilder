@@ -9,9 +9,8 @@ import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.testfx.framework.junit5.ApplicationTest;
 
-public class FileEditorTest extends ApplicationTest {
+public class FileEditorTest extends AutoClosingApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {

@@ -1,11 +1,11 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
+import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import java.util.function.Supplier;
 import javafx.scene.control.Dialog;
 import javafx.stage.Stage;
-import org.testfx.framework.junit5.ApplicationTest;
 
-public class CADAcceleratorDialogTest<T extends Dialog> extends ApplicationTest {
+public class CADAcceleratorDialogTest<T extends Dialog> extends AutoClosingApplicationTest {
 
   T dialog;
   private final Supplier<T> dialogSupplier;

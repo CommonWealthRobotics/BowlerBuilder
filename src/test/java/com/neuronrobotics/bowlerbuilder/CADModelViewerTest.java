@@ -9,9 +9,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
-import org.testfx.framework.junit5.ApplicationTest;
 
-class CADModelViewerTest extends ApplicationTest {
+class CADModelViewerTest extends AutoClosingApplicationTest {
 
   private CADModelViewerController controller;
 
