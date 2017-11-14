@@ -71,6 +71,9 @@ public class FileEditorController implements Initializable {
     try {
       root.getItems().add(loader.load());
       root.setDividerPosition(0, 0.8);
+      //ScriptingEngine.inlineScriptRun(aceInterface.getText(),
+      //new ArrayList<Object>(),
+      //ShellType.Groovy);
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));

@@ -9,11 +9,15 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -120,6 +124,26 @@ public class CADModelViewerController implements Initializable {
       mesh.setDrawMode(DrawMode.FILL);
       mesh.setDepthTest(DepthTest.ENABLE);
       mesh.setCullFace(CullFace.BACK);
+      mesh.setOnMouseClicked(mouseEvent -> {
+        if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+          ContextMenu menu = new ContextMenu();
+          MenuItem wireframe = new MenuItem("Show As Wireframe");
+          wireframe.setOnAction(actionEvent -> {
+            if ("Show As Wireframe".equals(wireframe.getText())) {
+              mesh.setDrawMode(DrawMode.LINE);
+              wireframe.setText("Show As Filled");
+            } else {
+              mesh.setDrawMode(DrawMode.FILL);
+              wireframe.setText("Show As Wireframe");
+            }
+          });
+          menu.getItems().add(wireframe);
+
+          Point2D point2D = root.getCenter()
+              .getLocalToSceneTransform().transform(new Point2D(mousePosX, mousePosY));
+          menu.show(root.getCenter(), point2D.getX(), point2D.getY());
+        }
+      });
       sceneGraph.getChildren().add(mesh);
     });
   }
