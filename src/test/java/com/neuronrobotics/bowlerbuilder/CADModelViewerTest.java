@@ -70,4 +70,27 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
     assertEquals(-12, controller.getCameraTranslate().getZ(), 0);
   }
 
+  //  @Test
+  //  void defaultMeshRenderTest() {
+  //    CSG cube = new Cube(1, 1, 1).toCSG();
+  //    MeshView mv = cube.toJavaFXMesh().getAsMeshViews().get(0);
+  //    mv.setId("#meshView1");
+  //    FxHelper.runAndWait(() -> controller.addMeshView(mv));
+  //
+  //    assertTrue(lookup("#meshView1").tryQuery().isPresent());
+  //  }
+  //
+  //  @Test
+  //  void wireframeTest() {
+  //    CSG cube = new Cube(1, 1, 1).toCSG();
+  //    MeshView mv = cube.toJavaFXMesh().getAsMeshViews().get(0);
+  //    mv.setId("#meshView1");
+  //    FxHelper.runAndWait(() -> controller.addMeshView(mv));
+  //
+  //    rightClickOn("#meshView1").clickOn("Show As Wireframe");
+  //    waitForFxEvents();
+  //
+  //    assertEquals(DrawMode.LINE, ((MeshView) lookup("#meshView1").query()).getDrawMode());
+  //  }
+
 }

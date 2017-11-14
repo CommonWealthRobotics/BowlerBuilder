@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import eu.mihosoft.jcsg.CSG;
-import eu.mihosoft.jcsg.Cube;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Point2D;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -24,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
@@ -109,61 +108,81 @@ public class CADModelViewerController implements Initializable {
     });
 
     root.setCenter(subScene);
-
-    addCSG(new Cube(1, 1, 1).toCSG());
   }
 
   /**
-   * Add a CSG to the scene graph. All meshes in the CSG will be added.
+   * Add a MeshView to the scene graph.
+   *
+   * @param mesh MeshView to add
+   */
+  public void addMeshView(MeshView mesh) {
+    mesh.setMaterial(new PhongMaterial(Color.RED));
+    mesh.setDrawMode(DrawMode.FILL);
+    mesh.setDepthTest(DepthTest.ENABLE);
+    mesh.setCullFace(CullFace.BACK);
+
+    mesh.setOnMouseClicked(mouseEvent -> {
+      if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoHide(true);
+
+        //Wireframe/Solid draw toggle
+        MenuItem wireframe;
+
+        //Set the title of the MenuItem to the opposite of the current draw
+        if (mesh.getDrawMode().equals(DrawMode.LINE)) {
+          wireframe = new MenuItem("Show As Solid");
+        } else {
+          wireframe = new MenuItem("Show As Wireframe");
+        }
+
+        //Set the onAction of the MenuItem to flip the draw state
+        wireframe.setOnAction(actionEvent -> {
+          if (mesh.getDrawMode().equals(DrawMode.FILL)) {
+            mesh.setDrawMode(DrawMode.LINE);
+            wireframe.setText("Show As Solid");
+          } else {
+            mesh.setDrawMode(DrawMode.FILL);
+            wireframe.setText("Show As Wireframe");
+          }
+        });
+
+        menu.getItems().addAll(wireframe);
+        //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
+        //right-click somewhere else
+        mesh.setOnContextMenuRequested(event ->
+            menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
+      }
+    });
+
+    sceneGraph.getChildren().add(mesh);
+  }
+
+  /**
+   * Add MeshViews from a CSG.
    *
    * @param csg CSG to add
    */
-  public void addCSG(CSG csg) {
-    csg.toJavaFXMesh().getAsMeshViews().forEach(mesh -> {
-      mesh.setMaterial(new PhongMaterial(Color.RED));
-      mesh.setDrawMode(DrawMode.FILL);
-      mesh.setDepthTest(DepthTest.ENABLE);
-      mesh.setCullFace(CullFace.BACK);
-      mesh.setOnMouseClicked(mouseEvent -> {
-        if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-          ContextMenu menu = new ContextMenu();
-          MenuItem wireframe = new MenuItem("Show As Wireframe");
-          wireframe.setOnAction(actionEvent -> {
-            if ("Show As Wireframe".equals(wireframe.getText())) {
-              mesh.setDrawMode(DrawMode.LINE);
-              wireframe.setText("Show As Filled");
-            } else {
-              mesh.setDrawMode(DrawMode.FILL);
-              wireframe.setText("Show As Wireframe");
-            }
-          });
-          menu.getItems().add(wireframe);
-
-          Point2D point2D = root.getCenter()
-              .getLocalToSceneTransform().transform(new Point2D(mousePosX, mousePosY));
-          menu.show(root.getCenter(), point2D.getX(), point2D.getY());
-        }
-      });
-      sceneGraph.getChildren().add(mesh);
-    });
+  public void addMeshesFromCSG(CSG csg) {
+    csg.toJavaFXMesh().getAsMeshViews().forEach(this::addMeshView);
   }
 
   /**
-   * Add all given CSGs to the scene graph.
+   * Add MeshViews from all CSGs.
    *
    * @param csgs CSGs to add
    */
-  public void addAllCSG(CSG... csgs) {
-    Arrays.stream(csgs).forEach(this::addCSG);
+  public void addMeshesFromAllCSG(CSG... csgs) {
+    Arrays.stream(csgs).forEach(this::addMeshesFromCSG);
   }
 
   /**
-   * Add all CSGs to the scene graph.
+   * Add MeshViews from all CSGs.
    *
    * @param csgs List of CSGs to add
    */
-  public void addAllCSG(List<CSG> csgs) {
-    csgs.forEach(this::addCSG);
+  public void addMeshesFromAllCSG(List<CSG> csgs) {
+    csgs.forEach(this::addMeshesFromCSG);
   }
 
   /**
