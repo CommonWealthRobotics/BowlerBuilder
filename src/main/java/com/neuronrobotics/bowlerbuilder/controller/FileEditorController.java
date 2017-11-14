@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +23,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
 
 public class FileEditorController implements Initializable {
 
@@ -40,10 +41,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private TextField gistNameField;
 
-  private static final Glyph FONTAWESOME_PLAY = new FontAwesome().create(FontAwesome.Glyph.PLAY);
-  private static final Glyph FONTAWESOME_PAUSE = new FontAwesome().create(FontAwesome.Glyph.PAUSE);
-  private static final Glyph FONTAWESOME_CLOUD_UPLOAD =
-      new FontAwesome().create(FontAwesome.Glyph.CLOUD_UPLOAD);
+  private int requestedFontSize = 14; //TODO: Load previous font size preference
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -53,8 +51,18 @@ public class FileEditorController implements Initializable {
     webEngine.load(getClass().getResource("../web/ace.html").toString());
     aceInterface = new AceInterface(webEngine);
 
-    runButton.setGraphic(FONTAWESOME_PLAY);
-    publishButton.setGraphic(FONTAWESOME_CLOUD_UPLOAD);
+    runButton.setGraphic(new FontAwesome().create(FontAwesome.Glyph.PLAY));
+    publishButton.setGraphic(new FontAwesome().create(FontAwesome.Glyph.CLOUD_UPLOAD));
+
+    //Stuff to run once the engine is done loading
+    webEngine.getLoadWorker().stateProperty().addListener(
+        (ObservableValue<? extends Worker.State> observable,
+         Worker.State oldValue,
+         Worker.State newValue) -> {
+          if (newValue == Worker.State.SUCCEEDED) {
+            aceInterface.setFontSize(requestedFontSize); //Set font size to the default
+          }
+        });
   }
 
   @FXML
@@ -124,7 +132,11 @@ public class FileEditorController implements Initializable {
    * @param fontSize Font size
    */
   public void setFontSize(int fontSize) {
-    aceInterface.setFontSize(fontSize);
+    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
+      aceInterface.setFontSize(fontSize);
+    } else {
+      requestedFontSize = fontSize;
+    }
   }
 
 }
