@@ -4,6 +4,9 @@ import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,10 +49,35 @@ public class MainWindowController implements Initializable {
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
   }
 
+  //Simple stream to append input characters to a text area
+  private static class TextAreaPrintStream extends OutputStream {
+    private final TextArea textArea;
+
+    public TextAreaPrintStream(TextArea textArea) {
+      this.textArea = textArea;
+    }
+
+    @Override
+    public void write(int character) throws IOException {
+      Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
+    }
+  }
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    //Add date to console
     console.setText(console.getText() + new SimpleDateFormat("HH:mm:ss, MM dd, yyyy",
         new Locale("en", "US")).format(new Date()));
+
+    //Redirect output to console
+    PrintStream stream = null;
+    try {
+      stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING, "UTF-8 encoding unsupported.");
+    }
+    System.setOut(stream);
+    System.setErr(stream);
   }
 
   @FXML
