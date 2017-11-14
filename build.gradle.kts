@@ -20,6 +20,7 @@ plugins {
     java
     checkstyle
     pmd
+    maven
     id("com.github.johnrengelman.shadow") version "2.0.1"
     id("com.diffplug.gradle.spotless") version "3.5.1"
 }
@@ -57,6 +58,17 @@ spotless {
 
 repositories {
     mavenCentral()
+//    maven { setUrl("https://repository-bubblecloud.forge.cloudbees.com/release/") }
+//    maven { setUrl("https://clojars.org/repo") }
+//    maven { setUrl("https://oss.sonatype.org/content/repositories/releases/")  }
+//    maven { setUrl("https://jline.sourceforge.net/m2repo") }
+//    maven { setUrl("https://repo.spring.io/milestone") }
+//    maven { setUrl("https://oss.sonatype.org/content/repositories/snapshots/")  }
+//    maven { setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")  }
+//    maven { setUrl("https://jenkinsci.artifactoryonline.com/jenkinsci/public/") }
+//    maven { setUrl("https://plugins.gradle.org/m2/") }
+//    maven { setUrl("https://dl.bintray.com/clearcontrol/ClearControl") }
+//    maven { setUrl("https://jitpack.io") }
 }
 
 dependencies {

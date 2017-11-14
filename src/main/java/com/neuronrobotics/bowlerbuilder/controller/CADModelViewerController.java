@@ -67,6 +67,7 @@ public class CADModelViewerController implements Initializable {
     subScene.setManaged(false);
     subScene.setFill(Color.ALICEBLUE);
     subScene.setCamera(camera);
+    subScene.setId("cadViewerSubScene");
 
     subScene.setOnMousePressed((MouseEvent me) -> {
       mousePosX = me.getSceneX();
