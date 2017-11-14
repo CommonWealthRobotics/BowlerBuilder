@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.neuronrobotics.bowlerbuilder.FxHelper;
 import java.util.List;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
@@ -14,25 +15,26 @@ class NewRoundedCubeDialogTest extends CADAcceleratorDialogTest<NewRoundedCubeDi
     super(NewRoundedCubeDialog::new);
   }
 
+  private void fillValues() {
+    FxHelper.runAndWait(() -> {
+      ((TextField)lookup("#nameField").query()).setText("foo");
+      ((TextField)lookup("#widthField").query()).setText("1");
+      ((TextField)lookup("#lengthField").query()).setText("2");
+      ((TextField)lookup("#heightField").query()).setText("3");
+      ((TextField)lookup("#cornerRadiusField").query()).setText("4");
+    });
+  }
+
   @Test
   void codeGenTest() {
-    ((TextField)lookup("#nameField").query()).setText("foo");
-    ((TextField)lookup("#widthField").query()).setText("1");
-    ((TextField)lookup("#lengthField").query()).setText("2");
-    ((TextField)lookup("#heightField").query()).setText("3");
-    ((TextField)lookup("#cornerRadiusField").query()).setText("4");
+    fillValues();
     assertEquals("CSG foo = new RoundedCube(1, 2, 3).cornerRadius(4).toCSG();",
         dialog.getResultAsScript());
   }
 
   @Test
   void resultTest() {
-    ((TextField)lookup("#nameField").query()).setText("foo");
-    ((TextField)lookup("#widthField").query()).setText("1");
-    ((TextField)lookup("#lengthField").query()).setText("2");
-    ((TextField)lookup("#heightField").query()).setText("3");
-    ((TextField)lookup("#cornerRadiusField").query()).setText("4");
-
+    fillValues();
     List<String> result = dialog.getResultConverter().call(ButtonType.OK);
 
     assertTrue("foo".equals(result.get(0)));
