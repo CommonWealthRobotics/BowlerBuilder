@@ -1,34 +1,35 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import eu.mihosoft.jcsg.CSG;
+import eu.mihosoft.jcsg.Cube;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SubScene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import javafx.util.Duration;
 
 public class CADModelViewerController implements Initializable {
 
   @FXML
-  private AnchorPane root;
+  private BorderPane root;
+  @FXML
+  private Button homeCameraButton;
 
   //Viewing camera and its transforms
   private final PerspectiveCamera camera; //NOPMD
@@ -36,6 +37,10 @@ public class CADModelViewerController implements Initializable {
   private final Rotate rotateY;
   private final Rotate rotateZ;
   private final Translate translate;
+  private double mousePosX; //NOPMD
+  private double mousePosY; //NOPMD
+  private static final double mouseXSens = 10;
+  private static final double mouseYSens = 10;
 
   //Main scene graph for all CAD objects
   private final Group sceneGraph;
@@ -59,25 +64,44 @@ public class CADModelViewerController implements Initializable {
     sceneGraph.getChildren().add(camera);
 
     subScene = new SubScene(sceneGraph, 300, 300);
+    subScene.setManaged(false);
     subScene.setFill(Color.ALICEBLUE);
     subScene.setCamera(camera);
+
+    subScene.setOnMousePressed((MouseEvent me) -> {
+      mousePosX = me.getSceneX();
+      mousePosY = me.getSceneY();
+    });
+
+    subScene.setOnMouseDragged((MouseEvent me) -> {
+      double dx = mousePosX - me.getSceneX();
+      double dy = mousePosY - me.getSceneY();
+      if (me.isPrimaryButtonDown()) {
+        rotateX.setAngle(rotateX.getAngle() + (dy / mouseYSens * 360) * (Math.PI / 180));
+        rotateY.setAngle(rotateY.getAngle() + (dx / mouseXSens * -360) * (Math.PI / 180));
+      }
+      mousePosX = me.getSceneX();
+      mousePosY = me.getSceneY();
+    });
   }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    Consumer<Rotate> makeTimelines = rotate -> {
-      Timeline timeline = new Timeline(
-          new KeyFrame(Duration.seconds(0), new KeyValue(rotate.angleProperty(), 0)),
-          new KeyFrame(Duration.seconds(15), new KeyValue(rotate.angleProperty(), 360)));
-      timeline.setCycleCount(Animation.INDEFINITE);
-      timeline.play();
-    };
+    //Resize the subscene with the borderpane
+    subScene.heightProperty().bind(root.heightProperty());
+    subScene.widthProperty().bind(root.widthProperty());
 
-    makeTimelines.accept(rotateX);
-    makeTimelines.accept(rotateY);
-    makeTimelines.accept(rotateZ);
+    //Clip the subscene so it doesn't overlap with other borderpane elements
+    final Rectangle clip = new Rectangle();
+    subScene.setClip(clip);
+    subScene.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
+      clip.setWidth(newBounds.getWidth());
+      clip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
+    });
 
-    root.getChildren().add(subScene);
+    root.setCenter(subScene);
+
+    addCSG(new Cube(1, 1, 1).toCSG());
   }
 
   /**
@@ -137,6 +161,23 @@ public class CADModelViewerController implements Initializable {
     translate.setX(translate.getX() + movX);
     translate.setY(translate.getY() + movY);
     translate.setZ(translate.getZ() + movZ);
+  }
+
+  @FXML
+  private void onHomeCamera(ActionEvent actionEvent) {
+    homeCamera();
+  }
+
+  /**
+   * Homes the camera rotation and translation.
+   */
+  public void homeCamera() {
+    rotateX.setAngle(0);
+    rotateY.setAngle(0);
+    rotateZ.setAngle(0);
+    translate.setX(0);
+    translate.setY(0);
+    translate.setZ(-15);
   }
 
 }
