@@ -22,7 +22,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
-//import org.kohsuke.github.GitHub;
 
 public class FileEditorController implements Initializable {
 
@@ -40,8 +39,6 @@ public class FileEditorController implements Initializable {
   private TextField fileNameField;
   @FXML
   private TextField gistNameField;
-
-  //  private ObjectProperty<GitHub> gitHub;
 
   private static final Glyph FONTAWESOME_PLAY = new FontAwesome().create(FontAwesome.Glyph.PLAY);
   private static final Glyph FONTAWESOME_PAUSE = new FontAwesome().create(FontAwesome.Glyph.PAUSE);
@@ -76,10 +73,6 @@ public class FileEditorController implements Initializable {
   private void publishFile(ActionEvent actionEvent) {
     //TODO: GitHub integration & publish changes to gist
   }
-
-  //  public void setGitHub(GitHub gitHub) {
-  //    this.gitHub.set(gitHub);
-  //  }
 
   @FXML
   private void newCube(ActionEvent actionEvent) {
@@ -123,6 +116,15 @@ public class FileEditorController implements Initializable {
     }
 
     Platform.runLater(webView::requestFocus);
+  }
+
+  /**
+   * Set the font size of this editor.
+   *
+   * @param fontSize Font size
+   */
+  public void setFontSize(int fontSize) {
+    aceInterface.setFontSize(fontSize);
   }
 
 }

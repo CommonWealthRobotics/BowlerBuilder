@@ -10,16 +10,21 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.TilePane?>
 
-<BorderPane fx:id="root" id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
+<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#exitProgram" text="Exit">
+              <MenuItem mnemonicParsing="false" onAction="#openPreferences" text="Preferences">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                     </accelerator></MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#exitProgram" text="Exit">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                     </accelerator></MenuItem>
+                     </accelerator>
+                  </MenuItem>
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Git">

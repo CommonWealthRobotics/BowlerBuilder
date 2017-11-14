@@ -19,4 +19,52 @@ public final class AceInterface {
     engine.executeScript("editor.insert(\"" + text + "\");");
   }
 
+  /**
+   * Set the font size for the editor.
+   *
+   * @param fontSize Font size
+   */
+  public void setFontSize(int fontSize) {
+    engine.executeScript("document.getElementById('editor').style.fontSize='" + fontSize + "px';");
+    //TODO: save font size preference
+  }
+
+  /**
+   * Get the entire document text.
+   *
+   * @return All text in the editor
+   */
+  public String getText() {
+    return (String) engine.executeScript("editor.getValue();");
+  }
+
+  /**
+   * Get the selected text.
+   *
+   * @return The selected text
+   */
+  public String getSelectedText() {
+    return (String)
+        engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());");
+  }
+
+  /**
+   * Move the cursor to a line.
+   *
+   * @param lineNumber Line number
+   */
+  public void gotoLine(int lineNumber) {
+    engine.executeScript("editor.gotoLine(" + lineNumber + ");");
+  }
+
+  /**
+   * Get the absolute cursor position as the number of characters in from the start of the text.
+   *
+   * @return Cursor position
+   */
+  public int getCursorPosition() {
+    return (int)
+        engine.executeScript("editor.session.doc.positionToIndex(editor.selection.getCursor());");
+  }
+
 }
