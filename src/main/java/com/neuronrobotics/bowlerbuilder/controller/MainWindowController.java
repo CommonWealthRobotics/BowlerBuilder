@@ -107,6 +107,14 @@ public class MainWindowController implements Initializable {
   @FXML
   private void logInToGitHub(ActionEvent actionEvent) {
     //TODO: Use ScriptingEngine's GitHub to log in
+    /*
+    ScriptingEngine.setLoginManager(new GithubLoginManager());
+    ScriptingEngine.runLogin(); //if exception, ScriptingEngine.setAnonymous();
+    if (ScriptingEngine.isLoginSuccess() && BowlerStudio.hasNetwork()) {
+      ScriptingEngine.setAutoupdate(true);
+      //Bowlerstudio.main() see conn.connect();
+    }
+     */
   }
 
   @FXML

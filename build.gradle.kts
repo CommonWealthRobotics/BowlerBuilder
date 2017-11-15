@@ -58,6 +58,7 @@ spotless {
 
 repositories {
     mavenCentral()
+    jcenter()
 //    maven { setUrl("https://repository-bubblecloud.forge.cloudbees.com/release/") }
 //    maven { setUrl("https://clojars.org/repo") }
 //    maven { setUrl("https://oss.sonatype.org/content/repositories/releases/")  }
@@ -76,9 +77,15 @@ dependencies {
     compile(group = "com.google.guava", name = "guava", version = "23.0")
     compile(group = "org.apache.commons", name = "commons-text", version = "1.1")
     compile(group = "commons-io", name = "commons-io", version = "2.6")
-    compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")
+//    compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")
 //    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.28.0")
 //    compile(group = "org.kohsuke", name = "github-api", version = "1.90")
+//    compile(group = "com.neuronrobotics", name = "JavaCad", version = "0.11.0")
+//    compile(group = "org.bubblecloud.jbullet", name = "jbullet", version = "2.72.2.4") //down
+//    compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
+//    compile "com.neuronrobotics:JavaCad:0.11.0"
+//    compile(project(":lib/src/jbullet"))
+    compile(files("jars/BowlerScriptingKernel-0.29.0.jar"))
 
     fun junitJupiter(name: String, version: String = "5.0.0") =
             create(group = "org.junit.jupiter", name = name, version = version)

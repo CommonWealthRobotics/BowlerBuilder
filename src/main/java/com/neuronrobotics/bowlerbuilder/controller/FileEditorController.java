@@ -6,8 +6,11 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCylinderDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewRoundedCubeDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewSphereDialog;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import eu.mihosoft.vrl.v3d.CSG;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javafx.application.Platform;
@@ -51,8 +54,9 @@ public class FileEditorController implements Initializable {
     webEngine.load(getClass().getResource("../web/ace.html").toString());
     aceInterface = new AceInterface(webEngine);
 
-    runButton.setGraphic(new FontAwesome().create(FontAwesome.Glyph.PLAY));
-    publishButton.setGraphic(new FontAwesome().create(FontAwesome.Glyph.CLOUD_UPLOAD));
+    runButton.setGraphic(new FontAwesome().create(String.valueOf(FontAwesome.Glyph.PLAY)));
+    publishButton.setGraphic(
+        new FontAwesome().create(String.valueOf(FontAwesome.Glyph.CLOUD_UPLOAD)));
 
     //Stuff to run once the engine is done loading
     webEngine.getLoadWorker().stateProperty().addListener(
@@ -70,13 +74,20 @@ public class FileEditorController implements Initializable {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/CADModelViewer.fxml"));
     try {
       root.getItems().add(loader.load());
+      CADModelViewerController controller = loader.getController();
       root.setDividerPosition(0, 0.8);
-      //ScriptingEngine.inlineScriptRun(aceInterface.getText(),
-      //new ArrayList<Object>(),
-      //ShellType.Groovy);
+      Object result = ScriptingEngine.inlineScriptStringRun(aceInterface.getText(),
+          new ArrayList<>(),
+          "Groovy");
+      if (result instanceof CSG) {
+        controller.addMeshesFromCSG((CSG) result);
+      }
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+    } catch (Exception e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 

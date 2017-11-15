@@ -1,0 +1,3 @@
+[submodule "lib/src/jbullet"]
+	path = lib/src/jbullet
+	url = https://github.com/bubblecloud/jbullet.git
