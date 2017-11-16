@@ -8,9 +8,11 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.NewRoundedCubeDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewSphereDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import eu.mihosoft.vrl.v3d.CSG;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javafx.application.Platform;
@@ -45,6 +47,7 @@ public class FileEditorController implements Initializable {
   private TextField gistNameField;
 
   private int requestedFontSize = 14; //TODO: Load previous font size preference
+  private File requestedFile;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,6 +68,7 @@ public class FileEditorController implements Initializable {
          Worker.State newValue) -> {
           if (newValue == Worker.State.SUCCEEDED) {
             aceInterface.setFontSize(requestedFontSize); //Set font size to the default
+            aceInterface.insertAtCursor(requestedFile.getAbsolutePath());
           }
         });
   }
@@ -76,11 +80,20 @@ public class FileEditorController implements Initializable {
       root.getItems().add(loader.load());
       CADModelViewerController controller = loader.getController();
       root.setDividerPosition(0, 0.8);
+
       Object result = ScriptingEngine.inlineScriptStringRun(aceInterface.getText(),
           new ArrayList<>(),
           "Groovy");
+
       if (result instanceof CSG) {
         controller.addMeshesFromCSG((CSG) result);
+      } else if (result instanceof List) {
+        List casted = (List) result;
+        casted.forEach(elem -> {
+          if (elem instanceof CSG) {
+            controller.addMeshesFromCSG((CSG) elem);
+          }
+        });
       }
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
@@ -150,6 +163,19 @@ public class FileEditorController implements Initializable {
       aceInterface.setFontSize(fontSize);
     } else {
       requestedFontSize = fontSize;
+    }
+  }
+
+  /**
+   * Load a file from disk and insert its content into the editor.
+   *
+   * @param file File to load
+   */
+  public void loadFile(File file) {
+    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
+      aceInterface.insertAtCursor(file.getAbsolutePath());
+    } else {
+      requestedFile = file;
     }
   }
 

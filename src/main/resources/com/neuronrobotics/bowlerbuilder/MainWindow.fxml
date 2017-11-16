@@ -9,9 +9,9 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.web.WebView?>
 
-<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
+<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -31,6 +31,12 @@
             <Menu mnemonicParsing="false" text="Git">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#logInToGitHub" text="Log in to GitHub" />
+                  <MenuItem fx:id="logOut" id="logOut" mnemonicParsing="false" onAction="#logOutFromGitHub" text="Log out from GitHub" />
+                  <Menu fx:id="myGists" id="myGists" mnemonicParsing="false" text="My Gists" />
+                  <Menu fx:id="myOrgs" id="myOrgs" mnemonicParsing="false" text="My Organizations" />
+                  <Menu fx:id="myRepos" id="myRepos" mnemonicParsing="false" text="My Repositories" />
+                  <Menu fx:id="watchedRepos" id="watchedRepos" mnemonicParsing="false" text="Repo's I'm Watching" />
+                  <MenuItem mnemonicParsing="false" onAction="#onDeleteLocalCache" text="Delete Local Cache" />
               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="3D CAD">
@@ -50,13 +56,13 @@
       </MenuBar>
    </top>
    <center>
-      <SplitPane dividerPositions="0.8" orientation="VERTICAL" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="splitPane" dividerPositions="0.8" orientation="VERTICAL" BorderPane.alignment="CENTER">
          <items>
             <TabPane fx:id="tabPane">
                <tabs>
-                  <Tab text="Home">
+                  <Tab id="homeTab" fx:id="homeTab" closable="false" text="Home">
                      <content>
-                        <TilePane prefHeight="200.0" prefWidth="200.0" />
+                        <WebView fx:id="homeWebView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
                      </content>
                   </Tab>
                </tabs>
