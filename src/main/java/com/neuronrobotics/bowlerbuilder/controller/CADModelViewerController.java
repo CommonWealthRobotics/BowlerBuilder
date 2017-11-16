@@ -12,9 +12,11 @@ import java.util.logging.Level;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point3D;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -23,8 +25,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
@@ -43,12 +45,18 @@ public class CADModelViewerController implements Initializable {
   private Button homeCameraButton;
 
   //Real camera
+  private final PerspectiveCamera camera1;
   private final XFormCamera cameraXForm1;
-  private final XFormCamera cameraXForm2;
+
   private final Translate translate;
-  private final Translate backgroundTranslate;
+
   private double mousePosX; //NOPMD
   private double mousePosY; //NOPMD
+  private Point3D vecIni;
+  private Point3D vecPos;
+  private double distance;
+  private MeshView selection;
+
   private static final double mouseXSens = 15;
   private static final double mouseYSens = 15;
   private static final double zoomSens = 0.2;
@@ -58,67 +66,79 @@ public class CADModelViewerController implements Initializable {
   private final Group csgGraph;
   private final SubScene csgScene;
 
-  private final SubScene backgroundScene;
-
   public CADModelViewerController() {
     translate = new Translate(0, 0, -15);
-    backgroundTranslate = new Translate(0, 0, -15);
 
-    PerspectiveCamera camera1 = new PerspectiveCamera(true);
+    camera1 = new PerspectiveCamera(true);
     camera1.setFarClip(100000);
     cameraXForm1 = new XFormCamera();
     cameraXForm1.getChildren().add(camera1);
     camera1.getTransforms().addAll(translate);
 
-    PerspectiveCamera camera2 = new PerspectiveCamera(true);
-    camera2.setFarClip(100000);
-    cameraXForm2 = new XFormCamera();
-    cameraXForm2.getChildren().add(camera2);
-    camera2.getTransforms().addAll(backgroundTranslate);
-
     csgGraph = new Group();
-    csgGraph.getChildren().addAll(cameraXForm1);
-    csgScene = new SubScene(csgGraph, 300, 300);
+    try {
+      csgGraph.getChildren().addAll(cameraXForm1,
+          new ImageView(new Image(getClass().getResource("../cap.png").toURI().toString())));
+    } catch (URISyntaxException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not load CAD viewer background image.\n" + Throwables.getStackTraceAsString(e));
+    }
+    csgScene = new SubScene(csgGraph, 300, 300, true, SceneAntialiasing.BALANCED);
     csgScene.setManaged(false);
     csgScene.setFill(Color.TRANSPARENT);
     csgScene.setCamera(camera1);
     csgScene.setId("cadViewerSubScene");
 
-    Group backgroundGraph = new Group();
-    try {
-      backgroundGraph.getChildren().addAll(cameraXForm2,
-          new ImageView(new Image(getClass().getResource("../cap.png").toURI().toString())));
-    } catch (URISyntaxException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not load background image.\n" + Throwables.getStackTraceAsString(e));
-    }
-    backgroundScene = new SubScene(backgroundGraph, 300, 300);
-    backgroundScene.setManaged(false);
-    backgroundScene.setFill(Color.ALICEBLUE);
-    backgroundScene.setCamera(camera2);
-    backgroundScene.setId("cadViewerBackgroundScene");
-
     //Keep track of drag start location
     csgScene.setOnMousePressed((MouseEvent me) -> {
+      //TODO: Translate object when picking, pan camera when not picking
       mousePosX = me.getSceneX();
       mousePosY = me.getSceneY();
+      PickResult pr = me.getPickResult();
+      if (pr != null && pr.getIntersectedNode() != null
+          && pr.getIntersectedNode() instanceof MeshView) {
+        selection = (MeshView) pr.getIntersectedNode();
+        distance = me.getPickResult().getIntersectedDistance();
+        vecIni = unProjectDirection(
+            mousePosX,
+            mousePosY,
+            csgScene.getWidth(),
+            csgScene.getHeight());
+      }
     });
 
     //Keep track of drag movement and update rotation
     csgScene.setOnMouseDragged((MouseEvent me) -> {
       double dx = mousePosX - me.getSceneX();
       double dy = mousePosY - me.getSceneY();
+
       if (me.isPrimaryButtonDown()) {
         //Primary button is rotate
         cameraXForm1.rotateY((dx / mouseXSens * -360) * (Math.PI / 180));
         cameraXForm1.rotateX((dy / mouseYSens * 360) * (Math.PI / 180));
-        cameraXForm2.rotateY((dx / mouseXSens * -360) * (Math.PI / 180));
-        cameraXForm2.rotateX((dy / mouseYSens * 360) * (Math.PI / 180));
       } else if (me.isMiddleButtonDown()) {
         //Middle button is fine zoom
         translateCamera(0, 0, dy * zoomFineSens);
       } else if (me.isSecondaryButtonDown()) {
-        translateCamera(zoomFineSens * dx, zoomFineSens * dy, 0);
+        //Secondary button is translate object
+        vecPos = unProjectDirection(
+            mousePosX,
+            mousePosY,
+            csgScene.getWidth(),
+            csgScene.getHeight());
+        Point3D translation = vecPos.subtract(vecIni).multiply(distance);
+        double sens = 10 / this.translate.getZ();
+        selection.getTransforms().add(new Translate(
+            translation.getX() * sens,
+            translation.getY() * sens,
+            translation.getZ() * sens));
+        vecIni = vecPos;
+        PickResult pr = me.getPickResult();
+        if (pr != null
+            && pr.getIntersectedNode() != null
+            && pr.getIntersectedNode() == selection) {
+          distance = pr.getIntersectedDistance();
+        }
       }
       mousePosX = me.getSceneX();
       mousePosY = me.getSceneY();
@@ -127,13 +147,64 @@ public class CADModelViewerController implements Initializable {
     csgScene.setOnScroll(event -> translateCamera(0, 0, event.getDeltaY() * zoomSens));
   }
 
+  /*
+     From fx83dfeatures.Camera3D
+     http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/5d371a34ddf1/apps/toys/FX8-3DFeatures/src
+     /fx83dfeatures/Camera3D.java
+    */
+
+  /**
+   * Undo scene projection.
+   *
+   * @param sceneX Scene x coordinate
+   * @param sceneY Scene y coordinate
+   * @param sceneWidth Scene width
+   * @param sceneHeight Scene height
+   * @return Un-projected point
+   */
+  private Point3D unProjectDirection(double sceneX,
+                                     double sceneY,
+                                     double sceneWidth,
+                                     double sceneHeight) {
+    double tanHFov = Math.tan(Math.toRadians(camera1.getFieldOfView()) * 0.5f);
+    Point3D virtualMouse = new Point3D(
+        tanHFov * (2 * sceneX / sceneWidth - 1),
+        tanHFov * (2 * sceneY / sceneWidth - sceneHeight / sceneWidth),
+        1);
+
+    return localToSceneDirection(virtualMouse).normalize();
+  }
+
+  /**
+   * Transform a local point to a scene point.
+   *
+   * @param pt Point to transform
+   * @return Transformed point
+   */
+  private Point3D localToScene(Point3D pt) {
+    Point3D res = camera1.localToParentTransformProperty().get().transform(pt);
+    if (camera1.getParent() != null) {
+      res = camera1.getParent().localToSceneTransformProperty().get().transform(res);
+    }
+    return res;
+  }
+
+  /**
+   * Get the un-normalized direction of the local-to-scene transform.
+   *
+   * @param dir Point to transform
+   * @return Direction
+   */
+  private Point3D localToSceneDirection(Point3D dir) {
+    Point3D res = localToScene(dir);
+    return res.subtract(localToScene(new Point3D(0, 0, 0)));
+  }
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     //Resize the subscene with the borderpane
     csgScene.heightProperty().bind(root.heightProperty());
     csgScene.widthProperty().bind(root.widthProperty());
-    backgroundScene.heightProperty().bind(root.heightProperty());
-    backgroundScene.widthProperty().bind(root.widthProperty());
 
     //Clip the subscene so it doesn't overlap with other borderpane elements
     final Rectangle csgClip = new Rectangle();
@@ -142,15 +213,8 @@ public class CADModelViewerController implements Initializable {
       csgClip.setWidth(newBounds.getWidth());
       csgClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
     });
-    final Rectangle backgroundClip = new Rectangle();
-    backgroundScene.setClip(backgroundClip);
-    backgroundScene.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
-      backgroundClip.setWidth(newBounds.getWidth());
-      backgroundClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
-    });
 
-    StackPane stackPane = new StackPane(backgroundScene, csgScene);
-    root.setCenter(stackPane);
+    root.setCenter(csgScene);
   }
 
   /**
@@ -239,9 +303,6 @@ public class CADModelViewerController implements Initializable {
     cameraXForm1.rotateX(rotX);
     cameraXForm1.rotateY(rotY);
     cameraXForm1.rotateZ(rotZ);
-    cameraXForm2.rotateX(rotX);
-    cameraXForm2.rotateY(rotY);
-    cameraXForm2.rotateZ(rotZ);
   }
 
   /**
@@ -255,7 +316,6 @@ public class CADModelViewerController implements Initializable {
     translate.setX(translate.getX() + movX);
     translate.setY(translate.getY() + movY);
     translate.setZ(translate.getZ() + movZ);
-    backgroundTranslate.setZ(translate.getZ());
   }
 
   @FXML
@@ -268,11 +328,9 @@ public class CADModelViewerController implements Initializable {
    */
   public void homeCamera() {
     cameraXForm1.home();
-    cameraXForm2.home();
     translate.setX(0);
     translate.setY(0);
     translate.setZ(-15);
-    backgroundTranslate.setZ(-15);
   }
 
   public double getCameraRotateX() {
