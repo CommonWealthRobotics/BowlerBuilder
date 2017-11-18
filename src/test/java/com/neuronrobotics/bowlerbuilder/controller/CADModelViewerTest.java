@@ -1,8 +1,8 @@
-package com.neuronrobotics.bowlerbuilder;
+package com.neuronrobotics.bowlerbuilder.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import com.neuronrobotics.bowlerbuilder.controller.CADModelViewerController;
+import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;

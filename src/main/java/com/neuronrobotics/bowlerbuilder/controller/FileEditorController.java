@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.aceEditor.AceEditor;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCylinderDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewRoundedCubeDialog;
@@ -37,7 +38,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private WebView webView;
   private WebEngine webEngine; //NOPMD
-  private AceInterface aceInterface;
+  private AceEditor aceEditor;
   @FXML
   private Button runButton;
   @FXML
@@ -61,7 +62,7 @@ public class FileEditorController implements Initializable {
     webEngine = webView.getEngine();
     webEngine.setJavaScriptEnabled(true);
     webEngine.load(getClass().getResource("../web/ace.html").toString());
-    aceInterface = new AceInterface(webEngine);
+    aceEditor = new AceEditor(webEngine);
 
     runButton.setGraphic(new FontAwesome().create(String.valueOf(FontAwesome.Glyph.PLAY)));
     publishButton.setGraphic(
@@ -73,8 +74,8 @@ public class FileEditorController implements Initializable {
          Worker.State oldValue,
          Worker.State newValue) -> {
           if (newValue == Worker.State.SUCCEEDED) {
-            aceInterface.setFontSize(requestedFontSize); //Set font size to the default
-            requestedFile.ifPresent(file -> aceInterface.insertAtCursor(file.getAbsolutePath()));
+            aceEditor.setFontSize(requestedFontSize); //Set font size to the default
+            requestedFile.ifPresent(file -> aceEditor.insertAtCursor(file.getAbsolutePath()));
           }
         });
   }
@@ -87,7 +88,7 @@ public class FileEditorController implements Initializable {
       CADModelViewerController controller = loader.getController();
       root.setDividerPosition(0, 0.8);
 
-      Object result = ScriptingEngine.inlineScriptStringRun(aceInterface.getText(),
+      Object result = ScriptingEngine.inlineScriptStringRun(aceEditor.getText(),
           new ArrayList<>(),
           "Groovy");
 
@@ -120,7 +121,7 @@ public class FileEditorController implements Initializable {
     NewCubeDialog dialog = new NewCubeDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      aceInterface.insertAtCursor(dialog.getResultAsScript());
+      aceEditor.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -131,7 +132,7 @@ public class FileEditorController implements Initializable {
     NewRoundedCubeDialog dialog = new NewRoundedCubeDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      aceInterface.insertAtCursor(dialog.getResultAsScript());
+      aceEditor.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -142,7 +143,7 @@ public class FileEditorController implements Initializable {
     NewSphereDialog dialog = new NewSphereDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      aceInterface.insertAtCursor(dialog.getResultAsScript());
+      aceEditor.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -153,7 +154,7 @@ public class FileEditorController implements Initializable {
     NewCylinderDialog dialog = new NewCylinderDialog();
 
     if (dialog.showAndWait().isPresent()) {
-      aceInterface.insertAtCursor(dialog.getResultAsScript());
+      aceEditor.insertAtCursor(dialog.getResultAsScript());
     }
 
     Platform.runLater(webView::requestFocus);
@@ -166,7 +167,7 @@ public class FileEditorController implements Initializable {
    */
   public void setFontSize(int fontSize) {
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      aceInterface.setFontSize(fontSize);
+      aceEditor.setFontSize(fontSize);
     } else {
       requestedFontSize = fontSize;
     }
@@ -179,7 +180,7 @@ public class FileEditorController implements Initializable {
    */
   public void loadFile(File file) {
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      aceInterface.insertAtCursor(file.getAbsolutePath());
+      aceEditor.insertAtCursor(file.getAbsolutePath());
     } else {
       requestedFile = Optional.of(file);
     }

@@ -1,7 +1,9 @@
-package com.neuronrobotics.bowlerbuilder;
+package com.neuronrobotics.bowlerbuilder.controller;
 
 import static org.junit.Assert.assertTrue;
 
+import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.FxHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

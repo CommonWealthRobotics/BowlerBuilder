@@ -1,12 +1,12 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller.aceEditor;
 
 import javafx.scene.web.WebEngine;
 
-public final class AceInterface {
+public final class AceEditor implements AceInterface {
 
   private final WebEngine engine;
 
-  public AceInterface(WebEngine engine) {
+  public AceEditor(WebEngine engine) {
     this.engine = engine;
   }
 

@@ -1,8 +1,8 @@
-package com.neuronrobotics.bowlerbuilder;
+package com.neuronrobotics.bowlerbuilder.controller.aceEditor;
 
 //public class AceInterfaceTest extends AutoClosingApplicationTest {
 //
-//  private AceInterface aceInterface;
+//  private AceEditor aceInterface;
 //  private String result;
 //
 //  @Override
@@ -12,7 +12,7 @@ package com.neuronrobotics.bowlerbuilder;
 //      result = (String) invocation.getArguments()[0];
 //      return invocation.getArguments()[0];
 //    });
-//    aceInterface = new AceInterface(engine);
+//    aceInterface = new AceEditor(engine);
 //  }
 //
 //  @Test
