@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javafx.application.Platform;
@@ -46,8 +47,13 @@ public class FileEditorController implements Initializable {
   @FXML
   private TextField gistNameField;
 
-  private int requestedFontSize = 14; //TODO: Load previous font size preference
-  private File requestedFile;
+  private int requestedFontSize;
+  private Optional<File> requestedFile;
+
+  public FileEditorController() {
+    requestedFontSize = 14; //TODO: Load previous font size preference
+    requestedFile = Optional.empty();
+  }
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,7 +74,7 @@ public class FileEditorController implements Initializable {
          Worker.State newValue) -> {
           if (newValue == Worker.State.SUCCEEDED) {
             aceInterface.setFontSize(requestedFontSize); //Set font size to the default
-            aceInterface.insertAtCursor(requestedFile.getAbsolutePath());
+            requestedFile.ifPresent(file -> aceInterface.insertAtCursor(file.getAbsolutePath()));
           }
         });
   }
@@ -175,7 +181,7 @@ public class FileEditorController implements Initializable {
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
       aceInterface.insertAtCursor(file.getAbsolutePath());
     } else {
-      requestedFile = file;
+      requestedFile = Optional.of(file);
     }
   }
 
