@@ -4,13 +4,19 @@ import org.gradle.api.tasks.wrapper.Wrapper
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+val kotlin_version: String by extra
 
 buildscript {
+    var kotlin_version: String by extra
+    kotlin_version = "1.1.60"
     repositories {
         mavenCentral()
     }
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0")
+        classpath(kotlinModule("gradle-plugin", kotlin_version))
     }
 }
 plugins {
@@ -30,6 +36,7 @@ apply {
     plugin("findbugs")
     plugin("jacoco")
     plugin("org.junit.platform.gradle.plugin")
+    plugin("kotlin")
 }
 
 group = "com.neuronrobotics.bowlerbuilder"
@@ -103,6 +110,7 @@ dependencies {
 
     testRuntime(testFx(name = "openjfx-monocle", version = "8u76-b04"))
     testRuntime(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.0.0")
+    compile(kotlinModule("stdlib-jre8", kotlin_version))
 
 }
 
@@ -266,3 +274,12 @@ val Project.`junitPlatform`: org.junit.platform.gradle.plugin.JUnitPlatformExten
  */
 fun Project.`junitPlatform`(configure: org.junit.platform.gradle.plugin.JUnitPlatformExtension.() -> Unit) =
         extensions.configure("junitPlatform", configure)
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
