@@ -230,7 +230,9 @@ public class MainWindowController implements Initializable {
             showWebGist.setOnAction(event -> {
               WebView webView = new WebView();
               webView.getEngine().load(gist.getHtmlUrl());
-              tabPane.getTabs().add(new Tab(gist.getDescription(), webView));
+              Tab tab = new Tab(gist.getDescription(), webView);
+              tabPane.getTabs().add(tab);
+              tabPane.getSelectionModel().select(tab);
             });
 
             MenuItem addFileToGist = new MenuItem("Add File");
@@ -238,8 +240,10 @@ public class MainWindowController implements Initializable {
               try {
                 openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
                     ScriptingEngine.filesInGit(gist.getGitPushUrl(),
-                        ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
-                        null).get(0)));
+                        ScriptingEngine.getFullBranch(
+                            gist.getGitPushUrl()),
+                        null)
+                        .get(0)));
               } catch (IOException e) {
                 LoggerUtilities.getLogger().log(Level.WARNING,
                     "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
@@ -252,7 +256,7 @@ public class MainWindowController implements Initializable {
               }
             }));
 
-            gistMenu.getItems().addAll(showWebGist);
+            gistMenu.getItems().addAll(showWebGist, addFileToGist);
             myGists.getItems().add(gistMenu);
           });
         }
