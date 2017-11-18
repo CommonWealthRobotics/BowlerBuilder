@@ -125,6 +125,14 @@ public class MainWindowController implements Initializable {
         .load("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
     SplitPane.setResizableWithParent(console, false);
+
+    try {
+      ScriptingEngine.runLogin();
+      setupMenusOnLogin();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.INFO,
+          "Could not log in with previous credentials.");
+    }
   }
 
   @FXML
@@ -211,59 +219,11 @@ public class MainWindowController implements Initializable {
       try {
         ScriptingEngine.runLogin();
         if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-          ScriptingEngine.setAutoupdate(true);
-          logOut.setDisable(false);
-
-          //Wait for GitHub to load in
-          GitHub gitHub;
-          while ((gitHub = ScriptingEngine.getGithub()) == null) {
-            ThreadUtil.wait(20);
-          }
-
-          GHMyself myself = gitHub.getMyself();
-          PagedIterable<GHGist> gists = myself.listGists();
-          gists.forEach(gist -> {
-            Menu gistMenu = new Menu(gist.getDescription()
-                .substring(0, Math.min(15, gist.getDescription().length()))); //Cap length to 15
-
-            MenuItem showWebGist = new MenuItem("Show Gist on Web");
-            showWebGist.setOnAction(event -> {
-              WebView webView = new WebView();
-              webView.getEngine().load(gist.getHtmlUrl());
-              Tab tab = new Tab(gist.getDescription(), webView);
-              tabPane.getTabs().add(tab);
-              tabPane.getSelectionModel().select(tab);
-            });
-
-            MenuItem addFileToGist = new MenuItem("Add File");
-            addFileToGist.setOnAction(event -> Platform.runLater(() -> {
-              try {
-                openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
-                    ScriptingEngine.filesInGit(gist.getGitPushUrl(),
-                        ScriptingEngine.getFullBranch(
-                            gist.getGitPushUrl()),
-                        null)
-                        .get(0)));
-              } catch (IOException e) {
-                LoggerUtilities.getLogger().log(Level.WARNING,
-                    "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
-              } catch (InvalidRemoteException e) {
-                LoggerUtilities.getLogger().log(Level.WARNING,
-                    "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
-              } catch (Exception e) {
-                LoggerUtilities.getLogger().log(Level.WARNING,
-                    "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
-              }
-            }));
-
-            gistMenu.getItems().addAll(showWebGist, addFileToGist);
-            myGists.getItems().add(gistMenu);
-          });
+          setupMenusOnLogin();
         }
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Could not launch GitHub as non-anonymous.\n" + Throwables.getStackTraceAsString(e));
-
         try {
           ScriptingEngine.setupAnyonmous();
         } catch (IOException e1) {
@@ -272,6 +232,68 @@ public class MainWindowController implements Initializable {
         }
       }
     }).start();
+  }
+
+  private void setupMenusOnLogin() {
+    try {
+      ScriptingEngine.setAutoupdate(true);
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not set auto update.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    logOut.setDisable(false);
+
+    //Wait for GitHub to load in
+    GitHub gitHub;
+    while ((gitHub = ScriptingEngine.getGithub()) == null) {
+      ThreadUtil.wait(20);
+    }
+
+    try {
+      GHMyself myself = gitHub.getMyself();
+      PagedIterable<GHGist> gists = myself.listGists();
+      gists.forEach(gist -> {
+        Menu gistMenu = new Menu(gist.getDescription()
+            .substring(0, Math.min(15, gist.getDescription().length()))); //Cap length to 15
+
+        MenuItem showWebGist = new MenuItem("Show Gist on Web");
+        showWebGist.setOnAction(event -> {
+          WebView webView = new WebView();
+          webView.getEngine().load(gist.getHtmlUrl());
+          Tab tab = new Tab(gist.getDescription(), webView);
+          tabPane.getTabs().add(tab);
+          tabPane.getSelectionModel().select(tab);
+        });
+
+        MenuItem addFileToGist = new MenuItem("Add File");
+        addFileToGist.setOnAction(event -> Platform.runLater(() -> {
+          try {
+            openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
+                ScriptingEngine.filesInGit(gist.getGitPushUrl(),
+                    ScriptingEngine.getFullBranch(
+                        gist.getGitPushUrl()),
+                    null)
+                    .get(0)));
+          } catch (IOException e) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
+          } catch (InvalidRemoteException e) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
+          } catch (Exception e) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
+          }
+        }));
+
+        gistMenu.getItems().addAll(showWebGist, addFileToGist);
+        myGists.getItems().add(gistMenu);
+      });
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not setup menus on login.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   @FXML
