@@ -9,23 +9,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class FileEditorTest extends AutoClosingApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("view/FileEditor.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
     SplitPane mainWindow = loader.load();
     stage.setScene(new Scene(mainWindow));
     stage.show();
   }
 
-  @AfterEach
-  void afterEach() {
-    closeCurrentWindow();
-  }
+  //  @AfterEach
+  //  void afterEach() {
+  //    closeCurrentWindow();
+  //  }
 
   @Test
   void runFileTest() {

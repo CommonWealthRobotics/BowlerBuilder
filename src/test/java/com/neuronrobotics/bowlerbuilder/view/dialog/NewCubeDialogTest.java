@@ -5,14 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import java.util.List;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import org.junit.jupiter.api.Test;
 
 class NewCubeDialogTest extends CADAcceleratorDialogTest<NewCubeDialog> {
-
-  private static final ButtonType ADD = new ButtonType("Add", ButtonBar.ButtonData.APPLY);
 
   NewCubeDialogTest() {
     super(NewCubeDialog::new);

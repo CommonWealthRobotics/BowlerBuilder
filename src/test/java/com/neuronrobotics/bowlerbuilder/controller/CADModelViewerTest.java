@@ -16,7 +16,7 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("view/CADModelViewer.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/CADModelViewer.fxml"));
     Pane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));

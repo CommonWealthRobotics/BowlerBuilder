@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<SplitPane id="root" fx:id="root" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.FileEditorController">
+<SplitPane id="root" fx:id="root" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.FileEditorController">
    <items>
       <BorderPane>
          <center>
@@ -18,18 +18,18 @@
          <bottom>
             <HBox alignment="CENTER_LEFT" maxHeight="30.0" nodeOrientation="LEFT_TO_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
                <children>
-                <Button fx:id="runButton" id="runButton" mnemonicParsing="false" onAction="#runFile" text="Run" />
-                  <Button fx:id="publishButton" id="publishButton" mnemonicParsing="false" onAction="#publishFile" text="Publish" />
+                <Button id="runButton" fx:id="runButton" mnemonicParsing="false" onAction="#runFile" text="Run" />
+                  <Button id="publishButton" fx:id="publishButton" mnemonicParsing="false" onAction="#publishFile" text="Publish" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="File:" />
-                        <TextField fx:id="fileNameField" id="fileNameField" />
+                        <TextField id="fileNameField" fx:id="fileNameField" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gist:" />
-                        <TextField fx:id="gistNameField" id="gistNameField" />
+                        <TextField id="gistNameField" fx:id="gistNameField" />
                      </children>
                   </HBox>
                </children>

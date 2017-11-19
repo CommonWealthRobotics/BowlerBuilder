@@ -147,6 +147,24 @@ public class CADModelViewerController implements Initializable {
     csgScene.setOnScroll(event -> translateCamera(0, 0, event.getDeltaY() * zoomSens));
   }
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    //Resize the subscene with the borderpane
+    csgScene.heightProperty().bind(root.heightProperty());
+    csgScene.widthProperty().bind(root.widthProperty());
+
+    //Clip the subscene so it doesn't overlap with other borderpane elements
+    final Rectangle csgClip = new Rectangle();
+    csgScene.setClip(csgClip);
+    csgScene.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
+      csgClip.setWidth(newBounds.getWidth());
+      csgClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
+    });
+
+    root.setCenter(csgScene);
+    root.setId("cadViewerBorderPane");
+  }
+
   /*
      From fx83dfeatures.Camera3D
      http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/5d371a34ddf1/apps/toys/FX8-3DFeatures/src
@@ -198,23 +216,6 @@ public class CADModelViewerController implements Initializable {
   private Point3D localToSceneDirection(Point3D dir) {
     Point3D res = localToScene(dir);
     return res.subtract(localToScene(new Point3D(0, 0, 0)));
-  }
-
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    //Resize the subscene with the borderpane
-    csgScene.heightProperty().bind(root.heightProperty());
-    csgScene.widthProperty().bind(root.widthProperty());
-
-    //Clip the subscene so it doesn't overlap with other borderpane elements
-    final Rectangle csgClip = new Rectangle();
-    csgScene.setClip(csgClip);
-    csgScene.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
-      csgClip.setWidth(newBounds.getWidth());
-      csgClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
-    });
-
-    root.setCenter(csgScene);
   }
 
   /**

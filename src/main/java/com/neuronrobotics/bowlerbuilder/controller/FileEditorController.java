@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.aceEditor.AceEditor;
+import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCylinderDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewRoundedCubeDialog;
@@ -88,26 +88,42 @@ public class FileEditorController implements Initializable {
       CADModelViewerController controller = loader.getController();
       root.setDividerPosition(0, 0.8);
 
-      Object result = ScriptingEngine.inlineScriptStringRun(aceEditor.getText(),
-          new ArrayList<>(),
-          "Groovy");
-
-      if (result instanceof CSG) {
-        controller.addMeshesFromCSG((CSG) result);
-      } else if (result instanceof List) {
-        List casted = (List) result;
-        casted.forEach(elem -> {
-          if (elem instanceof CSG) {
-            controller.addMeshesFromCSG((CSG) elem);
+      webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+        if (newValue == Worker.State.SUCCEEDED) {
+          try {
+            Object result = ScriptingEngine.inlineScriptStringRun(aceEditor.getText(),
+                new ArrayList<>(),
+                "Groovy");
+            parseCSG(controller, result);
+          } catch (IOException e) {
+            LoggerUtilities.getLogger().log(Level.SEVERE,
+                "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+          } catch (Exception e) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
           }
-        });
-      }
+        }
+      });
     } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
-    } catch (Exception e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  /**
+   * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
+   *
+   * @param controller CAD viewer controller
+   * @param item Object with CSGs
+   */
+  private void parseCSG(CADModelViewerController controller, Object item) {
+    if (item instanceof CSG) {
+      controller.addMeshesFromCSG((CSG) item);
+    } else if (item instanceof List) {
+      List itemList = (List) item;
+      for (Object elem : itemList) {
+        parseCSG(controller, elem);
+      }
     }
   }
 
