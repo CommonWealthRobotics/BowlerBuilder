@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
+import com.google.common.io.Files;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
@@ -12,6 +13,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -196,7 +198,13 @@ public class FileEditorController implements Initializable {
    */
   public void loadFile(File file) {
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      aceEditor.insertAtCursor(file.getAbsolutePath());
+      try {
+        aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
+      } catch (IOException e) {
+        LoggerUtilities.getLogger().log(Level.WARNING,
+            "Could not load file: " + file.getAbsolutePath() + ".\n"
+                + Throwables.getStackTraceAsString(e));
+      }
     } else {
       requestedFile = Optional.of(file);
     }
