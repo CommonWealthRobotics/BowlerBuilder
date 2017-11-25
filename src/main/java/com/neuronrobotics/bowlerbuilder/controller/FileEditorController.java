@@ -14,7 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -80,14 +84,31 @@ public class FileEditorController implements Initializable {
 
   @FXML
   private void runFile(ActionEvent actionEvent) {
-    Runnable runnable = () -> {
+    Runnable runnable = () -> new Thread(() -> {
       try {
+        //Grab code from FX thread
+        ObjectProperty<String> text = new SimpleObjectProperty<>();
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+          text.set(aceEditor.getText());
+          latch.countDown();
+        });
+        latch.await();
+
+        //Run the code
         Object result = ScriptingEngine.inlineScriptStringRun(
-            aceEditor.getText(),
+            text.get(),
             new ArrayList<>(),
             "Groovy");
-        cadviewerController.clearMeshes();
-        parseCSG(cadviewerController, result);
+
+        //Add CSGs
+        CountDownLatch latch2 = new CountDownLatch(1);
+        Platform.runLater(() -> {
+          cadviewerController.clearMeshes();
+          parseCSG(cadviewerController, result);
+          latch2.countDown();
+        });
+        latch2.await();
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.SEVERE,
             "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
@@ -95,7 +116,7 @@ public class FileEditorController implements Initializable {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
       }
-    };
+    }).start();
 
     //Runnable so we don't try to talk to ACE before it exists
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {

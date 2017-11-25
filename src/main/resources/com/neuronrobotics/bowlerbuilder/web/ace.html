@@ -32,26 +32,8 @@
         enableSnippets: true,
         enableLiveAutocompletion: true
     });
-
-//    var snippetManager = ace.require("ace/snippets").snippetManager;
-//    var config = ace.require("ace/config");
-//
-//    ace.config.loadModule("ace/snippets/javascript", function(m) {
-//        if (m) {
-//            snippetManager.files.javascript = m;
-////            m.snippetText += mySnippetText;
-////            m.snippets = snippetManager.parseSnippetFile(m.snippetText);
-//
-//            // or do this if you already have them parsed
-//            m.snippets.push({
-//                content: "${1:class_name}.prototype.${2:method_name} =\nfunction(${3:first_argument}) { ${4:// body...}",
-//                    name: "proto",
-//                        tabTrigger: "proto"
-//                });
-//
-//            snippetManager.register(m.snippets, m.scope);
-//        }
-//    });
+    editor.setScrollSpeed(1);
+    editor.resize();
 </script>
 </body>
 </html>
