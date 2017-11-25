@@ -164,9 +164,32 @@ public class MainWindowController implements Initializable {
     }
   }
 
+  @FXML
+  private void openScratchpad(ActionEvent actionEvent) {
+    Tab tab = new Tab("Scratchpad");
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
+
+    try {
+      tab.setContent(loader.load());
+
+      final FileEditorController controller = loader.getController();
+      fileEditors.add(controller);
+
+      controller.setFontSize((int) preferences.get("Font Size"));
+
+      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    tabPane.getTabs().add(tab);
+    tabPane.getSelectionModel().select(tab);
+  }
+
   private void openFileInEditor(File file) {
     Tab tab = new Tab(file.getName());
     FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
+
     try {
       tab.setContent(loader.load());
 
@@ -181,6 +204,7 @@ public class MainWindowController implements Initializable {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
+
     tabPane.getTabs().add(tab);
     tabPane.getSelectionModel().select(tab);
   }

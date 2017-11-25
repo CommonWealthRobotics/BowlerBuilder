@@ -52,5 +52,6 @@
             </HBox>
          </top>
       </BorderPane>
+      <fx:include fx:id="cadviewer" source="CADModelViewer.fxml" />
    </items>
 </SplitPane>

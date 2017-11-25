@@ -22,7 +22,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
@@ -47,6 +46,8 @@ public class FileEditorController implements Initializable {
   private TextField fileNameField;
   @FXML
   private TextField gistNameField;
+  @FXML
+  private CADModelViewerController cadviewerController;
 
   private int requestedFontSize;
   private Optional<File> requestedFile;
@@ -82,32 +83,40 @@ public class FileEditorController implements Initializable {
 
   @FXML
   private void runFile(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/CADModelViewer.fxml"));
-    try {
-      root.getItems().add(loader.load());
-      CADModelViewerController controller = loader.getController();
-      root.setDividerPosition(0, 0.8);
+    //    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/CADModelViewer.fxml"));
+    //    try {
+    //      root.getItems().add(loader.load());
+    //      CADModelViewerController controller = loader.getController();
+    //      root.setDividerPosition(0, 0.8);
 
+    Runnable runnable = () -> {
+      try {
+        Object result = ScriptingEngine.inlineScriptStringRun(aceEditor.getText(),
+            new ArrayList<>(),
+            "Groovy");
+        parseCSG(cadviewerController, result);
+      } catch (IOException e) {
+        LoggerUtilities.getLogger().log(Level.SEVERE,
+            "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+      } catch (Exception e) {
+        LoggerUtilities.getLogger().log(Level.WARNING,
+            "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+      }
+    };
+
+    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
+      runnable.run();
+    } else {
       webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
         if (newValue == Worker.State.SUCCEEDED) {
-          try {
-            Object result = ScriptingEngine.inlineScriptStringRun(aceEditor.getText(),
-                new ArrayList<>(),
-                "Groovy");
-            parseCSG(controller, result);
-          } catch (IOException e) {
-            LoggerUtilities.getLogger().log(Level.SEVERE,
-                "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
-          } catch (Exception e) {
-            LoggerUtilities.getLogger().log(Level.WARNING,
-                "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
-          }
+          runnable.run();
         }
       });
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
     }
+    //    } catch (IOException e) {
+    //      LoggerUtilities.getLogger().log(Level.WARNING,
+    //          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+    //    }
   }
 
   /**
@@ -117,7 +126,7 @@ public class FileEditorController implements Initializable {
    * @param item Object with CSGs
    */
   private void parseCSG(CADModelViewerController controller, Object item) {
-    if (item instanceof CSG) {
+    if (item != null && item instanceof CSG) {
       controller.addMeshesFromCSG((CSG) item);
     } else if (item instanceof List) {
       List itemList = (List) item;
