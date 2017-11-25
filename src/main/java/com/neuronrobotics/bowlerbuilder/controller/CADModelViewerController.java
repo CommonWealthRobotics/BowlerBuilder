@@ -66,6 +66,9 @@ public class CADModelViewerController implements Initializable {
   private final Group csgGraph;
   private final SubScene csgScene;
 
+  //Background images
+  private ImageView backgroundImage;
+
   public CADModelViewerController() {
     translate = new Translate(0, 0, -15);
 
@@ -75,14 +78,16 @@ public class CADModelViewerController implements Initializable {
     cameraXForm1.getChildren().add(camera1);
     camera1.getTransforms().addAll(translate);
 
-    csgGraph = new Group();
     try {
-      csgGraph.getChildren().addAll(cameraXForm1,
-          new ImageView(new Image(getClass().getResource("../cap.png").toURI().toString())));
+      backgroundImage = new ImageView(
+          new Image(getClass().getResource("../cap.png").toURI().toString()));
     } catch (URISyntaxException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not load CAD viewer background image.\n" + Throwables.getStackTraceAsString(e));
     }
+
+    csgGraph = new Group();
+    csgGraph.getChildren().addAll(cameraXForm1, backgroundImage);
     csgScene = new SubScene(csgGraph, 300, 300, true, SceneAntialiasing.BALANCED);
     csgScene.setManaged(false);
     csgScene.setFill(Color.TRANSPARENT);
@@ -317,6 +322,14 @@ public class CADModelViewerController implements Initializable {
     translate.setX(translate.getX() + movX);
     translate.setY(translate.getY() + movY);
     translate.setZ(translate.getZ() + movZ);
+  }
+
+  /**
+   * Removes all meshes except for the background.
+   */
+  public void clearMeshes() {
+    csgGraph.getChildren().clear();
+    csgGraph.getChildren().add(backgroundImage); //Re-add background
   }
 
   @FXML

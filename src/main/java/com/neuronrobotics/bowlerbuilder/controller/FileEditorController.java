@@ -83,17 +83,13 @@ public class FileEditorController implements Initializable {
 
   @FXML
   private void runFile(ActionEvent actionEvent) {
-    //    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/CADModelViewer.fxml"));
-    //    try {
-    //      root.getItems().add(loader.load());
-    //      CADModelViewerController controller = loader.getController();
-    //      root.setDividerPosition(0, 0.8);
-
     Runnable runnable = () -> {
       try {
-        Object result = ScriptingEngine.inlineScriptStringRun(aceEditor.getText(),
+        Object result = ScriptingEngine.inlineScriptStringRun(
+            aceEditor.getText(),
             new ArrayList<>(),
             "Groovy");
+        cadviewerController.clearMeshes();
         parseCSG(cadviewerController, result);
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.SEVERE,
@@ -104,6 +100,7 @@ public class FileEditorController implements Initializable {
       }
     };
 
+    //Runnable so we don't try to talk to ACE before it exists
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
       runnable.run();
     } else {
@@ -113,10 +110,6 @@ public class FileEditorController implements Initializable {
         }
       });
     }
-    //    } catch (IOException e) {
-    //      LoggerUtilities.getLogger().log(Level.WARNING,
-    //          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
-    //    }
   }
 
   /**
