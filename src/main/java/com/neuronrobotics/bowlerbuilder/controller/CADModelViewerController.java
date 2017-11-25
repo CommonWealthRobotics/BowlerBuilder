@@ -74,7 +74,7 @@ public class CADModelViewerController implements Initializable {
   private ImageView backgroundImage;
 
   public CADModelViewerController() {
-    translate = new Translate(0, 0, -15);
+    translate = new Translate(0, 0, -800);
 
     camera1 = new PerspectiveCamera(true);
     camera1.setFarClip(100000);
@@ -100,13 +100,16 @@ public class CADModelViewerController implements Initializable {
 
     //Keep track of drag start location
     csgScene.setOnMousePressed((MouseEvent me) -> {
-      //TODO: Translate object when picking, pan camera when not picking
       mousePosX = me.getSceneX();
       mousePosY = me.getSceneY();
       PickResult pr = me.getPickResult();
-      if (pr != null && pr.getIntersectedNode() != null
-          && pr.getIntersectedNode() instanceof MeshView) {
-        selection = (MeshView) pr.getIntersectedNode();
+      if (pr != null) {
+        if (pr.getIntersectedNode() != null && pr.getIntersectedNode() instanceof MeshView) {
+          selection = (MeshView) pr.getIntersectedNode();
+        } else {
+          selection = null;
+        }
+
         distance = me.getPickResult().getIntersectedDistance();
         vecIni = unProjectDirection(
             mousePosX,
@@ -129,18 +132,29 @@ public class CADModelViewerController implements Initializable {
         //Middle button is fine zoom
         translateCamera(0, 0, dy * zoomFineSens);
       } else if (me.isSecondaryButtonDown()) {
-        //Secondary button is translate object
+        //Secondary button is translate object or pan
         vecPos = unProjectDirection(
             mousePosX,
             mousePosY,
             csgScene.getWidth(),
             csgScene.getHeight());
         Point3D translation = vecPos.subtract(vecIni).multiply(distance);
-        double sens = 10 / this.translate.getZ();
-        selection.getTransforms().add(new Translate(
-            translation.getX() * sens,
-            translation.getY() * sens,
-            translation.getZ() * sens));
+        final double sens = this.translate.getZ() / 400;
+
+        //Selection is null if we didn't pick an object, so pan the camera
+        if (selection == null) {
+          translateCamera(
+              translation.getX() * sens,
+              translation.getY() * sens,
+              translation.getZ() * sens
+          );
+        } else {
+          selection.getTransforms().add(new Translate(
+              translation.getX() * sens,
+              translation.getY() * sens,
+              translation.getZ() * sens));
+        }
+
         vecIni = vecPos;
         PickResult pr = me.getPickResult();
         if (pr != null
@@ -368,7 +382,7 @@ public class CADModelViewerController implements Initializable {
     cameraXForm1.home();
     translate.setX(0);
     translate.setY(0);
-    translate.setZ(-15);
+    translate.setZ(-800);
   }
 
   public double getCameraRotateX() {

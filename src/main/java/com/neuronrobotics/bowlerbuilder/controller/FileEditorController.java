@@ -60,7 +60,7 @@ public class FileEditorController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    root.setDividerPosition(0, 1.0);
+    root.setDividerPosition(0, 0.8);
     webEngine = webView.getEngine();
     webEngine.setJavaScriptEnabled(true);
     webEngine.load(getClass().getResource("../web/ace.html").toString());
@@ -84,40 +84,43 @@ public class FileEditorController implements Initializable {
 
   @FXML
   private void runFile(ActionEvent actionEvent) {
-    Runnable runnable = () -> new Thread(() -> {
-      Thread.currentThread().setDaemon(false);
-      try {
-        //Grab code from FX thread
-        ObjectProperty<String> text = new SimpleObjectProperty<>();
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-          text.set(aceEditor.getText());
-          latch.countDown();
-        });
-        latch.await();
+    Runnable runnable = () -> {
+      Thread thread = new Thread(() -> {
+        try {
+          //Grab code from FX thread
+          ObjectProperty<String> text = new SimpleObjectProperty<>();
+          CountDownLatch latch = new CountDownLatch(1);
+          Platform.runLater(() -> {
+            text.set(aceEditor.getText());
+            latch.countDown();
+          });
+          latch.await();
 
-        //Run the code
-        Object result = ScriptingEngine.inlineScriptStringRun(
-            text.get(),
-            new ArrayList<>(),
-            "Groovy");
+          //Run the code
+          Object result = ScriptingEngine.inlineScriptStringRun(
+              text.get(),
+              new ArrayList<>(),
+              "Groovy");
 
-        //Add CSGs
-        CountDownLatch latch2 = new CountDownLatch(1);
-        Platform.runLater(() -> {
-          cadviewerController.clearMeshes();
-          parseCSG(cadviewerController, result);
-          latch2.countDown();
-        });
-        latch2.await();
-      } catch (IOException e) {
-        LoggerUtilities.getLogger().log(Level.SEVERE,
-            "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
-      } catch (Exception e) {
-        LoggerUtilities.getLogger().log(Level.WARNING,
-            "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
-      }
-    }).start();
+          //Add CSGs
+          CountDownLatch latch2 = new CountDownLatch(1);
+          Platform.runLater(() -> {
+            cadviewerController.clearMeshes();
+            parseCSG(cadviewerController, result);
+            latch2.countDown();
+          });
+          latch2.await();
+        } catch (IOException e) {
+          LoggerUtilities.getLogger().log(Level.SEVERE,
+              "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+        } catch (Exception e) {
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+        }
+      });
+      thread.setDaemon(false);
+      thread.start();
+    };
 
     //Runnable so we don't try to talk to ACE before it exists
     if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
