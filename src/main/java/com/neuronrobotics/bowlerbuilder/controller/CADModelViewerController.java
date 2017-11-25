@@ -3,6 +3,8 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import eu.mihosoft.vrl.v3d.CSG;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
@@ -36,6 +38,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.stage.FileChooser;
+import org.apache.commons.io.FileUtils;
 
 public class CADModelViewerController implements Initializable {
 
@@ -227,8 +231,9 @@ public class CADModelViewerController implements Initializable {
    * Add a MeshView to the scene graph.
    *
    * @param mesh MeshView to add
+   * @param csg CSG object the MeshView is contained in (used for exporting)
    */
-  public void addMeshView(MeshView mesh) {
+  public void addMeshView(MeshView mesh, CSG csg) {
     mesh.setMaterial(new PhongMaterial(Color.RED));
     mesh.setDrawMode(DrawMode.FILL);
     mesh.setDepthTest(DepthTest.ENABLE);
@@ -260,7 +265,26 @@ public class CADModelViewerController implements Initializable {
           }
         });
 
-        menu.getItems().addAll(wireframe);
+        MenuItem exportSTL = new MenuItem("Export as STL");
+        exportSTL.setOnAction(event -> {
+          FileChooser chooser = new FileChooser();
+          File save = chooser.showSaveDialog(root.getScene().getWindow());
+          if (save != null) {
+            if (!save.getPath().endsWith(".stl")) {
+              save = new File(save.getAbsolutePath() + ".stl");
+            }
+
+            CSG readyCSG = csg.prepForManufacturing();
+            try {
+              FileUtils.write(save, readyCSG.toStlString());
+            } catch (IOException e) {
+              LoggerUtilities.getLogger().log(Level.SEVERE,
+                  "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
+            }
+          }
+        });
+
+        menu.getItems().addAll(wireframe, exportSTL);
         //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
         //right-click somewhere else
         mesh.setOnContextMenuRequested(event ->
@@ -277,7 +301,7 @@ public class CADModelViewerController implements Initializable {
    * @param csg CSG to add
    */
   public void addMeshesFromCSG(CSG csg) {
-    csg.toJavaFXMesh(null).getAsMeshViews().forEach(this::addMeshView);
+    csg.toJavaFXMesh(null).getAsMeshViews().forEach(mesh -> addMeshView(mesh, csg));
   }
 
   /**
