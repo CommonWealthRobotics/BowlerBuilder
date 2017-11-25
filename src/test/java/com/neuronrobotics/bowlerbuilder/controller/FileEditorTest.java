@@ -33,32 +33,4 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
   }
 
-  @Test
-  void newCubeTest() {
-    FxHelper.runAndWait(() -> ((Button) lookup("#newCubeButton").query()).fire());
-
-    assertTrue(lookup("#newCubeRoot").tryQuery().isPresent());
-  }
-
-  @Test
-  void newRoundedCubeTest() {
-    FxHelper.runAndWait(() -> ((Button) lookup("#newRoundedCubeButton").query()).fire());
-
-    assertTrue(lookup("#newRoundedCubeRoot").tryQuery().isPresent());
-  }
-
-  @Test
-  void newCylinderTest() {
-    FxHelper.runAndWait(() -> ((Button) lookup("#newCylinderButton").query()).fire());
-
-    assertTrue(lookup("#newCylinderRoot").tryQuery().isPresent());
-  }
-
-  @Test
-  void newSphereTest() {
-    FxHelper.runAndWait(() -> ((Button) lookup("#newSphereButton").query()).fire());
-
-    assertTrue(lookup("#newSphereRoot").tryQuery().isPresent());
-  }
-
 }

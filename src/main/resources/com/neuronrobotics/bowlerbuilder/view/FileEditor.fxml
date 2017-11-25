@@ -39,17 +39,6 @@
             </HBox>
          </bottom>
          <top>
-            <HBox maxHeight="30.0" spacing="5.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Button id="newCubeButton" mnemonicParsing="false" onAction="#newCube" text="Cube" />
-                  <Button id="newRoundedCubeButton" mnemonicParsing="false" onAction="#newRoundedCube" text="Rounded Cube" />
-                  <Button id="newSphereButton" mnemonicParsing="false" onAction="#newSphere" text="Sphere" />
-                  <Button id="newCylinderButton" mnemonicParsing="false" onAction="#newCylinder" text="Cylinder" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" top="5.0" />
-               </padding>
-            </HBox>
          </top>
       </BorderPane>
       <fx:include fx:id="cadviewer" source="CADModelViewer.fxml" />

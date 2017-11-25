@@ -4,10 +4,6 @@ import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
-import com.neuronrobotics.bowlerbuilder.view.dialog.NewCubeDialog;
-import com.neuronrobotics.bowlerbuilder.view.dialog.NewCylinderDialog;
-import com.neuronrobotics.bowlerbuilder.view.dialog.NewRoundedCubeDialog;
-import com.neuronrobotics.bowlerbuilder.view.dialog.NewSphereDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.io.File;
@@ -19,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
@@ -134,50 +129,6 @@ public class FileEditorController implements Initializable {
   @FXML
   private void publishFile(ActionEvent actionEvent) {
     //TODO: GitHub integration & publish changes to gist
-  }
-
-  @FXML
-  private void newCube(ActionEvent actionEvent) {
-    NewCubeDialog dialog = new NewCubeDialog();
-
-    if (dialog.showAndWait().isPresent()) {
-      aceEditor.insertAtCursor(dialog.getResultAsScript());
-    }
-
-    Platform.runLater(webView::requestFocus);
-  }
-
-  @FXML
-  private void newRoundedCube(ActionEvent actionEvent) {
-    NewRoundedCubeDialog dialog = new NewRoundedCubeDialog();
-
-    if (dialog.showAndWait().isPresent()) {
-      aceEditor.insertAtCursor(dialog.getResultAsScript());
-    }
-
-    Platform.runLater(webView::requestFocus);
-  }
-
-  @FXML
-  private void newSphere(ActionEvent actionEvent) {
-    NewSphereDialog dialog = new NewSphereDialog();
-
-    if (dialog.showAndWait().isPresent()) {
-      aceEditor.insertAtCursor(dialog.getResultAsScript());
-    }
-
-    Platform.runLater(webView::requestFocus);
-  }
-
-  @FXML
-  private void newCylinder(ActionEvent actionEvent) {
-    NewCylinderDialog dialog = new NewCylinderDialog();
-
-    if (dialog.showAndWait().isPresent()) {
-      aceEditor.insertAtCursor(dialog.getResultAsScript());
-    }
-
-    Platform.runLater(webView::requestFocus);
   }
 
   /**
