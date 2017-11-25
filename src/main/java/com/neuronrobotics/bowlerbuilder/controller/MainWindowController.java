@@ -279,9 +279,6 @@ public class MainWindowController implements Initializable {
       GHMyself myself = gitHub.getMyself();
       PagedIterable<GHGist> gists = myself.listGists();
       gists.forEach(gist -> {
-        Menu gistMenu = new Menu(gist.getDescription()
-            .substring(0, Math.min(15, gist.getDescription().length()))); //Cap length to 15
-
         MenuItem showWebGist = new MenuItem("Show Gist on Web");
         showWebGist.setOnAction(event -> {
           WebView webView = new WebView();
@@ -291,15 +288,22 @@ public class MainWindowController implements Initializable {
           tabPane.getSelectionModel().select(tab);
         });
 
-        MenuItem addFileToGist = new MenuItem("Add File");
+        try {
+          List<String> files = ScriptingEngine.filesInGit(gist.getGitPushUrl());
+          LoggerUtilities.getLogger().log(Level.INFO, "Files in " + gist.getGitPushUrl() + ":");
+          files.forEach(elem -> LoggerUtilities.getLogger().log(Level.INFO, elem));
+        } catch (Exception e) {
+          LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e));
+        }
+
+        MenuItem addFileToGist = new MenuItem("Add File"); //TODO: Make this actually add a file
         addFileToGist.setOnAction(event -> Platform.runLater(() -> {
           try {
             openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
-                ScriptingEngine.filesInGit(gist.getGitPushUrl(),
-                    ScriptingEngine.getFullBranch(
-                        gist.getGitPushUrl()),
-                    null)
-                    .get(0)));
+                ScriptingEngine.filesInGit(
+                    gist.getGitPushUrl(),
+                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
+                ));
           } catch (IOException e) {
             LoggerUtilities.getLogger().log(Level.WARNING,
                 "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
@@ -312,6 +316,8 @@ public class MainWindowController implements Initializable {
           }
         }));
 
+        Menu gistMenu = new Menu(gist.getDescription()
+            .substring(0, Math.min(15, gist.getDescription().length()))); //Cap length to 15
         gistMenu.getItems().addAll(showWebGist, addFileToGist);
         myGists.getItems().add(gistMenu);
       });
