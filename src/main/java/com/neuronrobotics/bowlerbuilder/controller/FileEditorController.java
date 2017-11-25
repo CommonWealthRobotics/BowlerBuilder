@@ -119,7 +119,7 @@ public class FileEditorController implements Initializable {
    * @param item Object with CSGs
    */
   private void parseCSG(CADModelViewerController controller, Object item) {
-    if (item != null && item instanceof CSG) {
+    if (item instanceof CSG) {
       controller.addMeshesFromCSG((CSG) item);
     } else if (item instanceof List) {
       List itemList = (List) item;

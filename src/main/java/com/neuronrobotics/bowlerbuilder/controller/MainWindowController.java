@@ -179,7 +179,8 @@ public class MainWindowController implements Initializable {
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
     } catch (IOException e) {
-      e.printStackTrace();
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
 
     tabPane.getTabs().add(tab);
