@@ -16,17 +16,42 @@
 </head>
 <body>
 
-<div id="editor">
-</div>
+<div id="editor"></div>
 
 <script src="../web/ace-builds-1.2.9/src/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="../web/ace-builds-1.2.9/src/ext-language_tools.js"></script>
 <script>
+    ace.require("ace/ext/language_tools");
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/chrome");
     editor.getSession().setMode("ace/mode/groovy");
     editor.getSession().setUseSoftTabs(true);
     document.getElementById('editor').style.fontSize='14px';
-    editor.resize();
+    editor.setOptions({
+        enableBasicAutocompletion: false,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+
+//    var snippetManager = ace.require("ace/snippets").snippetManager;
+//    var config = ace.require("ace/config");
+//
+//    ace.config.loadModule("ace/snippets/javascript", function(m) {
+//        if (m) {
+//            snippetManager.files.javascript = m;
+////            m.snippetText += mySnippetText;
+////            m.snippets = snippetManager.parseSnippetFile(m.snippetText);
+//
+//            // or do this if you already have them parsed
+//            m.snippets.push({
+//                content: "${1:class_name}.prototype.${2:method_name} =\nfunction(${3:first_argument}) { ${4:// body...}",
+//                    name: "proto",
+//                        tabTrigger: "proto"
+//                });
+//
+//            snippetManager.register(m.snippets, m.scope);
+//        }
+//    });
 </script>
 </body>
 </html>
