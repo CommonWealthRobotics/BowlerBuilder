@@ -34,7 +34,7 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
     assertEquals(0, controller.getCameraRotateZ(), 0);
     assertEquals(0, controller.getCameraTranslate().getX(), 0);
     assertEquals(0, controller.getCameraTranslate().getY(), 0);
-    assertEquals(-15, controller.getCameraTranslate().getZ(), 0);
+    assertEquals(-800, controller.getCameraTranslate().getZ(), 0);
   }
 
   @Test
@@ -49,7 +49,7 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
     assertEquals(0, controller.getCameraRotateZ(), 0);
     assertEquals(0, controller.getCameraTranslate().getX(), 0);
     assertEquals(0, controller.getCameraTranslate().getY(), 0);
-    assertEquals(-15, controller.getCameraTranslate().getZ(), 0);
+    assertEquals(-800, controller.getCameraTranslate().getZ(), 0);
   }
 
   @Test
@@ -67,7 +67,7 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
 
     assertEquals(1, controller.getCameraTranslate().getX(), 0);
     assertEquals(2, controller.getCameraTranslate().getY(), 0);
-    assertEquals(-12, controller.getCameraTranslate().getZ(), 0);
+    assertEquals(-797, controller.getCameraTranslate().getZ(), 0);
   }
 
   //    @Test
