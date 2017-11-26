@@ -29,7 +29,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -288,13 +287,13 @@ public class MainWindowController implements Initializable {
           tabPane.getSelectionModel().select(tab);
         });
 
-        try {
-          List<String> files = ScriptingEngine.filesInGit(gist.getGitPushUrl());
-          LoggerUtilities.getLogger().log(Level.INFO, "Files in " + gist.getGitPushUrl() + ":");
-          files.forEach(elem -> LoggerUtilities.getLogger().log(Level.INFO, elem));
-        } catch (Exception e) {
-          LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e));
-        }
+        //try {
+        //  List<String> files = ScriptingEngine.filesInGit(gist.getGitPushUrl());
+        //  LoggerUtilities.getLogger().log(Level.INFO, "Files in " + gist.getGitPushUrl() + ":");
+        //  files.forEach(elem -> LoggerUtilities.getLogger().log(Level.INFO, elem));
+        //} catch (Exception e) {
+        //  LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e));
+        //}
 
         MenuItem addFileToGist = new MenuItem("Add File"); //TODO: Make this actually add a file
         addFileToGist.setOnAction(event -> Platform.runLater(() -> {
@@ -303,7 +302,7 @@ public class MainWindowController implements Initializable {
                 ScriptingEngine.filesInGit(
                     gist.getGitPushUrl(),
                     ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
-                ));
+            ));
           } catch (IOException e) {
             LoggerUtilities.getLogger().log(Level.WARNING,
                 "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
@@ -370,11 +369,11 @@ public class MainWindowController implements Initializable {
   @FXML
   private void openPreferences(ActionEvent actionEvent) {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Preferences.fxml"));
+    Dialog dialog = new Dialog();
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
+
     try {
-      Node content = loader.load();
-      Dialog dialog = new Dialog();
-      dialog.getDialogPane().setContent(content);
-      dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
+      dialog.getDialogPane().setContent(loader.load());
       PreferencesController controller = loader.getController();
       controller.setPreferences(preferences);
       dialog.showAndWait();
@@ -386,6 +385,22 @@ public class MainWindowController implements Initializable {
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load Preferences.fxml.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  @FXML
+  private void openEditorHelp(ActionEvent actionEvent) {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/dialog/EditorHelp.fxml"));
+    Dialog dialog = new Dialog();
+    dialog.setTitle("BowlerBuilder Help");
+    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+    try {
+      dialog.getDialogPane().setContent(loader.load());
+      dialog.showAndWait();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load EditorHelp.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
