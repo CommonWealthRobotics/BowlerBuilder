@@ -79,7 +79,10 @@ snippet cyl\n\
 \tCSG ${1:foo} = new Cylinder(${2:topRadius}, ${3:bottomRadius}, ${4:height}, ${5:resolution}).toCSG();\n\
 # CSG sphere\n\
 snippet sph\n\
-\tCSG ${1:foo} = new Sphere(${2:radius}).toCSG();\n";
+\tCSG ${1:foo} = new Sphere(${2:radius}).toCSG();\n\
+# CSG Polygon\n\
+snippet poly\n\
+\tCSG ${1:foo} = Extrude.points(new Vector3d(0, 0, ${2:50}));";
 exports.scope = "groovy";
 
 });
