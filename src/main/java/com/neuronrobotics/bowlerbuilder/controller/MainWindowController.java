@@ -287,14 +287,6 @@ public class MainWindowController implements Initializable {
           tabPane.getSelectionModel().select(tab);
         });
 
-        //try {
-        //  List<String> files = ScriptingEngine.filesInGit(gist.getGitPushUrl());
-        //  LoggerUtilities.getLogger().log(Level.INFO, "Files in " + gist.getGitPushUrl() + ":");
-        //  files.forEach(elem -> LoggerUtilities.getLogger().log(Level.INFO, elem));
-        //} catch (Exception e) {
-        //  LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e));
-        //}
-
         MenuItem addFileToGist = new MenuItem("Add File"); //TODO: Make this actually add a file
         addFileToGist.setOnAction(event -> Platform.runLater(() -> {
           try {

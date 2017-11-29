@@ -27,6 +27,27 @@ class BowlerBuilderTest extends AutoClosingApplicationTest {
   }
 
   @Test
+  void openScratchpadTest() {
+    clickOn("3D CAD").clickOn("Scratchpad");
+
+    assertTrue(lookup("#fileEditorRoot").tryQuery().isPresent());
+  }
+
+  @Test
+  void openHelp() {
+    clickOn("Help").clickOn("Editor Guide");
+
+    assertTrue(lookup("#editorGuide").tryQuery().isPresent());
+  }
+
+  @Test
+  void openPreferences() {
+    clickOn("File").clickOn("Preferences");
+
+    assertTrue(lookup("#preferencesRoot").tryQuery().isPresent());
+  }
+
+  @Test
   void closeTest() {
     clickOn("File").clickOn("Exit");
 
