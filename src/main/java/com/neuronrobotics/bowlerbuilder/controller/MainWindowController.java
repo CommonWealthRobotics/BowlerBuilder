@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -132,37 +133,18 @@ public class MainWindowController implements Initializable {
 
     try {
       ScriptingEngine.runLogin();
-      setupMenusOnLogin();
+      if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
+        //        showLoginNotification();
+        setupMenusOnLogin();
+      }
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.INFO,
           "Could not log in with previous credentials.");
     }
-
-    //    new Thread(() -> {
-    //      GitHub gitHub;
-    //      while ((gitHub = ScriptingEngine.getGithub()) == null) {
-    //        ThreadUtil.wait(20);
-    //      }
-    //
-    //      try {
-    //        GHMyself myself = gitHub.getMyself();
-    //        PagedIterable<GHGist> gists = myself.listGists();
-    //        gists.asList().stream().findFirst().ifPresent(gist -> {
-    //          gist.getFiles().values().stream().findFirst().ifPresent(gistFile -> {
-    //            Platform.runLater(() -> {
-    //              openGistFileInEditor(gist, gistFile);
-    //            });
-    //          });
-    //        });
-    //      } catch (IOException e) {
-    //        e.printStackTrace();
-    //      }
-    //    }).start();
-
   }
 
   @FXML
-  private void openNewCADFile(ActionEvent actionEvent) {
+  private void onOpenNewCADFile(ActionEvent actionEvent) {
     try {
       NewGistDialog dialog = new NewGistDialog();
       dialog.getDialogPane().setId("newFileDialog");
@@ -191,7 +173,7 @@ public class MainWindowController implements Initializable {
   }
 
   @FXML
-  private void openScratchpad(ActionEvent actionEvent) {
+  private void onOpenScratchpad(ActionEvent actionEvent) {
     Tab tab = new Tab("Scratchpad");
     FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
 
@@ -260,12 +242,12 @@ public class MainWindowController implements Initializable {
   }
 
   @FXML
-  private void exitProgram(ActionEvent actionEvent) {
+  private void onExitProgram(ActionEvent actionEvent) {
     saveAndQuit();
   }
 
   @FXML
-  private void logInToGitHub(ActionEvent actionEvent) {
+  private void onLogInToGitHub(ActionEvent actionEvent) {
     new Thread(() -> {
       Thread.currentThread().setName("GitHub Login Thread");
 
@@ -293,6 +275,7 @@ public class MainWindowController implements Initializable {
       try {
         ScriptingEngine.runLogin();
         if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
+          //          showLoginNotification();
           setupMenusOnLogin();
         }
       } catch (IOException e) {
@@ -308,6 +291,26 @@ public class MainWindowController implements Initializable {
     }).start();
   }
 
+  /**
+   * Show a GitHub login toast.
+   */
+  private void showLoginNotification() {
+    Platform.runLater(() -> {
+      try {
+        Notifications.create() //TODO: Weird exception
+            .title("Login Success")
+            .text(ScriptingEngine.getGithub().getMyself().getLogin())
+            .show();
+      } catch (IOException e) {
+        LoggerUtilities.getLogger().log(Level.WARNING,
+            "Unable to get GitHub.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
+  }
+
+  /**
+   * Setup the gist menu subsystem and fill it with repos and gists.
+   */
   private void setupMenusOnLogin() {
     try {
       ScriptingEngine.setAutoupdate(true);
@@ -360,6 +363,13 @@ public class MainWindowController implements Initializable {
         Menu gistMenu = new Menu(gist.getDescription()
             .substring(0, Math.min(15, gist.getDescription().length()))); //Cap length to 15
         gistMenu.getItems().addAll(showWebGist, addFileToGist);
+
+        gist.getFiles().forEach((name, gistFile) -> {
+          MenuItem gistFileItem = new MenuItem(name);
+          gistFileItem.setOnAction(event -> openGistFileInEditor(gist, gistFile));
+          gistMenu.getItems().add(gistFileItem);
+        });
+
         myGists.getItems().add(gistMenu);
       });
     } catch (IOException e) {
@@ -369,7 +379,7 @@ public class MainWindowController implements Initializable {
   }
 
   @FXML
-  private void logOutFromGitHub(ActionEvent actionEvent) {
+  private void onLogOutFromGitHub(ActionEvent actionEvent) {
     try {
       ScriptingEngine.logout();
       logOut.setDisable(true);

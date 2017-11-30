@@ -21,7 +21,7 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator></MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#exitProgram" text="Exit">
+                  <MenuItem mnemonicParsing="false" onAction="#onExitProgram" text="Exit">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator>
@@ -30,8 +30,8 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Git">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#logInToGitHub" text="Log in to GitHub" />
-                  <MenuItem id="logOut" fx:id="logOut" mnemonicParsing="false" onAction="#logOutFromGitHub" text="Log out from GitHub" />
+                <MenuItem mnemonicParsing="false" onAction="#onLogInToGitHub" text="Log in to GitHub" />
+                  <MenuItem id="logOut" fx:id="logOut" mnemonicParsing="false" onAction="#onLogOutFromGitHub" text="Log out from GitHub" />
                   <Menu id="myGists" fx:id="myGists" mnemonicParsing="false" text="My Gists" />
                   <Menu id="myOrgs" fx:id="myOrgs" mnemonicParsing="false" text="My Organizations" />
                   <Menu id="myRepos" fx:id="myRepos" mnemonicParsing="false" text="My Repositories" />
@@ -41,11 +41,11 @@
             </Menu>
           <Menu mnemonicParsing="false" text="3D CAD">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#openNewCADFile" text="New File">
+              <MenuItem mnemonicParsing="false" onAction="#onOpenNewCADFile" text="New File">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
                      </accelerator></MenuItem>
-                <MenuItem mnemonicParsing="false" onAction="#openScratchpad" text="Scratchpad" />
+                <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
