@@ -54,7 +54,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private TextField fileNameField;
   @FXML
-  private TextField gistNameField;
+  private TextField gistURLField;
   @FXML
   private CADModelViewerController cadviewerController;
 
@@ -178,13 +178,12 @@ public class FileEditorController implements Initializable {
     //
     //    } else {
     try {
-      ScriptingEngine.commit(
+      ScriptingEngine.pushCodeToGit(
           String.valueOf(gist.getId()),
-          ScriptingEngine.getBranch(gist.getGitPushUrl()),
+          ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
           gistFile.getFileName(),
           aceEditor.getText(),
-          "Test Message.",
-          false);
+          "Test Message");
     } catch (Exception e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not commit.\n" + Throwables.getStackTraceAsString(e));
@@ -239,6 +238,8 @@ public class FileEditorController implements Initializable {
       file = ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
       this.gist = gist;
       this.gistFile = gistFile;
+      gistURLField.setText(gist.getGitPushUrl());
+      fileNameField.setText(gistFile.getFileName());
     } catch (GitAPIException | IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));

@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<SplitPane id="fileEditorRoot" fx:id="root" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.FileEditorController">
+<SplitPane id="fileEditorRoot" fx:id="root" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.FileEditorController">
    <items>
       <BorderPane>
          <center>
@@ -20,16 +20,16 @@
                <children>
                 <Button id="runButton" fx:id="runButton" mnemonicParsing="false" onAction="#runFile" text="Run" />
                   <Button id="publishButton" fx:id="publishButton" mnemonicParsing="false" onAction="#publishFile" text="Publish" />
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0" spacing="5.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="File:" />
-                        <TextField id="fileNameField" fx:id="fileNameField" />
+                        <TextField id="fileNameField" fx:id="fileNameField" prefWidth="250.0" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="350.0" spacing="5.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gist:" />
-                        <TextField id="gistNameField" fx:id="gistNameField" />
+                        <TextField id="gistURLField" fx:id="gistURLField" prefWidth="350.0" />
                      </children>
                   </HBox>
                </children>
