@@ -149,9 +149,9 @@ public class CADModelViewerController implements Initializable {
         //Selection is null if we didn't pick an object, so pan the camera
         if (selection == null) {
           translateCamera(
-              translation.getX() * sens,
+              translation.getX() * -1 * sens,
               translation.getY() * sens,
-              translation.getZ() * sens
+              0
           );
         } else {
           selection.getTransforms().add(new Translate(
@@ -418,9 +418,7 @@ public class CADModelViewerController implements Initializable {
 
     XFormCamera() {
       super();
-      rotX = 0;
-      rotY = 0;
-      rotZ = 0;
+      home();
     }
 
     void rotateX(double angle) {
@@ -448,12 +446,12 @@ public class CADModelViewerController implements Initializable {
     }
 
     void home() {
-      rotX = 0;
+      rotX = 180;
       rotY = 0;
-      rotZ = 0;
-      transform = new Rotate(0, Rotate.X_AXIS);
-      transform = transform.createConcatenation(new Rotate(0, Rotate.Y_AXIS));
-      transform = transform.createConcatenation(new Rotate(0, Rotate.Z_AXIS));
+      rotZ = 180;
+      transform = new Rotate(rotX, Rotate.X_AXIS);
+      transform = transform.createConcatenation(new Rotate(rotY, Rotate.Y_AXIS));
+      transform = transform.createConcatenation(new Rotate(rotZ, Rotate.Z_AXIS));
       this.getTransforms().clear();
       this.getTransforms().addAll(transform);
     }
