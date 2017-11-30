@@ -16,7 +16,13 @@ public final class AceEditor implements AceInterface {
    * @param text Text to insert
    */
   public void insertAtCursor(String text) {
-    engine.executeScript("editor.insert(\"" + text + "\");");
+    String escaped = text;
+    escaped = escaped.replace("\"", "\\\"");
+    escaped = escaped.replace("'", "\\'");
+    escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
+    escaped = escaped.replace("\n", "\\n");
+    escaped = escaped.replace("\r", "\\n");
+    engine.executeScript("editor.insert(\"" + escaped + "\");");
   }
 
   /**

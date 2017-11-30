@@ -1,36 +1,48 @@
 package com.neuronrobotics.bowlerbuilder.controller.aceinterface;
 
-//public class AceInterfaceTest extends AutoClosingApplicationTest {
+//class AceInterfaceTest extends AutoClosingApplicationTest {
 //
 //  private AceEditor aceInterface;
-//  private String result;
+//  private WebView webView;
 //
 //  @Override
 //  public void start(Stage stage) throws Exception {
-//    WebEngine engine = mock(WebEngine.class);
-//    when(engine.executeScript(any(String.class))).thenAnswer(invocation -> {
-//      result = (String) invocation.getArguments()[0];
-//      return invocation.getArguments()[0];
-//    });
-//    aceInterface = new AceEditor(engine);
+//    webView = new WebView();
+//    stage.setScene(new Scene(webView));
+//    stage.show();
+//    aceInterface = new AceEditor(webView.getEngine());
 //  }
 //
 //  @Test
 //  void insertBasicCommandTest() {
-//    aceInterface.insertAtCursor("Cube foo = new Cube(1, 2, 3).toCSG();");
-//    assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");", result);
+//    FxHelper.runAndWait(() -> {
+//      webView.getEngine().getLoadWorker().stateProperty()
+// .addListener((observable, oldValue, newValue) -> {
+//        if (newValue == Worker.State.SUCCEEDED) {
+//          aceInterface.insertAtCursor("Cube foo = new Cube(1, 2, 3).toCSG();");
+//          assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");",
+// aceInterface.getText());
+//        }
+//      });
+//    });
+//
+////    assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");",
+// aceInterface.getText());
+////    FxHelper.runAndWait(() ->
+// assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");",
+// aceInterface.getText()));
 //  }
 //
-//  @Test
-//  void insertCommentTest() {
-//    aceInterface.insertAtCursor("//I am a comment");
-//    assertEquals("editor.insert(\"//I am a comment\");", result);
-//  }
-//
-//  @Test
-//  void insertEscapedTest() {
-//    aceInterface.insertAtCursor("\"\\\"");
-//    assertEquals("editor.insert(\"\"\\\"\");", result);
-//  }
+////  @Test
+////  void insertCommentTest() {
+////    aceInterface.insertAtCursor("//I am a comment");
+////    assertEquals("editor.insert(\"//I am a comment\");", result);
+////  }
+////
+////  @Test
+////  void insertEscapedTest() {
+////    aceInterface.insertAtCursor("\"\\\"");
+////    assertEquals("editor.insert(\"\"\\\"\");", result);
+////  }
 //
 //}

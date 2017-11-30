@@ -12,6 +12,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
@@ -136,6 +137,28 @@ public class MainWindowController implements Initializable {
       LoggerUtilities.getLogger().log(Level.INFO,
           "Could not log in with previous credentials.");
     }
+
+    //    new Thread(() -> {
+    //      GitHub gitHub;
+    //      while ((gitHub = ScriptingEngine.getGithub()) == null) {
+    //        ThreadUtil.wait(20);
+    //      }
+    //
+    //      try {
+    //        GHMyself myself = gitHub.getMyself();
+    //        PagedIterable<GHGist> gists = myself.listGists();
+    //        gists.asList().stream().findFirst().ifPresent(gist -> {
+    //          gist.getFiles().values().stream().findFirst().ifPresent(gistFile -> {
+    //            Platform.runLater(() -> {
+    //              openGistFileInEditor(gist, gistFile);
+    //            });
+    //          });
+    //        });
+    //      } catch (IOException e) {
+    //        e.printStackTrace();
+    //      }
+    //    }).start();
+
   }
 
   @FXML
@@ -202,6 +225,29 @@ public class MainWindowController implements Initializable {
 
       controller.setFontSize((int) preferences.get("Font Size"));
       controller.loadFile(file);
+
+      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    tabPane.getTabs().add(tab);
+    tabPane.getSelectionModel().select(tab);
+  }
+
+  private void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
+    Tab tab = new Tab(gistFile.getFileName());
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
+
+    try {
+      tab.setContent(loader.load());
+
+      final FileEditorController controller = loader.getController();
+      fileEditors.add(controller);
+
+      controller.setFontSize((int) preferences.get("Font Size"));
+      controller.loadGist(gist, gistFile);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
     } catch (IOException e) {

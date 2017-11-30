@@ -9,6 +9,11 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
+import org.controlsfx.glyphfont.FontAwesome;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -33,8 +38,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
-import org.controlsfx.glyphfont.FontAwesome;
 
 public class FileEditorController implements Initializable {
 
@@ -82,7 +85,15 @@ public class FileEditorController implements Initializable {
          Worker.State newValue) -> {
           if (newValue == Worker.State.SUCCEEDED) {
             aceEditor.setFontSize(requestedFontSize); //Set font size to the default
-            requestedFile.ifPresent(file -> aceEditor.insertAtCursor(file.getAbsolutePath()));
+            requestedFile.ifPresent(file -> {
+              try {
+                aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
+              } catch (IOException e) {
+                LoggerUtilities.getLogger().log(Level.WARNING,
+                    "Could not load file: " + file.getAbsolutePath() + ".\n"
+                        + Throwables.getStackTraceAsString(e));
+              }
+            });
           }
         });
   }
@@ -159,6 +170,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private void publishFile(ActionEvent actionEvent) {
     //TODO: GitHub integration & publish changes to gist
+    //TODO: Special case for when the scratchpad is open
   }
 
   /**
@@ -180,17 +192,37 @@ public class FileEditorController implements Initializable {
    * @param file File to load
    */
   public void loadFile(File file) {
-    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      try {
-        aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
-      } catch (IOException e) {
-        LoggerUtilities.getLogger().log(Level.WARNING,
-            "Could not load file: " + file.getAbsolutePath() + ".\n"
-                + Throwables.getStackTraceAsString(e));
+    if (file != null) {
+      if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
+        try {
+          aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
+        } catch (IOException e) {
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Could not load file: " + file.getAbsolutePath() + ".\n"
+                  + Throwables.getStackTraceAsString(e));
+        }
+      } else {
+        requestedFile = Optional.of(file);
       }
-    } else {
-      requestedFile = Optional.of(file);
     }
+  }
+
+  /**
+   * Load a file from a gist.
+   *
+   * @param gist     Parent gist
+   * @param gistFile File in gist
+   */
+  public void loadGist(GHGist gist, GHGistFile gistFile) {
+    File file = null;
+    try {
+      file = ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
+    } catch (GitAPIException | IOException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    loadFile(file);
   }
 
 }
