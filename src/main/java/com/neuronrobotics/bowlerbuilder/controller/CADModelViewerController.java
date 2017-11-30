@@ -1,8 +1,13 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
+
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+
 import eu.mihosoft.vrl.v3d.CSG;
+
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,7 +45,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FileUtils;
 
 public class CADModelViewerController implements Initializable {
 
@@ -197,9 +202,9 @@ public class CADModelViewerController implements Initializable {
   /**
    * Undo scene projection.
    *
-   * @param sceneX Scene x coordinate
-   * @param sceneY Scene y coordinate
-   * @param sceneWidth Scene width
+   * @param sceneX      Scene x coordinate
+   * @param sceneY      Scene y coordinate
+   * @param sceneWidth  Scene width
    * @param sceneHeight Scene height
    * @return Un-projected point
    */
@@ -245,7 +250,7 @@ public class CADModelViewerController implements Initializable {
    * Add a MeshView to the scene graph.
    *
    * @param mesh MeshView to add
-   * @param csg CSG object the MeshView is contained in (used for exporting)
+   * @param csg  CSG object the MeshView is contained in (used for exporting)
    */
   public void addMeshView(MeshView mesh, CSG csg) {
     mesh.setMaterial(new PhongMaterial(Color.RED));

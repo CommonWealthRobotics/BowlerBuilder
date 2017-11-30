@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;

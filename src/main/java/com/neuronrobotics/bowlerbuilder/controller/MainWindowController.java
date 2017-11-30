@@ -1,14 +1,21 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
-import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
-
 import com.google.common.base.Throwables;
+
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -44,12 +52,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.util.Pair;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
+
+import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
 public class MainWindowController implements Initializable {
 

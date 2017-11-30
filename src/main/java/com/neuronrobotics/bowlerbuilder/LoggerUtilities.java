@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerbuilder;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -8,7 +10,6 @@ import java.util.Locale;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import org.apache.commons.io.FileUtils;
 
 public final class LoggerUtilities {
 

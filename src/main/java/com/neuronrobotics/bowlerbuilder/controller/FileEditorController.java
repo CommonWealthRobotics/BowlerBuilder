@@ -2,10 +2,13 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
+
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+
 import eu.mihosoft.vrl.v3d.CSG;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -16,6 +19,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
+
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,6 +33,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
 import org.controlsfx.glyphfont.FontAwesome;
 
 public class FileEditorController implements Initializable {
@@ -138,7 +143,7 @@ public class FileEditorController implements Initializable {
    * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
    *
    * @param controller CAD viewer controller
-   * @param item Object with CSGs
+   * @param item       Object with CSGs
    */
   private void parseCSG(CADModelViewerController controller, Object item) {
     if (item instanceof CSG) {
