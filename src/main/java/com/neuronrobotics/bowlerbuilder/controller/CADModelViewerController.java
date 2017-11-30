@@ -409,7 +409,7 @@ public class CADModelViewerController implements Initializable {
   /**
    * Apply rotations iteratively to a group so the camera stays locked to azimuth rotations.
    */
-  private static class XFormCamera extends Group {
+  private static final class XFormCamera extends Group {
     private Rotate rotation;
     private double rotX;
     private double rotY;

@@ -29,9 +29,9 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
         .drag(MouseButton.PRIMARY)
         .dropTo(lookup("#cadViewerSubScene").query().localToScreen(20, 20));
 
-    assertEquals(26.39, controller.getCameraRotateX(), 1);
+    assertEquals(206.39, controller.getCameraRotateX(), 1);
     assertEquals(-33.93, controller.getCameraRotateY(), 1);
-    assertEquals(0, controller.getCameraRotateZ(), 0);
+    assertEquals(180, controller.getCameraRotateZ(), 0);
     assertEquals(0, controller.getCameraTranslate().getX(), 0);
     assertEquals(0, controller.getCameraTranslate().getY(), 0);
     assertEquals(-800, controller.getCameraTranslate().getZ(), 0);
@@ -44,9 +44,9 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
         .dropTo(lookup("#cadViewerSubScene").query().localToScreen(20, 20));
     clickOn("Home Camera");
 
-    assertEquals(0, controller.getCameraRotateX(), 0);
+    assertEquals(180, controller.getCameraRotateX(), 0);
     assertEquals(0, controller.getCameraRotateY(), 0);
-    assertEquals(0, controller.getCameraRotateZ(), 0);
+    assertEquals(180, controller.getCameraRotateZ(), 0);
     assertEquals(0, controller.getCameraTranslate().getX(), 0);
     assertEquals(0, controller.getCameraTranslate().getY(), 0);
     assertEquals(-800, controller.getCameraTranslate().getZ(), 0);
@@ -56,9 +56,9 @@ class CADModelViewerTest extends AutoClosingApplicationTest {
   void rotateCameraTest() {
     controller.rotateCamera(1, 2, 3);
 
-    assertEquals(1, controller.getCameraRotateX(), 0);
+    assertEquals(181, controller.getCameraRotateX(), 0);
     assertEquals(2, controller.getCameraRotateY(), 0);
-    assertEquals(3, controller.getCameraRotateZ(), 0);
+    assertEquals(183, controller.getCameraRotateZ(), 0);
   }
 
   @Test
