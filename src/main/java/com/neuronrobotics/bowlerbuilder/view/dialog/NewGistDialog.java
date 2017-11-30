@@ -74,6 +74,14 @@ public class NewGistDialog extends Dialog<List<String>> {
     });
   }
 
+  public String getName() {
+    return nameField.getText();
+  }
+
+  public String getDescription() {
+    return descField.getText();
+  }
+
   /**
    * Return whether the gist should be public.
    *

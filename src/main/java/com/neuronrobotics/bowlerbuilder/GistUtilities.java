@@ -1,7 +1,5 @@
 package com.neuronrobotics.bowlerbuilder;
 
-import com.google.common.base.Throwables;
-
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
@@ -23,9 +21,9 @@ public final class GistUtilities {
    * @param filename    Gist filename for first file
    * @param description Gist description
    * @param isPublic    Public/private viewing
-   * @return Gist push URL
+   * @return New gist
    */
-  public static String createNewGist(String filename, String description, boolean isPublic) {
+  public static GHGist createNewGist(String filename, String description, boolean isPublic) throws RuntimeException {
     //Setup gist
     GitHub gitHub = ScriptingEngine.getGithub();
     GHGistBuilder builder = gitHub.createGist();
@@ -43,9 +41,9 @@ public final class GistUtilities {
    * @param filename New file filename
    * @param content  Starting content of new file
    * @param gistID   Gist ID to add file to
-   * @return Gist push URL
+   * @return Gist containing new file
    */
-  public static String addFileToGist(String filename, String content, GHGist gistID) {
+  public static GHGist addFileToGist(String filename, String content, GHGist gistID) {
     GitHub gitHub = ScriptingEngine.getGithub();
     //Copy from old gist
     GHGistBuilder builder = gitHub.createGist();
@@ -69,9 +67,9 @@ public final class GistUtilities {
    *
    * @param builder  Gist builder
    * @param filename Gist file filename
-   * @return Gist push URL
+   * @return New gist
    */
-  private static String createGistFromBuilder(GHGistBuilder builder, String filename) {
+  private static GHGist createGistFromBuilder(GHGistBuilder builder, String filename) throws RuntimeException {
     GHGist gist;
     try {
       gist = builder.create();
@@ -88,11 +86,9 @@ public final class GistUtilities {
         ThreadUtil.wait(500);
       }
 
-      return gist.getGitPullUrl();
+      return gist;
     } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Unable to create gist from builder.\n" + Throwables.getStackTraceAsString(e));
+      throw new RuntimeException("Unable to create gist from builder.");
     }
-    return null;
   }
 }

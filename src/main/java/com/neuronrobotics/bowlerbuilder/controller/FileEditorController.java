@@ -3,13 +3,17 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 
+import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
+import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
 import org.controlsfx.glyphfont.FontAwesome;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -35,6 +39,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -63,7 +68,11 @@ public class FileEditorController implements Initializable {
 
   private GHGist gist;
   private GHGistFile gistFile;
-  //  private boolean isScratchpad = true;
+
+  private boolean isScratchpad = true;
+  private Tab tab;
+  private MainWindowController parentController;
+  private Runnable reloadMenus;
 
   public FileEditorController() {
     requestedFontSize = 14; //TODO: Load previous font size preference
@@ -173,22 +182,72 @@ public class FileEditorController implements Initializable {
 
   @FXML
   private void publishFile(ActionEvent actionEvent) {
-    //TODO: GitHub integration & publish changes to gist
-    //    if (isScratchpad) {
-    //
-    //    } else {
-    try {
-      ScriptingEngine.pushCodeToGit(
-          String.valueOf(gist.getId()),
-          ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
-          gistFile.getFileName(),
-          aceEditor.getText(),
-          "Test Message");
-    } catch (Exception e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+    if (isScratchpad) {
+      NewGistDialog dialog = new NewGistDialog();
+      dialog.showAndWait().ifPresent(__ -> {
+        try {
+          //Make a new gist
+          GHGist newGist = GistUtilities.createNewGist(
+              dialog.getName(),
+              dialog.getDescription(),
+              dialog.getIsPublic()
+          );
+
+          PublishDialog publishDialog = new PublishDialog();
+          publishDialog.showAndWait().ifPresent(commitMessage -> {
+            try {
+              //Push the new gist
+              ScriptingEngine.pushCodeToGit(
+                  newGist.getGitPushUrl(),
+                  ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
+                  dialog.getName(),
+                  aceEditor.getText(),
+                  commitMessage
+              );
+
+              isScratchpad = false;
+              gistURLField.setText(newGist.getGitPushUrl());
+              fileNameField.setText(dialog.getName());
+              gist = newGist;
+              gistFile = newGist.getFiles().get(dialog.getName());
+              tab.setText(dialog.getName());
+              reloadMenus.run();
+            } catch (Exception e) {
+              LoggerUtilities.getLogger().log(Level.SEVERE,
+                  "Could not push code.\n" + Throwables.getStackTraceAsString(e));
+            }
+          });
+        } catch (RuntimeException e) {
+          LoggerUtilities.getLogger().log(Level.SEVERE,
+              "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
+        }
+      });
+    } else {
+      PublishDialog dialog = new PublishDialog();
+      dialog.showAndWait().ifPresent(commitMessage -> {
+        try {
+          File currentFile = ScriptingEngine.fileFromGit(
+              gist.getGitPushUrl(),
+              gistFile.getFileName()
+          );
+          Git git = ScriptingEngine.locateGit(currentFile);
+          String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+          String relativePath = ScriptingEngine.findLocalPath(currentFile, git);
+
+          //Push to existing gist
+          ScriptingEngine.pushCodeToGit(
+              remote,
+              ScriptingEngine.getFullBranch(remote),
+              relativePath,
+              aceEditor.getText(),
+              commitMessage
+          );
+        } catch (Exception e) {
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+        }
+      });
     }
-    //    }
   }
 
   /**
@@ -209,7 +268,7 @@ public class FileEditorController implements Initializable {
    *
    * @param file File to load
    */
-  private void loadFile(File file) {
+  protected void loadFile(File file) {
     if (file != null) {
       if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
         try {
@@ -232,7 +291,7 @@ public class FileEditorController implements Initializable {
    * @param gistFile File in gist
    */
   public void loadGist(GHGist gist, GHGistFile gistFile) {
-    //isScratchpad = false;
+    isScratchpad = false;
     File file = null;
     try {
       file = ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
@@ -246,6 +305,16 @@ public class FileEditorController implements Initializable {
     }
 
     loadFile(file);
+  }
+
+  /**
+   * Gives the scratchpad code what it needs to work properly.
+   *
+   * @param tab Tab the editor is contained in
+   */
+  public void initScratchpad(Tab tab, Runnable reloadMenus) {
+    this.tab = tab;
+    this.reloadMenus = reloadMenus;
   }
 
 }

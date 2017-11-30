@@ -182,6 +182,7 @@ public class MainWindowController implements Initializable {
       fileEditors.add(controller);
 
       controller.setFontSize((int) preferences.get("Font Size"));
+      controller.initScratchpad(tab, this::reloadMenus);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
     } catch (IOException e) {
@@ -193,7 +194,7 @@ public class MainWindowController implements Initializable {
     tabPane.getSelectionModel().select(tab);
   }
 
-  private void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
+  public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
     Tab tab = new Tab(gistFile.getFileName());
     FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
 
@@ -296,11 +297,20 @@ public class MainWindowController implements Initializable {
 
     logOut.setDisable(false);
 
+    reloadMenus();
+  }
+
+  /**
+   * Reload the GitHub menus.
+   */
+  public void reloadMenus() {
     //Wait for GitHub to load in
     GitHub gitHub;
     while ((gitHub = ScriptingEngine.getGithub()) == null) {
       ThreadUtil.wait(20);
     }
+
+    myGists.getItems().clear();
 
     try {
       GHMyself myself = gitHub.getMyself();
@@ -318,17 +328,17 @@ public class MainWindowController implements Initializable {
         MenuItem addFileToGist = new MenuItem("Add File"); //TODO: Make this actually add a file
         addFileToGist.setOnAction(event -> Platform.runLater(() -> {
           try { //NOPMD
-          //            openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
-          //                ScriptingEngine.filesInGit(
-          //                    gist.getGitPushUrl(),
-          //                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
-          //            ));
-          //          } catch (IOException e) {
-          //            LoggerUtilities.getLogger().log(Level.WARNING,
-          //                "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
-          //          } catch (InvalidRemoteException e) {
-          //            LoggerUtilities.getLogger().log(Level.WARNING,
-          //     "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
+            //            openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
+            //                ScriptingEngine.filesInGit(
+            //                    gist.getGitPushUrl(),
+            //                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
+            //            ));
+            //          } catch (IOException e) {
+            //            LoggerUtilities.getLogger().log(Level.WARNING,
+            //                "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
+            //          } catch (InvalidRemoteException e) {
+            //            LoggerUtilities.getLogger().log(Level.WARNING,
+            //     "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
           } catch (Exception e) {
             LoggerUtilities.getLogger().log(Level.WARNING,
                 "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
