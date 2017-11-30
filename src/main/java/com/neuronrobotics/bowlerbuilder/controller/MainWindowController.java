@@ -194,6 +194,12 @@ public class MainWindowController implements Initializable {
     tabPane.getSelectionModel().select(tab);
   }
 
+  /**
+   * Open a gist file in the file editor.
+   *
+   * @param gist     Gist containing file
+   * @param gistFile File
+   */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
     Tab tab = new Tab(gistFile.getFileName());
     FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));

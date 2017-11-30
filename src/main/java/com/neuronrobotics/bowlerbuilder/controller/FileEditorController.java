@@ -71,7 +71,6 @@ public class FileEditorController implements Initializable {
 
   private boolean isScratchpad = true;
   private Tab tab;
-  private MainWindowController parentController;
   private Runnable reloadMenus;
 
   public FileEditorController() {
@@ -217,7 +216,7 @@ public class FileEditorController implements Initializable {
                   "Could not push code.\n" + Throwables.getStackTraceAsString(e));
             }
           });
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
           LoggerUtilities.getLogger().log(Level.SEVERE,
               "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
         }

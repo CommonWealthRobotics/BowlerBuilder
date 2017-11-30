@@ -37,7 +37,7 @@ public class PublishDialog extends Dialog<String> {
 
     setResultConverter(buttonType -> {
       if (buttonType == ButtonType.OK) {
-        return getCommitMessage();
+        return commitMessage.getText();
       }
 
       return null;

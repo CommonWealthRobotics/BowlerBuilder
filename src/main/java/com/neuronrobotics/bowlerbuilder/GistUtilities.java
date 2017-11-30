@@ -23,7 +23,8 @@ public final class GistUtilities {
    * @param isPublic    Public/private viewing
    * @return New gist
    */
-  public static GHGist createNewGist(String filename, String description, boolean isPublic) throws RuntimeException {
+  public static GHGist createNewGist(String filename, String description, boolean isPublic)
+      throws IOException {
     //Setup gist
     GitHub gitHub = ScriptingEngine.getGithub();
     GHGistBuilder builder = gitHub.createGist();
@@ -43,7 +44,8 @@ public final class GistUtilities {
    * @param gistID   Gist ID to add file to
    * @return Gist containing new file
    */
-  public static GHGist addFileToGist(String filename, String content, GHGist gistID) {
+  public static GHGist addFileToGist(String filename, String content, GHGist gistID)
+      throws IOException {
     GitHub gitHub = ScriptingEngine.getGithub();
     //Copy from old gist
     GHGistBuilder builder = gitHub.createGist();
@@ -69,26 +71,23 @@ public final class GistUtilities {
    * @param filename Gist file filename
    * @return New gist
    */
-  private static GHGist createGistFromBuilder(GHGistBuilder builder, String filename) throws RuntimeException {
+  private static GHGist createGistFromBuilder(GHGistBuilder builder, String filename)
+      throws IOException {
     GHGist gist;
-    try {
-      gist = builder.create();
+    gist = builder.create();
 
-      while (true) {
-        try {
-          ScriptingEngine.fileFromGit(gist.getGitPullUrl(), filename);
-          break;
-        } catch (GitAPIException e) {
-          LoggerUtilities.getLogger().log(Level.INFO,
-              "Waiting on Git API.");
-        }
-
-        ThreadUtil.wait(500);
+    while (true) {
+      try {
+        ScriptingEngine.fileFromGit(gist.getGitPullUrl(), filename);
+        break;
+      } catch (GitAPIException e) {
+        LoggerUtilities.getLogger().log(Level.INFO,
+            "Waiting on Git API.");
       }
 
-      return gist;
-    } catch (IOException e) {
-      throw new RuntimeException("Unable to create gist from builder.");
+      ThreadUtil.wait(500);
     }
+
+    return gist;
   }
 }
