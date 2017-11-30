@@ -61,6 +61,10 @@ public class FileEditorController implements Initializable {
   private int requestedFontSize;
   private Optional<File> requestedFile;
 
+  private GHGist gist;
+  private GHGistFile gistFile;
+  //  private boolean isScratchpad = true;
+
   public FileEditorController() {
     requestedFontSize = 14; //TODO: Load previous font size preference
     requestedFile = Optional.empty();
@@ -170,7 +174,22 @@ public class FileEditorController implements Initializable {
   @FXML
   private void publishFile(ActionEvent actionEvent) {
     //TODO: GitHub integration & publish changes to gist
-    //TODO: Special case for when the scratchpad is open
+    //    if (isScratchpad) {
+    //
+    //    } else {
+    try {
+      ScriptingEngine.commit(
+          String.valueOf(gist.getId()),
+          ScriptingEngine.getBranch(gist.getGitPushUrl()),
+          gistFile.getFileName(),
+          aceEditor.getText(),
+          "Test Message.",
+          false);
+    } catch (Exception e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+    }
+    //    }
   }
 
   /**
@@ -191,7 +210,7 @@ public class FileEditorController implements Initializable {
    *
    * @param file File to load
    */
-  public void loadFile(File file) {
+  private void loadFile(File file) {
     if (file != null) {
       if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
         try {
@@ -214,9 +233,12 @@ public class FileEditorController implements Initializable {
    * @param gistFile File in gist
    */
   public void loadGist(GHGist gist, GHGistFile gistFile) {
+    //isScratchpad = false;
     File file = null;
     try {
       file = ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
+      this.gist = gist;
+      this.gistFile = gistFile;
     } catch (GitAPIException | IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));

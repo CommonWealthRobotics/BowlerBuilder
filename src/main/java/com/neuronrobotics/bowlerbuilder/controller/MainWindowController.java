@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 
-import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
@@ -11,7 +10,6 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHMyself;
@@ -149,23 +147,23 @@ public class MainWindowController implements Initializable {
       NewGistDialog dialog = new NewGistDialog();
       dialog.getDialogPane().setId("newFileDialog");
 
-      if (dialog.showAndWait().isPresent()) {
-        List<String> nameAndDesc = dialog.getResult();
-        boolean isPublic = dialog.getIsPublic();
-        openFileInEditor(
-            ScriptingEngine.fileFromGit( //TODO: Is this the correct way?
-                GistUtilities.createNewGist(
-                    nameAndDesc.get(0),
-                    nameAndDesc.get(1),
-                    isPublic),
-                nameAndDesc.get(0)));
+      if (dialog.showAndWait().isPresent()) { //NOPMD
+        //List<String> nameAndDesc = dialog.getResult();
+        //        boolean isPublic = dialog.getIsPublic();
+        //        openFileInEditor(
+        //            ScriptingEngine.fileFromGit( //TODO: GistUtilities should return a GHGist
+        //                GistUtilities.createNewGist(
+        //                    nameAndDesc.get(0),
+        //                    nameAndDesc.get(1),
+        //                    isPublic),
+        //                nameAndDesc.get(0)));
       }
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
-    } catch (InvalidRemoteException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
+      //    } catch (IOException e) {
+      //      LoggerUtilities.getLogger().log(Level.WARNING,
+      //          "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
+      //    } catch (InvalidRemoteException e) {
+      //      LoggerUtilities.getLogger().log(Level.WARNING,
+      //          "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
     } catch (Exception e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
@@ -184,29 +182,6 @@ public class MainWindowController implements Initializable {
       fileEditors.add(controller);
 
       controller.setFontSize((int) preferences.get("Font Size"));
-
-      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    tabPane.getTabs().add(tab);
-    tabPane.getSelectionModel().select(tab);
-  }
-
-  private void openFileInEditor(File file) {
-    Tab tab = new Tab(file.getName());
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
-
-    try {
-      tab.setContent(loader.load());
-
-      final FileEditorController controller = loader.getController();
-      fileEditors.add(controller);
-
-      controller.setFontSize((int) preferences.get("Font Size"));
-      controller.loadFile(file);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
     } catch (IOException e) {
@@ -342,18 +317,18 @@ public class MainWindowController implements Initializable {
 
         MenuItem addFileToGist = new MenuItem("Add File"); //TODO: Make this actually add a file
         addFileToGist.setOnAction(event -> Platform.runLater(() -> {
-          try {
-            openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
-                ScriptingEngine.filesInGit(
-                    gist.getGitPushUrl(),
-                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
-            ));
-          } catch (IOException e) {
-            LoggerUtilities.getLogger().log(Level.WARNING,
-                "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
-          } catch (InvalidRemoteException e) {
-            LoggerUtilities.getLogger().log(Level.WARNING,
-                "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
+          try { //NOPMD
+          //            openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
+          //                ScriptingEngine.filesInGit(
+          //                    gist.getGitPushUrl(),
+          //                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
+          //            ));
+          //          } catch (IOException e) {
+          //            LoggerUtilities.getLogger().log(Level.WARNING,
+          //                "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
+          //          } catch (InvalidRemoteException e) {
+          //            LoggerUtilities.getLogger().log(Level.WARNING,
+          //     "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
           } catch (Exception e) {
             LoggerUtilities.getLogger().log(Level.WARNING,
                 "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
