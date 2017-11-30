@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 
+import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
@@ -331,20 +332,12 @@ public class MainWindowController implements Initializable {
           tabPane.getSelectionModel().select(tab);
         });
 
-        MenuItem addFileToGist = new MenuItem("Add File"); //TODO: Make this actually add a file
+        MenuItem addFileToGist = new MenuItem("Add File");
         addFileToGist.setOnAction(event -> Platform.runLater(() -> {
-          try { //NOPMD
-            //            openFileInEditor(ScriptingEngine.fileFromGit(gist.getGitPushUrl(),
-            //                ScriptingEngine.filesInGit(
-            //                    gist.getGitPushUrl(),
-            //                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()), null).get(0)
-            //            ));
-            //          } catch (IOException e) {
-            //            LoggerUtilities.getLogger().log(Level.WARNING,
-            //                "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
-            //          } catch (InvalidRemoteException e) {
-            //            LoggerUtilities.getLogger().log(Level.WARNING,
-            //     "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
+          try {
+            //TODO: Maybe addFileToGist is broken
+            GHGist newGist = GistUtilities.addFileToGist("test name", "test content", gist);
+            openGistFileInEditor(newGist, newGist.getFile("test name"));
           } catch (Exception e) {
             LoggerUtilities.getLogger().log(Level.WARNING,
                 "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
