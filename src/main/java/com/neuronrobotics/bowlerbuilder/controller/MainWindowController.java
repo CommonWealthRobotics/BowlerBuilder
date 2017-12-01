@@ -174,7 +174,8 @@ public class MainWindowController implements Initializable {
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
     Tab tab = new Tab("Scratchpad");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
 
     try {
       tab.setContent(loader.load());
@@ -203,7 +204,8 @@ public class MainWindowController implements Initializable {
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
     Tab tab = new Tab(gistFile.getFileName());
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/FileEditor.fxml"));
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
 
     try {
       tab.setContent(loader.load());
@@ -404,7 +406,8 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void openPreferences(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/Preferences.fxml"));
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/Preferences.fxml"));
     Dialog dialog = new Dialog();
     dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
 
@@ -426,7 +429,8 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void openEditorHelp(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/dialog/EditorHelp.fxml"));
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
     Dialog dialog = new Dialog();
     dialog.setTitle("BowlerBuilder Help");
     dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);

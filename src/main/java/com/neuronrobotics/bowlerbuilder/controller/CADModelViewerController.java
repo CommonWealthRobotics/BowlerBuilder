@@ -89,7 +89,8 @@ public class CADModelViewerController implements Initializable {
 
     try {
       backgroundImage = new ImageView(
-          new Image(getClass().getResource("../cap.png").toURI().toString()));
+          new Image(CADModelViewerController.class.getResource(
+              "/com/neuronrobotics/bowlerbuilder/cap.png").toURI().toString()));
     } catch (URISyntaxException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not load CAD viewer background image.\n" + Throwables.getStackTraceAsString(e));

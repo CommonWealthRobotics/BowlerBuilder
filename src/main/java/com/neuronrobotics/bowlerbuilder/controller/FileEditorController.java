@@ -83,7 +83,8 @@ public class FileEditorController implements Initializable {
     root.setDividerPosition(0, 0.8);
     webEngine = webView.getEngine();
     webEngine.setJavaScriptEnabled(true);
-    webEngine.load(getClass().getResource("../web/ace.html").toString());
+    webEngine.load(FileEditorController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/web/ace.html").toString());
     aceEditor = new AceEditor(webEngine);
 
     runButton.setGraphic(new FontAwesome().create(String.valueOf(FontAwesome.Glyph.PLAY)));

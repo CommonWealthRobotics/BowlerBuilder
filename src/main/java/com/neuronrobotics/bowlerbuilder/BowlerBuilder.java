@@ -17,7 +17,8 @@ public class BowlerBuilder extends Application {
 
   @Override
   public void start(Stage primaryStage) throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("MainWindow.fxml"));
+    FXMLLoader loader = new FXMLLoader(BowlerBuilder.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"));
     Pane mainWindow = loader.load();
 
     primaryStage.setTitle("BowlerBuilder");
