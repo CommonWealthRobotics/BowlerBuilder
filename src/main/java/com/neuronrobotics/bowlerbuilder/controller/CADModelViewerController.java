@@ -410,7 +410,7 @@ public class CADModelViewerController implements Initializable {
   /**
    * Apply rotations iteratively to a group so the camera stays locked to azimuth rotations.
    */
-  private static final class XFormCamera extends Group {
+  private final class XFormCamera extends Group {
     private Rotate rotation;
     private double rotX;
     private double rotY;
@@ -424,6 +424,8 @@ public class CADModelViewerController implements Initializable {
 
     void rotateX(double angle) {
       rotation = new Rotate(angle, Rotate.X_AXIS);
+      rotation.pivotXProperty().set(translate.getX()); //NOPMD
+      rotation.pivotYProperty().set(translate.getY()); //NOPMD
       rotX += angle;
       transform = transform.createConcatenation(rotation);
       this.getTransforms().clear();
@@ -432,6 +434,8 @@ public class CADModelViewerController implements Initializable {
 
     void rotateY(double angle) {
       rotation = new Rotate(angle, Rotate.Y_AXIS);
+      rotation.pivotXProperty().set(translate.getX()); //NOPMD
+      rotation.pivotYProperty().set(translate.getY()); //NOPMD
       rotY += angle;
       transform = transform.createConcatenation(rotation);
       this.getTransforms().clear();
@@ -440,6 +444,8 @@ public class CADModelViewerController implements Initializable {
 
     void rotateZ(double angle) {
       rotation = new Rotate(angle, Rotate.Z_AXIS);
+      rotation.pivotXProperty().set(translate.getX()); //NOPMD
+      rotation.pivotYProperty().set(translate.getY()); //NOPMD
       rotZ += angle;
       transform = transform.createConcatenation(rotation);
       this.getTransforms().clear();
