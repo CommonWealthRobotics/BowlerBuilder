@@ -76,7 +76,7 @@ public class CADModelViewerController implements Initializable {
   private final SubScene csgScene;
 
   //Background images
-  private ImageView backgroundImage;
+  private ImageView xRuler, yRuler, zRuler;
 
   public CADModelViewerController() {
     translate = new Translate(0, 0, -800);
@@ -88,16 +88,24 @@ public class CADModelViewerController implements Initializable {
     camera1.getTransforms().addAll(translate);
 
     try {
-      backgroundImage = new ImageView(
-          new Image(CADModelViewerController.class.getResource(
-              "/com/neuronrobotics/bowlerbuilder/cap.png").toURI().toString()));
+      xRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
+          "/com/neuronrobotics/bowlerbuilder/cadImages/Plus-X.png").toURI().toString()));
+      xRuler.getTransforms().add(new Translate(50, 0, 0));
+      yRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
+          "/com/neuronrobotics/bowlerbuilder/cadImages/Plus-Y.png").toURI().toString()));
+      yRuler.getTransforms().add(new Rotate(90, Rotate.Y_AXIS));
+      yRuler.getTransforms().add(new Translate(0, 50, 0));
+      zRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
+          "/com/neuronrobotics/bowlerbuilder/cadImages/Plus-Z.png").toURI().toString()));
+      zRuler.getTransforms().add(new Rotate(90, Rotate.Z_AXIS));
+      zRuler.getTransforms().add(new Translate(0, 0, 50));
     } catch (URISyntaxException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not load CAD viewer background image.\n" + Throwables.getStackTraceAsString(e));
     }
 
     csgGraph = new Group();
-    csgGraph.getChildren().addAll(cameraXForm1, backgroundImage);
+    csgGraph.getChildren().addAll(cameraXForm1, xRuler, yRuler, zRuler);
     csgScene = new SubScene(csgGraph, 300, 300, true, SceneAntialiasing.BALANCED);
     csgScene.setManaged(false);
     csgScene.setFill(Color.TRANSPARENT);
@@ -373,7 +381,7 @@ public class CADModelViewerController implements Initializable {
    */
   public void clearMeshes() {
     csgGraph.getChildren().clear();
-    csgGraph.getChildren().add(backgroundImage); //Re-add background
+    csgGraph.getChildren().addAll(xRuler, yRuler, zRuler); //Re-add background
   }
 
   @FXML
@@ -453,9 +461,9 @@ public class CADModelViewerController implements Initializable {
     }
 
     void home() {
-      rotX = 180;
-      rotY = 0;
-      rotZ = 180;
+      rotX = 180-20;
+      rotY = -35;
+      rotZ = 180-10;
       transform = new Rotate(rotX, Rotate.X_AXIS);
       transform = transform.createConcatenation(new Rotate(rotY, Rotate.Y_AXIS));
       transform = transform.createConcatenation(new Rotate(rotZ, Rotate.Z_AXIS));
