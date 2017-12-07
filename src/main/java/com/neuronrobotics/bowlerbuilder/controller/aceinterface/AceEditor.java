@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.aceinterface;
 
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import java.util.logging.Level;
 import javafx.scene.web.WebEngine;
 
 public final class AceEditor implements AceInterface {
@@ -22,6 +24,8 @@ public final class AceEditor implements AceInterface {
     escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
     escaped = escaped.replace("\n", "\\n");
     escaped = escaped.replace("\r", "\\n");
+    LoggerUtilities.getLogger().log(Level.INFO,
+        "Inserting: " + escaped);
     engine.executeScript("editor.insert(\"" + escaped + "\");");
   }
 
