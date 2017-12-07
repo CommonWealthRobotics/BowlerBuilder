@@ -11,6 +11,9 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHMyself;
@@ -130,45 +133,7 @@ public class MainWindowController implements Initializable {
 
     SplitPane.setResizableWithParent(console, false);
 
-    try {
-      ScriptingEngine.runLogin();
-      if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-        //        showLoginNotification();
-        setupMenusOnLogin();
-      }
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.INFO,
-          "Could not log in with previous credentials.");
-    }
-  }
-
-  @FXML
-  private void onOpenNewCADFile(ActionEvent actionEvent) {
-    try {
-      NewGistDialog dialog = new NewGistDialog();
-      dialog.getDialogPane().setId("newFileDialog");
-
-      if (dialog.showAndWait().isPresent()) { //NOPMD
-        //List<String> nameAndDesc = dialog.getResult();
-        //        boolean isPublic = dialog.getIsPublic();
-        //        openFileInEditor(
-        //            ScriptingEngine.fileFromGit( //TODO: GistUtilities should return a GHGist
-        //                GistUtilities.createNewGist(
-        //                    nameAndDesc.get(0),
-        //                    nameAndDesc.get(1),
-        //                    isPublic),
-        //                nameAndDesc.get(0)));
-      }
-      //    } catch (IOException e) {
-      //      LoggerUtilities.getLogger().log(Level.WARNING,
-      //          "Could not get full branch.\n" + Throwables.getStackTraceAsString(e));
-      //    } catch (InvalidRemoteException e) {
-      //      LoggerUtilities.getLogger().log(Level.WARNING,
-      //          "Could not get file from git.\n" + Throwables.getStackTraceAsString(e));
-    } catch (Exception e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
-    }
+    tryLogin();
   }
 
   @FXML
@@ -235,45 +200,60 @@ public class MainWindowController implements Initializable {
   private void onLogInToGitHub(ActionEvent actionEvent) {
     new Thread(() -> {
       Thread.currentThread().setName("GitHub Login Thread");
-
-      ScriptingEngine.setLoginManager(s -> {
-        VBox vBox = new VBox();
-        TextField nameField = new TextField();
-        PasswordField passField = new PasswordField();
-
-        nameField.setPromptText("Username");
-        passField.setPromptText("Password");
-
-        vBox.setSpacing(5);
-        vBox.getChildren().addAll(nameField, passField);
-
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(vBox);
-
-        if (dialog.showAndWait().isPresent()) {
-          return new String[]{dialog.getResult().getKey(), dialog.getResult().getValue()};
-        } else {
-          return new String[0];
-        }
-      });
-
-      try {
-        ScriptingEngine.runLogin();
-        if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-          //          showLoginNotification();
-          setupMenusOnLogin();
-        }
-      } catch (IOException e) {
-        LoggerUtilities.getLogger().log(Level.WARNING,
-            "Could not launch GitHub as non-anonymous.\n" + Throwables.getStackTraceAsString(e));
-        try {
-          ScriptingEngine.setupAnyonmous();
-        } catch (IOException e1) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
-              "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
-        }
-      }
+      tryLogin();
     }).start();
+  }
+
+  private void tryLogin() {
+    ScriptingEngine.setLoginManager(s -> {
+      VBox vBox = new VBox();
+      TextField nameField = new TextField();
+      PasswordField passField = new PasswordField();
+
+      nameField.setPromptText("Username");
+      passField.setPromptText("Password");
+
+      vBox.setSpacing(5);
+      vBox.getChildren().addAll(nameField, passField);
+
+      Dialog<Boolean> dialog = new Dialog<>();
+      dialog.getDialogPane().setContent(vBox);
+      dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+      dialog.setResultConverter(buttonType -> !buttonType.getButtonData().isCancelButton());
+
+      if (dialog.showAndWait().isPresent() && dialog.showAndWait().get()) {
+        System.out.println("present");
+        return new String[]{nameField.getText(), passField.getText()};
+      } else {
+        System.out.println("not present");
+        return new String[0];
+      }
+    });
+
+    try {
+      ScriptingEngine.waitForLogin();
+      ScriptingEngine.runLogin();
+      if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
+        //showLoginNotification();
+        setupMenusOnLogin();
+      }
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not launch GitHub as non-anonymous.\n" + Throwables.getStackTraceAsString(e));
+      try {
+        ScriptingEngine.setupAnyonmous();
+      } catch (IOException e1) {
+        LoggerUtilities.getLogger().log(Level.WARNING,
+            "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
+      }
+    } catch (InvalidRemoteException e) {
+      e.printStackTrace();
+    } catch (TransportException e) {
+      e.printStackTrace();
+    } catch (GitAPIException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

@@ -41,10 +41,6 @@
             </Menu>
           <Menu mnemonicParsing="false" text="3D CAD">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#onOpenNewCADFile" text="New File">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="N" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                     </accelerator></MenuItem>
                 <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
             </items>
           </Menu>
