@@ -20,13 +20,6 @@ class BowlerBuilderTest extends AutoClosingApplicationTest {
   }
 
   @Test
-  void newFileTest() {
-    clickOn("3D CAD").clickOn("New File");
-
-    assertTrue(lookup("#newFileDialog").tryQuery().isPresent());
-  }
-
-  @Test
   void openScratchpadTest() {
     clickOn("3D CAD").clickOn("Scratchpad");
 

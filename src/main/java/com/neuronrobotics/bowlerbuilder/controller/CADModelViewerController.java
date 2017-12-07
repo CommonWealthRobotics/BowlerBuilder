@@ -76,7 +76,9 @@ public class CADModelViewerController implements Initializable {
   private final SubScene csgScene;
 
   //Background images
-  private ImageView xRuler, yRuler, zRuler;
+  private ImageView xRuler;
+  private ImageView yRuler;
+  private ImageView zRuler;
 
   public CADModelViewerController() {
     translate = new Translate(0, 0, -800);
@@ -211,9 +213,9 @@ public class CADModelViewerController implements Initializable {
   /**
    * Undo scene projection.
    *
-   * @param sceneX      Scene x coordinate
-   * @param sceneY      Scene y coordinate
-   * @param sceneWidth  Scene width
+   * @param sceneX Scene x coordinate
+   * @param sceneY Scene y coordinate
+   * @param sceneWidth Scene width
    * @param sceneHeight Scene height
    * @return Un-projected point
    */
@@ -259,7 +261,7 @@ public class CADModelViewerController implements Initializable {
    * Add a MeshView to the scene graph.
    *
    * @param mesh MeshView to add
-   * @param csg  CSG object the MeshView is contained in (used for exporting)
+   * @param csg CSG object the MeshView is contained in (used for exporting)
    */
   public void addMeshView(MeshView mesh, CSG csg) {
     mesh.setMaterial(new PhongMaterial(Color.RED));
@@ -461,9 +463,9 @@ public class CADModelViewerController implements Initializable {
     }
 
     void home() {
-      rotX = 180-20;
+      rotX = 180 - 20;
       rotY = -35;
-      rotZ = 180-10;
+      rotZ = 180 - 10;
       transform = new Rotate(rotX, Rotate.X_AXIS);
       transform = transform.createConcatenation(new Rotate(rotY, Rotate.Y_AXIS));
       transform = transform.createConcatenation(new Rotate(rotZ, Rotate.Z_AXIS));

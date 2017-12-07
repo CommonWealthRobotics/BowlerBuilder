@@ -5,15 +5,12 @@ import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
-import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHMyself;
@@ -55,7 +52,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
-import javafx.util.Pair;
 
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
@@ -223,17 +219,14 @@ public class MainWindowController implements Initializable {
       dialog.setResultConverter(buttonType -> !buttonType.getButtonData().isCancelButton());
 
       if (dialog.showAndWait().isPresent() && dialog.showAndWait().get()) {
-        System.out.println("present");
         return new String[]{nameField.getText(), passField.getText()};
       } else {
-        System.out.println("not present");
         return new String[0];
       }
     });
 
     try {
       ScriptingEngine.waitForLogin();
-      ScriptingEngine.runLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
         //showLoginNotification();
         setupMenusOnLogin();
@@ -247,12 +240,9 @@ public class MainWindowController implements Initializable {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
       }
-    } catch (InvalidRemoteException e) {
-      e.printStackTrace();
-    } catch (TransportException e) {
-      e.printStackTrace();
     } catch (GitAPIException e) {
-      e.printStackTrace();
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not log in.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
