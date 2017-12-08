@@ -84,6 +84,7 @@ public class MainWindowController implements Initializable {
     fileEditors = new ArrayList<>();
     preferences = new HashMap<>();
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
+    System.out.println("Main Window Controller constructor done");
   }
 
   //Simple stream to append input characters to a text area
@@ -102,6 +103,7 @@ public class MainWindowController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    System.out.println("Start of Main Window Controller initialize");
     //Add date to console
     console.setText(console.getText()
         + new SimpleDateFormat(
@@ -119,14 +121,20 @@ public class MainWindowController implements Initializable {
     System.setOut(stream);
     System.setErr(stream);
 
+    System.out.println("Redirected sysouts");
+
     homeWebView
         .getEngine()
         .load("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
+    System.out.println("Loading homepage");
+
     SplitPane.setResizableWithParent(console, false);
 
     try {
+      System.out.println("Trying login");
       ScriptingEngine.runLogin();
+      System.out.println("Login done");
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not automatically log in.\n" + Throwables.getStackTraceAsString(e));
