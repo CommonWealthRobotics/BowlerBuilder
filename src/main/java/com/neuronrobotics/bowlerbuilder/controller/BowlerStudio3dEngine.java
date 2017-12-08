@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -49,7 +50,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
   private final PerspectiveCamera camera = new PerspectiveCamera(true);
 
   private final Group root = new Group();
-  private final Group manipulator = new Group();
   private final Group lookGroup = new Group();
   private final Group focusGroup = new Group();
   private final Group userGroup = new Group();
@@ -66,8 +66,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
   private Group ground;
   private VirtualCameraDevice virtualcam;
   private VirtualCameraMobileBase flyingCamera;
-  private HashMap<CSG, MeshView> csgMap = new HashMap<>();
-  private HashMap<MeshView, Axis> axisMap = new HashMap<>();
+  private Map<CSG, MeshView> csgMap = new HashMap<>();
+  private Map<MeshView, Axis> axisMap = new HashMap<>();
   private CSG selectedCsg = null;
   private long lastMosueMovementTime = System.currentTimeMillis();
 
@@ -83,11 +83,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
     Stop[] stops = null;
     getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
-    Scene s = new Scene(new Group(getSubScene()));
-    // handleKeyboard(s);
+    Scene scene = new Scene(new Group(getSubScene()));
     handleMouse(getSubScene());
-
-    setScene(s);
+    setScene(scene);
   }
 
 
@@ -135,15 +133,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
         0,
         new RotationNR(90 - 127, 24, 0)), 0
     );
-  }
-
-  /**
-   * Gets the camera field of view property.
-   *
-   * @return the camera field of view property
-   */
-  public DoubleProperty getCameraFieldOfViewProperty() {
-    return camera.fieldOfViewProperty();
   }
 
   /**
@@ -245,7 +234,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
    * @param scene the scene
    */
   private void handleMouse(SubScene scene) {
-
     scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
       long lastClickedTimeLocal = 0;
       long offset = 500;
@@ -256,18 +244,16 @@ public class BowlerStudio3dEngine extends JFXPanel {
         long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
         FxTimer.runLater(Duration.ofMillis(100), () -> {
           long diff = System.currentTimeMillis() - lastSelectedTime;
-
           if (diff > 2000) {
             // reset only if an object is not being selected
             if (lastClickedDifference < offset) {
               cancelSelection();
             }
           }
-
         });
+
         lastClickedTimeLocal = System.currentTimeMillis();
       }
-
     });
 
     scene.setOnMousePressed(me -> {
@@ -311,8 +297,13 @@ public class BowlerStudio3dEngine extends JFXPanel {
         }
       } else if (me.isSecondaryButtonDown()) {
         double depth = -100 / getVirtualcam().getZoomDepth();
-        moveCamera(new TransformNR(mouseDeltaX * modifierFactor * modifier * 1 / depth,
-            mouseDeltaY * modifierFactor * modifier * 1 / depth, 0, new RotationNR()), 0);
+        moveCamera(
+            new TransformNR(
+                mouseDeltaX * modifierFactor * modifier * 1 / depth,
+                mouseDeltaY * modifierFactor * modifier * 1 / depth,
+                0,
+                new RotationNR()),
+            0);
       }
     });
 
@@ -336,60 +327,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
   }
 
   /**
-   * Gets the sub scene.
-   *
-   * @return the sub scene
-   */
-  public SubScene getSubScene() {
-    return scene;
-  }
-
-  /**
-   * Sets the sub scene.
-   *
-   * @param scene the new sub scene
-   */
-  private void setSubScene(SubScene scene) {
-    this.scene = scene;
-  }
-
-  /**
-   * Gets the root.
-   *
-   * @return the root
-   */
-  public Group getRoot() {
-    return root;
-  }
-
-  /**
-   * Removes the arm.
-   */
-  public void removeArm() {
-    world.getChildren().remove(manipulator);
-  }
-
-  public VirtualCameraDevice getVirtualcam() {
-    return virtualcam;
-  }
-
-  private void setVirtualcam(VirtualCameraDevice virtualcam) {
-    this.virtualcam = virtualcam;
-  }
-
-  public VirtualCameraMobileBase getFlyingCamera() {
-    return flyingCamera;
-  }
-
-  private void setFlyingCamera(VirtualCameraMobileBase flyingCamera) {
-    this.flyingCamera = flyingCamera;
-  }
-
-  public CSG getSelectedCsg() {
-    return selectedCsg;
-  }
-
-  /**
    * Set the selected CSG.
    *
    * @param scg new CSG
@@ -409,23 +346,23 @@ public class BowlerStudio3dEngine extends JFXPanel {
     FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
         getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
 
-    double xcenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
-    double ycenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
-    double zcenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
+    double xCenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
+    double yCenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
+    double zCenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
 
     TransformNR poseToMove = new TransformNR();
     CSG finalCSG = selectedCsg;
     if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
-      finalCSG = finalCSG.movex(-xcenter);
-      poseToMove.translateX(xcenter);
+      finalCSG = finalCSG.movex(-xCenter);
+      poseToMove.translateX(xCenter);
     }
     if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
-      finalCSG = finalCSG.movey(-ycenter);
-      poseToMove.translateY(ycenter);
+      finalCSG = finalCSG.movey(-yCenter);
+      poseToMove.translateY(yCenter);
     }
     if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
-      finalCSG = finalCSG.movez(-zcenter);
-      poseToMove.translateZ(zcenter);
+      finalCSG = finalCSG.movez(-zCenter);
+      poseToMove.translateZ(zCenter);
     }
 
     Affine centering = TransformFactory.nrToAffine(poseToMove);
@@ -466,23 +403,6 @@ public class BowlerStudio3dEngine extends JFXPanel {
       }
       focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
     });
-    resetMouseTime();
-  }
-
-  /**
-   * Select the list of CSGs.
-   *
-   * @param selectedCsg list of CSGs to select
-   */
-  private void setSelectedCsg(List<CSG> selectedCsg) {
-    for (int in = 1; in < selectedCsg.size(); in++) {
-      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
-      if (mesh != null) {
-        FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
-            mesh.setMaterial(new PhongMaterial(Color.GOLD)));
-      }
-    }
-
     resetMouseTime();
   }
 
@@ -550,11 +470,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
     Arrays.stream(toRemove).forEach(allTrans::remove);
   }
 
-  public HashMap<CSG, MeshView> getCsgMap() {
+  public Map<CSG, MeshView> getCsgMap() {
     return csgMap;
   }
 
-  private void setCsgMap(HashMap<CSG, MeshView> csgMap) {
+  private void setCsgMap(Map<CSG, MeshView> csgMap) {
     this.csgMap = csgMap;
   }
 
@@ -587,6 +507,64 @@ public class BowlerStudio3dEngine extends JFXPanel {
 
   public long getLastMouseMoveTime() {
     return lastMosueMovementTime;
+  }
+
+  /**
+   * Gets the camera field of view property.
+   *
+   * @return the camera field of view property
+   */
+  public DoubleProperty getCameraFieldOfViewProperty() {
+    return camera.fieldOfViewProperty();
+  }
+
+  public SubScene getSubScene() {
+    return scene;
+  }
+
+  private void setSubScene(SubScene scene) {
+    this.scene = scene;
+  }
+
+  public Group getRoot() {
+    return root;
+  }
+
+  public VirtualCameraDevice getVirtualcam() {
+    return virtualcam;
+  }
+
+  private void setVirtualcam(VirtualCameraDevice virtualcam) {
+    this.virtualcam = virtualcam;
+  }
+
+  public VirtualCameraMobileBase getFlyingCamera() {
+    return flyingCamera;
+  }
+
+  private void setFlyingCamera(VirtualCameraMobileBase flyingCamera) {
+    this.flyingCamera = flyingCamera;
+  }
+
+  public CSG getSelectedCsg() {
+    return selectedCsg;
+  }
+
+  /**
+   * Select the list of CSGs.
+   *
+   * @param selectedCsg list of CSGs to select
+   */
+  private void setSelectedCsg(List<CSG> selectedCsg) {
+    for (int in = 1; in < selectedCsg.size(); in++) {
+      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
+      if (mesh != null) {
+        FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
+            mesh.setMaterial(new PhongMaterial(Color.GOLD)));
+      }
+    }
+
+    resetMouseTime();
   }
 
 }

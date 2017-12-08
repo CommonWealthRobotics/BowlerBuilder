@@ -14,10 +14,7 @@ public class VirtualCameraMobileBase extends MobileBase {
   private static ArrayList<VirtualCameraMobileBase> bases = new ArrayList<>();
 
   public VirtualCameraMobileBase() throws Exception {
-    //super (IOUtils.toInputStream(ScriptingEngine.codeFromGistID("bfa504cdfba41b132c5d",
-    // "flyingCamera.xml")[0], "UTF-8"));
     super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
-    //setDriveType(DrivingType.WALKING);
 
     setWalkingDriveEngine(getDriveEngine());
     bases.add(this);
@@ -35,54 +32,38 @@ public class VirtualCameraMobileBase extends MobileBase {
   }
 
   private final static class IDriveEngineImplementation implements IDriveEngine {
-
     double azOffset = 0;
     double elOffset = 0;
     double tlOffset = 0;
+
     TransformNR pureTrans = new TransformNR();
 
     @Override
     public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
-      // TODO Auto-generated method stub
-
     }
 
     @Override
     public void DriveVelocityArc(MobileBase source, double degreesPerSecond, double cmRadius) {
-      // TODO Auto-generated method stub
-
     }
 
     @Override
     public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
-      try {
-        pureTrans.setX(newPose.getX());
-        pureTrans.setY(newPose.getY());
-        pureTrans.setZ(newPose.getZ());
+      pureTrans.setX(newPose.getX());
+      pureTrans.setY(newPose.getY());
+      pureTrans.setZ(newPose.getZ());
 
-        TransformNR global = source.getFiducialToGlobalTransform().times(pureTrans);
-        //RotationNR finalRot = TransformNR(0,0,0,globalRot).times(newPose).getRotation();
-        //System.out.println("Azumuth = "+az+" elevation = "+el+" tilt = "+tl);
-        //				Rotation n = newPose.getRotation().getStorage();
-        //				Rotation g = global.getRotation().getStorage();
-        //				Rotation nr =n.compose(g, RotationNR.getConvention());
+      TransformNR global = source.getFiducialToGlobalTransform().times(pureTrans);
+      global.setRotation(new RotationNR(
+          tlOffset + (Math.toDegrees(
+              newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())
+              % 360),
+          azOffset + (Math.toDegrees(newPose.getRotation().getRotationAzimuth()
+              + global.getRotation().getRotationAzimuth()) % 360),
+          elOffset + Math.toDegrees(newPose.getRotation().getRotationElevation()
+              + global.getRotation().getRotationElevation())
+      ));
 
-        global.setRotation(new RotationNR(
-            tlOffset + (Math.toDegrees(
-                newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())
-                % 360),
-            azOffset + (Math.toDegrees(newPose.getRotation().getRotationAzimuth()
-                + global.getRotation().getRotationAzimuth()) % 360),
-            elOffset + Math.toDegrees(newPose.getRotation().getRotationElevation()
-                + global.getRotation().getRotationElevation())
-        ));
-        //				 global.getRotation().setStorage(nr);
-        //System.err.println("Camera  tilt="+tl+" az ="+az+" el="+el);
-        // New target calculated appliaed to global offset
-        source.setGlobalToFiducialTransform(global);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
+      source.setGlobalToFiducialTransform(global);
     }
   }
 

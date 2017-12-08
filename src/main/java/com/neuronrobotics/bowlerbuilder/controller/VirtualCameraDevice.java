@@ -18,16 +18,13 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   );
   private final Group cameraFrame = new Group();
   private PerspectiveCamera camera;
-  private Group hand;
   private double zoomDepth = getDefaultZoomDepth();
   private Affine zoomAffine = new Affine();
   private Group manipulationFrame;
 
   public VirtualCameraDevice(PerspectiveCamera camera, Group hand) {
-    this.hand = hand;
-    this.setCamera(camera);
+    setCamera(camera);
     setScriptingName("virtualCameraDevice");
-    //System.out.println("Setting camera frame transform");
 
     manipulationFrame = new Group();
     camera.getTransforms().add(zoomAffine);
@@ -35,7 +32,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     cameraFrame.getTransforms().add(getOffset());
     manipulationFrame.getChildren().addAll(camera, hand);
     cameraFrame.getChildren().add(manipulationFrame);
-    //new RuntimeException().printStackTrace();
+
     setZoomDepth(DEFAULT_ZOOM_DEPTH);
   }
 
@@ -56,7 +53,6 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 
   @Override
   protected boolean captureNewImage(BufferedImage imageData) {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -98,15 +94,16 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     if (zoomDepth > -2) {
       zoomDepth = -2;
     }
+
     if (zoomDepth < -5000) {
       zoomDepth = -5000;
     }
+
     this.zoomDepth = zoomDepth;
     zoomAffine.setTz(getZoomDepth());
   }
 
   public BufferedImage captureNewImage() {
-    // TODO Auto-generated method stub
     return null;
   }
 
