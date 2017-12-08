@@ -134,6 +134,10 @@ public class MainWindowController implements Initializable {
     try {
       System.out.println("Trying login");
       ScriptingEngine.runLogin();
+      if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
+        //showLoginNotification();
+        setupMenusOnLogin();
+      }
       System.out.println("Login done");
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,

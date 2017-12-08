@@ -20,16 +20,16 @@ import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -41,7 +41,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import org.reactfx.util.FxTimer;
 
-public class BowlerStudio3dEngine extends JFXPanel {
+public class BowlerStudio3dEngine extends Pane {
 
   private final Group axisGroup = new Group();
   private final Group gridGroup = new Group();
@@ -69,23 +69,22 @@ public class BowlerStudio3dEngine extends JFXPanel {
   private Map<CSG, MeshView> csgMap = new HashMap<>();
   private Map<MeshView, Axis> axisMap = new HashMap<>();
   private CSG selectedCsg = null;
-  private long lastMosueMovementTime = System.currentTimeMillis();
+  private long lastMouseMovementTime = System.currentTimeMillis();
 
-  private TransformNR perviousTarget = new TransformNR();
+  private TransformNR previousTarget = new TransformNR();
 
   private long lastSelectedTime = System.currentTimeMillis();
 
   public BowlerStudio3dEngine() {
-    setSubScene(new SubScene(getRoot(), 1024, 1024, true, null));
+    setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
     buildCamera();
     buildAxes();
 
     Stop[] stops = null;
     getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
-    Scene scene = new Scene(new Group(getSubScene()));
     handleMouse(getSubScene());
-    setScene(scene);
+    getChildren().add(getRoot());
   }
 
 
@@ -102,8 +101,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
    * Build the camera. Setup the pointer, clips, rotation, and position.
    */
   private void buildCamera() {
-
-    CSG cylinder = new Cylinder(0, // Radius at the top
+    CSG cylinder = new Cylinder(
+        0, // Radius at the top
         5, // Radius at the bottom
         20, // Height
         20 // resolution
@@ -124,7 +123,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
     try {
       setFlyingCamera(new VirtualCameraMobileBase());
     } catch (Exception e) {
-      e.printStackTrace();
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
     }
 
     moveCamera(new TransformNR(
@@ -144,13 +144,11 @@ public class BowlerStudio3dEngine extends JFXPanel {
         Image ruler = AssetFactory.loadAsset("ruler.png");
         Image groundLocal = AssetFactory.loadAsset("ground.png");
         Affine groundMove = new Affine();
-        // groundMove.setTz(-3);
         groundMove.setTx(-groundLocal.getHeight() / 2);
         groundMove.setTy(-groundLocal.getWidth() / 2);
 
         Affine zRuler = new Affine();
         double scale = 0.25;
-        // zRuler.setTx(-130*scale);
         zRuler.setTz(-20 * scale);
         zRuler.appendScale(scale, scale, scale);
         zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
@@ -165,9 +163,9 @@ public class BowlerStudio3dEngine extends JFXPanel {
         yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
         yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
 
-        Affine xp = new Affine();
         Affine downset = new Affine();
         downset.setTz(0.1);
+        Affine xp = new Affine();
         xp.setTx(-20 * scale);
         xp.appendScale(scale, scale, scale);
         xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
@@ -184,11 +182,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
           yrulerImage.getTransforms().addAll(yRuler, downset);
           gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
-          Affine groundPlacment = new Affine();
-          groundPlacment.setTz(-1);
-          // ground.setOpacity(.5);
+          Affine groundPlacement = new Affine();
+          groundPlacement.setTz(-1);
           ground = new Group();
-          ground.getTransforms().add(groundPlacment);
+          ground.getTransforms().add(groundPlacement);
           focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
 
           gridGroup.getChildren().addAll(new Axis(), ground);
@@ -256,33 +253,33 @@ public class BowlerStudio3dEngine extends JFXPanel {
       }
     });
 
-    scene.setOnMousePressed(me -> {
-      mousePosX = me.getSceneX();
-      mousePosY = me.getSceneY();
-      mouseOldX = me.getSceneX();
-      mouseOldY = me.getSceneY();
+    scene.setOnMousePressed(mouseEvent -> {
+      mousePosX = mouseEvent.getSceneX();
+      mousePosY = mouseEvent.getSceneY();
+      mouseOldX = mouseEvent.getSceneX();
+      mouseOldY = mouseEvent.getSceneY();
       resetMouseTime();
     });
 
-    scene.setOnMouseDragged(me -> {
+    scene.setOnMouseDragged(mouseEvent -> {
       resetMouseTime();
       mouseOldX = mousePosX;
       mouseOldY = mousePosY;
-      mousePosX = me.getSceneX();
-      mousePosY = me.getSceneY();
+      mousePosX = mouseEvent.getSceneX();
+      mousePosY = mouseEvent.getSceneY();
       mouseDeltaX = (mousePosX - mouseOldX);
       mouseDeltaY = (mousePosY - mouseOldY);
 
       double modifier = 1.0;
       double modifierFactor = 0.1;
 
-      if (me.isControlDown()) {
+      if (mouseEvent.isControlDown()) {
         modifier = 0.1;
-      } else if (me.isShiftDown()) {
+      } else if (mouseEvent.isShiftDown()) {
         modifier = 10.0;
       }
 
-      if (me.isPrimaryButtonDown()) {
+      if (mouseEvent.isPrimaryButtonDown()) {
         TransformNR trans = new TransformNR(
             0,
             0,
@@ -292,10 +289,10 @@ public class BowlerStudio3dEngine extends JFXPanel {
             )
         );
 
-        if (me.isPrimaryButtonDown()) {
+        if (mouseEvent.isPrimaryButtonDown()) {
           moveCamera(trans, 0);
         }
-      } else if (me.isSecondaryButtonDown()) {
+      } else if (mouseEvent.isSecondaryButtonDown()) {
         double depth = -100 / getVirtualcam().getZoomDepth();
         moveCamera(
             new TransformNR(
@@ -307,12 +304,12 @@ public class BowlerStudio3dEngine extends JFXPanel {
       }
     });
 
-    scene.addEventHandler(ScrollEvent.ANY, t -> {
-      if (ScrollEvent.SCROLL == t.getEventType()) {
-        double zoomFactor = -(t.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
+    scene.addEventHandler(ScrollEvent.ANY, event -> {
+      if (ScrollEvent.SCROLL == event.getEventType()) {
+        double zoomFactor = -(event.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
         getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
       }
-      t.consume();
+      event.consume();
     });
   }
 
@@ -374,7 +371,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
     rotationOnlyCOmponentOfManipulator.setZ(0);
     TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
 
-    TransformNR startSelectNr = perviousTarget.copy();
+    TransformNR startSelectNr = previousTarget.copy();
     TransformNR targetNR;
     if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
         || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
@@ -415,7 +412,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
     }
 
     this.selectedCsg = null;
-    TransformNR startSelectNr = perviousTarget.copy();
+    TransformNR startSelectNr = previousTarget.copy();
     TransformNR targetNR = new TransformNR();
     Affine interpolator = new Affine();
     TransformFactory.nrToAffine(startSelectNr, interpolator);
@@ -430,7 +427,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
   }
 
   private void resetMouseTime() {
-    this.lastMosueMovementTime = System.currentTimeMillis();
+    this.lastMouseMovementTime = System.currentTimeMillis();
   }
 
   private void focusInterpolate(TransformNR start,
@@ -459,8 +456,8 @@ public class BowlerStudio3dEngine extends JFXPanel {
           focusInterpolate(start, target, depth + 1, targetDepth, interpolator));
     } else {
       Platform.runLater(() -> focusGroup.getTransforms().remove(interpolator));
-      perviousTarget = target.copy();
-      perviousTarget.setRotation(new RotationNR());
+      previousTarget = target.copy();
+      previousTarget.setRotation(new RotationNR());
     }
   }
 
@@ -506,7 +503,7 @@ public class BowlerStudio3dEngine extends JFXPanel {
   }
 
   public long getLastMouseMoveTime() {
-    return lastMosueMovementTime;
+    return lastMouseMovementTime;
   }
 
   /**

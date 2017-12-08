@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
+import javafx.embed.swing.JFXPanel;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -53,141 +54,17 @@ public class CADModelViewerController implements Initializable {
   @FXML
   private Button homeCameraButton;
 
-  //Real camera
-  private final PerspectiveCamera camera = new PerspectiveCamera(true);
-  private final XFormCamera cameraXForm1;
-  private final XForm world = new XForm();
+  private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
 
-  private final Translate translate;
-
-  private double mousePosX; //NOPMD
-  private double mousePosY; //NOPMD
-  private Point3D vecIni;
-  private Point3D vecPos;
-  private double distance;
-  private MeshView selection;
-
-  private static final double mouseXSens = 15;
-  private static final double mouseYSens = 15;
-  private static final double zoomSens = 0.2;
-  private static final double zoomFineSens = 0.05;
-
-  //Main scene graph for all CAD objects
-  private final Group csgGraph;
-  private final SubScene csgScene;
-
-  //Background images
-  private ImageView xRuler;
-  private ImageView yRuler;
-  private ImageView zRuler;
 
   public CADModelViewerController() {
-    translate = new Translate(0, 0, -800);
 
-    camera.setFarClip(100000);
-    cameraXForm1 = new XFormCamera();
-    cameraXForm1.getChildren().add(camera);
-    camera.getTransforms().addAll(translate);
-
-    try {
-      xRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
-          "/com/neuronrobotics/bowlerbuilder/cadImages/Plus-X.png").toURI().toString()));
-      xRuler.getTransforms().add(new Translate(50, 0, 0));
-      yRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
-          "/com/neuronrobotics/bowlerbuilder/cadImages/Plus-Y.png").toURI().toString()));
-      yRuler.getTransforms().add(new Rotate(90, Rotate.Y_AXIS));
-      yRuler.getTransforms().add(new Translate(0, 50, 0));
-      zRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
-          "/com/neuronrobotics/bowlerbuilder/cadImages/Plus-Z.png").toURI().toString()));
-      zRuler.getTransforms().add(new Rotate(90, Rotate.Z_AXIS));
-      zRuler.getTransforms().add(new Translate(0, 0, 50));
-    } catch (URISyntaxException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not load CAD viewer background image.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    csgGraph = new Group();
-    csgGraph.getChildren().addAll(cameraXForm1, xRuler, yRuler, zRuler);
-    csgScene = new SubScene(csgGraph, 300, 300, true, SceneAntialiasing.BALANCED);
-    csgScene.setManaged(false);
-    csgScene.setFill(Color.TRANSPARENT);
-    csgScene.setCamera(camera);
-    csgScene.setId("cadViewerSubScene");
-
-    //Keep track of drag start location
-    csgScene.setOnMousePressed((MouseEvent me) -> {
-      mousePosX = me.getSceneX();
-      mousePosY = me.getSceneY();
-      PickResult pr = me.getPickResult();
-      if (pr != null) {
-        if (pr.getIntersectedNode() != null && pr.getIntersectedNode() instanceof MeshView) {
-          selection = (MeshView) pr.getIntersectedNode();
-        } else {
-          selection = null;
-        }
-
-        distance = me.getPickResult().getIntersectedDistance();
-        vecIni = unProjectDirection(
-            mousePosX,
-            mousePosY,
-            csgScene.getWidth(),
-            csgScene.getHeight());
-      }
-    });
-
-    //Keep track of drag movement and update rotation
-    csgScene.setOnMouseDragged((MouseEvent me) -> {
-      double dx = mousePosX - me.getSceneX();
-      double dy = mousePosY - me.getSceneY();
-
-      if (me.isPrimaryButtonDown()) {
-        //Primary button is rotate
-        cameraXForm1.rotateY((dx / mouseXSens * -360) * (Math.PI / 180));
-        cameraXForm1.rotateX((dy / mouseYSens * 360) * (Math.PI / 180));
-      } else if (me.isMiddleButtonDown()) {
-        //Middle button is fine zoom
-        translateCamera(0, 0, dy * zoomFineSens);
-      } else if (me.isSecondaryButtonDown()) {
-        //Secondary button is translate object or pan
-        vecPos = unProjectDirection(
-            mousePosX,
-            mousePosY,
-            csgScene.getWidth(),
-            csgScene.getHeight());
-        Point3D translation = vecPos.subtract(vecIni).multiply(distance);
-        final double sens = this.translate.getZ() / 400;
-
-        //Selection is null if we didn't pick an object, so pan the camera
-        if (selection == null) {
-          translateCamera(
-              translation.getX() * -1 * sens,
-              translation.getY() * sens,
-              0
-          );
-        } else {
-          selection.getTransforms().add(new Translate(
-              translation.getX() * sens,
-              translation.getY() * sens,
-              translation.getZ() * sens));
-        }
-
-        vecIni = vecPos;
-        PickResult pr = me.getPickResult();
-        if (pr != null
-            && pr.getIntersectedNode() != null
-            && pr.getIntersectedNode() == selection) {
-          distance = pr.getIntersectedDistance();
-        }
-      }
-      mousePosX = me.getSceneX();
-      mousePosY = me.getSceneY();
-    });
-
-    csgScene.setOnScroll(event -> translateCamera(0, 0, event.getDeltaY() * zoomSens));
   }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    SubScene csgScene = engine.getSubScene();
+
     //Resize the subscene with the borderpane
     csgScene.heightProperty().bind(root.heightProperty());
     csgScene.widthProperty().bind(root.widthProperty());
@@ -200,62 +77,8 @@ public class CADModelViewerController implements Initializable {
       csgClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
     });
 
-//    root.setCenter(csgScene);
-    root.setCenter(new BowlerStudio3dEngine().getSubScene());
+    root.setCenter(engine.getSubScene());
     root.setId("cadViewerBorderPane");
-  }
-
-  /*
-     From fx83dfeatures.Camera3D
-     http://hg.openjdk.java.net/openjfx/8u-dev/rt/file/5d371a34ddf1/apps/toys/FX8-3DFeatures/src
-     /fx83dfeatures/Camera3D.java
-    */
-
-  /**
-   * Undo scene projection.
-   *
-   * @param sceneX Scene x coordinate
-   * @param sceneY Scene y coordinate
-   * @param sceneWidth Scene width
-   * @param sceneHeight Scene height
-   * @return Un-projected point
-   */
-  private Point3D unProjectDirection(double sceneX,
-                                     double sceneY,
-                                     double sceneWidth,
-                                     double sceneHeight) {
-    double tanHFov = Math.tan(Math.toRadians(camera.getFieldOfView()) * 0.5f);
-    Point3D virtualMouse = new Point3D(
-        tanHFov * (2 * sceneX / sceneWidth - 1),
-        tanHFov * (2 * sceneY / sceneWidth - sceneHeight / sceneWidth),
-        1);
-
-    return localToSceneDirection(virtualMouse).normalize();
-  }
-
-  /**
-   * Transform a local point to a scene point.
-   *
-   * @param pt Point to transform
-   * @return Transformed point
-   */
-  private Point3D localToScene(Point3D pt) {
-    Point3D res = camera.localToParentTransformProperty().get().transform(pt);
-    if (camera.getParent() != null) {
-      res = camera.getParent().localToSceneTransformProperty().get().transform(res);
-    }
-    return res;
-  }
-
-  /**
-   * Get the un-normalized direction of the local-to-scene transform.
-   *
-   * @param dir Point to transform
-   * @return Direction
-   */
-  private Point3D localToSceneDirection(Point3D dir) {
-    Point3D res = localToScene(dir);
-    return res.subtract(localToScene(new Point3D(0, 0, 0)));
   }
 
   /**
@@ -323,7 +146,8 @@ public class CADModelViewerController implements Initializable {
       }
     });
 
-    csgGraph.getChildren().add(mesh);
+    engine.getCsgMap().put(csg, mesh);
+    engine.getRoot().getChildren().add(mesh);
   }
 
   /**
@@ -354,137 +178,16 @@ public class CADModelViewerController implements Initializable {
   }
 
   /**
-   * Rotate the camera. Adds to the existing rotation.
-   *
-   * @param rotX X axis rotation
-   * @param rotY Y axis rotation
-   * @param rotZ Z axis rotation
-   */
-  public void rotateCamera(double rotX, double rotY, double rotZ) {
-    cameraXForm1.rotateX(rotX);
-    cameraXForm1.rotateY(rotY);
-    cameraXForm1.rotateZ(rotZ);
-  }
-
-  /**
-   * Translate the camera. Adds to the existing translation.
-   *
-   * @param movX X axis translation
-   * @param movY Y axis translation
-   * @param movZ Z axis translation
-   */
-  public void translateCamera(double movX, double movY, double movZ) {
-    translate.setX(translate.getX() + movX);
-    translate.setY(translate.getY() + movY);
-    translate.setZ(translate.getZ() + movZ);
-  }
-
-  /**
    * Removes all meshes except for the background.
    */
   public void clearMeshes() {
-    csgGraph.getChildren().clear();
-    csgGraph.getChildren().addAll(xRuler, yRuler, zRuler); //Re-add background
+    engine.getCsgMap().clear();
+    engine.getRoot().getChildren().clear();
   }
 
   @FXML
   private void onHomeCamera(ActionEvent actionEvent) {
-    homeCamera();
-  }
-
-  /**
-   * Homes the camera rotation and translation.
-   */
-  public void homeCamera() {
-    cameraXForm1.home();
-    translate.setX(0);
-    translate.setY(0);
-    translate.setZ(-800);
-  }
-
-  public double getCameraRotateX() {
-    return cameraXForm1.getRotX();
-  }
-
-  public double getCameraRotateY() {
-    return cameraXForm1.getRotY();
-  }
-
-  public double getCameraRotateZ() {
-    return cameraXForm1.getRotZ();
-  }
-
-  public Translate getCameraTranslate() {
-    return translate;
-  }
-
-  /**
-   * Apply rotations iteratively to a group so the camera stays locked to azimuth rotations.
-   */
-  private final class XFormCamera extends Group {
-    private Rotate rotation;
-    private double rotX;
-    private double rotY;
-    private double rotZ;
-    private Transform transform = new Rotate();
-
-    XFormCamera() {
-      super();
-      home();
-    }
-
-    void rotateX(double angle) {
-      rotation = new Rotate(angle, Rotate.X_AXIS);
-      rotation.pivotXProperty().set(translate.getX()); //NOPMD
-      rotation.pivotYProperty().set(translate.getY()); //NOPMD
-      rotX += angle;
-      transform = transform.createConcatenation(rotation);
-      this.getTransforms().clear();
-      this.getTransforms().addAll(transform);
-    }
-
-    void rotateY(double angle) {
-      rotation = new Rotate(angle, Rotate.Y_AXIS);
-      rotation.pivotXProperty().set(translate.getX()); //NOPMD
-      rotation.pivotYProperty().set(translate.getY()); //NOPMD
-      rotY += angle;
-      transform = transform.createConcatenation(rotation);
-      this.getTransforms().clear();
-      this.getTransforms().addAll(transform);
-    }
-
-    void rotateZ(double angle) {
-      rotation = new Rotate(angle, Rotate.Z_AXIS);
-      rotation.pivotXProperty().set(translate.getX()); //NOPMD
-      rotation.pivotYProperty().set(translate.getY()); //NOPMD
-      rotZ += angle;
-      transform = transform.createConcatenation(rotation);
-      this.getTransforms().clear();
-      this.getTransforms().addAll(transform);
-    }
-
-    void home() {
-      rotX = 180 - 20;
-      rotY = -35;
-      rotZ = 180 - 10;
-      transform = new Rotate(rotX, Rotate.X_AXIS);
-      transform = transform.createConcatenation(new Rotate(rotY, Rotate.Y_AXIS));
-      transform = transform.createConcatenation(new Rotate(rotZ, Rotate.Z_AXIS));
-      this.getTransforms().clear();
-      this.getTransforms().addAll(transform);
-    }
-
-    public double getRotX() {
-      return rotX;
-    }
-
-    public double getRotY() {
-      return rotY;
-    }
-
-    public double getRotZ() {
-      return rotZ;
-    }
+//    homeCamera();
   }
 
 }
