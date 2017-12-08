@@ -54,8 +54,9 @@ public class CADModelViewerController implements Initializable {
   private Button homeCameraButton;
 
   //Real camera
-  private final PerspectiveCamera camera1;
+  private final PerspectiveCamera camera = new PerspectiveCamera(true);
   private final XFormCamera cameraXForm1;
+  private final XForm world = new XForm();
 
   private final Translate translate;
 
@@ -83,11 +84,10 @@ public class CADModelViewerController implements Initializable {
   public CADModelViewerController() {
     translate = new Translate(0, 0, -800);
 
-    camera1 = new PerspectiveCamera(true);
-    camera1.setFarClip(100000);
+    camera.setFarClip(100000);
     cameraXForm1 = new XFormCamera();
-    cameraXForm1.getChildren().add(camera1);
-    camera1.getTransforms().addAll(translate);
+    cameraXForm1.getChildren().add(camera);
+    camera.getTransforms().addAll(translate);
 
     try {
       xRuler = new ImageView(new Image(CADModelViewerController.class.getResource(
@@ -111,7 +111,7 @@ public class CADModelViewerController implements Initializable {
     csgScene = new SubScene(csgGraph, 300, 300, true, SceneAntialiasing.BALANCED);
     csgScene.setManaged(false);
     csgScene.setFill(Color.TRANSPARENT);
-    csgScene.setCamera(camera1);
+    csgScene.setCamera(camera);
     csgScene.setId("cadViewerSubScene");
 
     //Keep track of drag start location
@@ -200,7 +200,8 @@ public class CADModelViewerController implements Initializable {
       csgClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
     });
 
-    root.setCenter(csgScene);
+//    root.setCenter(csgScene);
+    root.setCenter(new BowlerStudio3dEngine().getSubScene());
     root.setId("cadViewerBorderPane");
   }
 
@@ -223,7 +224,7 @@ public class CADModelViewerController implements Initializable {
                                      double sceneY,
                                      double sceneWidth,
                                      double sceneHeight) {
-    double tanHFov = Math.tan(Math.toRadians(camera1.getFieldOfView()) * 0.5f);
+    double tanHFov = Math.tan(Math.toRadians(camera.getFieldOfView()) * 0.5f);
     Point3D virtualMouse = new Point3D(
         tanHFov * (2 * sceneX / sceneWidth - 1),
         tanHFov * (2 * sceneY / sceneWidth - sceneHeight / sceneWidth),
@@ -239,9 +240,9 @@ public class CADModelViewerController implements Initializable {
    * @return Transformed point
    */
   private Point3D localToScene(Point3D pt) {
-    Point3D res = camera1.localToParentTransformProperty().get().transform(pt);
-    if (camera1.getParent() != null) {
-      res = camera1.getParent().localToSceneTransformProperty().get().transform(res);
+    Point3D res = camera.localToParentTransformProperty().get().transform(pt);
+    if (camera.getParent() != null) {
+      res = camera.getParent().localToSceneTransformProperty().get().transform(res);
     }
     return res;
   }
