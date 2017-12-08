@@ -1,22 +1,13 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
-import com.google.common.base.Throwables;
+import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
-import org.apache.commons.io.FileUtils;
-import org.controlsfx.control.Notifications;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,8 +42,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
-
-import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
+import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.Notifications;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
 
 public class MainWindowController implements Initializable {
 
@@ -129,7 +125,12 @@ public class MainWindowController implements Initializable {
 
     SplitPane.setResizableWithParent(console, false);
 
-    tryLogin();
+    try {
+      ScriptingEngine.runLogin();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not automatically log in.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   @FXML
@@ -194,10 +195,7 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void onLogInToGitHub(ActionEvent actionEvent) {
-    new Thread(() -> {
-      Thread.currentThread().setName("GitHub Login Thread");
-      tryLogin();
-    }).start();
+    tryLogin();
   }
 
   private void tryLogin() {
