@@ -322,8 +322,15 @@ public class MainWindowController implements Initializable {
           }
         }));
 
-        Menu gistMenu = new Menu(gist.getDescription()
-            .substring(0, Math.min(15, gist.getDescription().length()))); //Cap length to 15
+        String gistMenuText = gist.getDescription();
+        if (gistMenuText == null) {
+          gistMenuText = "";
+        } else {
+          //Cap length to 15
+          gistMenuText = gistMenuText.substring(0, Math.min(15, gistMenuText.length()));
+        }
+
+        Menu gistMenu = new Menu(gistMenuText);
         gistMenu.getItems().addAll(showWebGist, addFileToGist);
 
         gist.getFiles().forEach((name, gistFile) -> {
