@@ -87,7 +87,6 @@ public class BowlerStudio3dEngine extends Pane {
     getChildren().add(getRoot());
   }
 
-
   /**
    * Build the scene. Setup camera angle and add world to the root.
    */
@@ -502,6 +501,23 @@ public class BowlerStudio3dEngine extends Pane {
     }
   }
 
+  /**
+   * Select the list of CSGs.
+   *
+   * @param selectedCsg list of CSGs to select
+   */
+  private void setSelectedCsg(List<CSG> selectedCsg) {
+    for (int in = 1; in < selectedCsg.size(); in++) {
+      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
+      if (mesh != null) {
+        FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
+            mesh.setMaterial(new PhongMaterial(Color.GOLD)));
+      }
+    }
+
+    resetMouseTime();
+  }
+
   public long getLastMouseMoveTime() {
     return lastMouseMovementTime;
   }
@@ -547,21 +563,7 @@ public class BowlerStudio3dEngine extends Pane {
     return selectedCsg;
   }
 
-  /**
-   * Select the list of CSGs.
-   *
-   * @param selectedCsg list of CSGs to select
-   */
-  private void setSelectedCsg(List<CSG> selectedCsg) {
-    for (int in = 1; in < selectedCsg.size(); in++) {
-      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
-      if (mesh != null) {
-        FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
-            mesh.setMaterial(new PhongMaterial(Color.GOLD)));
-      }
-    }
-
-    resetMouseTime();
+  public XForm getWorld() {
+    return world;
   }
-
 }
