@@ -84,7 +84,7 @@ public class BowlerStudio3dEngine extends Pane {
     Stop[] stops = null;
     getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
     handleMouse(getSubScene());
-    getChildren().add(getRoot());
+    getChildren().add(getSubScene());
   }
 
   /**

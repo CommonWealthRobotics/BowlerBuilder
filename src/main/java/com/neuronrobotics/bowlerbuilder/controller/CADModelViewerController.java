@@ -6,7 +6,14 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -63,21 +70,18 @@ public class CADModelViewerController implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    SubScene csgScene = engine.getSubScene();
-
-    //Resize the subscene with the borderpane
-    csgScene.heightProperty().bind(root.heightProperty());
-    csgScene.widthProperty().bind(root.widthProperty());
-
-    //Clip the subscene so it doesn't overlap with other borderpane elements
-    final Rectangle csgClip = new Rectangle();
-    csgScene.setClip(csgClip);
-    csgScene.layoutBoundsProperty().addListener((observableValue, oldBounds, newBounds) -> {
-      csgClip.setWidth(newBounds.getWidth());
-      csgClip.setHeight(newBounds.getHeight() - 35); //35 is the height of the bottom HBox
+    Platform.runLater(() -> {
+      SubScene subScene = engine.getSubScene();
+      subScene.setFocusTraversable(false);
+      subScene.widthProperty().bind(root.widthProperty());
+      subScene.heightProperty().bind(root.heightProperty());
+      AnchorPane.setTopAnchor(subScene, 0.0);
+      AnchorPane.setRightAnchor(subScene, 0.0);
+      AnchorPane.setLeftAnchor(subScene, 0.0);
+      AnchorPane.setBottomAnchor(subScene, 0.0);
     });
 
-    root.setCenter(engine.getSubScene());
+    root.setCenter(engine);
     root.setId("cadViewerBorderPane");
   }
 
@@ -182,7 +186,12 @@ public class CADModelViewerController implements Initializable {
    */
   public void clearMeshes() {
     engine.getCsgMap().clear();
-    engine.getRoot().getChildren().clear();
+    ObservableList<Node> children = engine.getRoot().getChildren();
+    for (Node node : children) {
+      if (node instanceof MeshView) {
+        children.remove(node);
+      }
+    }
   }
 
   @FXML
