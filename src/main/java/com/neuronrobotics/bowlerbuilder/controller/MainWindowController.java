@@ -67,8 +67,6 @@ public class MainWindowController implements Initializable {
   @FXML
   private Menu myRepos;
   @FXML
-  private Menu watchedRepos;
-  @FXML
   private TabPane tabPane;
   @FXML
   private Tab homeTab;
@@ -383,9 +381,14 @@ public class MainWindowController implements Initializable {
   private void loadOrgsIntoMenus(GHPersonSet<GHOrganization> orgs) {
     orgs.forEach(org -> {
       try {
-        MenuItem menuItem = new MenuItem(org.getName());
-        menuItem.setOnAction(event -> homeWebView.getEngine().load(org.getHtmlUrl()));
-        myOrgs.getItems().add(menuItem);
+        Menu orgMenu = new Menu(org.getName());
+        org.getRepositories().forEach((key, value) -> {
+          MenuItem repoMenu = new MenuItem(key);
+          repoMenu.setOnAction(__ -> homeWebView.getEngine().load(value.gitHttpTransportUrl()));
+          orgMenu.getItems().add(repoMenu);
+        });
+        orgMenu.setOnAction(event -> homeWebView.getEngine().load(org.getHtmlUrl()));
+        myOrgs.getItems().add(orgMenu);
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
