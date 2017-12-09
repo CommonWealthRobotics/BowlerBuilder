@@ -48,6 +48,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHPersonSet;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 
@@ -89,6 +92,7 @@ public class MainWindowController implements Initializable {
 
   //Simple stream to append input characters to a text area
   private static class TextAreaPrintStream extends OutputStream {
+
     private final TextArea textArea;
 
     public TextAreaPrintStream(TextArea textArea) {
@@ -134,6 +138,10 @@ public class MainWindowController implements Initializable {
     try {
       System.out.println("Trying login");
       ScriptingEngine.runLogin();
+      if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
+        //showLoginNotification();
+        setupMenusOnLogin();
+      }
       System.out.println("Login done");
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
@@ -169,7 +177,7 @@ public class MainWindowController implements Initializable {
   /**
    * Open a gist file in the file editor.
    *
-   * @param gist     Gist containing file
+   * @param gist Gist containing file
    * @param gistFile File
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
@@ -296,55 +304,106 @@ public class MainWindowController implements Initializable {
     }
 
     myGists.getItems().clear();
+    myOrgs.getItems().clear();
+    myRepos.getItems().clear();
 
+    GHMyself myself;
     try {
-      GHMyself myself = gitHub.getMyself();
-      PagedIterable<GHGist> gists = myself.listGists();
-      gists.forEach(gist -> {
-        MenuItem showWebGist = new MenuItem("Show Gist on Web");
-        showWebGist.setOnAction(event -> {
-          WebView webView = new WebView();
-          webView.getEngine().load(gist.getHtmlUrl());
-          Tab tab = new Tab(gist.getDescription(), webView);
-          tabPane.getTabs().add(tab);
-          tabPane.getSelectionModel().select(tab);
-        });
+      myself = gitHub.getMyself();
 
-        MenuItem addFileToGist = new MenuItem("Add File");
-        addFileToGist.setOnAction(event -> Platform.runLater(() -> {
-          try {
-            //TODO: Maybe addFileToGist is broken
-            GHGist newGist = GistUtilities.addFileToGist("test name", "test content", gist);
-            openGistFileInEditor(newGist, newGist.getFile("test name"));
-          } catch (Exception e) {
-            LoggerUtilities.getLogger().log(Level.WARNING,
-                "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
-          }
-        }));
+      try {
+        loadGistsIntoMenus(myself.listGists());
+        loadOrgsIntoMenus(myself.getAllOrganizations());
+        loadReposIntoMenus(myself.listRepositories());
 
-        String gistMenuText = gist.getDescription();
-        if (gistMenuText == null) {
-          gistMenuText = "";
-        } else {
-          //Cap length to 15
-          gistMenuText = gistMenuText.substring(0, Math.min(15, gistMenuText.length()));
-        }
-
-        Menu gistMenu = new Menu(gistMenuText);
-        gistMenu.getItems().addAll(showWebGist, addFileToGist);
-
-        gist.getFiles().forEach((name, gistFile) -> {
-          MenuItem gistFileItem = new MenuItem(name);
-          gistFileItem.setOnAction(event -> openGistFileInEditor(gist, gistFile));
-          gistMenu.getItems().add(gistFileItem);
-        });
-
-        myGists.getItems().add(gistMenu);
-      });
+      } catch (IOException e) {
+        LoggerUtilities.getLogger().log(Level.SEVERE,
+            "Could not list gists.\n" + Throwables.getStackTraceAsString(e));
+      }
     } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not setup menus on login.\n" + Throwables.getStackTraceAsString(e));
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
     }
+  }
+
+  /**
+   * Load gists into menus for the main menu bar.
+   *
+   * @param gists list of gists
+   */
+  private void loadGistsIntoMenus(PagedIterable<GHGist> gists) {
+    gists.forEach(gist -> {
+      MenuItem showWebGist = new MenuItem("Show Gist on Web");
+      showWebGist.setOnAction(event -> {
+        WebView webView = new WebView();
+        webView.getEngine().load(gist.getHtmlUrl());
+        Tab tab = new Tab(gist.getDescription(), webView);
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+      });
+
+      MenuItem addFileToGist = new MenuItem("Add File");
+      addFileToGist.setOnAction(event -> Platform.runLater(() -> {
+        try {
+          //TODO: Maybe addFileToGist is broken
+          GHGist newGist = GistUtilities.addFileToGist("test name", "test content", gist);
+          openGistFileInEditor(newGist, newGist.getFile("test name"));
+        } catch (Exception e) {
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
+        }
+      }));
+
+      String gistMenuText = gist.getDescription();
+      if (gistMenuText == null) {
+        gistMenuText = "";
+      } else {
+        //Cap length to 15
+        gistMenuText = gistMenuText.substring(0, Math.min(15, gistMenuText.length()));
+      }
+
+      Menu gistMenu = new Menu(gistMenuText);
+      gistMenu.getItems().addAll(showWebGist, addFileToGist);
+
+      gist.getFiles().forEach((name, gistFile) -> {
+        MenuItem gistFileItem = new MenuItem(name);
+        gistFileItem.setOnAction(event -> openGistFileInEditor(gist, gistFile));
+        gistMenu.getItems().add(gistFileItem);
+      });
+
+      myGists.getItems().add(gistMenu);
+    });
+  }
+
+  /**
+   * Load organizations into menus for the main menu bar.
+   *
+   * @param orgs organizations
+   */
+  private void loadOrgsIntoMenus(GHPersonSet<GHOrganization> orgs) {
+    orgs.forEach(org -> {
+      try {
+        MenuItem menuItem = new MenuItem(org.getName());
+        menuItem.setOnAction(event -> homeWebView.getEngine().load(org.getHtmlUrl()));
+        myOrgs.getItems().add(menuItem);
+      } catch (IOException e) {
+        LoggerUtilities.getLogger().log(Level.WARNING,
+            "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
+  }
+
+  /**
+   * Load repositories into menus for the main menu bar.
+   *
+   * @param repos repositories
+   */
+  private void loadReposIntoMenus(PagedIterable<GHRepository> repos) {
+    repos.forEach(repo -> {
+      MenuItem menuItem = new MenuItem(repo.getName());
+      menuItem.setOnAction(event -> homeWebView.getEngine().load(repo.gitHttpTransportUrl()));
+      myRepos.getItems().add(menuItem);
+    });
   }
 
   @FXML
