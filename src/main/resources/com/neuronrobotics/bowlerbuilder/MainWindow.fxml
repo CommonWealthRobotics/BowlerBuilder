@@ -35,7 +35,6 @@
                   <Menu id="myGists" fx:id="myGists" mnemonicParsing="false" text="My Gists" />
                   <Menu id="myOrgs" fx:id="myOrgs" mnemonicParsing="false" text="My Organizations" />
                   <Menu id="myRepos" fx:id="myRepos" mnemonicParsing="false" text="My Repositories" />
-                  <Menu id="watchedRepos" fx:id="watchedRepos" mnemonicParsing="false" text="Repo's I'm Watching" />
                   <MenuItem mnemonicParsing="false" onAction="#onDeleteLocalCache" text="Delete Local Cache" />
               </items>
             </Menu>

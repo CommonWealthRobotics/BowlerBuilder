@@ -70,6 +70,7 @@ repositories {
 //    maven { setUrl("https://plugins.gradle.org/m2/") }
 //    maven { setUrl("https://dl.bintray.com/clearcontrol/ClearControl") }
 //    maven { setUrl("https://jitpack.io") }
+//    maven { setUrl("http://maven-eclipse.github.io/maven") }
 }
 
 dependencies {
