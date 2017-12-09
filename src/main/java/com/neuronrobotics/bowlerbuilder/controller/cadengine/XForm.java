@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
     /*
      * Copyright (c) 2011, 2013 Oracle and/or its affiliates.
@@ -37,90 +37,23 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
-// TODO: Auto-generated Javadoc
-
-/**
- * The Class Xform.
- */
 public class XForm extends Group {
 
-  /**
-   * The Enum RotateOrder.
-   */
-  public enum RotateOrder {
-
-    /**
-     * The xyz.
-     */
-    XYZ,
-    /**
-     * The xzy.
-     */
-    XZY,
-    /**
-     * The yxz.
-     */
-    YXZ,
-    /**
-     * The yzx.
-     */
-    YZX,
-    /**
-     * The zxy.
-     */
-    ZXY,
-    /**
-     * The zyx.
-     */
-    ZYX
-  }
-
-  /**
-   * The t.
-   */
   public Translate t = new Translate();
-
-  /**
-   * The p.
-   */
   public Translate p = new Translate();
-
-  /**
-   * The ip.
-   */
   public Translate ip = new Translate();
 
-  /**
-   * The rx.
-   */
   public Rotate rx = new Rotate();
+  public Rotate ry = new Rotate();
+  public Rotate rz = new Rotate();
+
+  public Scale s = new Scale();
 
   {
     rx.setAxis(Rotate.X_AXIS);
-  }
-
-  /**
-   * The ry.
-   */
-  public Rotate ry = new Rotate();
-
-  {
     ry.setAxis(Rotate.Y_AXIS);
-  }
-
-  /**
-   * The rz.
-   */
-  public Rotate rz = new Rotate();
-
-  {
     rz.setAxis(Rotate.Z_AXIS);
   }
-
-  /**
-   * The s.
-   */
-  public Scale s = new Scale();
 
   /**
    * Instantiates a new xform.
@@ -184,11 +117,6 @@ public class XForm extends Group {
     t.setY(y);
   }
 
-  // Cannot override these methods as they are final:
-  // public void setTranslateX(double x) { t.setX(x); }
-  // public void setTranslateY(double y) { t.setY(y); }
-  // public void setTranslateZ(double z) { t.setZ(z); }
-
   /**
    * Sets the tx.
    *
@@ -198,6 +126,11 @@ public class XForm extends Group {
   public void setTx(double x) {
     t.setX(x);
   }
+
+  // Cannot override these methods as they are final:
+  // public void setTranslateX(double x) { t.setX(x); }
+  // public void setTranslateY(double y) { t.setY(y); }
+  // public void setTranslateZ(double z) { t.setZ(z); }
 
   /**
    * Sets the ty.
@@ -308,11 +241,6 @@ public class XForm extends Group {
     s.setZ(z);
   }
 
-  // Cannot override these methods as they are final:
-  // public void setScaleX(double x) { s.setX(x); }
-  // public void setScaleY(double y) { s.setY(y); }
-  // public void setScaleZ(double z) { s.setZ(z); }
-
   /**
    * Sets the sx.
    *
@@ -322,6 +250,11 @@ public class XForm extends Group {
   public void setSx(double x) {
     s.setX(x);
   }
+
+  // Cannot override these methods as they are final:
+  // public void setScaleX(double x) { s.setX(x); }
+  // public void setScaleY(double y) { s.setY(y); }
+  // public void setScaleZ(double z) { s.setZ(z); }
 
   /**
    * Sets the sy.
@@ -395,4 +328,14 @@ public class XForm extends Group {
     ip.setY(0.0);
     ip.setZ(0.0);
   }
+
+  public enum RotateOrder {
+    XYZ,
+    XZY,
+    YXZ,
+    YZX,
+    ZXY,
+    ZYX
+  }
+
 }

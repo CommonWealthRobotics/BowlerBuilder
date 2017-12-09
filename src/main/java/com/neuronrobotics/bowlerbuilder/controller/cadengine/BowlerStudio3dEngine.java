@@ -1,7 +1,9 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.VirtualCameraDevice;
+import com.neuronrobotics.bowlerbuilder.controller.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -64,7 +66,7 @@ public class BowlerStudio3dEngine extends Pane {
   private SubScene scene;
 
   private Group ground;
-  private VirtualCameraDevice virtualcam;
+  private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
   private Map<MeshView, Axis> axisMap = new HashMap<>();
@@ -116,8 +118,8 @@ public class BowlerStudio3dEngine extends Pane {
     camera.setRotationAxis(Rotate.Z_AXIS);
     camera.setRotate(180);
 
-    setVirtualcam(new VirtualCameraDevice(camera, hand));
-    VirtualCameraFactory.setFactory(() -> virtualcam);
+    setVirtualCam(new VirtualCameraDevice(camera, hand));
+    VirtualCameraFactory.setFactory(() -> virtualCam);
 
     try {
       setFlyingCamera(new VirtualCameraMobileBase());
@@ -185,7 +187,7 @@ public class BowlerStudio3dEngine extends Pane {
           groundPlacement.setTz(-1);
           ground = new Group();
           ground.getTransforms().add(groundPlacement);
-          focusGroup.getChildren().add(getVirtualcam().getCameraFrame());
+          focusGroup.getChildren().add(getVirtualCam().getCameraFrame());
 
           gridGroup.getChildren().addAll(new Axis(), ground);
           showAxis();
@@ -292,7 +294,7 @@ public class BowlerStudio3dEngine extends Pane {
           moveCamera(trans, 0);
         }
       } else if (mouseEvent.isSecondaryButtonDown()) {
-        double depth = -100 / getVirtualcam().getZoomDepth();
+        double depth = -100 / getVirtualCam().getZoomDepth();
         moveCamera(
             new TransformNR(
                 mouseDeltaX * modifierFactor * modifier * 1 / depth,
@@ -305,8 +307,8 @@ public class BowlerStudio3dEngine extends Pane {
 
     scene.addEventHandler(ScrollEvent.ANY, event -> {
       if (ScrollEvent.SCROLL == event.getEventType()) {
-        double zoomFactor = -(event.getDeltaY()) * getVirtualcam().getZoomDepth() / 500;
-        getVirtualcam().setZoomDepth(getVirtualcam().getZoomDepth() + zoomFactor);
+        double zoomFactor = -(event.getDeltaY()) * getVirtualCam().getZoomDepth() / 500;
+        getVirtualCam().setZoomDepth(getVirtualCam().getZoomDepth() + zoomFactor);
       }
       event.consume();
     });
@@ -430,10 +432,10 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   private void focusInterpolate(TransformNR start,
-                                TransformNR target,
-                                int depth,
-                                int targetDepth,
-                                Affine interpolator) {
+      TransformNR target,
+      int depth,
+      int targetDepth,
+      Affine interpolator) {
 
     double depthScale = 1 - (double) depth / (double) targetDepth;
     double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
@@ -526,12 +528,12 @@ public class BowlerStudio3dEngine extends Pane {
     return root;
   }
 
-  public VirtualCameraDevice getVirtualcam() {
-    return virtualcam;
+  public VirtualCameraDevice getVirtualCam() {
+    return virtualCam;
   }
 
-  private void setVirtualcam(VirtualCameraDevice virtualcam) {
-    this.virtualcam = virtualcam;
+  private void setVirtualCam(VirtualCameraDevice virtualCam) {
+    this.virtualCam = virtualCam;
   }
 
   public VirtualCameraMobileBase getFlyingCamera() {
