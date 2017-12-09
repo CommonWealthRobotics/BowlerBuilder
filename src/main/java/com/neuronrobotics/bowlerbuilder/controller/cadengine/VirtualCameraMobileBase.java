@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
@@ -8,7 +8,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
-public class VirtualCameraMobileBase extends MobileBase {
+public class VirtualCameraMobileBase extends MobileBase { //NOPMD
 
   private static IDriveEngine de = new IDriveEngineImplementation();
   private static ArrayList<VirtualCameraMobileBase> bases = new ArrayList<>();
@@ -24,6 +24,11 @@ public class VirtualCameraMobileBase extends MobileBase {
     return de;
   }
 
+  /**
+   * Set a new drive engine. The walking drive engine for each base will also be set.
+   *
+   * @param de drive engine
+   */
   public static void setDriveEngine(IDriveEngine de) {
     VirtualCameraMobileBase.de = de;
     for (VirtualCameraMobileBase base : bases) {
@@ -31,21 +36,37 @@ public class VirtualCameraMobileBase extends MobileBase {
     }
   }
 
-  private final static class IDriveEngineImplementation implements IDriveEngine {
-    double azOffset = 0;
-    double elOffset = 0;
-    double tlOffset = 0;
+  private static final class IDriveEngineImplementation implements IDriveEngine {
+
+    double azOffset;
+    double elOffset;
+    double tlOffset;
 
     TransformNR pureTrans = new TransformNR();
 
+    /**
+     * Not used.
+     */
     @Override
     public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
+      //Not used
     }
 
+    /**
+     * Not used.
+     */
     @Override
     public void DriveVelocityArc(MobileBase source, double degreesPerSecond, double cmRadius) {
+      //Not used
     }
 
+    /**
+     * Move in an arc.
+     *
+     * @param source base to move
+     * @param newPose transform to move on
+     * @param seconds time to move over
+     */
     @Override
     public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
       pureTrans.setX(newPose.getX());

@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;
@@ -19,8 +19,8 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   private final Group cameraFrame = new Group();
   private PerspectiveCamera camera;
   private double zoomDepth = getDefaultZoomDepth();
-  private Affine zoomAffine = new Affine();
-  private Group manipulationFrame;
+  private final Affine zoomAffine = new Affine();
+  private final Group manipulationFrame;
 
   public VirtualCameraDevice(PerspectiveCamera camera, Group hand) {
     setCamera(camera);
@@ -56,10 +56,23 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     return false;
   }
 
-  @Override
-  public void disconnectDeviceImp() {
+  public BufferedImage captureNewImage() {
+    return null;
   }
 
+  /**
+   * Nothing to disconnect.
+   */
+  @Override
+  public void disconnectDeviceImp() {
+    //Not used
+  }
+
+  /**
+   * Nothing to connect.
+   *
+   * @return true
+   */
   @Override
   public boolean connectDeviceImp() {
     return true;
@@ -90,21 +103,21 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     return zoomDepth;
   }
 
+  /**
+   * Set the zoom depth to zoom the camera.
+   *
+   * @param zoomDepth new zoom depth
+   */
   public void setZoomDepth(double zoomDepth) {
     if (zoomDepth > -2) {
-      zoomDepth = -2;
+      this.zoomDepth = -2;
     }
 
     if (zoomDepth < -5000) {
-      zoomDepth = -5000;
+      this.zoomDepth = -5000;
     }
 
-    this.zoomDepth = zoomDepth;
-    zoomAffine.setTz(getZoomDepth());
-  }
-
-  public BufferedImage captureNewImage() {
-    return null;
+    zoomAffine.setTz(this.zoomDepth);
   }
 
 }

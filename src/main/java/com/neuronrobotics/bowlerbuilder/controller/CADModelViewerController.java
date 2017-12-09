@@ -42,9 +42,6 @@ public class CADModelViewerController implements Initializable {
 
   private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
 
-  public CADModelViewerController() {
-  }
-
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     Platform.runLater(() -> {
@@ -173,7 +170,7 @@ public class CADModelViewerController implements Initializable {
 
   @FXML
   private void onHomeCamera(ActionEvent actionEvent) {
-//    homeCamera();
+    //TODO: home camera
   }
 
 }

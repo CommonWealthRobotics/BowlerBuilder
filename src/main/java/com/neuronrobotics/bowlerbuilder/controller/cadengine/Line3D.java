@@ -10,14 +10,14 @@ import eu.mihosoft.vrl.v3d.Vertex;
 
 public class Line3D extends Cylinder {
 
-  private double endZ = 0;
-  private double startZ = 0;
+  private double endZ;
+  private double startZ;
 
   public Line3D(Vertex start, Vertex end) {
     this(start.pos, end.pos);
   }
 
-  public Line3D(double[] start, double[] end) {
+  public Line3D(double[] start, double[] end) { //NOPMD
     this(start[0], start[1], start[2], end[0], end[1], end[2]);
   }
 
@@ -45,18 +45,16 @@ public class Line3D extends Cylinder {
 
     double xyProjection = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 
-    double rotZ = Math.toDegrees(Math.atan2(xDiff, yDiff));
-    double rotY = Math.toDegrees(Math.atan2(xyProjection, zDiff));
     Affine xy = new Affine();
+    double rotY = Math.toDegrees(Math.atan2(xyProjection, zDiff));
     xy.appendRotation(-90 - rotY, 0, 0, 0, 0, 1, 0);
 
     Affine orent = new Affine();
     orent.appendRotation(90, 0, 0, 0, 0, 0, 1);
-
-    Affine orent2 = new Affine();
     orent.setTx(lineLen / 2);
 
     Affine zp = new Affine();
+    double rotZ = Math.toDegrees(Math.atan2(xDiff, yDiff));
     zp.appendRotation(-90 - rotZ, 0, 0, 0, 0, 0, 1);
     Affine zTrans = new Affine();
     zTrans.setTx(startX);
@@ -68,6 +66,8 @@ public class Line3D extends Cylinder {
     getTransforms().add(xy);
 
     getTransforms().add(orent);
+
+    Affine orent2 = new Affine();
     getTransforms().add(orent2);
   }
 

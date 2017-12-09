@@ -1,9 +1,7 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine; //NOPMD
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.VirtualCameraDevice;
-import com.neuronrobotics.bowlerbuilder.controller.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -17,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import javafx.application.Platform;
@@ -69,8 +68,8 @@ public class BowlerStudio3dEngine extends Pane {
   private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
-  private Map<MeshView, Axis> axisMap = new HashMap<>();
-  private CSG selectedCsg = null;
+  private final Map<MeshView, Axis> axisMap = new HashMap<>();
+  private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
 
   private TransformNR previousTarget = new TransformNR();
@@ -78,15 +77,15 @@ public class BowlerStudio3dEngine extends Pane {
   private long lastSelectedTime = System.currentTimeMillis();
 
   public BowlerStudio3dEngine() {
-    setSubScene(new SubScene(getRoot(), 1024, 1024, true, SceneAntialiasing.BALANCED));
+    setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
     buildCamera();
-    buildAxes();
+    buildAxes(); //NOPMD
 
     Stop[] stops = null;
-    getSubScene().setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
-    handleMouse(getSubScene());
-    getChildren().add(getSubScene());
+    scene.setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
+    handleMouse(scene);
+    getChildren().add(scene);
   }
 
   /**
@@ -102,15 +101,6 @@ public class BowlerStudio3dEngine extends Pane {
    * Build the camera. Setup the pointer, clips, rotation, and position.
    */
   private void buildCamera() {
-    CSG cylinder = new Cylinder(
-        0, // Radius at the top
-        5, // Radius at the bottom
-        20, // Height
-        20 // resolution
-    ).toCSG().roty(90).setColor(Color.BLACK);
-
-    Group hand = new Group(cylinder.getMesh());
-
     camera.setNearClip(.1);
     camera.setFarClip(100000.0);
     getSubScene().setCamera(camera);
@@ -118,6 +108,13 @@ public class BowlerStudio3dEngine extends Pane {
     camera.setRotationAxis(Rotate.Z_AXIS);
     camera.setRotate(180);
 
+    CSG cylinder = new Cylinder(
+        0, // Radius at the top
+        5, // Radius at the bottom
+        20, // Height
+        20 // resolution
+    ).toCSG().roty(90).setColor(Color.BLACK);
+    Group hand = new Group(cylinder.getMesh());
     setVirtualCam(new VirtualCameraDevice(camera, hand));
     VirtualCameraFactory.setFactory(() -> virtualCam);
 
@@ -128,12 +125,9 @@ public class BowlerStudio3dEngine extends Pane {
           "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
     }
 
-    moveCamera(new TransformNR(
-        0,
-        0,
-        0,
-        new RotationNR(90 - 127, 24, 0)), 0
-    );
+    moveCamera(
+        new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)),
+        0);
   }
 
   /**
@@ -148,8 +142,8 @@ public class BowlerStudio3dEngine extends Pane {
         groundMove.setTx(-groundLocal.getHeight() / 2);
         groundMove.setTy(-groundLocal.getWidth() / 2);
 
-        Affine zRuler = new Affine();
         double scale = 0.25;
+        Affine zRuler = new Affine();
         zRuler.setTz(-20 * scale);
         zRuler.appendScale(scale, scale, scale);
         zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
@@ -166,21 +160,26 @@ public class BowlerStudio3dEngine extends Pane {
 
         Affine downset = new Affine();
         downset.setTz(0.1);
+
         Affine xp = new Affine();
         xp.setTx(-20 * scale);
         xp.appendScale(scale, scale, scale);
         xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 
         Platform.runLater(() -> {
-          ImageView rulerImage = new ImageView(ruler);
-          ImageView yrulerImage = new ImageView(ruler);
-          ImageView zrulerImage = new ImageView(ruler);
           ImageView groundView = new ImageView(groundLocal);
           groundView.getTransforms().addAll(groundMove, downset);
           groundView.setOpacity(0.3);
+
+          ImageView zrulerImage = new ImageView(ruler);
           zrulerImage.getTransforms().addAll(zRuler, downset);
+
+          ImageView rulerImage = new ImageView(ruler);
           rulerImage.getTransforms().addAll(xp, downset);
+
+          ImageView yrulerImage = new ImageView(ruler);
           yrulerImage.getTransforms().addAll(yRuler, downset);
+
           gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
           Affine groundPlacement = new Affine();
@@ -211,9 +210,7 @@ public class BowlerStudio3dEngine extends Pane {
    */
   public void showAxis() {
     Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
-    for (MeshView a : axisMap.keySet()) {
-      axisMap.get(a).show();
-    }
+    axisMap.forEach((mesh, axis) -> axis.show());
   }
 
   /**
@@ -221,9 +218,7 @@ public class BowlerStudio3dEngine extends Pane {
    */
   public void hideAxis() {
     Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
-    for (MeshView a : axisMap.keySet()) {
-      axisMap.get(a).hide();
-    }
+    axisMap.forEach((mesh, axis) -> axis.hide());
   }
 
   /**
@@ -233,20 +228,18 @@ public class BowlerStudio3dEngine extends Pane {
    */
   private void handleMouse(SubScene scene) {
     scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
-      long lastClickedTimeLocal = 0;
+      long lastClickedTimeLocal;
       long offset = 500;
 
       @Override
       public void handle(MouseEvent event) {
-        resetMouseTime();
+        resetMouseTime(); //NOPMD
         long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
         FxTimer.runLater(Duration.ofMillis(100), () -> {
-          long diff = System.currentTimeMillis() - lastSelectedTime;
-          if (diff > 2000) {
-            // reset only if an object is not being selected
-            if (lastClickedDifference < offset) {
-              cancelSelection();
-            }
+          long diff = System.currentTimeMillis() - lastSelectedTime; //NOPMD
+          // reset only if an object is not being selected
+          if (diff > 2000 && lastClickedDifference < offset) {
+            cancelSelection(); //NOPMD
           }
         });
 
@@ -325,23 +318,24 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   /**
-   * Set the selected CSG.
+   * Select a CSG.
    *
    * @param scg new CSG
    */
   private void setSelectedCsg(CSG scg) {
-    if (scg == selectedCsg) {
+    if (scg.equals(selectedCsg)) {
       return;
     }
 
     for (CSG key : getCsgMap().keySet()) {
-      Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+      Platform.runLater(() ->
+          getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
     }
 
     lastSelectedTime = System.currentTimeMillis();
     selectedCsg = scg;
 
-    FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
+    FxTimer.runLater(Duration.ofMillis(20), () ->
         getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
 
     double xCenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
@@ -405,11 +399,68 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   /**
+   * Select each CSG in the list.
+   *
+   * @param selectedCsg list of CSGs to select
+   */
+  private void setSelectedCsg(List<CSG> selectedCsg) {
+    for (int in = 1; in < selectedCsg.size(); in++) {
+      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
+      if (mesh != null) {
+        FxTimer.runLater(Duration.ofMillis(20), () ->
+            mesh.setMaterial(new PhongMaterial(Color.GOLD))); //NOPMD
+      }
+    }
+
+    resetMouseTime();
+  }
+
+  /**
+   * Select a CSG from the line in the script.
+   *
+   * @param script script containing CSG source
+   * @param lineNumber line number in script
+   */
+  public void setSelectedCsg(File script, int lineNumber) {
+    List<CSG> objsFromScriptLine = new ArrayList<>();
+
+    // check all visible CSGs
+    for (CSG checker : getCsgMap().keySet()) {
+      for (String trace : checker.getCreationEventStackTraceList()) {
+        String[] traceParts = trace.split(":");
+        if (traceParts[0]
+            .trim()
+            .toLowerCase(Locale.US)
+            .contains(script.getName()
+                .toLowerCase(Locale.US)
+                .trim())) {
+          try {
+            int num = Integer.parseInt(traceParts[1].trim());
+
+            if (num == lineNumber) {
+              objsFromScriptLine.add(checker);
+            }
+          } catch (Exception e) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not select CSG in script.\n" + Throwables.getStackTraceAsString(e));
+          }
+        }
+      }
+    }
+
+    if (!objsFromScriptLine.isEmpty()) {
+      setSelectedCsg(objsFromScriptLine.get(0));
+      setSelectedCsg(objsFromScriptLine);
+    }
+  }
+
+  /**
    * De-select the selection.
    */
   private void cancelSelection() {
     for (CSG key : getCsgMap().keySet()) {
-      Platform.runLater(() -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor())));
+      Platform.runLater(() ->
+          getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
     }
 
     this.selectedCsg = null;
@@ -442,9 +493,9 @@ public class BowlerStudio3dEngine extends Pane {
 
     double difference = start.getX() - target.getX();
 
-    double xIncrement = (difference * sinunsoidalScale);
-    double yIncrement = ((start.getY() - target.getY()) * sinunsoidalScale);
-    double zIncrement = ((start.getZ() - target.getZ()) * sinunsoidalScale);
+    double xIncrement = difference * sinunsoidalScale;
+    double yIncrement = (start.getY() - target.getY()) * sinunsoidalScale;
+    double zIncrement = (start.getZ() - target.getZ()) * sinunsoidalScale;
 
     Platform.runLater(() -> {
       interpolator.setTx(xIncrement);
@@ -464,7 +515,7 @@ public class BowlerStudio3dEngine extends Pane {
 
   private void removeAllFocusTransforms() {
     ObservableList<Transform> allTrans = focusGroup.getTransforms();
-    Transform[] toRemove = allTrans.toArray(new Transform[0]);
+    Transform[] toRemove = allTrans.toArray(new Transform[allTrans.size()]);
     Arrays.stream(toRemove).forEach(allTrans::remove);
   }
 
@@ -474,33 +525,6 @@ public class BowlerStudio3dEngine extends Pane {
 
   private void setCsgMap(Map<CSG, MeshView> csgMap) {
     this.csgMap = csgMap;
-  }
-
-  private void setSelectedCsg(File script, int lineNumber) {
-    List<CSG> objsFromScriptLine = new ArrayList<>();
-
-    // check all visible CSGs
-    for (CSG checker : getCsgMap().keySet()) {
-      for (String trace : checker.getCreationEventStackTraceList()) {
-        String[] traceParts = trace.split(":");
-        if (traceParts[0].trim().toLowerCase().contains(script.getName().toLowerCase().trim())) {
-          try {
-            int num = Integer.parseInt(traceParts[1].trim());
-
-            if (num == lineNumber) {
-              objsFromScriptLine.add(checker);
-            }
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }
-
-    if (objsFromScriptLine.size() > 0) {
-      setSelectedCsg(objsFromScriptLine.get(0));
-      setSelectedCsg(objsFromScriptLine);
-    }
   }
 
   public long getLastMouseMoveTime() {
@@ -546,23 +570,6 @@ public class BowlerStudio3dEngine extends Pane {
 
   public CSG getSelectedCsg() {
     return selectedCsg;
-  }
-
-  /**
-   * Select the list of CSGs.
-   *
-   * @param selectedCsg list of CSGs to select
-   */
-  private void setSelectedCsg(List<CSG> selectedCsg) {
-    for (int in = 1; in < selectedCsg.size(); in++) {
-      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
-      if (mesh != null) {
-        FxTimer.runLater(java.time.Duration.ofMillis(20), () ->
-            mesh.setMaterial(new PhongMaterial(Color.GOLD)));
-      }
-    }
-
-    resetMouseTime();
   }
 
   public XForm getWorld() {
