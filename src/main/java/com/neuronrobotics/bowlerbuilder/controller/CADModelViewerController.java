@@ -63,9 +63,7 @@ public class CADModelViewerController implements Initializable {
 
   private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
 
-
   public CADModelViewerController() {
-
   }
 
   @Override
