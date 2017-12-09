@@ -30,6 +30,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 
@@ -53,6 +54,13 @@ public class CADModelViewerController implements Initializable {
       AnchorPane.setRightAnchor(subScene, 0.0);
       AnchorPane.setLeftAnchor(subScene, 0.0);
       AnchorPane.setBottomAnchor(subScene, 0.0);
+    });
+
+    final Rectangle engineClip = new Rectangle();
+    engine.setClip(engineClip);
+    engine.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+      engineClip.setWidth(newValue.getWidth());
+      engineClip.setHeight(newValue.getHeight());
     });
 
     root.setCenter(engine);
@@ -170,7 +178,7 @@ public class CADModelViewerController implements Initializable {
 
   @FXML
   private void onHomeCamera(ActionEvent actionEvent) {
-    //TODO: home camera
+    engine.homeCamera();
   }
 
 }

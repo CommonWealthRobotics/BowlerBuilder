@@ -67,6 +67,7 @@ public class BowlerStudio3dEngine extends Pane {
   private Group ground;
   private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
+  private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
   private final Map<MeshView, Axis> axisMap = new HashMap<>();
   private CSG selectedCsg;
@@ -128,6 +129,8 @@ public class BowlerStudio3dEngine extends Pane {
     moveCamera(
         new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)),
         0);
+
+    defaultCameraView = flyingCamera.getFiducialToGlobalTransform();
   }
 
   /**
@@ -315,6 +318,15 @@ public class BowlerStudio3dEngine extends Pane {
    */
   private void moveCamera(TransformNR newPose, double seconds) {
     getFlyingCamera().DriveArc(newPose, seconds);
+  }
+
+  /**
+   * Home the camera to its default view.
+   */
+  public void homeCamera() {
+    getFlyingCamera().setGlobalToFiducialTransform(defaultCameraView);
+    getVirtualCam().setZoomDepth(VirtualCameraDevice.getDefaultZoomDepth());
+    getFlyingCamera().updatePositions();
   }
 
   /**
