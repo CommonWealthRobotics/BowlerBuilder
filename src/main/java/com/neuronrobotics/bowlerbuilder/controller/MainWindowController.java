@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
@@ -85,7 +85,6 @@ public class MainWindowController implements Initializable {
     fileEditors = new ArrayList<>();
     preferences = new HashMap<>();
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
-    System.out.println("Main Window Controller constructor done");
   }
 
   //Simple stream to append input characters to a text area
@@ -105,7 +104,6 @@ public class MainWindowController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    System.out.println("Start of Main Window Controller initialize");
     //Add date to console
     console.setText(console.getText()
         + new SimpleDateFormat(
@@ -123,24 +121,18 @@ public class MainWindowController implements Initializable {
     System.setOut(stream);
     System.setErr(stream);
 
-    System.out.println("Redirected sysouts");
-
     homeWebView
         .getEngine()
         .load("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
-    System.out.println("Loading homepage");
-
     SplitPane.setResizableWithParent(console, false);
 
     try {
-      System.out.println("Trying login");
       ScriptingEngine.runLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
         //showLoginNotification();
         setupMenusOnLogin();
       }
-      System.out.println("Login done");
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
           "Could not automatically log in.\n" + Throwables.getStackTraceAsString(e));
@@ -309,15 +301,25 @@ public class MainWindowController implements Initializable {
     try {
       myself = gitHub.getMyself();
 
-      try {
-        loadGistsIntoMenus(myself.listGists());
-        loadOrgsIntoMenus(myself.getAllOrganizations());
-        loadReposIntoMenus(myself.listRepositories());
+      new Thread(() -> {
+        try {
+          loadGistsIntoMenus(myGists, myself.listGists());
+        } catch (IOException e) {
+          LoggerUtilities.getLogger().log(Level.SEVERE,
+              "Unable to list gists.\n" + Throwables.getStackTraceAsString(e));
+        }
+      }).start();
 
-      } catch (IOException e) {
-        LoggerUtilities.getLogger().log(Level.SEVERE,
-            "Could not list gists.\n" + Throwables.getStackTraceAsString(e));
-      }
+      new Thread(() -> {
+        try {
+          loadOrgsIntoMenus(myOrgs, myself.getAllOrganizations());
+        } catch (IOException e) {
+          LoggerUtilities.getLogger().log(Level.SEVERE,
+              "Unable to get organizations.\n" + Throwables.getStackTraceAsString(e));
+        }
+      }).start();
+
+      new Thread(() -> loadReposIntoMenus(myRepos, myself.listRepositories())).start();
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
@@ -327,9 +329,10 @@ public class MainWindowController implements Initializable {
   /**
    * Load gists into menus for the main menu bar.
    *
+   * @param menu menu to put submenus into
    * @param gists list of gists
    */
-  private void loadGistsIntoMenus(PagedIterable<GHGist> gists) {
+  private void loadGistsIntoMenus(Menu menu, PagedIterable<GHGist> gists) {
     gists.forEach(gist -> {
       MenuItem showWebGist = new MenuItem("Show Gist on Web");
       showWebGist.setOnAction(event -> {
@@ -369,16 +372,17 @@ public class MainWindowController implements Initializable {
         gistMenu.getItems().add(gistFileItem);
       });
 
-      myGists.getItems().add(gistMenu);
+      menu.getItems().add(gistMenu);
     });
   }
 
   /**
    * Load organizations into menus for the main menu bar.
    *
+   * @param menu menu to put submenus into
    * @param orgs organizations
    */
-  private void loadOrgsIntoMenus(GHPersonSet<GHOrganization> orgs) {
+  private void loadOrgsIntoMenus(Menu menu, GHPersonSet<GHOrganization> orgs) {
     orgs.forEach(org -> {
       try {
         Menu orgMenu = new Menu(org.getName());
@@ -388,7 +392,7 @@ public class MainWindowController implements Initializable {
           orgMenu.getItems().add(repoMenu);
         });
         orgMenu.setOnAction(event -> homeWebView.getEngine().load(org.getHtmlUrl()));
-        myOrgs.getItems().add(orgMenu);
+        menu.getItems().add(orgMenu);
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
@@ -399,13 +403,14 @@ public class MainWindowController implements Initializable {
   /**
    * Load repositories into menus for the main menu bar.
    *
+   * @param menu menu to put submenus into
    * @param repos repositories
    */
-  private void loadReposIntoMenus(PagedIterable<GHRepository> repos) {
+  private void loadReposIntoMenus(Menu menu, PagedIterable<GHRepository> repos) {
     repos.forEach(repo -> {
       MenuItem menuItem = new MenuItem(repo.getName());
       menuItem.setOnAction(event -> homeWebView.getEngine().load(repo.gitHttpTransportUrl()));
-      myRepos.getItems().add(menuItem);
+      menu.getItems().add(menuItem);
     });
   }
 
