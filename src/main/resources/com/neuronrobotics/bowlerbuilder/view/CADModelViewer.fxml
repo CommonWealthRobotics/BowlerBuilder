@@ -10,7 +10,7 @@
    <bottom>
       <HBox maxHeight="35.0" minHeight="35.0" BorderPane.alignment="CENTER_LEFT">
          <children>
-            <Button fx:id="homeCameraButton" mnemonicParsing="false" onAction="#onHomeCamera" text="Home Camera" />
+            <Button mnemonicParsing="false" onAction="#onHomeCamera" text="Home Camera" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" top="5.0" />

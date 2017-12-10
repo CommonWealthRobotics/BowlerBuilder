@@ -10,6 +10,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +23,16 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
@@ -36,10 +41,14 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.CullFace;
+import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+import javafx.stage.FileChooser;
+import org.apache.commons.io.FileUtils;
 import org.reactfx.util.FxTimer;
 
 public class BowlerStudio3dEngine extends Pane {
@@ -53,7 +62,7 @@ public class BowlerStudio3dEngine extends Pane {
   private final Group root = new Group();
   private final Group lookGroup = new Group();
   private final Group focusGroup = new Group();
-  private final Group userGroup = new Group();
+  private final Group meshViewGroup = new Group();
 
   private double mousePosX;
   private double mousePosY;
@@ -193,7 +202,7 @@ public class BowlerStudio3dEngine extends Pane {
 
           gridGroup.getChildren().addAll(new Axis(), ground);
           showAxis();
-          axisGroup.getChildren().addAll(focusGroup, userGroup);
+          axisGroup.getChildren().addAll(focusGroup, meshViewGroup);
           world.getChildren().addAll(lookGroup, axisGroup);
         });
       } catch (Exception e) {
@@ -281,8 +290,10 @@ public class BowlerStudio3dEngine extends Pane {
             0,
             0,
             0,
-            new RotationNR(mouseDeltaY * modifierFactor * modifier * 2.0,
-                mouseDeltaX * modifierFactor * modifier * 2.0, 0
+            new RotationNR(
+                mouseDeltaY * modifierFactor * modifier * 2.0,
+                mouseDeltaX * modifierFactor * modifier * 2.0,
+                0
             )
         );
 
@@ -587,4 +598,77 @@ public class BowlerStudio3dEngine extends Pane {
   public XForm getWorld() {
     return world;
   }
+
+  /**
+   * Add a CSG to the scene graph.
+   *
+   * @param csg CSG to add
+   */
+  public void addCSG(CSG csg) {
+    MeshView mesh = csg.getMesh();
+    mesh.setMaterial(new PhongMaterial(Color.RED));
+    mesh.setDrawMode(DrawMode.FILL);
+    mesh.setDepthTest(DepthTest.ENABLE);
+    mesh.setCullFace(CullFace.BACK);
+
+    mesh.setOnMouseClicked(mouseEvent -> {
+      if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoHide(true);
+
+        //Wireframe/Solid draw toggle
+        MenuItem wireframe;
+
+        //Set the title of the MenuItem to the opposite of the current draw
+        if (mesh.getDrawMode().equals(DrawMode.LINE)) {
+          wireframe = new MenuItem("Show As Solid");
+        } else {
+          wireframe = new MenuItem("Show As Wireframe");
+        }
+
+        //Set the onAction of the MenuItem to flip the draw state
+        wireframe.setOnAction(actionEvent -> {
+          if (mesh.getDrawMode().equals(DrawMode.FILL)) {
+            mesh.setDrawMode(DrawMode.LINE);
+            wireframe.setText("Show As Solid");
+          } else {
+            mesh.setDrawMode(DrawMode.FILL);
+            wireframe.setText("Show As Wireframe");
+          }
+        });
+
+        MenuItem exportSTL = new MenuItem("Export as STL");
+        exportSTL.setOnAction(event -> {
+          FileChooser chooser = new FileChooser();
+          File save = chooser.showSaveDialog(root.getScene().getWindow());
+          if (save != null) {
+            if (!save.getPath().endsWith(".stl")) {
+              save = new File(save.getAbsolutePath() + ".stl");
+            }
+
+            CSG readyCSG = csg.prepForManufacturing();
+            try {
+              FileUtils.write(save, readyCSG.toStlString());
+            } catch (IOException e) {
+              LoggerUtilities.getLogger().log(Level.SEVERE,
+                  "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
+            }
+          }
+        });
+
+        menu.getItems().addAll(wireframe, exportSTL);
+        //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
+        //right-click somewhere else
+        mesh.setOnContextMenuRequested(event ->
+            menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
+      }
+    });
+
+    meshViewGroup.getChildren().add(mesh);
+  }
+
+  public void clearMeshViews() {
+    meshViewGroup.getChildren().clear();
+  }
+
 }
