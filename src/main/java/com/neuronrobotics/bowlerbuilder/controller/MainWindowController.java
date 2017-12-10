@@ -507,7 +507,7 @@ public class MainWindowController implements Initializable {
    */
   private void quit() {
     root.getScene().getWindow().hide();
-    System.exit(0);
+    Platform.exit();
   }
 
 }

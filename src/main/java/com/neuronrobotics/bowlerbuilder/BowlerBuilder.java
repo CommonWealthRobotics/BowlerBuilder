@@ -24,7 +24,8 @@ public class BowlerBuilder extends Application {
 
     primaryStage.setTitle("BowlerBuilder");
     primaryStage.setScene(new Scene(mainWindow));
-    primaryStage.setOnCloseRequest(event -> ((MainWindowController) loader.getController()).saveAndQuit());
+    primaryStage.setOnCloseRequest(event ->
+        ((MainWindowController) loader.getController()).saveAndQuit());
     primaryStage.show();
   }
 

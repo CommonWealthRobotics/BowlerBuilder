@@ -11,17 +11,13 @@ import java.util.ArrayList;
 public class VirtualCameraMobileBase extends MobileBase { //NOPMD
 
   private IDriveEngine de = new IDriveEngineImplementation();
-  private ArrayList<VirtualCameraMobileBase> bases = new ArrayList<>();
+  private final ArrayList<VirtualCameraMobileBase> bases = new ArrayList<>();
 
   public VirtualCameraMobileBase() throws Exception {
     super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
 
-    setWalkingDriveEngine(getDriveEngine());
+    setWalkingDriveEngine(de);
     bases.add(this);
-  }
-
-  public IDriveEngine getDriveEngine() {
-    return de;
   }
 
   /**
@@ -36,7 +32,11 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
     }
   }
 
-  private final class IDriveEngineImplementation implements IDriveEngine {
+  public IDriveEngine getDriveEngine() {
+    return de;
+  }
+
+  private static final class IDriveEngineImplementation implements IDriveEngine {
 
     double azOffset;
     double elOffset;
