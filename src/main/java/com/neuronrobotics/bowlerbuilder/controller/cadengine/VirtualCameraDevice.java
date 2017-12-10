@@ -109,11 +109,13 @@ public class VirtualCameraDevice extends AbstractImageProvider {
    * @param zoomDepth new zoom depth
    */
   public void setZoomDepth(double zoomDepth) {
-    if (zoomDepth > -2) {
+    this.zoomDepth = zoomDepth;
+
+    if (this.zoomDepth > -2) {
       this.zoomDepth = -2;
     }
 
-    if (zoomDepth < -5000) {
+    if (this.zoomDepth < -5000) {
       this.zoomDepth = -5000;
     }
 
