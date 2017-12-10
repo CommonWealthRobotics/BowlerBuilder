@@ -1,15 +1,16 @@
 package com.neuronrobotics.bowlerbuilder;
 
-import org.apache.commons.io.FileUtils;
-
+import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import org.apache.commons.io.FileUtils;
 
 public final class LoggerUtilities {
 
@@ -44,6 +45,19 @@ public final class LoggerUtilities {
       //We can't call a logger here instead because we are the logger!
       e.printStackTrace(); //NOPMD
     }
+  }
+
+  /**
+   * Return a new thread that logs uncaught exceptions.
+   *
+   * @param runnable Thread runnable
+   * @return logging thread
+   */
+  public static Thread newLoggingThread(Runnable runnable) {
+    Thread thread = new Thread(runnable);
+    thread.setUncaughtExceptionHandler((t, e) ->
+        LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e)));
+    return thread;
   }
 
 }

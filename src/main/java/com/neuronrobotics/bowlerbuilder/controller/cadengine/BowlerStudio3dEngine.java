@@ -137,7 +137,7 @@ public class BowlerStudio3dEngine extends Pane {
    * Builds the axes.
    */
   private void buildAxes() {
-    Thread buildThread = new Thread(() -> {
+    Thread buildThread = LoggerUtilities.newLoggingThread(() -> {
       try {
         Image ruler = AssetFactory.loadAsset("ruler.png");
         Image groundLocal = AssetFactory.loadAsset("ground.png");

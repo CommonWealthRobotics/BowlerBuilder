@@ -497,7 +497,7 @@ public class MainWindowController implements Initializable {
   /**
    * Save work and quit.
    */
-  private void saveAndQuit() {
+  public void saveAndQuit() {
     //Save here
     quit();
   }
@@ -507,6 +507,7 @@ public class MainWindowController implements Initializable {
    */
   private void quit() {
     root.getScene().getWindow().hide();
+    System.exit(0);
   }
 
 }

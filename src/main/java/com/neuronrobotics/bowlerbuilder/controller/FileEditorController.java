@@ -114,7 +114,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private void runFile(ActionEvent actionEvent) {
     Runnable runnable = () -> {
-      Thread thread = new Thread(() -> {
+      Thread thread = LoggerUtilities.newLoggingThread(() -> {
         try {
           //Grab code from FX thread
           ObjectProperty<String> text = new SimpleObjectProperty<>();
