@@ -102,9 +102,9 @@ public class BowlerStudio3dEngine extends Pane {
    * Build the scene. Setup camera angle and add world to the root.
    */
   private void buildScene() {
-    world.ry.setAngle(-90);// point z upwards
-    world.ry.setAngle(180);// arm out towards user
-    getRoot().getChildren().add(world);
+    world.ry.setAngle(-90); //point z upwards
+    world.ry.setAngle(180); //arm out towards user
+    root.getChildren().add(world);
   }
 
   /**
@@ -113,7 +113,7 @@ public class BowlerStudio3dEngine extends Pane {
   private void buildCamera() {
     camera.setNearClip(.1);
     camera.setFarClip(100000.0);
-    getSubScene().setCamera(camera);
+    scene.setCamera(camera);
 
     camera.setRotationAxis(Rotate.Z_AXIS);
     camera.setRotate(180);
@@ -125,11 +125,11 @@ public class BowlerStudio3dEngine extends Pane {
         20 // resolution
     ).toCSG().roty(90).setColor(Color.BLACK);
     Group hand = new Group(cylinder.getMesh());
-    setVirtualCam(new VirtualCameraDevice(camera, hand));
+    virtualCam = new VirtualCameraDevice(camera, hand);
     VirtualCameraFactory.setFactory(() -> virtualCam);
 
     try {
-      setFlyingCamera(new VirtualCameraMobileBase());
+      flyingCamera = new VirtualCameraMobileBase();
     } catch (Exception e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
@@ -315,7 +315,7 @@ public class BowlerStudio3dEngine extends Pane {
     scene.addEventHandler(ScrollEvent.ANY, event -> {
       if (ScrollEvent.SCROLL == event.getEventType()) {
         double zoomFactor = -(event.getDeltaY()) * getVirtualCam().getZoomDepth() / 500;
-        getVirtualCam().setZoomDepth(getVirtualCam().getZoomDepth() + zoomFactor);
+        virtualCam.setZoomDepth(getVirtualCam().getZoomDepth() + zoomFactor);
       }
       event.consume();
     });
@@ -328,16 +328,16 @@ public class BowlerStudio3dEngine extends Pane {
    * @param seconds seconds to move over
    */
   private void moveCamera(TransformNR newPose, double seconds) {
-    getFlyingCamera().DriveArc(newPose, seconds);
+    flyingCamera.DriveArc(newPose, seconds);
   }
 
   /**
    * Home the camera to its default view.
    */
   public void homeCamera() {
-    getFlyingCamera().setGlobalToFiducialTransform(defaultCameraView);
-    getVirtualCam().setZoomDepth(VirtualCameraDevice.getDefaultZoomDepth());
-    getFlyingCamera().updatePositions();
+    flyingCamera.setGlobalToFiducialTransform(defaultCameraView);
+    virtualCam.setZoomDepth(VirtualCameraDevice.getDefaultZoomDepth());
+    flyingCamera.updatePositions();
   }
 
   /**
