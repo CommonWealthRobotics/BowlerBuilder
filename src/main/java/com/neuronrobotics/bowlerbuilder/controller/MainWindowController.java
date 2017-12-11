@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Stack;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -81,10 +82,16 @@ public class MainWindowController implements Initializable {
   private final List<FileEditorController> fileEditors;
   private Map<String, Object> preferences;
 
+  //WebView history stack
+  private final Stack<String> backPageHistory;
+  private final Stack<String> nextPageHistory;
+
   public MainWindowController() {
     fileEditors = new ArrayList<>();
     preferences = new HashMap<>();
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
+    backPageHistory = new Stack<>();
+    nextPageHistory = new Stack<>();
   }
 
   //Simple stream to append input characters to a text area
@@ -121,9 +128,7 @@ public class MainWindowController implements Initializable {
     System.setOut(stream);
     System.setErr(stream);
 
-    homeWebView
-        .getEngine()
-        .load("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+    loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
     SplitPane.setResizableWithParent(console, false);
 
@@ -202,6 +207,31 @@ public class MainWindowController implements Initializable {
   @FXML
   private void onLogInToGitHub(ActionEvent actionEvent) {
     tryLogin();
+  }
+
+  @FXML
+  private void onBackPage(ActionEvent actionEvent) {
+    String url = backPageHistory.pop();
+    homeWebView.getEngine().load(url); //Manual load so it doesn't go on the stack
+  }
+
+  @FXML
+  private void onNextPage(ActionEvent actionEvent) {
+  }
+
+  @FXML
+  private void onReloadPage(ActionEvent actionEvent) {
+    homeWebView.getEngine().reload();
+  }
+
+  @FXML
+  private void onHomePage(ActionEvent actionEvent) {
+    loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
+  }
+
+  private void loadPage(String url) {
+    homeWebView.getEngine().load(url);
+    backPageHistory.push(url);
   }
 
   private void tryLogin() {

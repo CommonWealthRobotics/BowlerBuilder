@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -9,6 +10,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.web.WebView?>
 
 <BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
@@ -45,7 +47,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="Editor Guide" onAction="#openEditorHelp" />
+              <MenuItem mnemonicParsing="false" onAction="#openEditorHelp" text="Editor Guide" />
             </items>
           </Menu>
         </menus>
@@ -58,7 +60,21 @@
                <tabs>
                   <Tab id="homeTab" fx:id="homeTab" closable="false" text="Home">
                      <content>
-                        <WebView fx:id="homeWebView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" />
+                        <BorderPane>
+                           <top>
+                              <HBox prefHeight="35.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#onBackPage" text="Button" />
+                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onNextPage" text="Button" />
+                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReloadPage" text="Button" />
+                                    <Button layoutX="114.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHomePage" text="Button" />
+                                 </children>
+                              </HBox>
+                           </top>
+                           <center>
+                              <WebView fx:id="homeWebView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
                      </content>
                   </Tab>
                </tabs>

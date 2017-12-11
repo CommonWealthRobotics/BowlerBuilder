@@ -90,10 +90,9 @@ public class BowlerStudio3dEngine extends Pane {
     setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
     buildCamera();
-    buildAxes(); //NOPMD
+    buildAxes();
 
-    Stop[] stops = null;
-    scene.setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops));
+    scene.setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, (Stop[]) null));
     handleMouse(scene);
     getChildren().add(scene);
   }
@@ -297,7 +296,7 @@ public class BowlerStudio3dEngine extends Pane {
   /**
    * Show the axes.
    */
-  public void showAxis() {
+  public final void showAxis() {
     Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.show());
   }
@@ -305,7 +304,7 @@ public class BowlerStudio3dEngine extends Pane {
   /**
    * Hide the axes.
    */
-  public void hideAxis() {
+  public final void hideAxis() {
     Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.hide());
   }
