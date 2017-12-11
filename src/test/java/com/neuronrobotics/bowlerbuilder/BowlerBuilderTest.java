@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerbuilder;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import javafx.fxml.FXMLLoader;
@@ -38,13 +37,6 @@ class BowlerBuilderTest extends AutoClosingApplicationTest {
     clickOn("File").clickOn("Preferences");
 
     assertTrue(lookup("#preferencesRoot").tryQuery().isPresent());
-  }
-
-  @Test
-  void closeTest() {
-    clickOn("File").clickOn("Exit");
-
-    assertFalse(lookup("#root").tryQuery().isPresent());
   }
 
 }

@@ -1,14 +1,10 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -18,7 +14,7 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
   private final ArrayList<VirtualCameraMobileBase> bases = new ArrayList<>();
 
   public VirtualCameraMobileBase(String text) throws Exception {
-//    super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
+    //super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
     super(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name())));
 
     setWalkingDriveEngine(de);

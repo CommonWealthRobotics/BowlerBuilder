@@ -2,23 +2,14 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
-
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-
 import eu.mihosoft.vrl.v3d.CSG;
-
 import groovy.lang.GroovyRuntimeException;
-import org.controlsfx.glyphfont.FontAwesome;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -29,7 +20,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
-
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,6 +34,11 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
 
 public class FileEditorController implements Initializable {
 
@@ -95,8 +90,8 @@ public class FileEditorController implements Initializable {
     //Stuff to run once the engine is done loading
     webEngine.getLoadWorker().stateProperty().addListener(
         (ObservableValue<? extends Worker.State> observable,
-         Worker.State oldValue,
-         Worker.State newValue) -> {
+            Worker.State oldValue,
+            Worker.State newValue) -> {
           if (newValue == Worker.State.SUCCEEDED) {
             aceEditor.setFontSize(requestedFontSize); //Set font size to the default
             requestedFile.ifPresent(file -> {
@@ -143,14 +138,12 @@ public class FileEditorController implements Initializable {
         } catch (IOException e) {
           LoggerUtilities.getLogger().log(Level.SEVERE,
               "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+        } catch (GroovyRuntimeException e) {
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Error in CAD script: " + e.getMessage());
         } catch (Exception e) {
-          if (e instanceof GroovyRuntimeException) {
-            LoggerUtilities.getLogger().log(Level.WARNING,
-                "Error in CAD script: " + e.getMessage());
-          } else {
-            LoggerUtilities.getLogger().log(Level.WARNING,
-                "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
-          }
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
         }
       });
       thread.setDaemon(false);
@@ -173,7 +166,7 @@ public class FileEditorController implements Initializable {
    * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
    *
    * @param controller CAD viewer controller
-   * @param item       Object with CSGs
+   * @param item Object with CSGs
    */
   private void parseCSG(CADModelViewerController controller, Object item) {
     if (item instanceof CSG) {
@@ -293,7 +286,7 @@ public class FileEditorController implements Initializable {
   /**
    * Load a file from a gist.
    *
-   * @param gist     Parent gist
+   * @param gist Parent gist
    * @param gistFile File in gist
    */
   public void loadGist(GHGist gist, GHGistFile gistFile) {
