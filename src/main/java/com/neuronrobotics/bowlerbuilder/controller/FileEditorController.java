@@ -12,6 +12,7 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
+import groovy.lang.GroovyRuntimeException;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -143,8 +144,13 @@ public class FileEditorController implements Initializable {
           LoggerUtilities.getLogger().log(Level.SEVERE,
               "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
         } catch (Exception e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
-              "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+          if (e instanceof GroovyRuntimeException) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Error in CAD script: " + e.getMessage());
+          } else {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+          }
         }
       });
       thread.setDaemon(false);
