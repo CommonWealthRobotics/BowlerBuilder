@@ -146,7 +146,7 @@ public class FileEditorController implements Initializable {
               "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
         }
       });
-      thread.setDaemon(false);
+      thread.setDaemon(true);
       thread.start();
     };
 
@@ -170,7 +170,7 @@ public class FileEditorController implements Initializable {
    */
   private void parseCSG(CADModelViewerController controller, Object item) {
     if (item instanceof CSG) {
-      controller.addCSGs((CSG) item);
+      controller.addCSG((CSG) item);
     } else if (item instanceof List) {
       List itemList = (List) item;
       for (Object elem : itemList) {
@@ -316,4 +316,7 @@ public class FileEditorController implements Initializable {
     this.reloadMenus = reloadMenus;
   }
 
+  public CADModelViewerController getCADViewerController() {
+    return cadviewerController;
+  }
 }

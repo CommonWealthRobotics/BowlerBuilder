@@ -51,7 +51,7 @@ public class CADModelViewerController implements Initializable {
    *
    * @param csg CSG to add
    */
-  public void addCSGs(CSG csg) {
+  public void addCSG(CSG csg) {
     csg.toJavaFXMesh(null).getAsMeshViews().forEach(mesh -> engine.addCSG(csg));
   }
 
@@ -61,7 +61,7 @@ public class CADModelViewerController implements Initializable {
    * @param csgs CSGs to add
    */
   public void addAllCSGs(CSG... csgs) {
-    Arrays.stream(csgs).forEach(this::addCSGs);
+    Arrays.stream(csgs).forEach(this::addCSG);
   }
 
   /**
@@ -70,7 +70,7 @@ public class CADModelViewerController implements Initializable {
    * @param csgs List of CSGs to add
    */
   public void addAllCSGs(Collection<CSG> csgs) {
-    csgs.forEach(this::addCSGs);
+    csgs.forEach(this::addCSG);
   }
 
   /**
@@ -85,4 +85,7 @@ public class CADModelViewerController implements Initializable {
     engine.homeCamera();
   }
 
+  public BowlerStudio3dEngine getEngine() {
+    return engine;
+  }
 }

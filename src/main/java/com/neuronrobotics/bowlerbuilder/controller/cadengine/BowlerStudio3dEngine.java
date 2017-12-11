@@ -7,7 +7,6 @@ import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.DeviceManager;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import java.io.File;
@@ -91,7 +90,6 @@ public class BowlerStudio3dEngine extends Pane {
     setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
     buildCamera();
-    DeviceManager.listConnectedDevice().forEach(System.out::println);
     buildAxes(); //NOPMD
 
     Stop[] stops = null;
