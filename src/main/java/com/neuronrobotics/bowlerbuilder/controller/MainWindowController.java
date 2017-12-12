@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Stack;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -48,7 +46,6 @@ import javafx.scene.web.WebView;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
-import org.controlsfx.glyphfont.Glyph;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -248,8 +245,8 @@ public class MainWindowController implements Initializable {
   private void onNavigate(ActionEvent actionEvent) {
     String url = urlField.getText();
 
-    if (!url.toLowerCase().matches("^\\w+://.*")) {
-      url = "http://" + url;
+    if (!url.toLowerCase(Locale.ENGLISH).matches("^\\w+://.*")) {
+      url = String.format("http://%s", url);
     }
 
     loadPage(url);
