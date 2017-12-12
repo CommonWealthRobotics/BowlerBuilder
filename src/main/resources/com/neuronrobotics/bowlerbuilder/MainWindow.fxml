@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -8,12 +9,13 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.web.WebView?>
 
-<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
+<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -62,13 +64,20 @@
                      <content>
                         <BorderPane>
                            <top>
-                              <HBox prefHeight="35.0" BorderPane.alignment="CENTER">
+                              <HBox alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#onBackPage" text="Button" />
-                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onNextPage" text="Button" />
-                                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReloadPage" text="Button" />
-                                    <Button layoutX="114.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHomePage" text="Button" />
+                                    <Button fx:id="backPageButton" mnemonicParsing="false" onAction="#onBackPage" />
+                                    <Button fx:id="nextPageButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onNextPage" />
+                                    <Button fx:id="reloadPageButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReloadPage" />
+                                    <Button fx:id="homePageButton" layoutX="114.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHomePage" />
+                                    <TextField fx:id="urlField" HBox.hgrow="ALWAYS" onAction="#onNavigate">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin></TextField>
                                  </children>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
                               </HBox>
                            </top>
                            <center>

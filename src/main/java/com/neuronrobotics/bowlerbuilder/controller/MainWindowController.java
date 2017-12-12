@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
@@ -45,6 +47,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -73,8 +77,20 @@ public class MainWindowController implements Initializable {
   private Tab homeTab;
   @FXML
   private SplitPane splitPane;
+
+  @FXML
+  private Button backPageButton;
+  @FXML
+  private Button nextPageButton;
+  @FXML
+  private Button reloadPageButton;
+  @FXML
+  private Button homePageButton;
+  @FXML
+  private TextField urlField;
   @FXML
   private WebView homeWebView;
+
   @FXML
   private TextArea console;
 
@@ -82,16 +98,10 @@ public class MainWindowController implements Initializable {
   private final List<FileEditorController> fileEditors;
   private Map<String, Object> preferences;
 
-  //WebView history stack
-  private final Stack<String> backPageHistory;
-  private final Stack<String> nextPageHistory;
-
   public MainWindowController() {
     fileEditors = new ArrayList<>();
     preferences = new HashMap<>();
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
-    backPageHistory = new Stack<>();
-    nextPageHistory = new Stack<>();
   }
 
   //Simple stream to append input characters to a text area
@@ -127,6 +137,11 @@ public class MainWindowController implements Initializable {
     }
     System.setOut(stream);
     System.setErr(stream);
+
+    backPageButton.setGraphic(FontAwesome.Glyph.ARROW_LEFT.create());
+    nextPageButton.setGraphic(FontAwesome.Glyph.ARROW_RIGHT.create());
+    reloadPageButton.setGraphic(FontAwesome.Glyph.REFRESH.create());
+    homePageButton.setGraphic(FontAwesome.Glyph.HOME.create());
 
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
@@ -211,12 +226,12 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void onBackPage(ActionEvent actionEvent) {
-    String url = backPageHistory.pop();
-    homeWebView.getEngine().load(url); //Manual load so it doesn't go on the stack
+    Platform.runLater(() -> homeWebView.getEngine().executeScript("history.back()"));
   }
 
   @FXML
   private void onNextPage(ActionEvent actionEvent) {
+    Platform.runLater(() -> homeWebView.getEngine().executeScript("history.forward()"));
   }
 
   @FXML
@@ -229,9 +244,20 @@ public class MainWindowController implements Initializable {
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
   }
 
+  @FXML
+  private void onNavigate(ActionEvent actionEvent) {
+    String url = urlField.getText();
+
+    if (!url.toLowerCase().matches("^\\w+://.*")) {
+      url = "http://" + url;
+    }
+
+    loadPage(url);
+  }
+
   private void loadPage(String url) {
     homeWebView.getEngine().load(url);
-    backPageHistory.push(url);
+    urlField.setText(url);
   }
 
   private void tryLogin() {
