@@ -444,7 +444,12 @@ public class MainWindowController implements Initializable {
   private void loadOrgsIntoMenus(Menu menu, GHPersonSet<GHOrganization> orgs) {
     orgs.forEach(org -> {
       try {
-        Menu orgMenu = new Menu(org.getName());
+        String name = org.getName();
+        if (name == null || name.length() == 0) {
+          name = org.getLogin();
+        }
+        
+        Menu orgMenu = new Menu(name);
         org.getRepositories().forEach((key, value) -> {
           MenuItem repoMenu = new MenuItem(key);
           repoMenu.setOnAction(__ -> homeWebView.getEngine().load(value.gitHttpTransportUrl()));
