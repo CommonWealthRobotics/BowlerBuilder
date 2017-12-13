@@ -9,6 +9,9 @@ import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
+import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
+import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
+import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -18,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -29,6 +33,8 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -647,10 +653,6 @@ public class BowlerStudio3dEngine extends Pane {
     this.scene = scene;
   }
 
-  public Group getRoot() {
-    return root;
-  }
-
   public VirtualCameraDevice getVirtualCam() {
     return virtualCam;
   }
@@ -713,6 +715,86 @@ public class BowlerStudio3dEngine extends Pane {
           }
         });
 
+        Set<String> params = csg.getParameters();
+        if (params != null) {
+          Menu parameters = new Menu("Parameters");
+          params.forEach(key -> {
+            Runnable regenerateObjects = () -> {
+              //Get the set of objects to check for regeneration after the initial
+              //regeneration cycle
+              Set<CSG> objects = getCsgMap().keySet();
+
+              //Hide this menu because the regenerated CSG talks to the new menu
+              menu.hide();
+
+              fireRegenerate(key, objects);
+              resetMouseTime();
+            };
+
+            Parameter param = CSGDatabase.get(key);
+            csg.setParameterIfNull(key);
+
+            if (param instanceof LengthParameter) {
+              LengthParameter lp = (LengthParameter) param;
+
+              EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
+                  new OnEngineeringUnitsChange() {
+                    @Override
+                    public void onSliderMoving(
+                        EngineeringUnitsSliderWidget sliderWidget,
+                        double newAngleDegrees) {
+                      try {
+                        csg.setParameterNewValue(key, newAngleDegrees);
+                      } catch (Exception e) {
+                        LoggerUtilities.getLogger().log(Level.WARNING,
+                            "Could not set new parameter value.\n"
+                                + Throwables.getStackTraceAsString(e));
+                      }
+                    }
+
+                    @Override
+                    public void onSliderDoneMoving(
+                        EngineeringUnitsSliderWidget sliderWidget,
+                        double newAngleDegrees) {
+                      regenerateObjects.run();
+                    }
+                  }, Double.parseDouble(lp.getOptions().get(1)),
+                  Double.parseDouble(lp.getOptions().get(0)), lp.getMM(), 400, key);
+
+              CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+              customMenuItem.setHideOnClick(false);
+              parameters.getItems().add(customMenuItem);
+              LoggerUtilities.getLogger().log(Level.INFO,
+                  "Adding Length Paramater " + lp.getName());
+            } else {
+              if (param != null) {
+                Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
+
+                param.getOptions().forEach(option -> {
+                  MenuItem customMenuItem = new MenuItem(option);
+                  customMenuItem.setOnAction(event -> {
+                    LoggerUtilities.getLogger().log(Level.INFO,
+                        "Updating " + param.getName() + " to " + option);
+
+                    param.setStrValue(option);
+                    CSGDatabase.get(param.getName()).setStrValue(option);
+                    CSGDatabase.getParamListeners(param.getName())
+                        .forEach(l -> l.parameterChanged(param.getName(), param));
+
+                    regenerateObjects.run();
+                  });
+                  paramTypes.getItems().add(customMenuItem);
+                });
+
+                parameters.getItems().add(paramTypes);
+              }
+
+            }
+          });
+
+          menu.getItems().add(parameters);
+        }
+
         MenuItem exportSTL = new MenuItem("Export as STL");
         exportSTL.setOnAction(event -> {
           FileChooser chooser = new FileChooser();
@@ -742,6 +824,46 @@ public class BowlerStudio3dEngine extends Pane {
 
     meshViewGroup.getChildren().add(mesh);
     csgMap.put(csg, mesh);
+  }
+
+  private void fireRegenerate(String key, Set<CSG> currentObjectsToCheck) {
+    Thread thread = LoggerUtilities.newLoggingThread(() -> {
+      List<CSG> toAdd = new ArrayList<>();
+      List<CSG> toRemove = new ArrayList<>();
+
+      Object[] array = currentObjectsToCheck.toArray();
+      for (int i = 0; i < currentObjectsToCheck.size(); i++) {
+        LoggerUtilities.getLogger().log(Level.INFO,
+            "Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
+
+        CSG tester = (CSG) array[i];
+        for (String p : tester.getParameters()) {
+          if (p.contentEquals(key) && !toRemove.contains(tester)) {
+            LoggerUtilities.getLogger().log(Level.INFO,
+                "Regenerating " + i + " on key " + p);
+            try {
+              CSG ret = tester.regenerate();
+              toRemove.add(tester);
+              toAdd.add(ret);
+            } catch (Exception e) {
+              LoggerUtilities.getLogger().log(Level.WARNING,
+                  "Could not regenerate CSG.\n" + Throwables.getStackTraceAsString(e));
+            }
+          }
+        }
+      }
+
+      toRemove.forEach(item ->
+          Platform.runLater(() -> meshViewGroup.getChildren().remove(item.getMesh())));
+      toAdd.forEach(item -> Platform.runLater(() -> addCSG(item)));
+
+      LoggerUtilities.getLogger().log(Level.INFO, "Saving CSG database");
+      CSGDatabase.saveDatabase();
+    });
+
+    thread.setDaemon(true);
+    thread.setName("CAD Regenerate Thread");
+    thread.start();
   }
 
   public void clearMeshViews() {

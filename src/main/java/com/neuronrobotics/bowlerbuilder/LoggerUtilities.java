@@ -56,7 +56,7 @@ public final class LoggerUtilities {
   public static Thread newLoggingThread(Runnable runnable) {
     Thread thread = new Thread(runnable);
     thread.setUncaughtExceptionHandler((t, e) ->
-        LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e)));
+        LoggerUtilities.getLogger().log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
     return thread;
   }
 
