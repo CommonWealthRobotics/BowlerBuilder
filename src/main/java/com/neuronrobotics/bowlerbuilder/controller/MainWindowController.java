@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -409,12 +410,17 @@ public class MainWindowController implements Initializable {
       }));
 
       String gistMenuText = gist.getDescription();
-      if (gistMenuText == null) {
-        gistMenuText = "";
-      } else {
-        //Cap length to 15
-        gistMenuText = gistMenuText.substring(0, Math.min(15, gistMenuText.length()));
+      if (gistMenuText == null || gistMenuText.length() == 0) {
+        Set<String> filenames = gist.getFiles().keySet();
+        if (filenames.size() >= 1) {
+          gistMenuText = filenames.iterator().next();
+        } else {
+          gistMenuText = "";
+        }
       }
+
+      //Cap length to 15
+      gistMenuText = gistMenuText.substring(0, Math.min(15, gistMenuText.length()));
 
       Menu gistMenu = new Menu(gistMenuText);
       gistMenu.getItems().addAll(showWebGist, addFileToGist);
