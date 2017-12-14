@@ -8,9 +8,10 @@
 
 <BorderPane fx:id="root" id="cadViewerBorderPane" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.CADModelViewerController">
    <bottom>
-      <HBox maxHeight="35.0" minHeight="35.0" BorderPane.alignment="CENTER_LEFT">
+      <HBox maxHeight="35.0" minHeight="35.0" BorderPane.alignment="CENTER_LEFT" spacing="5">
          <children>
             <Button mnemonicParsing="false" onAction="#onHomeCamera" text="Home Camera" />
+            <Button mnemonicParsing="false" onAction="#onAxis" text="Show/Hide Axis" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" top="5.0" />

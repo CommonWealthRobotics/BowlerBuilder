@@ -21,6 +21,7 @@ public class CADModelViewerController implements Initializable {
   private BorderPane root;
 
   private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
+  private boolean axisShowing = true;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -83,6 +84,17 @@ public class CADModelViewerController implements Initializable {
   @FXML
   private void onHomeCamera(ActionEvent actionEvent) {
     engine.homeCamera();
+  }
+
+  @FXML
+  private void onAxis(ActionEvent actionEvent) {
+    if (axisShowing) {
+      engine.hideAxis();
+    } else {
+      engine.showAxis();
+    }
+
+    axisShowing = !axisShowing;
   }
 
   public BowlerStudio3dEngine getEngine() {
