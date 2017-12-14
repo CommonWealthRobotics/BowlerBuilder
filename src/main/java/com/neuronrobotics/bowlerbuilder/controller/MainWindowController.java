@@ -3,10 +3,10 @@ package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
 import com.google.common.base.Throwables;
-import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
+import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -439,14 +439,26 @@ public class MainWindowController implements Initializable {
 
       MenuItem addFileToGist = new MenuItem("Add File");
       addFileToGist.setOnAction(event -> Platform.runLater(() -> {
-        try {
-          //TODO: Maybe addFileToGist is broken
-          GHGist newGist = GistUtilities.addFileToGist("test name", "test content", gist);
-          openGistFileInEditor(newGist, newGist.getFile("test name"));
-        } catch (Exception e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
-              "Could not get files in git.\n" + Throwables.getStackTraceAsString(e));
-        }
+        AddFileToGistDialog dialog = new AddFileToGistDialog();
+        dialog.showAndWait().ifPresent(name -> {
+          try {
+            ScriptingEngine.pushCodeToGit(
+                gist.getGitPushUrl(),
+                ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
+                name,
+                "//Your code here",
+                "New file");
+            reloadGitMenus();
+            ScriptingEngine.getGithub().getMyself().listGists().asList()
+                .stream()
+                .filter(item -> item.equals(gist))
+                .findFirst()
+                .ifPresent(newGist -> openGistFileInEditor(newGist, newGist.getFile(name)));
+          } catch (Exception e) {
+            LoggerUtilities.getLogger().log(Level.SEVERE,
+                "Could not add file to gist.\n" + Throwables.getStackTraceAsString(e));
+          }
+        });
       }));
 
       String gistMenuText = gist.getDescription();

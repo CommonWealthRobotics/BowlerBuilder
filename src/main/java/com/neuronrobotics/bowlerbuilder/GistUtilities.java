@@ -1,26 +1,28 @@
 package com.neuronrobotics.bowlerbuilder;
 
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
-
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.logging.Level;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
 public final class GistUtilities {
+
   private GistUtilities() {
   }
 
   /**
    * Create and publish a new gist.
    *
-   * @param filename    Gist filename for first file
+   * @param filename Gist filename for first file
    * @param description Gist description
-   * @param isPublic    Public/private viewing
+   * @param isPublic Public/private viewing
    * @return New gist
    */
   public static GHGist createNewGist(String filename, String description, boolean isPublic)
@@ -28,7 +30,13 @@ public final class GistUtilities {
     //Setup gist
     GitHub gitHub = ScriptingEngine.getGithub();
     GHGistBuilder builder = gitHub.createGist();
-    builder.file(filename, "//Your code here");
+
+    String fixedFilename = filename;
+    if (!fixedFilename.endsWith(".groovy")) {
+      fixedFilename += ".groovy";
+    }
+
+    builder.file(fixedFilename, "//Your code here");
     builder.description(description);
     builder.public_(isPublic);
 
@@ -37,37 +45,9 @@ public final class GistUtilities {
   }
 
   /**
-   * Add a new file to an existing Gist.
-   *
-   * @param filename New file filename
-   * @param content  Starting content of new file
-   * @param gistID   Gist ID to add file to
-   * @return Gist containing new file
-   */
-  public static GHGist addFileToGist(String filename, String content, GHGist gistID)
-      throws IOException {
-    GitHub gitHub = ScriptingEngine.getGithub();
-    //Copy from old gist
-    GHGistBuilder builder = gitHub.createGist();
-
-    builder.description(gistID.getDescription());
-    builder.public_(gistID.isPublic());
-
-    gistID.getFiles().keySet().forEach(key ->
-        builder.file(key, gistID.getFiles().get(key).getContent()));
-
-    //Add new file
-    builder.file(filename, content);
-
-    //Make new gist with old filename
-    return createGistFromBuilder(builder,
-        gistID.getFiles().values().iterator().next().getFileName());
-  }
-
-  /**
    * Create a new Gist.
    *
-   * @param builder  Gist builder
+   * @param builder Gist builder
    * @param filename Gist file filename
    * @return New gist
    */
@@ -90,4 +70,23 @@ public final class GistUtilities {
 
     return gist;
   }
+
+  /**
+   * Use reflection to get the id of a gist, because the API does not provide this for some reason.
+   *
+   * @param gist gist with id
+   * @return id of gist
+   */
+  public static Optional<String> getGistID(GHGist gist) {
+    try {
+      Field id = GHGist.class.getDeclaredField("id");
+      return Optional.of((String) id.get(gist));
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not get gist id.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    return Optional.empty();
+  }
+
 }
