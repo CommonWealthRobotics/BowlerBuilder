@@ -33,7 +33,7 @@ public final class GistUtilities {
 
     String fixedFilename = filename;
     if (!fixedFilename.endsWith(".groovy")) {
-      fixedFilename += ".groovy";
+      fixedFilename += ".groovy"; //NOPMD
     }
 
     builder.file(fixedFilename, "//Your code here");
