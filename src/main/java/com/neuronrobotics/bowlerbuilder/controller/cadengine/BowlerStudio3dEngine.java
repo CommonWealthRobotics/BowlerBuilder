@@ -88,6 +88,7 @@ public class BowlerStudio3dEngine extends Pane {
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
+  private Map<String, MeshView> csgNameMap = new HashMap<>();
   private final Map<MeshView, Axis> axisMap = new HashMap<>();
   private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
@@ -689,9 +690,16 @@ public class BowlerStudio3dEngine extends Pane {
   public void addCSG(CSG csg) {
     MeshView mesh = csg.getMesh();
     mesh.setMaterial(new PhongMaterial(Color.RED));
-    mesh.setDrawMode(DrawMode.FILL);
     mesh.setDepthTest(DepthTest.ENABLE);
     mesh.setCullFace(CullFace.BACK);
+
+    if (csg.getName() != null
+        && !"".equals(csg.getName())
+        && csgNameMap.containsKey(csg.getName())) {
+      mesh.setDrawMode(csgNameMap.get(csg.getName()).getDrawMode());
+    } else {
+      mesh.setDrawMode(DrawMode.FILL);
+    }
 
     mesh.setOnMouseClicked(mouseEvent -> {
       if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
@@ -823,6 +831,7 @@ public class BowlerStudio3dEngine extends Pane {
 
     meshViewGroup.getChildren().add(mesh);
     csgMap.put(csg, mesh);
+    csgNameMap.put(csg.getName(), mesh);
   }
 
   private void fireRegenerate(String key, Set<CSG> currentObjectsToCheck) {

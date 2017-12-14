@@ -97,6 +97,11 @@ public class CADModelViewerController implements Initializable {
     axisShowing = !axisShowing;
   }
 
+  @FXML
+  private void onClearObjects(ActionEvent actionEvent) {
+    clearMeshes();
+  }
+
   public BowlerStudio3dEngine getEngine() {
     return engine;
   }
