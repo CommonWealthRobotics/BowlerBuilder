@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
 
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
