@@ -146,6 +146,10 @@ public class MainWindowController implements Initializable {
     reloadPageButton.setGraphic(FontAwesome.Glyph.REFRESH.create());
     homePageButton.setGraphic(FontAwesome.Glyph.HOME.create());
 
+    //Update the url field when a new page gets loaded
+    homeWebView.getEngine().locationProperty().addListener((observable, oldValue, newValue) ->
+        urlField.setText(newValue));
+
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
     SplitPane.setResizableWithParent(console, false);
@@ -262,9 +266,13 @@ public class MainWindowController implements Initializable {
     loadPage(url);
   }
 
+  /**
+   * Load a page into the home WebView.
+   *
+   * @param url URl to load
+   */
   private void loadPage(String url) {
     homeWebView.getEngine().load(url);
-    urlField.setText(url);
   }
 
   private void tryLogin() {
