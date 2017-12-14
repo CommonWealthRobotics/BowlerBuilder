@@ -355,6 +355,11 @@ public class MainWindowController implements Initializable {
     reloadCadMenus();
   }
 
+  @FXML
+  private void onReloadMenus(ActionEvent actionEvent) {
+    reloadGitMenus();
+  }
+
   /**
    * Reload the GitHub-related menus.
    */
