@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -88,8 +89,8 @@ public class BowlerStudio3dEngine extends Pane {
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
-  private Map<String, MeshView> csgNameMap = new HashMap<>();
-  private final Map<MeshView, Axis> axisMap = new HashMap<>();
+  private Map<String, MeshView> csgNameMap = new WeakHashMap<>();
+  private final Map<MeshView, Axis> axisMap = new WeakHashMap<>();
   private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
 
