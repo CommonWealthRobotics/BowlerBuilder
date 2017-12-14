@@ -5,7 +5,7 @@ import javafx.scene.control.Tab;
 
 public class FileEditorTab extends Tab {
 
-  private FileEditorController controller;
+  private final FileEditorController controller;
 
   public FileEditorTab(String text, FileEditorController controller) {
     super(text);
