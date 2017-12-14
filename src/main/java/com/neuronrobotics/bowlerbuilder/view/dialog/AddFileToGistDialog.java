@@ -37,13 +37,23 @@ public class AddFileToGistDialog extends Dialog<String> {
     pane.add(nameField, 1, 0);
 
     ValidationSupport validator = new ValidationSupport();
-    validator.setValidationDecorator(new StyleClassValidationDecoration("text-field-error", "text-field-warning"));
+    validator.setValidationDecorator(new StyleClassValidationDecoration(
+        "text-field-error",
+        "text-field-warning"));
     validator.registerValidator(nameField, false, (control, value) -> {
       if (value instanceof String) {
-        return ValidationResult.fromMessageIf(control, "Invalid File Name", Severity.ERROR, !validateFileName((String) value).isPresent());
+        return ValidationResult.fromMessageIf(
+            control,
+            "Invalid File Name",
+            Severity.ERROR,
+            !validateFileName((String) value).isPresent());
       }
 
-      return ValidationResult.fromMessageIf(control, "Invalid File Name", Severity.ERROR, false);
+      return ValidationResult.fromMessageIf(
+          control,
+          "Invalid File Name",
+          Severity.ERROR,
+          false);
     });
 
     getDialogPane().setContent(pane);
@@ -65,6 +75,7 @@ public class AddFileToGistDialog extends Dialog<String> {
 
   /**
    * Validate a file name. A valid file name has an extension.
+   *
    * @param name File name to validate
    * @return An optional containing a valid file name, empty otherwise
    */

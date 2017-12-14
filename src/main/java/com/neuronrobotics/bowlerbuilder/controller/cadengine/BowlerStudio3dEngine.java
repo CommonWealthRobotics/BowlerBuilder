@@ -89,7 +89,7 @@ public class BowlerStudio3dEngine extends Pane {
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
-  private Map<String, MeshView> csgNameMap = new WeakHashMap<>();
+  private final Map<String, MeshView> csgNameMap = new WeakHashMap<>();
   private final Map<MeshView, Axis> axisMap = new WeakHashMap<>();
   private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
