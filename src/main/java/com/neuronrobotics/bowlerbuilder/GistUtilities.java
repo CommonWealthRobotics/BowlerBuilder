@@ -31,12 +31,7 @@ public final class GistUtilities {
     GitHub gitHub = ScriptingEngine.getGithub();
     GHGistBuilder builder = gitHub.createGist();
 
-    String fixedFilename = filename;
-    if (!fixedFilename.endsWith(".groovy")) {
-      fixedFilename += ".groovy"; //NOPMD
-    }
-
-    builder.file(fixedFilename, "//Your code here");
+    builder.file(filename, "//Your code here");
     builder.description(description);
     builder.public_(isPublic);
 
