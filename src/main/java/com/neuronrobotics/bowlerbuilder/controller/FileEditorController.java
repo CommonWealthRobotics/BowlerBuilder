@@ -316,6 +316,15 @@ public class FileEditorController implements Initializable {
     this.reloadMenus = reloadMenus;
   }
 
+  /**
+   * Insert the text at the cursor.
+   *
+   * @param text text to insert
+   */
+  public void insertAtCursor(String text) {
+    aceEditor.insertAtCursor(text);
+  }
+
   public CADModelViewerController getCADViewerController() {
     return cadviewerController;
   }

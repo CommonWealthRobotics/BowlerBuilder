@@ -5,8 +5,10 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -69,6 +72,8 @@ public class MainWindowController implements Initializable {
   private Menu myOrgs;
   @FXML
   private Menu myRepos;
+  @FXML
+  private Menu cadVitamins;
   @FXML
   private TabPane tabPane;
   @FXML
@@ -112,7 +117,7 @@ public class MainWindowController implements Initializable {
     }
 
     @Override
-    public void write(int character) throws IOException {
+    public void write(int character) {
       Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
     }
   }
@@ -159,27 +164,29 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
-    Tab tab = new Tab("Scratchpad");
+    FileEditorTab tab;
     FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
 
     try {
-      tab.setContent(loader.load());
-
+      Node node = loader.load();
       final FileEditorController controller = loader.getController();
       fileEditors.add(controller);
 
+      tab = new FileEditorTab("Scratchpad", controller);
+      tab.setContent(node);
+
       controller.setFontSize((int) preferences.get("Font Size"));
-      controller.initScratchpad(tab, this::reloadMenus);
+      controller.initScratchpad(tab, this::reloadGitMenus);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+
+      tabPane.getTabs().add(tab);
+      tabPane.getSelectionModel().select(tab);
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
-
-    tabPane.getTabs().add(tab);
-    tabPane.getSelectionModel().select(tab);
   }
 
   /**
@@ -189,27 +196,29 @@ public class MainWindowController implements Initializable {
    * @param gistFile File
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
-    Tab tab = new Tab(gistFile.getFileName());
+    FileEditorTab tab;
     FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
 
     try {
-      tab.setContent(loader.load());
-
+      Node node = loader.load();
       final FileEditorController controller = loader.getController();
       fileEditors.add(controller);
+
+      tab = new FileEditorTab(gistFile.getFileName(), controller);
+      tab.setContent(node);
 
       controller.setFontSize((int) preferences.get("Font Size"));
       controller.loadGist(gist, gistFile);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+
+      tabPane.getTabs().add(tab);
+      tabPane.getSelectionModel().select(tab);
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
-
-    tabPane.getTabs().add(tab);
-    tabPane.getSelectionModel().select(tab);
   }
 
   @FXML
@@ -322,7 +331,7 @@ public class MainWindowController implements Initializable {
   }
 
   /**
-   * Setup the gist menu subsystem and fill it with repos and gists.
+   * Setup the menus for the main menu bar.
    */
   private void setupMenusOnLogin() {
     try {
@@ -334,13 +343,14 @@ public class MainWindowController implements Initializable {
 
     logOut.setDisable(false);
 
-    reloadMenus();
+    reloadGitMenus();
+    reloadCadMenus();
   }
 
   /**
-   * Reload the GitHub menus.
+   * Reload the GitHub-related menus.
    */
-  public void reloadMenus() {
+  public void reloadGitMenus() {
     //Wait for GitHub to load in
     GitHub gitHub;
     while ((gitHub = ScriptingEngine.getGithub()) == null) {
@@ -355,7 +365,7 @@ public class MainWindowController implements Initializable {
     try {
       myself = gitHub.getMyself();
 
-      new Thread(() -> {
+      LoggerUtilities.newLoggingThread(() -> {
         try {
           loadGistsIntoMenus(myGists, myself.listGists());
         } catch (IOException e) {
@@ -364,7 +374,7 @@ public class MainWindowController implements Initializable {
         }
       }).start();
 
-      new Thread(() -> {
+      LoggerUtilities.newLoggingThread(() -> {
         try {
           loadOrgsIntoMenus(myOrgs, myself.getAllOrganizations());
         } catch (IOException e) {
@@ -373,11 +383,41 @@ public class MainWindowController implements Initializable {
         }
       }).start();
 
-      new Thread(() -> loadReposIntoMenus(myRepos, myself.listRepositories())).start();
+      LoggerUtilities.newLoggingThread(() ->
+          loadReposIntoMenus(myRepos, myself.listRepositories())).start();
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
     }
+  }
+
+  /**
+   * Reload the CAD menus.
+   */
+  public void reloadCadMenus() {
+    LoggerUtilities.newLoggingThread(() ->
+        Vitamins.listVitaminTypes().forEach(vitamin -> {
+
+          Menu vitaminMenu = new Menu(vitamin);
+
+          Vitamins.listVitaminSizes(vitamin).forEach(size -> {
+            MenuItem sizeMenu = new MenuItem(size);
+
+            sizeMenu.setOnAction(event1 -> {
+              Tab selection = tabPane.getSelectionModel().getSelectedItem();
+              if (selection instanceof FileEditorTab) {
+                FileEditorTab editorTab = (FileEditorTab) selection;
+                String insertion =
+                    "CSG foo = Vitamins.get(\"" + vitamin + "\", \"" + size + "\");";
+                editorTab.getController().insertAtCursor(insertion);
+              }
+            });
+
+            vitaminMenu.getItems().add(sizeMenu);
+          });
+
+          cadVitamins.getItems().add(vitaminMenu);
+        })).start();
   }
 
   /**
@@ -448,7 +488,7 @@ public class MainWindowController implements Initializable {
         if (name == null || name.length() == 0) {
           name = org.getLogin();
         }
-        
+
         Menu orgMenu = new Menu(name);
         org.getRepositories().forEach((key, value) -> {
           MenuItem repoMenu = new MenuItem(key);

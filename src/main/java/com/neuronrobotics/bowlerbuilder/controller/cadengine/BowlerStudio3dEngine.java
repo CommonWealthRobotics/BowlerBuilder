@@ -764,8 +764,6 @@ public class BowlerStudio3dEngine extends Pane {
               CustomMenuItem customMenuItem = new CustomMenuItem(widget);
               customMenuItem.setHideOnClick(false);
               parameters.getItems().add(customMenuItem);
-              LoggerUtilities.getLogger().log(Level.INFO,
-                  "Adding Length Paramater " + lp.getName());
             } else {
               if (param != null) {
                 Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
@@ -773,9 +771,6 @@ public class BowlerStudio3dEngine extends Pane {
                 param.getOptions().forEach(option -> {
                   MenuItem customMenuItem = new MenuItem(option);
                   customMenuItem.setOnAction(event -> {
-                    LoggerUtilities.getLogger().log(Level.INFO,
-                        "Updating " + param.getName() + " to " + option);
-
                     param.setStrValue(option);
                     CSGDatabase.get(param.getName()).setStrValue(option);
                     CSGDatabase.getParamListeners(param.getName())
