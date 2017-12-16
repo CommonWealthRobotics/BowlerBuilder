@@ -732,12 +732,13 @@ public class BowlerStudio3dEngine extends Pane {
         if (params != null) {
           Menu parameters = new Menu("Parameters");
           params.forEach(key -> {
+            //Regenerate all objects if their parameters have changed
             Runnable regenerateObjects = () -> {
-              //Get the set of objects to check for regeneration after the initial
-              //regeneration cycle
+              //Get the set of objects to check for regeneration after the initial regeneration
+              //cycle
               Set<CSG> objects = getCsgMap().keySet();
 
-              //Hide this menu because the regenerated CSG talks to the new menu
+              //Hide the menu because the parameter is done being changed
               menu.hide();
 
               fireRegenerate(key, objects);
@@ -771,11 +772,15 @@ public class BowlerStudio3dEngine extends Pane {
                         double newAngleDegrees) {
                       regenerateObjects.run();
                     }
-                  }, Double.parseDouble(lp.getOptions().get(1)),
-                  Double.parseDouble(lp.getOptions().get(0)), lp.getMM(), 400, key);
+                  },
+                  Double.parseDouble(lp.getOptions().get(1)),
+                  Double.parseDouble(lp.getOptions().get(0)),
+                  lp.getMM(),
+                  400,
+                  key);
 
               CustomMenuItem customMenuItem = new CustomMenuItem(widget);
-              customMenuItem.setHideOnClick(false);
+              customMenuItem.setHideOnClick(false); //Regen will hide the menu
               parameters.getItems().add(customMenuItem);
             } else {
               if (param != null) {
@@ -788,15 +793,14 @@ public class BowlerStudio3dEngine extends Pane {
                     CSGDatabase.get(param.getName()).setStrValue(option);
                     CSGDatabase.getParamListeners(param.getName())
                         .forEach(l -> l.parameterChanged(param.getName(), param));
-
                     regenerateObjects.run();
                   });
+
                   paramTypes.getItems().add(customMenuItem);
                 });
 
                 parameters.getItems().add(paramTypes);
               }
-
             }
           });
 
