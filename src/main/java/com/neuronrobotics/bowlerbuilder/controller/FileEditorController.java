@@ -50,6 +50,7 @@ public class FileEditorController implements Initializable {
   private WebView webView;
   private WebEngine webEngine; //NOPMD
   private AceEditor aceEditor;
+  private int line;
   @FXML
   private Button runButton;
   @FXML
@@ -104,6 +105,21 @@ public class FileEditorController implements Initializable {
                     "Could not load file: " + file.getAbsolutePath() + ".\n"
                         + Throwables.getStackTraceAsString(e));
               }
+            });
+
+            //Hack to get scrolling to work
+            webView.setOnScroll(event -> {
+              int length = (int) webView.getEngine().executeScript("editor.session.getLength();");
+
+              line += (int) Math.copySign(5, -1 * event.getDeltaY());
+              if (line < 0) {
+                line = 0;
+              } else if (line > length) {
+                line = length;
+              }
+
+              webView.getEngine().executeScript(
+                  "editor.renderer.scrollCursorIntoView({row: " + line + ", column: 1}, 0.5);");
             });
           }
         });
