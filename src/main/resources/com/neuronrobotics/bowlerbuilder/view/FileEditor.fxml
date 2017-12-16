@@ -32,6 +32,7 @@
                         <TextField id="gistURLField" fx:id="gistURLField" prefWidth="350.0" />
                      </children>
                   </HBox>
+                 <Button onAction="#onCopyGist" text="Copy Gist URL" />
                </children>
                <padding>
                   <Insets left="5.0" />

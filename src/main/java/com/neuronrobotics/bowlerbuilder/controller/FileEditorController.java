@@ -32,6 +32,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -162,23 +164,6 @@ public class FileEditorController implements Initializable {
     }
   }
 
-  /**
-   * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
-   *
-   * @param controller CAD viewer controller
-   * @param item Object with CSGs
-   */
-  private void parseCSG(CADModelViewerController controller, Object item) {
-    if (item instanceof CSG) {
-      controller.addCSG((CSG) item);
-    } else if (item instanceof List) {
-      List itemList = (List) item;
-      for (Object elem : itemList) {
-        parseCSG(controller, elem);
-      }
-    }
-  }
-
   @FXML
   private void publishFile(ActionEvent actionEvent) {
     if (isScratchpad) {
@@ -249,6 +234,14 @@ public class FileEditorController implements Initializable {
     }
   }
 
+  @FXML
+  private void onCopyGist(ActionEvent actionEvent) {
+    //Put gist URL on system clipboard
+    ClipboardContent content = new ClipboardContent();
+    content.putString(gistURLField.getText());
+    Clipboard.getSystemClipboard().setContent(content);
+  }
+
   /**
    * Set the font size of this editor.
    *
@@ -259,6 +252,23 @@ public class FileEditorController implements Initializable {
       aceEditor.setFontSize(fontSize);
     } else {
       requestedFontSize = fontSize;
+    }
+  }
+
+  /**
+   * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
+   *
+   * @param controller CAD viewer controller
+   * @param item Object with CSGs
+   */
+  private void parseCSG(CADModelViewerController controller, Object item) {
+    if (item instanceof CSG) {
+      controller.addCSG((CSG) item);
+    } else if (item instanceof List) {
+      List itemList = (List) item;
+      for (Object elem : itemList) {
+        parseCSG(controller, elem);
+      }
     }
   }
 
