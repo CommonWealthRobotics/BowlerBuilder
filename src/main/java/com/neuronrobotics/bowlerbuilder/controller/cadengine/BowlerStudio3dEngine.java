@@ -840,31 +840,21 @@ public class BowlerStudio3dEngine extends Pane {
       List<CSG> toAdd = new ArrayList<>();
       List<CSG> toRemove = new ArrayList<>();
 
-      Object[] array = currentObjectsToCheck.toArray();
-      for (int i = 0; i < currentObjectsToCheck.size(); i++) {
-        LoggerUtilities.getLogger().log(Level.INFO,
-            "Testing for Regenerating " + i + " of " + currentObjectsToCheck.size());
-
-        CSG tester = (CSG) array[i];
-        for (String p : tester.getParameters()) {
-          if (p.contentEquals(key) && !toRemove.contains(tester)) {
-            LoggerUtilities.getLogger().log(Level.INFO,
-                "Regenerating " + i + " on key " + p);
-            try {
-              CSG ret = tester.regenerate();
-              toRemove.add(tester);
-              toAdd.add(ret);
-            } catch (Exception e) {
-              LoggerUtilities.getLogger().log(Level.WARNING,
-                  "Could not regenerate CSG.\n" + Throwables.getStackTraceAsString(e));
-            }
-          }
+      //For each parameter of each object
+      currentObjectsToCheck.forEach(object -> object.getParameters().forEach(param -> {
+        //If the parameter matches the input
+        if (param.contentEquals(key) && !toRemove.contains(object)) {
+          //Regen the csg, remove the existing CSG, and add the new CSG
+          CSG regen = object.regenerate();
+          toRemove.add(object);
+          toAdd.add(regen);
         }
-      }
+      }));
 
-      toRemove.forEach(item ->
-          Platform.runLater(() -> meshViewGroup.getChildren().remove(item.getMesh())));
-      toAdd.forEach(item -> Platform.runLater(() -> addCSG(item)));
+      Platform.runLater(() ->
+          toRemove.forEach(item -> meshViewGroup.getChildren().remove(item.getMesh())));
+      Platform.runLater(() ->
+          toAdd.forEach(this::addCSG));
 
       LoggerUtilities.getLogger().log(Level.INFO, "Saving CSG database");
       CSGDatabase.saveDatabase();
