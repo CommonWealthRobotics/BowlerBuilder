@@ -16,8 +16,10 @@ public class HelpDialog extends Dialog {
 
     FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
+
     setTitle("BowlerBuilder Help");
     getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
     try {
       getDialogPane().setContent(loader.load());
     } catch (IOException e) {

@@ -8,19 +8,21 @@ import javafx.scene.layout.VBox;
 
 public class LoginDialog extends Dialog<Boolean> {
 
-  private TextField nameField;
-  private PasswordField passField;
+  private final TextField nameField;
+  private final PasswordField passField;
 
   public LoginDialog() {
     super();
 
-    VBox vBox = new VBox();
     nameField = new TextField();
-    passField = new PasswordField();
-
+    nameField.setId("loginNameField");
     nameField.setPromptText("Username");
+
+    passField = new PasswordField();
+    passField.setId("loginPassField");
     passField.setPromptText("Password");
 
+    VBox vBox = new VBox();
     vBox.setSpacing(5);
     vBox.getChildren().addAll(nameField, passField);
 
