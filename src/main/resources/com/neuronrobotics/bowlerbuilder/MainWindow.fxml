@@ -47,6 +47,7 @@
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
                 <Menu mnemonicParsing="false" fx:id="cadVitamins" text="Vitamins" />
+                <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

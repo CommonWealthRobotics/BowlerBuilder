@@ -80,7 +80,6 @@ public class MainWindowController implements Initializable {
   private Tab homeTab;
   @FXML
   private SplitPane splitPane;
-
   @FXML
   private Button backPageButton;
   @FXML
@@ -93,7 +92,6 @@ public class MainWindowController implements Initializable {
   private TextField urlField;
   @FXML
   private WebView homeWebView;
-
   @FXML
   private TextArea console;
 
@@ -105,21 +103,6 @@ public class MainWindowController implements Initializable {
     fileEditors = new ArrayList<>();
     preferences = new HashMap<>();
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
-  }
-
-  //Simple stream to append input characters to a text area
-  private static class TextAreaPrintStream extends OutputStream {
-
-    private final TextArea textArea;
-
-    public TextAreaPrintStream(TextArea textArea) {
-      this.textArea = textArea;
-    }
-
-    @Override
-    public void write(int character) {
-      Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
-    }
   }
 
   @Override
@@ -193,35 +176,83 @@ public class MainWindowController implements Initializable {
     }
   }
 
-  /**
-   * Open a gist file in the file editor.
-   *
-   * @param gist Gist containing file
-   * @param gistFile File
-   */
-  public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
-    FileEditorTab tab;
+  @FXML
+  private void onLogOutFromGitHub(ActionEvent actionEvent) {
+    try {
+      ScriptingEngine.logout();
+      logOut.setDisable(true);
+      myGists.getItems().clear();
+      myOrgs.getItems().clear();
+      myRepos.getItems().clear();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.WARNING,
+          "Could not log out from GitHub.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  @FXML
+  private void onDeleteLocalCache(ActionEvent actionEvent) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
+    alert.setTitle("Confirm Deletion");
+    alert.setHeaderText("Delete All Local Files and Quit?");
+    alert.setContentText("Deleting the cache will remove unsaved work and quit. Are you sure?");
+
+    if (alert.showAndWait().isPresent() && alert.getResult() == ButtonType.OK) {
+      new Thread(() -> {
+        Thread.currentThread().setName("Delete Cache Thread");
+
+        try {
+          FileUtils.deleteDirectory(
+              new File(
+                  ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/"));
+        } catch (IOException e) {
+          LoggerUtilities.getLogger().log(Level.WARNING,
+              "Unable to delete cache.\n" + Throwables.getStackTraceAsString(e));
+        }
+
+        Platform.runLater(this::quit);
+      }).start();
+    }
+  }
+
+  @FXML
+  private void openPreferences(ActionEvent actionEvent) {
     FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
+        "/com/neuronrobotics/bowlerbuilder/view/Preferences.fxml"));
+    Dialog dialog = new Dialog();
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
 
     try {
-      Node node = loader.load();
-      final FileEditorController controller = loader.getController();
-      fileEditors.add(controller);
-
-      tab = new FileEditorTab(gistFile.getFileName(), controller);
-      tab.setContent(node);
-
-      controller.setFontSize((int) preferences.get("Font Size"));
-      controller.loadGist(gist, gistFile);
-
-      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
-
-      tabPane.getTabs().add(tab);
-      tabPane.getSelectionModel().select(tab);
+      dialog.getDialogPane().setContent(loader.load());
+      PreferencesController controller = loader.getController();
+      controller.setPreferences(preferences);
+      dialog.showAndWait();
+      preferences = controller.getPreferences();
+      if (controller.getPreferences().containsKey("Font Size")) {
+        fileEditors.forEach(elem ->
+            elem.setFontSize((Integer) controller.getPreferences().get("Font Size")));
+      }
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+          "Could not load Preferences.fxml.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  @FXML
+  private void openEditorHelp(ActionEvent actionEvent) {
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
+    Dialog dialog = new Dialog();
+    dialog.setTitle("BowlerBuilder Help");
+    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+    try {
+      dialog.getDialogPane().setContent(loader.load());
+      dialog.showAndWait();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load EditorHelp.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -266,6 +297,16 @@ public class MainWindowController implements Initializable {
     loadPage(url);
   }
 
+  @FXML
+  private void onReloadMenus(ActionEvent actionEvent) {
+    reloadGitMenus();
+  }
+
+  @FXML
+  private void onReloadVitamins(ActionEvent actionEvent) {
+    reloadCadMenus();
+  }
+
   /**
    * Load a page into the home WebView.
    *
@@ -273,6 +314,38 @@ public class MainWindowController implements Initializable {
    */
   private void loadPage(String url) {
     homeWebView.getEngine().load(url);
+  }
+
+  /**
+   * Open a gist file in the file editor.
+   *
+   * @param gist Gist containing file
+   * @param gistFile File
+   */
+  public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
+    FileEditorTab tab;
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
+
+    try {
+      Node node = loader.load();
+      final FileEditorController controller = loader.getController();
+      fileEditors.add(controller);
+
+      tab = new FileEditorTab(gistFile.getFileName(), controller);
+      tab.setContent(node);
+
+      controller.setFontSize((int) preferences.get("Font Size"));
+      controller.loadGist(gist, gistFile);
+
+      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+
+      tabPane.getTabs().add(tab);
+      tabPane.getSelectionModel().select(tab);
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   private void tryLogin() {
@@ -353,11 +426,6 @@ public class MainWindowController implements Initializable {
 
     reloadGitMenus();
     reloadCadMenus();
-  }
-
-  @FXML
-  private void onReloadMenus(ActionEvent actionEvent) {
-    reloadGitMenus();
   }
 
   /**
@@ -543,86 +611,6 @@ public class MainWindowController implements Initializable {
     });
   }
 
-  @FXML
-  private void onLogOutFromGitHub(ActionEvent actionEvent) {
-    try {
-      ScriptingEngine.logout();
-      logOut.setDisable(true);
-      myGists.getItems().clear();
-      myOrgs.getItems().clear();
-      myRepos.getItems().clear();
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not log out from GitHub.\n" + Throwables.getStackTraceAsString(e));
-    }
-  }
-
-  @FXML
-  private void onDeleteLocalCache(ActionEvent actionEvent) {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-
-    alert.setTitle("Confirm Deletion");
-    alert.setHeaderText("Delete All Local Files and Quit?");
-    alert.setContentText("Deleting the cache will remove unsaved work and quit. Are you sure?");
-
-    if (alert.showAndWait().isPresent() && alert.getResult() == ButtonType.OK) {
-      new Thread(() -> {
-        Thread.currentThread().setName("Delete Cache Thread");
-
-        try {
-          FileUtils.deleteDirectory(
-              new File(
-                  ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/"));
-        } catch (IOException e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
-              "Unable to delete cache.\n" + Throwables.getStackTraceAsString(e));
-        }
-
-        Platform.runLater(this::quit);
-      }).start();
-    }
-  }
-
-  @FXML
-  private void openPreferences(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/Preferences.fxml"));
-    Dialog dialog = new Dialog();
-    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
-
-    try {
-      dialog.getDialogPane().setContent(loader.load());
-      PreferencesController controller = loader.getController();
-      controller.setPreferences(preferences);
-      dialog.showAndWait();
-      preferences = controller.getPreferences();
-      if (controller.getPreferences().containsKey("Font Size")) {
-        fileEditors.forEach(elem ->
-            elem.setFontSize((Integer) controller.getPreferences().get("Font Size")));
-      }
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load Preferences.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
-  }
-
-  @FXML
-  private void openEditorHelp(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
-    Dialog dialog = new Dialog();
-    dialog.setTitle("BowlerBuilder Help");
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-
-    try {
-      dialog.getDialogPane().setContent(loader.load());
-      dialog.showAndWait();
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load EditorHelp.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
-  }
-
   /**
    * Save work and quit.
    */
@@ -637,6 +625,21 @@ public class MainWindowController implements Initializable {
   private void quit() {
     root.getScene().getWindow().hide();
     Platform.exit();
+  }
+
+  //Simple stream to append input characters to a text area
+  private static class TextAreaPrintStream extends OutputStream {
+
+    private final TextArea textArea;
+
+    public TextAreaPrintStream(TextArea textArea) {
+      this.textArea = textArea;
+    }
+
+    @Override
+    public void write(int character) {
+      Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
+    }
   }
 
 }
