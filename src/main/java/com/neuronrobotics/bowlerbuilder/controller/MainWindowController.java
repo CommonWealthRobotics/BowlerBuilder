@@ -8,6 +8,7 @@ import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -339,24 +340,10 @@ public class MainWindowController implements Initializable {
 
   private void tryLogin() {
     ScriptingEngine.setLoginManager(s -> {
-      VBox vBox = new VBox();
-      TextField nameField = new TextField();
-      PasswordField passField = new PasswordField();
-
-      nameField.setPromptText("Username");
-      passField.setPromptText("Password");
-
-      vBox.setSpacing(5);
-      vBox.getChildren().addAll(nameField, passField);
-
-      Dialog<Boolean> dialog = new Dialog<>();
-      dialog.getDialogPane().setContent(vBox);
-      dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-      dialog.setResultConverter(buttonType -> !buttonType.getButtonData().isCancelButton());
+      LoginDialog dialog = new LoginDialog();
 
       if (dialog.showAndWait().isPresent() && dialog.showAndWait().get()) {
-        return new String[]{nameField.getText(), passField.getText()};
+        return new String[]{dialog.getName(), dialog.getPassword()};
       } else {
         return new String[0];
       }
