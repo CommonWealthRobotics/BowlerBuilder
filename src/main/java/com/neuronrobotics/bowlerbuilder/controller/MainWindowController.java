@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -241,19 +242,7 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void openEditorHelp(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
-    Dialog dialog = new Dialog();
-    dialog.setTitle("BowlerBuilder Help");
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-
-    try {
-      dialog.getDialogPane().setContent(loader.load());
-      dialog.showAndWait();
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load EditorHelp.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
+    new HelpDialog().showAndWait();
   }
 
   @FXML
