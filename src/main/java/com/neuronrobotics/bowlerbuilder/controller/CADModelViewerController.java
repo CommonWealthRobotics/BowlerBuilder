@@ -22,6 +22,7 @@ public class CADModelViewerController implements Initializable {
 
   private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
   private boolean axisShowing = true;
+  private boolean handShowing = true;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -95,6 +96,17 @@ public class CADModelViewerController implements Initializable {
     }
 
     axisShowing = !axisShowing;
+  }
+
+  @FXML
+  private void onHand(ActionEvent actionEvent) {
+    if (handShowing) {
+      engine.hideHand();
+    } else {
+      engine.showHand();
+    }
+
+    handShowing = !handShowing;
   }
 
   @FXML

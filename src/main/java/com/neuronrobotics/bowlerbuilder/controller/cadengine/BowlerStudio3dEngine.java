@@ -74,6 +74,7 @@ public class BowlerStudio3dEngine extends Pane {
   private final Group lookGroup = new Group();
   private final Group focusGroup = new Group();
   private final Group meshViewGroup = new Group();
+  private final Group hand = new Group();
 
   private double mousePosX;
   private double mousePosY;
@@ -135,7 +136,7 @@ public class BowlerStudio3dEngine extends Pane {
         20, // Height
         20 // resolution
     ).toCSG().roty(90).setColor(Color.BLACK);
-    Group hand = new Group(cylinder.getMesh());
+    hand.getChildren().add(cylinder.getMesh());
     virtualCam = new VirtualCameraDevice(camera, hand);
     VirtualCameraFactory.setFactory(() -> virtualCam);
 
@@ -319,6 +320,14 @@ public class BowlerStudio3dEngine extends Pane {
   public final void hideAxis() {
     Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.hide());
+  }
+
+  public final void showHand() {
+    hand.setVisible(true);
+  }
+
+  public void hideHand() {
+    hand.setVisible(false);
   }
 
   /**

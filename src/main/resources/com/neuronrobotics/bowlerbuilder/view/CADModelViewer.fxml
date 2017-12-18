@@ -12,6 +12,7 @@
          <children>
             <Button mnemonicParsing="false" onAction="#onHomeCamera" text="Home Camera" />
             <Button mnemonicParsing="false" onAction="#onAxis" text="Show/Hide Axis" />
+            <Button mnemonicParsing="false" onAction="#onHand" text="Show/Hide Hand" />
             <Button mnemonicParsing="false" onAction="#onClearObjects" text="Clear Objects" />
          </children>
          <padding>
