@@ -1,6 +1,6 @@
-package com.neuronrobotics.bowlerbuilder.controller.aceinterface;
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 
-public interface AceInterface {
+public interface ScriptEditor {
 
   /**
    * Insert text at the cursor position.

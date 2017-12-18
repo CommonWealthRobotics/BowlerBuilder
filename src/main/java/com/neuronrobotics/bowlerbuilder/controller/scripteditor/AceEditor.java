@@ -1,10 +1,10 @@
-package com.neuronrobotics.bowlerbuilder.controller.aceinterface;
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.util.logging.Level;
 import javafx.scene.web.WebEngine;
 
-public final class AceEditor implements AceInterface {
+public final class AceEditor implements ScriptEditor {
 
   private final WebEngine engine;
 

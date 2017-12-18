@@ -4,7 +4,7 @@ import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.aceinterface.AceEditor;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditor;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;

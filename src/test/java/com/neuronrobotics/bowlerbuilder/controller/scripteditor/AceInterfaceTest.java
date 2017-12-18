@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.aceinterface;
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 
 //class AceInterfaceTest extends AutoClosingApplicationTest {
 //
