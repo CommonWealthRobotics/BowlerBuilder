@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.view;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
