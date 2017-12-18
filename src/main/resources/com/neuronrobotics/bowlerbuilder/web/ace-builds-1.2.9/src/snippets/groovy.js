@@ -53,18 +53,18 @@ snippet ret\n\
 	return ${1:result}\n\
 # for (property in object ) { ... }\n\
 snippet fore\n\
-	for (${1:int} ${2:elem} in ${3:Things}) {\n\
+	for (${1:int} ${2:elem} : ${3:Things}) {\n\
 		${0:$2}\n\
 	}\n\
 # for (...) {...}\n\
 snippet for\n\
-	for (${1:int} ${2:i} = 0; $2 < ${3:Things}.length; $2++) {\n\
-		${0:$3[$2]}\n\
+	for (${1:int} ${2:i} = 0; $2 < ${3:Things}; $2++) {\n\
+		${0}\n\
 	}\n\
 # for (...) {...} (Improved Native For-Loop)\n\
 snippet forr\n\
-	for (${1:int} ${2:i} = ${3:Things}.length - 1; $2 >= 0; $2--) {\n\
-		${0:$3[$2]}\n\
+	for (${1:int} ${2:i} = ${3:Things} - 1; $2 >= 0; $2--) {\n\
+		${0}\n\
 	}\n\
 \n\
 \n\
