@@ -588,8 +588,8 @@ public class MainWindowController implements Initializable {
         }
       }
 
-      //Cap length to 15
-      gistMenuText = gistMenuText.substring(0, Math.min(15, gistMenuText.length()));
+      //Cap length
+      gistMenuText = gistMenuText.substring(0, Math.min(25, gistMenuText.length()));
 
       Menu gistMenu = new Menu(gistMenuText);
       gistMenu.getItems().addAll(showWebGist, addFileToGist);
