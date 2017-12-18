@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import java.util.concurrent.ConcurrentHashMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
@@ -39,7 +40,7 @@ public class PreferencesController implements Initializable {
    * @return Changed preferences
    */
   public Map<String, Object> getChanges() {
-    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> map = new ConcurrentHashMap<>();
     Integer newFontSize = Integer.parseInt(fontSizeTextField.getText());
     if (!prefs.get("Font Size").equals(newFontSize)) {
       map.put("Font Size", newFontSize);
@@ -53,7 +54,7 @@ public class PreferencesController implements Initializable {
    * @return Full preferences
    */
   public Map<String, Object> getPreferences() {
-    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> map = new ConcurrentHashMap<>();
     map.put("Font Size", Integer.parseInt(fontSizeTextField.getText()));
     return map;
   }

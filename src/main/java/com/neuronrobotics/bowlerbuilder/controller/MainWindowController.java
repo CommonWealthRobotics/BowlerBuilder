@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -63,7 +64,8 @@ import org.kohsuke.github.PagedIterable;
 public class MainWindowController implements Initializable {
 
   //Open file editors
-  private final List<FileEditorController> fileEditors;
+  private final List<FileEditorController> fileEditors = new ArrayList<>();
+
   @FXML
   private BorderPane root;
   @FXML
@@ -96,11 +98,10 @@ public class MainWindowController implements Initializable {
   private WebView homeWebView;
   @FXML
   private TextArea console;
-  private Map<String, Object> preferences;
+
+  private Map<String, Object> preferences = new ConcurrentHashMap<>();
 
   public MainWindowController() {
-    fileEditors = new ArrayList<>();
-    preferences = new HashMap<>();
     preferences.put("Font Size", 14); //TODO: Load previous font size preference
   }
 
