@@ -13,6 +13,7 @@ buildscript {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0")
     }
 }
+
 plugins {
     application
     `maven-publish`

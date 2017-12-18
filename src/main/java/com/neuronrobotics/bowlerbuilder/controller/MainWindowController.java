@@ -374,10 +374,10 @@ public class MainWindowController implements Initializable {
   private void showLoginNotification() {
     Platform.runLater(() -> {
       try {
-        Notifications.create() //TODO: Weird exception
+        Notifications notifications = Notifications.create() //TODO: Weird exception
             .title("Login Success")
-            .text(ScriptingEngine.getGithub().getMyself().getLogin())
-            .show();
+            .text(ScriptingEngine.getGithub().getMyself().getLogin());
+        notifications.owner(root);
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Unable to get GitHub.\n" + Throwables.getStackTraceAsString(e));
@@ -450,6 +450,8 @@ public class MainWindowController implements Initializable {
    * Reload the CAD menus.
    */
   public void reloadCadMenus() {
+    cadVitamins.getItems().clear();
+
     LoggerUtilities.newLoggingThread(() ->
         Vitamins.listVitaminTypes().forEach(vitamin -> {
 
