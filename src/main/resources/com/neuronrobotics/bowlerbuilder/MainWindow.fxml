@@ -66,25 +66,8 @@
                   <Tab id="homeTab" fx:id="homeTab" closable="false" text="Home">
                      <content>
                         <BorderPane>
-                           <top>
-                              <HBox alignment="CENTER_LEFT" prefHeight="35.0" spacing="5.0" BorderPane.alignment="CENTER">
-                                 <children>
-                                    <Button fx:id="backPageButton" mnemonicParsing="false" onAction="#onBackPage" />
-                                    <Button fx:id="nextPageButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onNextPage" />
-                                    <Button fx:id="reloadPageButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReloadPage" />
-                                    <Button fx:id="homePageButton" layoutX="114.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHomePage" />
-                                    <TextField fx:id="urlField" HBox.hgrow="ALWAYS" onAction="#onNavigate">
-                                       <HBox.margin>
-                                          <Insets right="5.0" />
-                                       </HBox.margin></TextField>
-                                 </children>
-                                 <padding>
-                                    <Insets left="5.0" />
-                                 </padding>
-                              </HBox>
-                           </top>
                            <center>
-                              <WebView fx:id="homeWebView" minHeight="-1.0" minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" BorderPane.alignment="CENTER" />
+                               <fx:include fx:id="webBrowser" source="view/WebBrowser.fxml" />
                            </center>
                         </BorderPane>
                      </content>

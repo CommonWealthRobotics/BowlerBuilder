@@ -35,7 +35,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
@@ -44,12 +43,9 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.web.WebView;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -82,19 +78,7 @@ public class MainWindowController implements Initializable {
   @FXML
   private Tab homeTab;
   @FXML
-  private SplitPane splitPane;
-  @FXML
-  private Button backPageButton;
-  @FXML
-  private Button nextPageButton;
-  @FXML
-  private Button reloadPageButton;
-  @FXML
-  private Button homePageButton;
-  @FXML
-  private TextField urlField;
-  @FXML
-  private WebView homeWebView;
+  private WebBrowserController webBrowserController;
   @FXML
   private TextArea console;
 
@@ -122,15 +106,6 @@ public class MainWindowController implements Initializable {
     }
     System.setOut(stream);
     System.setErr(stream);
-
-    backPageButton.setGraphic(FontAwesome.Glyph.ARROW_LEFT.create());
-    nextPageButton.setGraphic(FontAwesome.Glyph.ARROW_RIGHT.create());
-    reloadPageButton.setGraphic(FontAwesome.Glyph.REFRESH.create());
-    homePageButton.setGraphic(FontAwesome.Glyph.HOME.create());
-
-    //Update the url field when a new page gets loaded
-    homeWebView.getEngine().locationProperty().addListener((observable, oldValue, newValue) ->
-        urlField.setText(newValue));
 
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
@@ -315,37 +290,6 @@ public class MainWindowController implements Initializable {
   }
 
   @FXML
-  private void onBackPage(ActionEvent actionEvent) {
-    Platform.runLater(() -> homeWebView.getEngine().executeScript("history.back()"));
-  }
-
-  @FXML
-  private void onNextPage(ActionEvent actionEvent) {
-    Platform.runLater(() -> homeWebView.getEngine().executeScript("history.forward()"));
-  }
-
-  @FXML
-  private void onReloadPage(ActionEvent actionEvent) {
-    homeWebView.getEngine().reload();
-  }
-
-  @FXML
-  private void onHomePage(ActionEvent actionEvent) {
-    loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
-  }
-
-  @FXML
-  private void onNavigate(ActionEvent actionEvent) {
-    String url = urlField.getText();
-
-    if (!url.toLowerCase(Locale.ENGLISH).matches("^\\w+://.*")) {
-      url = String.format("http://%s", url);
-    }
-
-    loadPage(url);
-  }
-
-  @FXML
   private void onReloadMenus(ActionEvent actionEvent) {
     reloadGitMenus();
   }
@@ -358,10 +302,32 @@ public class MainWindowController implements Initializable {
   /**
    * Load a page into the home WebView.
    *
-   * @param url URl to load
+   * @param url URL to load
    */
   private void loadPage(String url) {
-    homeWebView.getEngine().load(url);
+    webBrowserController.loadPage(url);
+  }
+
+  /**
+   * Load a page into a new Tab.
+   *
+   * @param tabName name for new tab
+   * @param url URL to load
+   */
+  private void loadPageIntoNewTab(String tabName, String url) {
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
+
+    try {
+      Tab tab = new Tab(tabName, loader.load());
+      WebBrowserController controller = loader.getController();
+      controller.loadPage(url);
+      tabPane.getTabs().add(tab);
+      tabPane.getSelectionModel().select(tab);
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load WebBrowser.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   /**
@@ -546,13 +512,8 @@ public class MainWindowController implements Initializable {
   private void loadGistsIntoMenus(Menu menu, PagedIterable<GHGist> gists) {
     gists.forEach(gist -> {
       MenuItem showWebGist = new MenuItem("Show Gist on Web");
-      showWebGist.setOnAction(event -> {
-        WebView webView = new WebView();
-        webView.getEngine().load(gist.getHtmlUrl());
-        Tab tab = new Tab(gist.getDescription(), webView);
-        tabPane.getTabs().add(tab);
-        tabPane.getSelectionModel().select(tab);
-      });
+      showWebGist.setOnAction(event ->
+          loadPageIntoNewTab(gist.getDescription(), gist.getHtmlUrl()));
 
       MenuItem addFileToGist = new MenuItem("Add File");
       addFileToGist.setOnAction(event -> Platform.runLater(() -> {
@@ -621,10 +582,27 @@ public class MainWindowController implements Initializable {
         Menu orgMenu = new Menu(name);
         org.getRepositories().forEach((key, value) -> {
           MenuItem repoMenu = new MenuItem(key);
-          repoMenu.setOnAction(__ -> homeWebView.getEngine().load(value.gitHttpTransportUrl()));
+          repoMenu.setOnAction(event -> {
+                loadPageIntoNewTab(
+                    value.getDescription()
+                        .substring(0, Math.min(15, value.getDescription().length())),
+                    value.gitHttpTransportUrl());
+                event.consume();
+              }
+          );
           orgMenu.getItems().add(repoMenu);
         });
-        orgMenu.setOnAction(event -> homeWebView.getEngine().load(org.getHtmlUrl()));
+
+        orgMenu.setOnAction(event -> {
+          try {
+            loadPageIntoNewTab(org.getName(), org.getHtmlUrl());
+          } catch (IOException e) {
+            LoggerUtilities.getLogger().log(Level.WARNING,
+                "Could not get organization name when loading new tab.\n"
+                    + Throwables.getStackTraceAsString(e));
+          }
+        });
+
         menu.getItems().add(orgMenu);
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.WARNING,
@@ -642,7 +620,10 @@ public class MainWindowController implements Initializable {
   private void loadReposIntoMenus(Menu menu, PagedIterable<GHRepository> repos) {
     repos.forEach(repo -> {
       MenuItem menuItem = new MenuItem(repo.getName());
-      menuItem.setOnAction(event -> homeWebView.getEngine().load(repo.gitHttpTransportUrl()));
+      menuItem.setOnAction(event ->
+          loadPageIntoNewTab(
+              repo.getName().substring(0, Math.min(15, repo.getName().length())),
+              repo.gitHttpTransportUrl()));
       menu.getItems().add(menuItem);
     });
   }
