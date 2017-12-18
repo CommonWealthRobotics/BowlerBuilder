@@ -513,11 +513,11 @@ public class MainWindowController implements Initializable {
     cadVitamins.getItems().clear();
 
     LoggerUtilities.newLoggingThread(() ->
-        Vitamins.listVitaminTypes().forEach(vitamin -> {
+        Vitamins.listVitaminTypes().stream().sorted().forEach(vitamin -> {
 
           Menu vitaminMenu = new Menu(vitamin);
 
-          Vitamins.listVitaminSizes(vitamin).forEach(size -> {
+          Vitamins.listVitaminSizes(vitamin).stream().sorted().forEach(size -> {
             MenuItem sizeMenu = new MenuItem(size);
 
             sizeMenu.setOnAction(event1 -> {
