@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="editorGuide" prefHeight="316.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="editorGuide" prefHeight="316.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -18,7 +18,7 @@
                         <Label text="if -&gt; if statement" />
                         <Label text="ife -&gt; if-else statement" />
                         <Label text="ter -&gt; ternary conditional" />
-                        <Label text="switch -&gt; switch statement with one case and default" />
+                        <Label text="switch -&gt; switch statement" />
                         <Label text="case -&gt; case statement" />
                         <Label text="wh -&gt; while loop" />
                         <Label text="try -&gt; try-catch block" />
