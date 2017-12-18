@@ -62,6 +62,8 @@ import org.kohsuke.github.PagedIterable;
 
 public class MainWindowController implements Initializable {
 
+  //Open file editors
+  private final List<FileEditorController> fileEditors;
   @FXML
   private BorderPane root;
   @FXML
@@ -94,9 +96,6 @@ public class MainWindowController implements Initializable {
   private WebView homeWebView;
   @FXML
   private TextArea console;
-
-  //Open file editors
-  private final List<FileEditorController> fileEditors;
   private Map<String, Object> preferences;
 
   public MainWindowController() {
@@ -237,7 +236,68 @@ public class MainWindowController implements Initializable {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not load Preferences.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
+    //    Map<String, Object> customDataMap = new LinkedHashMap<>();
+    //    customDataMap.put("Group 1#My Text", "Same text"); // Creates a TextField in property
+    // sheet
+    //    customDataMap.put("Group 1#My Date", LocalDate.of(2000, Month.JANUARY, 1)); // Creates
+    // a DatePicker
+    //    customDataMap.put("Group 2#My Boolean", false); // Creates a CheckBox
+    //    customDataMap.put("Group 2#My Number", 500); // Creates a NumericField
+    //    ObservableList<PropertySheet.Item> list = FXCollections.observableArrayList();
+    //    for (String key : customDataMap.keySet())
+    //      list.add(new CustomPropertyItem(key, customDataMap));
+    //
+    //    PropertySheet propertySheet = new PropertySheet(list);
+    //    VBox.setVgrow(propertySheet, Priority.ALWAYS);
+    //
+    //    Dialog dialog  =new Dialog();
+    //    dialog.getDialogPane().setContent(propertySheet);
   }
+
+  //  class CustomPropertyItem implements PropertySheet.Item {
+  //    private String key;
+  //    private String category, name;
+  //    private Map<String, Object> customDataMap;
+  //
+  //    public CustomPropertyItem(String key, Map<String, Object> map) {
+  //      this.key = key;
+  //      this.customDataMap = map;
+  //
+  //      String[] skey = key.split("#");
+  //      category = skey[0];
+  //      name = skey[1];
+  //    }
+  //
+  //    @Override
+  //    public Class<?> getType() {
+  //      return customDataMap.get(key).getClass();
+  //    }
+  //
+  //    @Override
+  //    public String getCategory() {
+  //      return category;
+  //    }
+  //
+  //    @Override
+  //    public String getName() {
+  //      return name;
+  //    }
+  //
+  //    @Override
+  //    public String getDescription() {
+  //      return null;
+  //    }
+  //
+  //    @Override
+  //    public Object getValue() {
+  //      return customDataMap.get(key);
+  //    }
+  //
+  //    @Override
+  //    public void setValue(Object value) {
+  //      customDataMap.put(key, value);
+  //    }
+  //  }
 
   @FXML
   private void openEditorHelp(ActionEvent actionEvent) {
