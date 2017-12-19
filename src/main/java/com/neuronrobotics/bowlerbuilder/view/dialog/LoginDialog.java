@@ -25,6 +25,7 @@ public class LoginDialog extends Dialog<Boolean> {
     VBox vBox = new VBox();
     vBox.setSpacing(5);
     vBox.getChildren().addAll(nameField, passField);
+    nameField.requestFocus();
 
     setTitle("Login to GitHub");
     getDialogPane().setContent(vBox);

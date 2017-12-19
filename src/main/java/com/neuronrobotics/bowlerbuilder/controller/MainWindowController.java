@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +34,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -114,12 +116,13 @@ public class MainWindowController implements Initializable {
     try {
       ScriptingEngine.runLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-        //showLoginNotification();
+        showLoginNotification();
         setupMenusOnLogin();
       }
     } catch (IOException e) {
       LoggerUtilities.getLogger().log(Level.WARNING,
-          "Could not automatically log in.\n" + Throwables.getStackTraceAsString(e));
+          "Could not automatically log in.\n");
+      logOut.setDisable(true); //Can't log out when not logged in
     }
   }
 
@@ -366,7 +369,8 @@ public class MainWindowController implements Initializable {
     ScriptingEngine.setLoginManager(s -> {
       LoginDialog dialog = new LoginDialog();
 
-      if (dialog.showAndWait().isPresent() && dialog.showAndWait().get()) {
+      final Optional<Boolean> result = dialog.showAndWait();
+      if (result.isPresent() && result.get()) {
         return new String[]{dialog.getName(), dialog.getPassword()};
       } else {
         return new String[0];
@@ -376,7 +380,7 @@ public class MainWindowController implements Initializable {
     try {
       ScriptingEngine.waitForLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-        //showLoginNotification();
+        showLoginNotification();
         setupMenusOnLogin();
       }
     } catch (IOException e) {
@@ -389,7 +393,7 @@ public class MainWindowController implements Initializable {
             "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
       }
     } catch (GitAPIException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
+      LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not log in.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -400,10 +404,12 @@ public class MainWindowController implements Initializable {
   private void showLoginNotification() {
     Platform.runLater(() -> {
       try {
-        Notifications notifications = Notifications.create() //TODO: Weird exception
+        Notifications.create()
             .title("Login Success")
-            .text(ScriptingEngine.getGithub().getMyself().getLogin());
-        notifications.owner(root);
+            .text(ScriptingEngine.getGithub().getMyself().getLogin())
+            .owner(root)
+            .position(Pos.BOTTOM_RIGHT)
+            .showInformation();
       } catch (IOException e) {
         LoggerUtilities.getLogger().log(Level.WARNING,
             "Unable to get GitHub.\n" + Throwables.getStackTraceAsString(e));
@@ -434,6 +440,7 @@ public class MainWindowController implements Initializable {
   public void reloadGitMenus() {
     //Wait for GitHub to load in
     GitHub gitHub;
+
     while ((gitHub = ScriptingEngine.getGithub()) == null) {
       ThreadUtil.wait(20);
     }
