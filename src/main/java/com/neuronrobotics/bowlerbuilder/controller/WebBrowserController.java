@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 
 public class WebBrowserController implements Initializable {
 
@@ -29,10 +30,10 @@ public class WebBrowserController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    backPageButton.setGraphic(FontAwesome.Glyph.ARROW_LEFT.create());
-    nextPageButton.setGraphic(FontAwesome.Glyph.ARROW_RIGHT.create());
-    reloadPageButton.setGraphic(FontAwesome.Glyph.REFRESH.create());
-    homePageButton.setGraphic(FontAwesome.Glyph.HOME.create());
+    backPageButton.setGraphic(new Glyph("FontAwesome", "ARROW_LEFT"));
+    nextPageButton.setGraphic(new Glyph("FontAwesome", "ARROW_RIGHT"));
+    reloadPageButton.setGraphic(new Glyph("FontAwesome", "REFRESH"));
+    homePageButton.setGraphic(new Glyph("FontAwesome", "HOME"));
 
     //Update the url field when a new page gets loaded
     webView.getEngine().locationProperty().addListener((observable, oldValue, newValue) ->
