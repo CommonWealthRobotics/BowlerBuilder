@@ -108,6 +108,12 @@ dependencies {
 
 }
 
+//test {
+//    testLogging {
+//        exceptionFormat = 'full'
+//    }
+//}
+
 application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 }
