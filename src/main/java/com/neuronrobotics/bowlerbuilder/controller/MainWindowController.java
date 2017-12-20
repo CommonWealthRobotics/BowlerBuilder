@@ -70,6 +70,7 @@ public class MainWindowController implements Initializable {
   //Open file editors
   private final List<FileEditorController> fileEditors = new ArrayList<>();
   private final Preferences preferences;
+  private final IntegerProperty fontSizePref = new SimpleIntegerProperty(null, "Font Size");
   @FXML
   private BorderPane root;
   @FXML
@@ -90,7 +91,6 @@ public class MainWindowController implements Initializable {
   private WebBrowserController webBrowserController;
   @FXML
   private TextArea console;
-  private IntegerProperty fontSizePref = new SimpleIntegerProperty(null, "Font Size");
 
   public MainWindowController() {
     //TODO: Load previous font size preference

@@ -10,7 +10,7 @@ import org.controlsfx.control.PropertySheet;
  */
 public class BeanPropertySheetItem implements PropertySheet.Item {
 
-  private Property prop;
+  private final Property prop;
 
   public BeanPropertySheetItem(Property prop) {
     this.prop = prop;
