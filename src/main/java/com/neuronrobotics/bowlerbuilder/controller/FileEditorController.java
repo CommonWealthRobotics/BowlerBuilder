@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -95,8 +94,8 @@ public class FileEditorController implements Initializable {
     //Stuff to run once the engine is done loading
     webEngine.getLoadWorker().stateProperty().addListener(
         (ObservableValue<? extends Worker.State> observable,
-            Worker.State oldValue,
-            Worker.State newValue) -> {
+         Worker.State oldValue,
+         Worker.State newValue) -> {
           if (newValue == Worker.State.SUCCEEDED) {
             aceEditor.setFontSize(requestedFontSize); //Set font size to the default
             requestedFile.ifPresent(file -> {
@@ -263,15 +262,26 @@ public class FileEditorController implements Initializable {
   /**
    * Set the font size of this editor.
    *
-   * @param fontSize Font size
+   * @param fontSize font size object ({@link IntegerProperty} or {@link Integer})
    */
-  public void setFontSize(Property fontSize) {
+  public void setFontSize(Object fontSize) {
     if (fontSize instanceof IntegerProperty) {
-      if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-        aceEditor.setFontSize(((IntegerProperty) fontSize).getValue());
-      } else {
-        requestedFontSize = ((IntegerProperty) fontSize).getValue();
-      }
+      setFontSize(((IntegerProperty) fontSize).getValue());
+    } else if (fontSize instanceof Integer) {
+      setFontSize((Integer) fontSize);
+    }
+  }
+
+  /**
+   * Set the font size of this editor.
+   *
+   * @param fontSize font size
+   */
+  public void setFontSize(Integer fontSize) {
+    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
+      aceEditor.setFontSize(fontSize);
+    } else {
+      requestedFontSize = fontSize;
     }
   }
 
@@ -279,7 +289,7 @@ public class FileEditorController implements Initializable {
    * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
    *
    * @param controller CAD viewer controller
-   * @param item Object with CSGs
+   * @param item object with CSGs
    */
   private void parseCSG(CADModelViewerController controller, Object item) {
     if (item instanceof CSG) {

@@ -46,7 +46,7 @@ class BowlerBuilderTest extends AutoClosingApplicationTest {
   void openPreferences() {
     clickOn("File").clickOn("Preferences");
 
-    assertTrue(lookup("#preferencesRoot").tryQuery().isPresent());
+    assertTrue(lookup("#preferencesPropertySheet").tryQuery().isPresent());
   }
 
 }

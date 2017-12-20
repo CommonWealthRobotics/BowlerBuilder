@@ -6,7 +6,8 @@ import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
-import com.neuronrobotics.bowlerbuilder.model.Preferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
@@ -22,19 +23,14 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -69,8 +65,9 @@ public class MainWindowController implements Initializable {
 
   //Open file editors
   private final List<FileEditorController> fileEditors = new ArrayList<>();
+  private final PreferencesService preferencesService;
   private final Preferences preferences;
-  private final IntegerProperty fontSizePref = new SimpleIntegerProperty(null, "Font Size");
+
   @FXML
   private BorderPane root;
   @FXML
@@ -93,12 +90,13 @@ public class MainWindowController implements Initializable {
   private TextArea console;
 
   public MainWindowController() {
-    //TODO: Load previous font size preference
-    Map<String, Property> previousPreferences = new HashMap<>();
-    previousPreferences.put("Font Size", fontSizePref);
-    preferences = new Preferences(previousPreferences);
-    fontSizePref.addListener((observableValue, oldVal, newVal) ->
-        fileEditors.forEach(editor -> editor.setFontSize(fontSizePref)));
+    preferencesService = new PreferencesService();
+    Optional<Preferences> loadedPreferences = preferencesService.loadPreferencesFromFile();
+
+    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
+
+    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
+        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
   }
 
   @Override
@@ -135,33 +133,22 @@ public class MainWindowController implements Initializable {
           "Could not automatically log in.\n");
       logOut.setDisable(true); //Can't log out when not logged in
     }
+
+    LoggerUtilities.getLogger().log(Level.FINE, "Test");
   }
 
   @FXML
-  private void onOpenScratchpad(ActionEvent actionEvent) {
-    FileEditorTab tab;
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
+  private void openPreferences(ActionEvent actionEvent) {
+    PropertySheet propertySheet = new PropertySheet(FXCollections.observableArrayList(
+        preferences.getAllProperties().stream()
+            .map(BeanPropertySheetItem::new)
+            .collect(Collectors.toList())));
 
-    try {
-      Node node = loader.load();
-      final FileEditorController controller = loader.getController();
-      fileEditors.add(controller);
-
-      tab = new FileEditorTab("Scratchpad", controller);
-      tab.setContent(node);
-
-      controller.setFontSize(preferences.get("Font Size"));
-      controller.initScratchpad(tab, this::reloadGitMenus);
-
-      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
-
-      tabPane.getTabs().add(tab);
-      tabPane.getSelectionModel().select(tab);
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
+    Dialog dialog = new Dialog();
+    dialog.getDialogPane().setContent(propertySheet);
+    propertySheet.setId("preferencesPropertySheet");
+    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+    dialog.showAndWait();
   }
 
   @FXML
@@ -205,27 +192,6 @@ public class MainWindowController implements Initializable {
   }
 
   @FXML
-  private void openPreferences(ActionEvent actionEvent) {
-    PropertySheet propertySheet = new PropertySheet(FXCollections.observableArrayList(
-        preferences.getAllProperties().stream()
-            .map(BeanPropertySheetItem::new)
-            .collect(Collectors.toList())));
-
-    BorderPane root = new BorderPane();
-    root.setCenter(propertySheet);
-
-    Dialog dialog = new Dialog();
-    dialog.getDialogPane().setContent(root);
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-    dialog.showAndWait();
-  }
-
-  @FXML
-  private void openEditorHelp(ActionEvent actionEvent) {
-    new HelpDialog().showAndWait();
-  }
-
-  @FXML
   private void onExitProgram(ActionEvent actionEvent) {
     saveAndQuit();
   }
@@ -241,8 +207,40 @@ public class MainWindowController implements Initializable {
   }
 
   @FXML
+  private void onOpenScratchpad(ActionEvent actionEvent) {
+    FileEditorTab tab;
+    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
+
+    try {
+      Node node = loader.load();
+      final FileEditorController controller = loader.getController();
+      fileEditors.add(controller);
+
+      tab = new FileEditorTab("Scratchpad", controller);
+      tab.setContent(node);
+
+      controller.setFontSize(preferences.get("Font Size"));
+      controller.initScratchpad(tab, this::reloadGitMenus);
+
+      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+
+      tabPane.getTabs().add(tab);
+      tabPane.getSelectionModel().select(tab);
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  @FXML
   private void onReloadVitamins(ActionEvent actionEvent) {
     reloadCadMenus();
+  }
+
+  @FXML
+  private void openEditorHelp(ActionEvent actionEvent) {
+    new HelpDialog().showAndWait();
   }
 
   /**
@@ -582,7 +580,7 @@ public class MainWindowController implements Initializable {
    * Save work and quit.
    */
   public void saveAndQuit() {
-    //Save here
+    preferencesService.savePreferencesToFile(preferences);
     quit();
   }
 

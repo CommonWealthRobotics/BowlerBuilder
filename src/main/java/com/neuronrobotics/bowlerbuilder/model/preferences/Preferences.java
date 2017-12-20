@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.model;
+package com.neuronrobotics.bowlerbuilder.model.preferences;
 
 import java.util.Collection;
 import java.util.Map;
@@ -45,6 +45,10 @@ public class Preferences {
    */
   public Collection<Property> getAllProperties() {
     return props.values();
+  }
+
+  public Map<String, Property> getPropertyMap() {
+    return props;
   }
 
 }
