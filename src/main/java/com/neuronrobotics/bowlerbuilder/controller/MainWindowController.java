@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
 import com.google.common.base.Throwables;
+import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
@@ -19,14 +20,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -35,7 +34,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -61,12 +59,13 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 
-public class MainWindowController implements Initializable {
+public class MainWindowController {
 
   //Open file editors
   private final List<FileEditorController> fileEditors = new ArrayList<>();
-  private final PreferencesService preferencesService;
-  private final Preferences preferences;
+  @Inject
+  private PreferencesService preferencesService;
+  private Preferences preferences;
 
   @FXML
   private BorderPane root;
@@ -89,24 +88,8 @@ public class MainWindowController implements Initializable {
   @FXML
   private TextArea console;
 
-  public MainWindowController() {
-    preferencesService = new PreferencesService();
-    Optional<Preferences> loadedPreferences = Optional.empty();
-    try {
-      loadedPreferences = preferencesService.loadPreferencesFromFile();
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
-
-    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
-        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
-  }
-
-  @Override
-  public void initialize(URL url, ResourceBundle resourceBundle) {
+  @FXML
+  protected void initialize() {
     //Add date to console
     console.setText(console.getText()
         + new SimpleDateFormat(
@@ -140,7 +123,18 @@ public class MainWindowController implements Initializable {
       logOut.setDisable(true); //Can't log out when not logged in
     }
 
-    LoggerUtilities.getLogger().log(Level.FINE, "Test");
+    Optional<Preferences> loadedPreferences = Optional.empty();
+    try {
+      loadedPreferences = preferencesService.loadPreferencesFromFile();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
+
+    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
+        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
   }
 
   @FXML

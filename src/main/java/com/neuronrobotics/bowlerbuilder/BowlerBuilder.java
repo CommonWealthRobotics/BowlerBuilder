@@ -1,6 +1,10 @@
 package com.neuronrobotics.bowlerbuilder;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.util.Modules;
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -12,14 +16,21 @@ import javafx.stage.Stage;
 
 public class BowlerBuilder extends Application {
 
+  @VisibleForTesting
+  private Injector injector;
+
   @Override
   public void start(Stage primaryStage) throws IOException {
     //Log uncaught exceptions on the FX thread
     Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
         LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e)));
 
-    FXMLLoader loader = new FXMLLoader(BowlerBuilder.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"));
+    injector = Guice.createInjector();
+    FXMLLoader loader = new FXMLLoader(
+        BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
+        null,
+        null,
+        injector::getInstance);
     Pane mainWindow = loader.load();
 
     primaryStage.setTitle("BowlerBuilder");

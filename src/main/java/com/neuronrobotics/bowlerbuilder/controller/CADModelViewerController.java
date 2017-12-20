@@ -2,30 +2,26 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine;
 import eu.mihosoft.vrl.v3d.CSG;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.SubScene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Rectangle;
 
-public class CADModelViewerController implements Initializable {
-
-  @FXML
-  private BorderPane root;
+public class CADModelViewerController {
 
   private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
+  @FXML
+  private BorderPane root;
   private boolean axisShowing = true;
   private boolean handShowing = true;
 
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
+  @FXML
+  protected void initialize() {
     Platform.runLater(() -> {
       SubScene subScene = engine.getSubScene();
       subScene.setFocusTraversable(false);

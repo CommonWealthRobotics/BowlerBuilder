@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditor;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -12,12 +13,10 @@ import eu.mihosoft.vrl.v3d.CSG;
 import groovy.lang.GroovyRuntimeException;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import javafx.application.Platform;
@@ -28,7 +27,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -43,14 +41,14 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
-public class FileEditorController implements Initializable {
+public class FileEditorController {
 
   @FXML
   private SplitPane root;
   @FXML
   private WebView webView;
   private WebEngine webEngine; //NOPMD
-  private AceEditor aceEditor;
+  private ScriptEditor aceEditor;
   private int line;
   @FXML
   private Button runButton;
@@ -63,7 +61,7 @@ public class FileEditorController implements Initializable {
   @FXML
   private CADModelViewerController cadviewerController;
 
-  private int requestedFontSize;
+  private int requestedFontSize = 14;
   private Optional<File> requestedFile;
 
   private GHGist gist;
@@ -73,13 +71,10 @@ public class FileEditorController implements Initializable {
   private Tab tab;
   private Runnable reloadMenus;
 
-  public FileEditorController() {
-    requestedFontSize = 14; //TODO: Load previous font size preference
+  @FXML
+  protected void initialize() {
     requestedFile = Optional.empty();
-  }
 
-  @Override
-  public void initialize(URL url, ResourceBundle resourceBundle) {
     root.setDividerPosition(0, 0.8);
     webEngine = webView.getEngine();
     webEngine.setJavaScriptEnabled(true);

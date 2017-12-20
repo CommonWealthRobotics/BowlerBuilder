@@ -1,18 +1,15 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
-import java.net.URL;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebView;
 import org.controlsfx.glyphfont.Glyph;
 
-public class WebBrowserController implements Initializable {
+public class WebBrowserController {
 
   @FXML
   private Button backPageButton;
@@ -27,8 +24,8 @@ public class WebBrowserController implements Initializable {
   @FXML
   private WebView webView;
 
-  @Override
-  public void initialize(URL url, ResourceBundle resourceBundle) {
+  @FXML
+  protected void initialize() {
     backPageButton.setGraphic(new Glyph("FontAwesome", "ARROW_LEFT"));
     nextPageButton.setGraphic(new Glyph("FontAwesome", "ARROW_RIGHT"));
     reloadPageButton.setGraphic(new Glyph("FontAwesome", "REFRESH"));
