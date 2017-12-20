@@ -12,6 +12,7 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -144,10 +145,7 @@ public class MainWindowController {
             .map(BeanPropertySheetItem::new)
             .collect(Collectors.toList())));
 
-    Dialog dialog = new Dialog();
-    dialog.getDialogPane().setContent(propertySheet);
-    propertySheet.setId("preferencesPropertySheet");
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+    PreferencesDialog dialog = new PreferencesDialog(propertySheet);
     dialog.showAndWait();
   }
 
