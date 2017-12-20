@@ -2,10 +2,8 @@ package com.neuronrobotics.bowlerbuilder.model.preferences;
 
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
-import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -31,17 +29,17 @@ public class PreferencesService {
       + "preferences";
   private static final String prefsSaveFilePath = prefsSaveDirPath
       + File.separator
-      + "preferences.ser";
+      + "preferences.json";
 
   /**
    * Load saved preferences in from the default save file.
    *
    * @return preferences from file
+   * @throws IOException reading bytes from the save file can fail
    */
-  public Optional<Preferences> loadPreferencesFromFile() {
-    Optional<Preferences> preferences = Optional.empty();
-
-    try {
+  public Optional<Preferences> loadPreferencesFromFile() throws IOException {
+    File saveFile = new File(prefsSaveFilePath);
+    if (saveFile.exists() && !saveFile.isDirectory()) {
       JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(
           IOUtils.toString(Files.readAllBytes(Paths.get(prefsSaveFilePath)), UTF_8));
 
@@ -51,48 +49,31 @@ public class PreferencesService {
       fontSize.setValue(jsonObject.getInt("Font Size"));
       data.put("Font Size", fontSize);
 
-      preferences = Optional.of(new Preferences(data));
-    } catch (FileNotFoundException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not open FileInputStream when loading preferences.\n"
-              + Throwables.getStackTraceAsString(e));
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not open ObjectInputStream when loading preferences.\n"
-              + Throwables.getStackTraceAsString(e));
+      return Optional.of(new Preferences(data));
     }
 
-    return preferences;
+    return Optional.empty();
   }
 
   /**
    * Save a Preferences to the default save file.
    *
    * @param preferences preferences to save
+   * @throws IOException writing to the save file can fail
    */
-  public void savePreferencesToFile(Preferences preferences) {
-    try {
-      File preferencesSaveDirectory = new File(prefsSaveDirPath);
+  public void savePreferencesToFile(Preferences preferences) throws IOException {
+    File preferencesSaveDirectory = new File(prefsSaveDirPath);
 
-      if (preferencesSaveDirectory.exists() || preferencesSaveDirectory.mkdirs()) {
-        JSONObject jsonObject = new JSONObject();
-        preferences.getPropertyMap().forEach((key, value) -> jsonObject.put(key, value.getValue()));
+    if (preferencesSaveDirectory.exists() || preferencesSaveDirectory.mkdirs()) {
+      JSONObject jsonObject = new JSONObject();
+      preferences.getPropertyMap().forEach((key, value) -> jsonObject.put(key, value.getValue()));
 
-        Files.write(
-            Paths.get(prefsSaveFilePath),
-            jsonObject.toString().getBytes(Charset.forName("UTF-8")));
-      } else {
-        LoggerUtilities.getLogger().log(Level.SEVERE,
-            "Creating preferences directory failed.\n");
-      }
-    } catch (FileNotFoundException e) {
+      Files.write(
+          Paths.get(prefsSaveFilePath),
+          jsonObject.toString().getBytes(Charset.forName("UTF-8")));
+    } else {
       LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not create FileOutputStream when saving.\n"
-              + Throwables.getStackTraceAsString(e));
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not create ObjectOutputStream when saving\n"
-              + Throwables.getStackTraceAsString(e));
+          "Creating preferences directory failed.\n");
     }
   }
 

@@ -77,6 +77,7 @@ repositories {
 dependencies {
     compile(group = "org.controlsfx", name = "controlsfx", version = "8.40.14")
     compile(group = "com.google.guava", name = "guava", version = "23.0")
+    compile(group = "com.google.inject", name = "guice", version = "4.1.0")
     compile(group = "org.apache.commons", name = "commons-text", version = "1.1")
     compile(group = "commons-io", name = "commons-io", version = "2.6")
 //    compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")

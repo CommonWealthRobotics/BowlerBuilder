@@ -91,7 +91,13 @@ public class MainWindowController implements Initializable {
 
   public MainWindowController() {
     preferencesService = new PreferencesService();
-    Optional<Preferences> loadedPreferences = preferencesService.loadPreferencesFromFile();
+    Optional<Preferences> loadedPreferences = Optional.empty();
+    try {
+      loadedPreferences = preferencesService.loadPreferencesFromFile();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
+    }
 
     preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
 
@@ -580,7 +586,12 @@ public class MainWindowController implements Initializable {
    * Save work and quit.
    */
   public void saveAndQuit() {
-    preferencesService.savePreferencesToFile(preferences);
+    try {
+      preferencesService.savePreferencesToFile(preferences);
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not save preferences.\n" + Throwables.getStackTraceAsString(e));
+    }
     quit();
   }
 

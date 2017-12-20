@@ -8,10 +8,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 import org.apache.commons.io.FileUtils;
 
 public final class LoggerUtilities {
