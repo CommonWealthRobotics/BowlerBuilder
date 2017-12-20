@@ -21,7 +21,9 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -263,11 +265,13 @@ public class FileEditorController implements Initializable {
    *
    * @param fontSize Font size
    */
-  public void setFontSize(int fontSize) {
-    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      aceEditor.setFontSize(fontSize);
-    } else {
-      requestedFontSize = fontSize;
+  public void setFontSize(Property fontSize) {
+    if (fontSize instanceof IntegerProperty) {
+      if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
+        aceEditor.setFontSize(((IntegerProperty) fontSize).getValue());
+      } else {
+        requestedFontSize = ((IntegerProperty) fontSize).getValue();
+      }
     }
   }
 

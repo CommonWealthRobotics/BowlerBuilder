@@ -5,7 +5,8 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
-import com.neuronrobotics.bowlerbuilder.controller.view.PreferencesController;
+import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
+import com.neuronrobotics.bowlerbuilder.model.Preferences;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
@@ -21,15 +22,20 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,6 +54,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.control.PropertySheet;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -62,7 +69,7 @@ public class MainWindowController implements Initializable {
 
   //Open file editors
   private final List<FileEditorController> fileEditors = new ArrayList<>();
-
+  private final Preferences preferences;
   @FXML
   private BorderPane root;
   @FXML
@@ -83,11 +90,15 @@ public class MainWindowController implements Initializable {
   private WebBrowserController webBrowserController;
   @FXML
   private TextArea console;
-
-  private Map<String, Object> preferences = new ConcurrentHashMap<>();
+  private IntegerProperty fontSizePref = new SimpleIntegerProperty(null, "Font Size");
 
   public MainWindowController() {
-    preferences.put("Font Size", 14); //TODO: Load previous font size preference
+    //TODO: Load previous font size preference
+    Map<String, Property> previousPreferences = new HashMap<>();
+    previousPreferences.put("Font Size", fontSizePref);
+    preferences = new Preferences(previousPreferences);
+    fontSizePref.addListener((observableValue, oldVal, newVal) ->
+        fileEditors.forEach(editor -> editor.setFontSize(fontSizePref)));
   }
 
   @Override
@@ -140,7 +151,7 @@ public class MainWindowController implements Initializable {
       tab = new FileEditorTab("Scratchpad", controller);
       tab.setContent(node);
 
-      controller.setFontSize((int) preferences.get("Font Size"));
+      controller.setFontSize(preferences.get("Font Size"));
       controller.initScratchpad(tab, this::reloadGitMenus);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
@@ -195,87 +206,19 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void openPreferences(ActionEvent actionEvent) {
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/Preferences.fxml"));
+    PropertySheet propertySheet = new PropertySheet(FXCollections.observableArrayList(
+        preferences.getAllProperties().stream()
+            .map(BeanPropertySheetItem::new)
+            .collect(Collectors.toList())));
+
+    BorderPane root = new BorderPane();
+    root.setCenter(propertySheet);
+
     Dialog dialog = new Dialog();
-    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
-
-    try {
-      dialog.getDialogPane().setContent(loader.load());
-      PreferencesController controller = loader.getController();
-      controller.setPreferences(preferences);
-      dialog.showAndWait();
-      preferences = controller.getPreferences();
-      if (controller.getPreferences().containsKey("Font Size")) {
-        fileEditors.forEach(elem ->
-            elem.setFontSize((Integer) controller.getPreferences().get("Font Size")));
-      }
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load Preferences.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
-    //    Map<String, Object> customDataMap = new LinkedHashMap<>();
-    //    customDataMap.put("Group 1#My Text", "Same text"); // Creates a TextField in property
-    // sheet
-    //    customDataMap.put("Group 1#My Date", LocalDate.of(2000, Month.JANUARY, 1)); // Creates
-    // a DatePicker
-    //    customDataMap.put("Group 2#My Boolean", false); // Creates a CheckBox
-    //    customDataMap.put("Group 2#My Number", 500); // Creates a NumericField
-    //    ObservableList<PropertySheet.Item> list = FXCollections.observableArrayList();
-    //    for (String key : customDataMap.keySet())
-    //      list.add(new CustomPropertyItem(key, customDataMap));
-    //
-    //    PropertySheet propertySheet = new PropertySheet(list);
-    //    VBox.setVgrow(propertySheet, Priority.ALWAYS);
-    //
-    //    Dialog dialog  =new Dialog();
-    //    dialog.getDialogPane().setContent(propertySheet);
+    dialog.getDialogPane().setContent(root);
+    dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+    dialog.showAndWait();
   }
-
-  //  class CustomPropertyItem implements PropertySheet.Item {
-  //    private String key;
-  //    private String category, name;
-  //    private Map<String, Object> customDataMap;
-  //
-  //    public CustomPropertyItem(String key, Map<String, Object> map) {
-  //      this.key = key;
-  //      this.customDataMap = map;
-  //
-  //      String[] skey = key.split("#");
-  //      category = skey[0];
-  //      name = skey[1];
-  //    }
-  //
-  //    @Override
-  //    public Class<?> getType() {
-  //      return customDataMap.get(key).getClass();
-  //    }
-  //
-  //    @Override
-  //    public String getCategory() {
-  //      return category;
-  //    }
-  //
-  //    @Override
-  //    public String getName() {
-  //      return name;
-  //    }
-  //
-  //    @Override
-  //    public String getDescription() {
-  //      return null;
-  //    }
-  //
-  //    @Override
-  //    public Object getValue() {
-  //      return customDataMap.get(key);
-  //    }
-  //
-  //    @Override
-  //    public void setValue(Object value) {
-  //      customDataMap.put(key, value);
-  //    }
-  //  }
 
   @FXML
   private void openEditorHelp(ActionEvent actionEvent) {
@@ -352,7 +295,7 @@ public class MainWindowController implements Initializable {
       tab = new FileEditorTab(gistFile.getFileName(), controller);
       tab.setContent(node);
 
-      controller.setFontSize((int) preferences.get("Font Size"));
+      //      controller.setFontSize((int) preferences.get("Font Size"));
       controller.loadGist(gist, gistFile);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
