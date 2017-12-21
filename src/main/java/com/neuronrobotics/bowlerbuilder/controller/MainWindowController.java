@@ -63,8 +63,7 @@ import org.kohsuke.github.PagedIterable;
 public class MainWindowController {
 
   //Open file editors
-  private final List<FileEditorController> fileEditors = new ArrayList<>();
-  @Inject
+  private final List<FileEditorController> fileEditors;
   private PreferencesService preferencesService;
   private Preferences preferences;
 
@@ -88,6 +87,12 @@ public class MainWindowController {
   private WebBrowserController webBrowserController;
   @FXML
   private TextArea console;
+
+  @Inject
+  MainWindowController(PreferencesService preferencesService) {
+    this.preferencesService = preferencesService;
+    fileEditors = new ArrayList<>();
+  }
 
   @FXML
   protected void initialize() {
@@ -124,18 +129,7 @@ public class MainWindowController {
       logOut.setDisable(true); //Can't log out when not logged in
     }
 
-    Optional<Preferences> loadedPreferences = Optional.empty();
-    try {
-      loadedPreferences = preferencesService.loadPreferencesFromFile();
-    } catch (IOException e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
-          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
-
-    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
-        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
+    loadPreferences();
   }
 
   @FXML
@@ -239,6 +233,25 @@ public class MainWindowController {
   @FXML
   private void openEditorHelp(ActionEvent actionEvent) {
     new HelpDialog().showAndWait();
+  }
+
+  /**
+   * Load the user preferences from a file. If the preferences can't be loaded, use the default
+   * preferences.
+   */
+  private void loadPreferences() {
+    Optional<Preferences> loadedPreferences = Optional.empty();
+    try {
+      loadedPreferences = preferencesService.loadPreferencesFromFile();
+    } catch (IOException e) {
+      LoggerUtilities.getLogger().log(Level.SEVERE,
+          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
+
+    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
+        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
   }
 
   /**

@@ -20,12 +20,16 @@ public class BowlerBuilder extends Application {
   private Injector injector;
 
   @Override
+  public void init() {
+    injector = Guice.createInjector();
+  }
+
+  @Override
   public void start(Stage primaryStage) throws IOException {
     //Log uncaught exceptions on the FX thread
     Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
         LoggerUtilities.getLogger().log(Level.INFO, Throwables.getStackTraceAsString(e)));
 
-    injector = Guice.createInjector();
     FXMLLoader loader = new FXMLLoader(
         BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
         null,
