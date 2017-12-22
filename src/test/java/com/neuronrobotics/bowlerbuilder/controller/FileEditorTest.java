@@ -45,10 +45,10 @@ public class FileEditorTest extends AutoClosingApplicationTest {
   @Test
   void runCubeTest() {
     FxHelper.runAndWait(() -> controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()"));
-    ThreadUtil.wait(1000);
+    ThreadUtil.wait(2000);
 
     FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());
-    ThreadUtil.wait(1000);
+    ThreadUtil.wait(2000);
 
     assertEquals(1, controller.getCADViewerController().getCsgMap().size());
   }
