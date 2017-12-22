@@ -71,10 +71,10 @@ import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.reactfx.util.FxTimer;
 
-public class BowlerStudio3dEngine extends Pane implements CadEngine {
+public class BowlerCadEngine extends Pane implements CadEngine {
 
   private static final Logger logger
-      = LoggerUtilities.getLogger(BowlerStudio3dEngine.class.getSimpleName());
+      = LoggerUtilities.getLogger(BowlerCadEngine.class.getSimpleName());
 
   private final Group axisGroup = new Group();
   private final Group gridGroup = new Group();
@@ -113,7 +113,7 @@ public class BowlerStudio3dEngine extends Pane implements CadEngine {
   private final BooleanProperty axisShowingProperty;
   private final BooleanProperty handShowingProperty;
 
-  public BowlerStudio3dEngine() {
+  public BowlerCadEngine() {
     axisShowingProperty = new SimpleBooleanProperty(true);
     handShowingProperty = new SimpleBooleanProperty(true);
 

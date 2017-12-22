@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.view;
 
 import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
@@ -13,7 +13,7 @@ import javafx.scene.Node;
 /**
  * {@link CadEditorTab} that uses an
  * {@link AceEditorView} and a
- * {@link com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine}.
+ * {@link BowlerCadEngine}.
  */
 public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
 
@@ -22,7 +22,7 @@ public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
 
   public AceCadEditorTab(String title)
       throws IOException {
-    super(title, new AceEditorView(), new BowlerStudio3dEngine());
+    super(title, new AceEditorView(), new BowlerCadEngine());
 
     FXMLLoader loader = new FXMLLoader(AceCadEditorTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/AceCadEditor.fxml"),
