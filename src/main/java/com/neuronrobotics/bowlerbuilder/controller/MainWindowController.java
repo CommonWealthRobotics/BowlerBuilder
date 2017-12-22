@@ -4,6 +4,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
@@ -21,14 +22,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +37,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
@@ -60,14 +58,14 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 
-public class MainWindowController implements Initializable {
+@Singleton
+public class MainWindowController {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   //Open file editors
   private final List<FileEditorController> fileEditors;
-  @Inject
-  private PreferencesService preferencesService;
+  private final PreferencesService preferencesService;
   private Preferences preferences;
 
   @FXML
@@ -91,12 +89,15 @@ public class MainWindowController implements Initializable {
   @FXML
   private TextArea console;
 
-  public MainWindowController() {
+  @Inject
+  public MainWindowController(PreferencesService preferencesService) {
+    this.preferencesService = preferencesService;
     this.fileEditors = new ArrayList<>();
+    logger.info("me: " + this);
   }
 
-  @Override
-  public void initialize(URL url, ResourceBundle resourceBundle) {
+  @FXML
+  protected void initialize() {
     //Add date to console
     console.setText(
         console.getText()
@@ -553,6 +554,15 @@ public class MainWindowController implements Initializable {
               repo.gitHttpTransportUrl()));
       menu.getItems().add(menuItem);
     });
+  }
+
+  /**
+   * Add a tab to the tab pane.
+   *
+   * @param tab tab to add
+   */
+  public void addTab(Tab tab) {
+    tabPane.getTabs().add(tab);
   }
 
   /**

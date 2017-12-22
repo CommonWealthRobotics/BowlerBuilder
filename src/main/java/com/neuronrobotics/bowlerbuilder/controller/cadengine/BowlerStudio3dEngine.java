@@ -73,7 +73,8 @@ import org.reactfx.util.FxTimer;
 
 public class BowlerStudio3dEngine extends Pane implements CadEngine {
 
-  private static final Logger logger = LoggerUtilities.getLogger(BowlerStudio3dEngine.class.getSimpleName());
+  private static final Logger logger
+      = LoggerUtilities.getLogger(BowlerStudio3dEngine.class.getSimpleName());
 
   private final Group axisGroup = new Group();
   private final Group gridGroup = new Group();

@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder;
 import com.google.common.base.Throwables;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -13,9 +14,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+@Singleton
 public class BowlerBuilder extends Application {
 
-  private static final Logger logger = LoggerUtilities.getLogger(BowlerBuilder.class.getSimpleName());
+  private static final Logger logger =
+      LoggerUtilities.getLogger(BowlerBuilder.class.getSimpleName());
+
+  private static final Injector injector = Guice.createInjector();
 
   @Override
   public void start(Stage primaryStage) throws IOException {
@@ -23,7 +28,6 @@ public class BowlerBuilder extends Application {
     Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
         logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
 
-    Injector injector = Guice.createInjector();
     FXMLLoader loader = new FXMLLoader(
         BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
         null,
@@ -36,6 +40,10 @@ public class BowlerBuilder extends Application {
     primaryStage.setOnCloseRequest(event ->
         ((MainWindowController) loader.getController()).saveAndQuit());
     primaryStage.show();
+  }
+
+  public static Injector getInjector() {
+    return injector;
   }
 
 }

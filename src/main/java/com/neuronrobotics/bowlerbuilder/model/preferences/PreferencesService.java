@@ -25,7 +25,8 @@ import org.apache.commons.io.IOUtils;
  */
 public class PreferencesService {
 
-  private static final Logger logger = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
+  private static final Logger logger
+      = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
 
   private static final String prefsSaveDirPath = LoggerUtilities.getBowlerDirectory()
       + File.separator
