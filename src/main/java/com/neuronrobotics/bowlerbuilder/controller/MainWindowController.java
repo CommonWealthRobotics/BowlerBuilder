@@ -39,7 +39,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
@@ -63,11 +62,10 @@ import org.kohsuke.github.PagedIterable;
 
 public class MainWindowController implements Initializable {
 
-  //Open file editors
-  private final List<FileEditorController> fileEditors;
   private static final Logger logger =
       Logger.getLogger(MainWindowController.class.getSimpleName());
-
+  //Open file editors
+  private final List<FileEditorController> fileEditors;
   @Inject
   private PreferencesService preferencesService;
   private Preferences preferences;
@@ -205,20 +203,15 @@ public class MainWindowController implements Initializable {
 
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
-    FileEditorTab tab;
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
-
     try {
-      Node node = loader.load();
-      final FileEditorController controller = loader.getController();
-      fileEditors.add(controller);
-
-      tab = new FileEditorTab("Scratchpad", controller);
-      tab.setContent(node);
+      FileEditorTab tab = new FileEditorTab(
+          "Scratchpad",
+          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml");
+      FileEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));
       controller.initScratchpad(tab, this::reloadGitMenus);
+      fileEditors.add(controller);
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
 
@@ -297,20 +290,15 @@ public class MainWindowController implements Initializable {
    * @param gistFile File
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
-    FileEditorTab tab;
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml"));
-
     try {
-      Node node = loader.load();
-      final FileEditorController controller = loader.getController();
-      fileEditors.add(controller);
+      FileEditorTab tab = new FileEditorTab(
+          gistFile.getFileName(),
+          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml");
+      FileEditorController controller = tab.getController();
 
-      tab = new FileEditorTab(gistFile.getFileName(), controller);
-      tab.setContent(node);
-
-      //      controller.setFontSize((int) preferences.get("Font Size"));
+      controller.setFontSize(preferences.get("Font Size"));
       controller.loadGist(gist, gistFile);
+      fileEditors.add(tab.getController());
 
       tab.setOnCloseRequest(event -> fileEditors.remove(controller));
 
