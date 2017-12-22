@@ -11,13 +11,13 @@ import javafx.concurrent.Worker;
  */
 public final class AceEditor implements ScriptEditor {
 
-  private static final Logger logger = Logger.getLogger(AceEditor.class.getSimpleName());
+  private static final Logger logger = LoggerUtilities.getLogger(AceEditor.class.getSimpleName());
 
   private final WebEngineAdapter engine;
 
   public AceEditor(WebEngineAdapter webEngine) {
     this.engine = webEngine;
-    LoggerUtilities.setupLogger(logger);
+    logger.log(Level.FINEST, "engine: " + webEngine);
   }
 
   /**

@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -44,7 +45,7 @@ import org.kohsuke.github.GHGistFile;
 public class FileEditorController {
 
   private static final Logger logger =
-      Logger.getLogger(FileEditorController.class.getSimpleName());
+      LoggerUtilities.getLogger(FileEditorController.class.getSimpleName());
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   @FXML
@@ -73,7 +74,6 @@ public class FileEditorController {
   public FileEditorController(ScriptEditorView scriptEditorView) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
-    LoggerUtilities.setupLogger(logger);
   }
 
   @FXML
@@ -102,12 +102,16 @@ public class FileEditorController {
           latch.await();
 
           //Run the code
+          logger.log(Level.FINE, "Running script.");
           Object result = ScriptingEngine.inlineScriptStringRun(
               text.get(),
               new ArrayList<>(),
               "Groovy");
 
+          logger.log(Level.FINER, "Result is: " + result);
+
           //Add CSGs
+          logger.log(Level.FINE, "Parsing result.");
           CountDownLatch latch2 = new CountDownLatch(1);
           Platform.runLater(() -> {
             cadviewerController.clearMeshes();

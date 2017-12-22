@@ -63,7 +63,7 @@ import org.kohsuke.github.PagedIterable;
 public class MainWindowController implements Initializable {
 
   private static final Logger logger =
-      Logger.getLogger(MainWindowController.class.getSimpleName());
+      LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   //Open file editors
   private final List<FileEditorController> fileEditors;
   @Inject
@@ -93,7 +93,6 @@ public class MainWindowController implements Initializable {
 
   public MainWindowController() {
     this.fileEditors = new ArrayList<>();
-    LoggerUtilities.setupLogger(logger);
   }
 
   @Override

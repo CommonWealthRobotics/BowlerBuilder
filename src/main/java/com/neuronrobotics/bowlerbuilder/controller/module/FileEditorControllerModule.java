@@ -6,9 +6,15 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView
 
 public class FileEditorControllerModule extends AbstractModule {
 
+  private final ScriptEditorView scriptEditorView;
+
+  public FileEditorControllerModule(ScriptEditorView scriptEditorView) {
+    this.scriptEditorView = scriptEditorView;
+  }
+
   @Override
   protected void configure() {
-    bind(ScriptEditorView.class).to(AceEditorView.class);
+    bind(ScriptEditorView.class).toInstance(scriptEditorView);
   }
 
 }

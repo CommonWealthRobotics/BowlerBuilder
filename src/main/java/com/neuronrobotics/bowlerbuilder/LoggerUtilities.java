@@ -4,6 +4,8 @@ import com.google.common.base.Throwables;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.logging.ConsoleHandler;
@@ -23,6 +25,9 @@ public final class LoggerUtilities {
 
   //FileHandler that saves to the log file
   private static FileHandler fileHandler;
+
+  //Previous logger names
+  private static final Collection<String> loggerNames;
 
   static {
     logFileDirPath = getBowlerDirectory()
@@ -46,6 +51,8 @@ public final class LoggerUtilities {
       //We can't call a logger here instead because we are the logger!
       e.printStackTrace(); //NOPMD
     }
+
+    loggerNames = new ArrayList<>();
   }
 
   private LoggerUtilities() {
@@ -91,12 +98,20 @@ public final class LoggerUtilities {
   /**
    * Setup a logger with handlers and set its log level to ALL.
    *
-   * @param logger logger to set up
+   * @param name logger name
+   * @return new logger
    */
-  public static void setupLogger(Logger logger) {
+  public static Logger getLogger(String name) {
+    if (loggerNames.contains(name)) {
+      throw new UnsupportedOperationException(
+          "Cannot add logger of name: " + name + ". A logger with the same name already exists.");
+    }
+
+    Logger logger = Logger.getLogger(name);
     logger.addHandler(new ConsoleHandler());
     logger.addHandler(LoggerUtilities.getFileHandler());
     logger.setLevel(Level.ALL);
+    return logger;
   }
 
 }

@@ -27,7 +27,7 @@ public class FileEditorTest extends AutoClosingApplicationTest {
         null,
         null,
         Guice.createInjector(
-            new FileEditorControllerModule(),
+            new FileEditorControllerModule(scriptEditorView),
             new CadModelViewerControllerModule())::getInstance);
     SplitPane mainWindow = loader.load();
     controller = loader.getController();

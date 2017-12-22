@@ -15,11 +15,7 @@ import org.kohsuke.github.GitHub;
 
 public final class GistUtilities {
 
-  private static final Logger logger = Logger.getLogger(GistUtilities.class.getSimpleName());
-
-  private GistUtilities() {
-    LoggerUtilities.setupLogger(logger);
-  }
+  private static final Logger logger = LoggerUtilities.getLogger(GistUtilities.class.getSimpleName());
 
   /**
    * Create and publish a new gist.

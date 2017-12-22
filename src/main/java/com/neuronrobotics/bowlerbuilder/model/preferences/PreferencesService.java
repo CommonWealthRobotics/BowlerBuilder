@@ -25,7 +25,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class PreferencesService {
 
-  private static final Logger logger = Logger.getLogger(PreferencesService.class.getSimpleName());
+  private static final Logger logger = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
 
   private static final String prefsSaveDirPath = LoggerUtilities.getBowlerDirectory()
       + File.separator
@@ -33,10 +33,6 @@ public class PreferencesService {
   private static final String prefsSaveFilePath = prefsSaveDirPath
       + File.separator
       + "preferences.json";
-
-  public PreferencesService() {
-    LoggerUtilities.setupLogger(logger);
-  }
 
   /**
    * Load saved preferences in from the default save file.

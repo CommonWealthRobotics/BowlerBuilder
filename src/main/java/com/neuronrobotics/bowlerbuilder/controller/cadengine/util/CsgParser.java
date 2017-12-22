@@ -16,11 +16,7 @@ import javafx.scene.shape.MeshView;
  */
 public class CsgParser {
 
-  private static final Logger logger = Logger.getLogger(CsgParser.class.getSimpleName());
-
-  public CsgParser() {
-    LoggerUtilities.setupLogger(logger);
-  }
+  private static final Logger logger = LoggerUtilities.getLogger(CsgParser.class.getSimpleName());
 
   /**
    * Find the CSG object in the map from the source code.

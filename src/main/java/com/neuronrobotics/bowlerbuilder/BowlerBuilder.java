@@ -15,11 +15,7 @@ import javafx.stage.Stage;
 
 public class BowlerBuilder extends Application {
 
-  private static final Logger logger = Logger.getLogger(BowlerBuilder.class.getSimpleName());
-
-  public BowlerBuilder() {
-    LoggerUtilities.setupLogger(logger);
-  }
+  private static final Logger logger = LoggerUtilities.getLogger(BowlerBuilder.class.getSimpleName());
 
   @Override
   public void start(Stage primaryStage) throws IOException {

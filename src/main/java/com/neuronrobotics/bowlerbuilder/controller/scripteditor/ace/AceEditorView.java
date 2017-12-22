@@ -23,6 +23,7 @@ public class AceEditorView implements ScriptEditorView {
     Platform.runLater(() -> webView.getEngine().load(FileEditorController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/web/ace.html").toString()));
 
+    System.out.println("we: " + webEngine);
     this.scriptEditor = new AceEditor(new AceWebEngine(webEngine));
   }
 

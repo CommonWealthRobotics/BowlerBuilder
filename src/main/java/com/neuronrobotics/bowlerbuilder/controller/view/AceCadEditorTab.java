@@ -29,7 +29,7 @@ public class AceCadEditorTab extends CadEditorTab<FileEditorController> {
         null,
         null,
         Guice.createInjector(
-            new FileEditorControllerModule(),
+            new FileEditorControllerModule(getScriptEditorView()),
             new CadModelViewerControllerModule())::getInstance);
 
     node = loader.load();

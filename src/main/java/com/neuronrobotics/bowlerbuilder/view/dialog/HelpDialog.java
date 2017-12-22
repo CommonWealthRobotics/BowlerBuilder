@@ -12,12 +12,10 @@ import javafx.scene.control.Dialog;
 
 public class HelpDialog extends Dialog {
 
-  private static final Logger logger = Logger.getLogger(HelpDialog.class.getSimpleName());
+  private static final Logger logger = LoggerUtilities.getLogger(HelpDialog.class.getSimpleName());
 
   public HelpDialog() {
     super();
-
-    LoggerUtilities.setupLogger(logger);
 
     FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
