@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -113,6 +112,7 @@ public class MainWindowController implements Initializable {
     } catch (UnsupportedEncodingException e) {
       logger.log(Level.WARNING, "UTF-8 encoding unsupported.");
     }
+
     System.setOut(stream);
     System.setErr(stream);
 
@@ -165,7 +165,7 @@ public class MainWindowController implements Initializable {
       myOrgs.getItems().clear();
       myRepos.getItems().clear();
     } catch (IOException e) {
-      logger.log(Level.WARNING,
+      logger.log(Level.SEVERE,
           "Could not log out from GitHub.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -187,7 +187,7 @@ public class MainWindowController implements Initializable {
               new File(
                   ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/"));
         } catch (IOException e) {
-          logger.log(Level.WARNING,
+          logger.log(Level.SEVERE,
               "Unable to delete cache.\n" + Throwables.getStackTraceAsString(e));
         }
 
@@ -329,12 +329,12 @@ public class MainWindowController implements Initializable {
         setupMenusOnLogin();
       }
     } catch (IOException e) {
-      logger.log(Level.WARNING,
+      logger.log(Level.SEVERE,
           "Could not launch GitHub as non-anonymous.\n" + Throwables.getStackTraceAsString(e));
       try {
         ScriptingEngine.setupAnyonmous();
       } catch (IOException e1) {
-        logger.log(Level.WARNING,
+        logger.log(Level.SEVERE,
             "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
       }
     } catch (GitAPIException e) {
@@ -350,7 +350,7 @@ public class MainWindowController implements Initializable {
     try {
       ScriptingEngine.setAutoupdate(true);
     } catch (IOException e) {
-      logger.log(Level.WARNING,
+      logger.log(Level.SEVERE,
           "Could not set auto update.\n" + Throwables.getStackTraceAsString(e));
     }
 
@@ -530,7 +530,7 @@ public class MainWindowController implements Initializable {
           try {
             loadPageIntoNewTab(org.getName(), org.getHtmlUrl());
           } catch (IOException e) {
-            logger.log(Level.WARNING,
+            logger.log(Level.SEVERE,
                 "Could not get organization name when loading new tab.\n"
                     + Throwables.getStackTraceAsString(e));
           }
@@ -538,7 +538,7 @@ public class MainWindowController implements Initializable {
 
         menu.getItems().add(orgMenu);
       } catch (IOException e) {
-        logger.log(Level.WARNING,
+        logger.log(Level.SEVERE,
             "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
       }
     });

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -107,7 +106,7 @@ public class FileEditorController {
               try {
                 aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
               } catch (IOException e) {
-                logger.log(Level.WARNING,
+                logger.log(Level.SEVERE,
                     "Could not load file: " + file.getAbsolutePath() + ".\n"
                         + Throwables.getStackTraceAsString(e));
               }
@@ -172,7 +171,7 @@ public class FileEditorController {
               .position(Pos.BOTTOM_RIGHT)
               .showInformation());
         } catch (Exception e) {
-          logger.log(Level.WARNING,
+          logger.log(Level.SEVERE,
               "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
         }
       });
@@ -255,7 +254,7 @@ public class FileEditorController {
               commitMessage
           );
         } catch (Exception e) {
-          logger.log(Level.WARNING,
+          logger.log(Level.SEVERE,
               "Could not commit.\n" + Throwables.getStackTraceAsString(e));
         }
       });
@@ -324,7 +323,7 @@ public class FileEditorController {
         try {
           aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
         } catch (IOException e) {
-          logger.log(Level.WARNING,
+          logger.log(Level.SEVERE,
               "Could not load file: " + file.getAbsolutePath() + ".\n"
                   + Throwables.getStackTraceAsString(e));
         }
@@ -350,7 +349,7 @@ public class FileEditorController {
       gistURLField.setText(gist.getGitPushUrl());
       fileNameField.setText(gistFile.getFileName());
     } catch (GitAPIException | IOException e) {
-      logger.log(Level.WARNING,
+      logger.log(Level.SEVERE,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
     }
 

@@ -6,7 +6,6 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Optional;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -61,8 +60,7 @@ public final class GistUtilities {
         ScriptingEngine.fileFromGit(gist.getGitPullUrl(), filename);
         break;
       } catch (GitAPIException e) {
-        logger.log(Level.INFO,
-            "Waiting on Git API.");
+        logger.log(Level.INFO, "Waiting on Git API.");
       }
 
       ThreadUtil.wait(500);
@@ -81,7 +79,7 @@ public final class GistUtilities {
     try {
       Field id = GHGist.class.getDeclaredField("id");
       return Optional.of((String) id.get(gist));
-    } catch (NoSuchFieldException | IllegalAccessException e) {
+    } catch (Exception e) {
       logger.log(Level.SEVERE,
           "Could not get gist id.\n" + Throwables.getStackTraceAsString(e));
     }

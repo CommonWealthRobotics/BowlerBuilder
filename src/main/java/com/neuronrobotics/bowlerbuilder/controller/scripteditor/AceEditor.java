@@ -29,7 +29,7 @@ public final class AceEditor implements ScriptEditor {
     escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
     escaped = escaped.replace("\n", "\\n");
     escaped = escaped.replace("\r", "\\n");
-    logger.log(Level.INFO,
+    logger.log(Level.FINE,
         "Inserting: " + escaped);
     engine.executeScript("editor.insert(\"" + escaped + "\");");
   }
@@ -41,7 +41,6 @@ public final class AceEditor implements ScriptEditor {
    */
   public void setFontSize(int fontSize) {
     engine.executeScript("document.getElementById('editor').style.fontSize='" + fontSize + "px';");
-    //TODO: save font size preference
   }
 
   /**

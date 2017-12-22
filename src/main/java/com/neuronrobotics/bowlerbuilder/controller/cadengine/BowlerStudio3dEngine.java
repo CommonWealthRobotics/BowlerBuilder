@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -568,7 +567,7 @@ public class BowlerStudio3dEngine extends Pane {
             }
           } catch (Exception e) {
             logger.log(Level.WARNING,
-                "Could not select CSG in script.\n" + Throwables.getStackTraceAsString(e));
+                "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
           }
         }
       }
@@ -775,7 +774,7 @@ public class BowlerStudio3dEngine extends Pane {
                       try {
                         csg.setParameterNewValue(key, newAngleDegrees);
                       } catch (Exception e) {
-                        logger.log(Level.WARNING,
+                        logger.log(Level.SEVERE,
                             "Could not set new parameter value.\n"
                                 + Throwables.getStackTraceAsString(e));
                       }
@@ -852,6 +851,7 @@ public class BowlerStudio3dEngine extends Pane {
     meshViewGroup.getChildren().add(mesh);
     csgMap.put(csg, mesh);
     csgNameMap.put(csg.getName(), mesh);
+    logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
   private void fireRegenerate(String key, Set<CSG> currentObjectsToCheck) {
@@ -877,6 +877,7 @@ public class BowlerStudio3dEngine extends Pane {
 
       logger.log(Level.INFO, "Saving CSG database");
       CSGDatabase.saveDatabase();
+      logger.log(Level.INFO, "Done saving CSG database");
     });
 
     thread.setDaemon(true);

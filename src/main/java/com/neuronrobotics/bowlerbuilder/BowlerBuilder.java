@@ -25,7 +25,7 @@ public class BowlerBuilder extends Application {
   public void start(Stage primaryStage) throws IOException {
     //Log uncaught exceptions on the FX thread
     Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
-        logger.log(Level.INFO, Throwables.getStackTraceAsString(e)));
+        logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
 
     Injector injector = Guice.createInjector();
     FXMLLoader loader = new FXMLLoader(
