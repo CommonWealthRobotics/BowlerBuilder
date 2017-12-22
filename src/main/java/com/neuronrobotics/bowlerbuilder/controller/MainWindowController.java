@@ -64,8 +64,9 @@ import org.kohsuke.github.PagedIterable;
 public class MainWindowController implements Initializable {
 
   //Open file editors
-  private final List<FileEditorController> fileEditors = new ArrayList<>();
-  private final Logger logger = Logger.getLogger(MainWindowController.class.getSimpleName());
+  private final List<FileEditorController> fileEditors;
+  private static final Logger logger =
+      Logger.getLogger(MainWindowController.class.getSimpleName());
 
   @Inject
   private PreferencesService preferencesService;
@@ -93,24 +94,26 @@ public class MainWindowController implements Initializable {
   private TextArea console;
 
   public MainWindowController() {
+    this.fileEditors = new ArrayList<>();
     LoggerUtilities.setupLogger(logger);
   }
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     //Add date to console
-    console.setText(console.getText()
-        + new SimpleDateFormat(
-        "HH:mm:ss, MM dd, yyyy",
-        new Locale("en", "US")).format(new Date())
-        + "\n");
+    console.setText(
+        console.getText()
+            + new SimpleDateFormat(
+            "HH:mm:ss, MM dd, yyyy",
+            new Locale("en", "US")).format(new Date())
+            + "\n");
 
     //Redirect output to console
     PrintStream stream = null;
     try {
       stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
     } catch (UnsupportedEncodingException e) {
-      logger.log(Level.WARNING, "UTF-8 encoding unsupported.");
+      logger.log(Level.SEVERE, "UTF-8 encoding not supported.");
     }
 
     System.setOut(stream);
@@ -131,18 +134,7 @@ public class MainWindowController implements Initializable {
       logOut.setDisable(true); //Can't log out when not logged in
     }
 
-    Optional<Preferences> loadedPreferences = Optional.empty();
-    try {
-      loadedPreferences = preferencesService.loadPreferencesFromFile();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE,
-          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
-
-    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
-        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
+    loadPreferences();
   }
 
   @FXML
@@ -277,6 +269,25 @@ public class MainWindowController implements Initializable {
       logger.log(Level.SEVERE,
           "Could not load WebBrowser.\n" + Throwables.getStackTraceAsString(e));
     }
+  }
+
+  /**
+   * Load user preferences.
+   */
+  private void loadPreferences() {
+    Optional<Preferences> loadedPreferences = Optional.empty();
+
+    try {
+      loadedPreferences = preferencesService.loadPreferencesFromFile();
+    } catch (IOException e) {
+      logger.log(Level.SEVERE,
+          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
+
+    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
+        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
   }
 
   /**

@@ -7,7 +7,7 @@ import javafx.scene.web.WebEngine;
 
 public final class AceEditor implements ScriptEditor {
 
-  private final Logger logger = Logger.getLogger(AceEditor.class.getSimpleName());
+  private static final Logger logger = Logger.getLogger(AceEditor.class.getSimpleName());
 
   private final WebEngine engine;
 

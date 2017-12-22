@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 
 public class BowlerBuilder extends Application {
 
-  private final Logger logger = Logger.getLogger(BowlerBuilder.class.getSimpleName());
+  private static final Logger logger = Logger.getLogger(BowlerBuilder.class.getSimpleName());
 
   public BowlerBuilder() {
     LoggerUtilities.setupLogger(logger);

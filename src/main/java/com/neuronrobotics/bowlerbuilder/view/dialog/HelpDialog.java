@@ -12,7 +12,7 @@ import javafx.scene.control.Dialog;
 
 public class HelpDialog extends Dialog {
 
-  private final Logger logger = Logger.getLogger(HelpDialog.class.getSimpleName());
+  private static final Logger logger = Logger.getLogger(HelpDialog.class.getSimpleName());
 
   public HelpDialog() {
     super();

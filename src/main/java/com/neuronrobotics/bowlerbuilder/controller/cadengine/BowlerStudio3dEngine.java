@@ -65,7 +65,7 @@ import org.reactfx.util.FxTimer;
 
 public class BowlerStudio3dEngine extends Pane {
 
-  private final Logger logger = Logger.getLogger(BowlerStudio3dEngine.class.getSimpleName());
+  private static final Logger logger = Logger.getLogger(BowlerStudio3dEngine.class.getSimpleName());
 
   private final Group axisGroup = new Group();
   private final Group gridGroup = new Group();
@@ -78,23 +78,20 @@ public class BowlerStudio3dEngine extends Pane {
   private final Group focusGroup = new Group();
   private final Group meshViewGroup = new Group();
   private final Group hand = new Group();
-
+  private final Map<String, MeshView> csgNameMap = new WeakHashMap<>();
+  private final Map<MeshView, Axis> axisMap = new WeakHashMap<>();
   private double mousePosX;
   private double mousePosY;
   private double mouseOldX;
   private double mouseOldY;
   private double mouseDeltaX;
   private double mouseDeltaY;
-
   private SubScene scene;
-
   private Group ground;
   private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
-  private final Map<String, MeshView> csgNameMap = new WeakHashMap<>();
-  private final Map<MeshView, Axis> axisMap = new WeakHashMap<>();
   private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
 
@@ -443,143 +440,6 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   /**
-   * Select a CSG.
-   *
-   * @param scg new CSG
-   */
-  private void setSelectedCsg(CSG scg) {
-    if (scg.equals(selectedCsg)) {
-      return;
-    }
-
-    for (CSG key : getCsgMap().keySet()) {
-      Platform.runLater(() ->
-          getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
-    }
-
-    lastSelectedTime = System.currentTimeMillis();
-    selectedCsg = scg;
-
-    FxTimer.runLater(Duration.ofMillis(20), () ->
-        getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
-
-    double xCenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
-    double yCenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
-    double zCenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
-
-    TransformNR poseToMove = new TransformNR();
-    CSG finalCSG = selectedCsg;
-    if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
-      finalCSG = finalCSG.movex(-xCenter);
-      poseToMove.translateX(xCenter);
-    }
-    if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
-      finalCSG = finalCSG.movey(-yCenter);
-      poseToMove.translateY(yCenter);
-    }
-    if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
-      finalCSG = finalCSG.movez(-zCenter);
-      poseToMove.translateZ(zCenter);
-    }
-
-    Affine centering = TransformFactory.nrToAffine(poseToMove);
-    // this section keeps the camera oriented the same way to avoid whipping around
-    TransformNR rotationOnlyCOmponentOfManipulator
-        = TransformFactory.affineToNr(selectedCsg.getManipulator());
-    rotationOnlyCOmponentOfManipulator.setX(0);
-    rotationOnlyCOmponentOfManipulator.setY(0);
-    rotationOnlyCOmponentOfManipulator.setZ(0);
-    TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
-
-    TransformNR startSelectNr = previousTarget.copy();
-    TransformNR targetNR;
-    if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-        || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-        || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-      targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
-    } else {
-      targetNR = TransformFactory.affineToNr(centering);
-    }
-
-    Affine interpolator = new Affine();
-    Affine correction = TransformFactory.nrToAffine(reverseRotation);
-
-    Platform.runLater(() -> {
-      interpolator.setTx(startSelectNr.getX() - targetNR.getX());
-      interpolator.setTy(startSelectNr.getY() - targetNR.getY());
-      interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
-      removeAllFocusTransforms();
-      focusGroup.getTransforms().add(interpolator);
-      if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-          || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-          || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
-        focusGroup.getTransforms().add(selectedCsg.getManipulator());
-        focusGroup.getTransforms().add(correction);
-      } else {
-        focusGroup.getTransforms().add(centering);
-      }
-      focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
-    });
-    resetMouseTime();
-  }
-
-  /**
-   * Select each CSG in the list.
-   *
-   * @param selectedCsg list of CSGs to select
-   */
-  private void setSelectedCsg(List<CSG> selectedCsg) {
-    for (int in = 1; in < selectedCsg.size(); in++) {
-      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
-      if (mesh != null) {
-        FxTimer.runLater(Duration.ofMillis(20), () ->
-            mesh.setMaterial(new PhongMaterial(Color.GOLD))); //NOPMD
-      }
-    }
-
-    resetMouseTime();
-  }
-
-  /**
-   * Select a CSG from the line in the script.
-   *
-   * @param script script containing CSG source
-   * @param lineNumber line number in script
-   */
-  public void setSelectedCsg(File script, int lineNumber) {
-    List<CSG> objsFromScriptLine = new ArrayList<>();
-
-    // check all visible CSGs
-    for (CSG checker : getCsgMap().keySet()) {
-      for (String trace : checker.getCreationEventStackTraceList()) {
-        String[] traceParts = trace.split(":");
-        if (traceParts[0]
-            .trim()
-            .toLowerCase(Locale.US)
-            .contains(script.getName()
-                .toLowerCase(Locale.US)
-                .trim())) {
-          try {
-            int num = Integer.parseInt(traceParts[1].trim());
-
-            if (num == lineNumber) {
-              objsFromScriptLine.add(checker);
-            }
-          } catch (Exception e) {
-            logger.log(Level.WARNING,
-                "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
-          }
-        }
-      }
-    }
-
-    if (!objsFromScriptLine.isEmpty()) {
-      setSelectedCsg(objsFromScriptLine.get(0));
-      setSelectedCsg(objsFromScriptLine);
-    }
-  }
-
-  /**
    * De-select the selection.
    */
   private void cancelSelection() {
@@ -693,6 +553,143 @@ public class BowlerStudio3dEngine extends Pane {
     return selectedCsg;
   }
 
+  /**
+   * Select a CSG from the line in the script.
+   *
+   * @param script script containing CSG source
+   * @param lineNumber line number in script
+   */
+  public void setSelectedCsg(File script, int lineNumber) {
+    List<CSG> objsFromScriptLine = new ArrayList<>();
+
+    // check all visible CSGs
+    for (CSG checker : getCsgMap().keySet()) {
+      for (String trace : checker.getCreationEventStackTraceList()) {
+        String[] traceParts = trace.split(":");
+        if (traceParts[0]
+            .trim()
+            .toLowerCase(Locale.US)
+            .contains(script.getName()
+                .toLowerCase(Locale.US)
+                .trim())) {
+          try {
+            int num = Integer.parseInt(traceParts[1].trim());
+
+            if (num == lineNumber) {
+              objsFromScriptLine.add(checker);
+            }
+          } catch (Exception e) {
+            logger.log(Level.WARNING,
+                "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
+          }
+        }
+      }
+    }
+
+    if (!objsFromScriptLine.isEmpty()) {
+      setSelectedCsg(objsFromScriptLine.get(0));
+      setSelectedCsg(objsFromScriptLine);
+    }
+  }
+
+  /**
+   * Select each CSG in the list.
+   *
+   * @param selectedCsg list of CSGs to select
+   */
+  private void setSelectedCsg(List<CSG> selectedCsg) {
+    for (int in = 1; in < selectedCsg.size(); in++) {
+      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
+      if (mesh != null) {
+        FxTimer.runLater(Duration.ofMillis(20), () ->
+            mesh.setMaterial(new PhongMaterial(Color.GOLD))); //NOPMD
+      }
+    }
+
+    resetMouseTime();
+  }
+
+  /**
+   * Select a CSG.
+   *
+   * @param scg new CSG
+   */
+  private void setSelectedCsg(CSG scg) {
+    if (scg.equals(selectedCsg)) {
+      return;
+    }
+
+    for (CSG key : getCsgMap().keySet()) {
+      Platform.runLater(() ->
+          getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
+    }
+
+    lastSelectedTime = System.currentTimeMillis();
+    selectedCsg = scg;
+
+    FxTimer.runLater(Duration.ofMillis(20), () ->
+        getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
+
+    double xCenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
+    double yCenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
+    double zCenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
+
+    TransformNR poseToMove = new TransformNR();
+    CSG finalCSG = selectedCsg;
+    if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
+      finalCSG = finalCSG.movex(-xCenter);
+      poseToMove.translateX(xCenter);
+    }
+    if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
+      finalCSG = finalCSG.movey(-yCenter);
+      poseToMove.translateY(yCenter);
+    }
+    if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
+      finalCSG = finalCSG.movez(-zCenter);
+      poseToMove.translateZ(zCenter);
+    }
+
+    Affine centering = TransformFactory.nrToAffine(poseToMove);
+    // this section keeps the camera oriented the same way to avoid whipping around
+    TransformNR rotationOnlyCOmponentOfManipulator
+        = TransformFactory.affineToNr(selectedCsg.getManipulator());
+    rotationOnlyCOmponentOfManipulator.setX(0);
+    rotationOnlyCOmponentOfManipulator.setY(0);
+    rotationOnlyCOmponentOfManipulator.setZ(0);
+    TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
+
+    TransformNR startSelectNr = previousTarget.copy();
+    TransformNR targetNR;
+    if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
+        || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+        || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+      targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
+    } else {
+      targetNR = TransformFactory.affineToNr(centering);
+    }
+
+    Affine interpolator = new Affine();
+    Affine correction = TransformFactory.nrToAffine(reverseRotation);
+
+    Platform.runLater(() -> {
+      interpolator.setTx(startSelectNr.getX() - targetNR.getX());
+      interpolator.setTy(startSelectNr.getY() - targetNR.getY());
+      interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
+      removeAllFocusTransforms();
+      focusGroup.getTransforms().add(interpolator);
+      if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
+          || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+          || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+        focusGroup.getTransforms().add(selectedCsg.getManipulator());
+        focusGroup.getTransforms().add(correction);
+      } else {
+        focusGroup.getTransforms().add(centering);
+      }
+      focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
+    });
+    resetMouseTime();
+  }
+
   public XForm getWorld() {
     return world;
   }
@@ -774,7 +771,7 @@ public class BowlerStudio3dEngine extends Pane {
                       try {
                         csg.setParameterNewValue(key, newAngleDegrees);
                       } catch (Exception e) {
-                        logger.log(Level.SEVERE,
+                        logger.log(Level.SEVERE, //NOPMD
                             "Could not set new parameter value.\n"
                                 + Throwables.getStackTraceAsString(e));
                       }

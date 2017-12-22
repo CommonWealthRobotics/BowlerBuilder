@@ -46,7 +46,8 @@ import org.kohsuke.github.GHGistFile;
 
 public class FileEditorController {
 
-  private final Logger logger = Logger.getLogger(FileEditorController.class.getSimpleName());
+  private static final Logger logger =
+      Logger.getLogger(FileEditorController.class.getSimpleName());
 
   @FXML
   private SplitPane root;
