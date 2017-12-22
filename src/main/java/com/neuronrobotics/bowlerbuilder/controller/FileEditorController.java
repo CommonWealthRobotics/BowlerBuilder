@@ -6,7 +6,6 @@ import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TestGroovy;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
