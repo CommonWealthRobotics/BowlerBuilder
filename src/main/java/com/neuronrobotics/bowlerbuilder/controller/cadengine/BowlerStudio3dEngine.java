@@ -31,11 +31,14 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
@@ -57,6 +60,7 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.CullFace;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
@@ -64,7 +68,7 @@ import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.reactfx.util.FxTimer;
 
-public class BowlerStudio3dEngine extends Pane {
+public class BowlerStudio3dEngine extends Pane implements CadEngine {
 
   private static final Logger logger = Logger.getLogger(BowlerStudio3dEngine.class.getSimpleName());
 
@@ -102,8 +106,14 @@ public class BowlerStudio3dEngine extends Pane {
 
   private long lastSelectedTime = System.currentTimeMillis();
 
+  private final BooleanProperty axisShowingProperty;
+  private final BooleanProperty handShowingProperty;
+
   public BowlerStudio3dEngine() {
     LoggerUtilities.setupLogger(logger);
+
+    axisShowingProperty = new SimpleBooleanProperty(true);
+    handShowingProperty = new SimpleBooleanProperty(true);
 
     setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
@@ -113,6 +123,30 @@ public class BowlerStudio3dEngine extends Pane {
     scene.setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, (Stop[]) null));
     handleMouse(scene);
     getChildren().add(scene);
+
+    //Clip view so it doesn't overlap with anything
+    final Rectangle engineClip = new Rectangle();
+    setClip(engineClip);
+    layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+      engineClip.setWidth(newValue.getWidth());
+      engineClip.setHeight(newValue.getHeight());
+    });
+
+    axisShowingProperty.addListener((observableValue, oldVal, newVal) -> {
+      if (newVal) {
+        showAxis();
+      } else {
+        hideAxis();
+      }
+    });
+
+    handShowingProperty.addListener((observableValue, oldVal, newVal) -> {
+      if (newVal) {
+        showHand();
+      } else {
+        hideHand();
+      }
+    });
   }
 
   /**
@@ -314,7 +348,7 @@ public class BowlerStudio3dEngine extends Pane {
   /**
    * Show the axes.
    */
-  public final void showAxis() {
+  private final void showAxis() {
     Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.show());
   }
@@ -322,16 +356,16 @@ public class BowlerStudio3dEngine extends Pane {
   /**
    * Hide the axes.
    */
-  public final void hideAxis() {
+  private final void hideAxis() {
     Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.hide());
   }
 
-  public final void showHand() {
+  private final void showHand() {
     hand.setVisible(true);
   }
 
-  public void hideHand() {
+  private void hideHand() {
     hand.setVisible(false);
   }
 
@@ -528,10 +562,6 @@ public class BowlerStudio3dEngine extends Pane {
     return camera.fieldOfViewProperty();
   }
 
-  public SubScene getSubScene() {
-    return scene;
-  }
-
   private void setSubScene(SubScene scene) {
     this.scene = scene;
   }
@@ -675,6 +705,7 @@ public class BowlerStudio3dEngine extends Pane {
    *
    * @param csg CSG to add
    */
+  @Override
   public void addCSG(CSG csg) {
     MeshView mesh = csg.getMesh();
     mesh.setMaterial(new PhongMaterial(Color.RED));
@@ -829,6 +860,41 @@ public class BowlerStudio3dEngine extends Pane {
     logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
+  @Override
+  public void addAllCSGs(CSG... csgs) {
+    Arrays.stream(csgs).forEach(this::addCSG);
+  }
+
+  @Override
+  public void addAllCSGs(Collection<CSG> csgs) {
+    csgs.forEach(this::addCSG);
+  }
+
+  @Override
+  public void clearMeshes() {
+    meshViewGroup.getChildren().clear();
+  }
+
+  @Override
+  public BooleanProperty axisShowingProperty() {
+    return axisShowingProperty;
+  }
+
+  @Override
+  public BooleanProperty handShowingProperty() {
+    return handShowingProperty;
+  }
+
+  @Override
+  public Node getView() {
+    return this;
+  }
+
+  @Override
+  public SubScene getSubScene() {
+    return scene;
+  }
+
   private void fireRegenerate(String key, Set<CSG> currentObjectsToCheck) {
     Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
       List<CSG> toAdd = new ArrayList<>();
@@ -858,10 +924,6 @@ public class BowlerStudio3dEngine extends Pane {
     thread.setDaemon(true);
     thread.setName("CAD Regenerate Thread");
     thread.start();
-  }
-
-  public void clearMeshViews() {
-    meshViewGroup.getChildren().clear();
   }
 
 }

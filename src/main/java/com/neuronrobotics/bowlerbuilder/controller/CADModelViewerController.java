@@ -1,24 +1,30 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine;
+import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import eu.mihosoft.vrl.v3d.CSG;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.SubScene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.MeshView;
 
 public class CADModelViewerController {
 
-  private final BowlerStudio3dEngine engine = new BowlerStudio3dEngine();
+  private final CadEngine engine;
   @FXML
   private BorderPane root;
   private boolean axisShowing = true;
   private boolean handShowing = true;
+
+  @Inject
+  public CADModelViewerController(CadEngine engine) {
+    this.engine = engine;
+  }
 
   @FXML
   protected void initialize() {
@@ -33,14 +39,7 @@ public class CADModelViewerController {
       AnchorPane.setBottomAnchor(subScene, 0.0);
     });
 
-    final Rectangle engineClip = new Rectangle();
-    engine.setClip(engineClip);
-    engine.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
-      engineClip.setWidth(newValue.getWidth());
-      engineClip.setHeight(newValue.getHeight());
-    });
-
-    root.setCenter(engine);
+    root.setCenter(engine.getView());
     root.setId("cadViewerBorderPane");
   }
 
@@ -50,7 +49,7 @@ public class CADModelViewerController {
    * @param csg CSG to add
    */
   public void addCSG(CSG csg) {
-    csg.toJavaFXMesh(null).getAsMeshViews().forEach(mesh -> engine.addCSG(csg));
+    engine.addCSG(csg);
   }
 
   /**
@@ -59,7 +58,7 @@ public class CADModelViewerController {
    * @param csgs CSGs to add
    */
   public void addAllCSGs(CSG... csgs) {
-    Arrays.stream(csgs).forEach(this::addCSG);
+    engine.addAllCSGs(csgs);
   }
 
   /**
@@ -68,14 +67,14 @@ public class CADModelViewerController {
    * @param csgs List of CSGs to add
    */
   public void addAllCSGs(Collection<CSG> csgs) {
-    csgs.forEach(this::addCSG);
+    engine.addAllCSGs(csgs);
   }
 
   /**
    * Removes all meshes except for the background.
    */
   public void clearMeshes() {
-    engine.clearMeshViews();
+    engine.clearMeshes();
   }
 
   @FXML
@@ -85,24 +84,14 @@ public class CADModelViewerController {
 
   @FXML
   private void onAxis(ActionEvent actionEvent) {
-    if (axisShowing) {
-      engine.hideAxis();
-    } else {
-      engine.showAxis();
-    }
-
     axisShowing = !axisShowing;
+    engine.axisShowingProperty().setValue(axisShowing);
   }
 
   @FXML
   private void onHand(ActionEvent actionEvent) {
-    if (handShowing) {
-      engine.hideHand();
-    } else {
-      engine.showHand();
-    }
-
     handShowing = !handShowing;
+    engine.handShowingProperty().setValue(handShowing);
   }
 
   @FXML
@@ -110,8 +99,8 @@ public class CADModelViewerController {
     clearMeshes();
   }
 
-  public BowlerStudio3dEngine getEngine() {
-    return engine;
+  public Map<CSG, MeshView> getCsgMap() {
+    return engine.getCsgMap();
   }
 
 }

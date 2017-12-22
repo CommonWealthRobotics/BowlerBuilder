@@ -5,8 +5,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorView;
-import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
+import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
@@ -205,10 +204,7 @@ public class MainWindowController implements Initializable {
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
     try {
-      FileEditorTab tab = new FileEditorTab(
-          "Scratchpad",
-          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml",
-          new AceEditorView());
+      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
       FileEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));
@@ -221,7 +217,7 @@ public class MainWindowController implements Initializable {
       tabPane.getSelectionModel().select(tab);
     } catch (IOException e) {
       logger.log(Level.SEVERE,
-          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+          "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -293,10 +289,7 @@ public class MainWindowController implements Initializable {
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
     try {
-      FileEditorTab tab = new FileEditorTab(
-          gistFile.getFileName(),
-          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml",
-          new AceEditorView());
+      AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
       FileEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));
@@ -309,7 +302,7 @@ public class MainWindowController implements Initializable {
       tabPane.getSelectionModel().select(tab);
     } catch (IOException e) {
       logger.log(Level.SEVERE,
-          "Could not load FileEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+          "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -423,8 +416,8 @@ public class MainWindowController implements Initializable {
 
             sizeMenu.setOnAction(event1 -> {
               Tab selection = tabPane.getSelectionModel().getSelectedItem();
-              if (selection instanceof FileEditorTab) {
-                FileEditorTab editorTab = (FileEditorTab) selection;
+              if (selection instanceof AceCadEditorTab) {
+                AceCadEditorTab editorTab = (AceCadEditorTab) selection;
                 String insertion =
                     "CSG foo = Vitamins.get(\"" + vitamin + "\", \"" + size + "\");";
                 editorTab.getController().insertAtCursor(insertion);

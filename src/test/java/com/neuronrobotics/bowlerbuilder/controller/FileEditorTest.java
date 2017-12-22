@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
+import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
+import com.neuronrobotics.bowlerbuilder.controller.module.FileEditorControllerModule;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,10 +23,12 @@ public class FileEditorTest extends AutoClosingApplicationTest {
   @Override
   public void start(Stage stage) throws Exception {
     FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("../view/FileEditor.fxml"),
+        getClass().getResource("../view/AceCadEditor.fxml"),
         null,
         null,
-        Guice.createInjector(new FileEditorControllerModule())::getInstance);
+        Guice.createInjector(
+            new FileEditorControllerModule(),
+            new CadModelViewerControllerModule())::getInstance);
     SplitPane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));
@@ -51,7 +55,7 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());
     ThreadUtil.wait(1000);
 
-    assertEquals(1, controller.getCADViewerController().getEngine().getCsgMap().size());
+    assertEquals(1, controller.getCADViewerController().getCsgMap().size());
   }
 
 }

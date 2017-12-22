@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller.module;
 
 import com.google.inject.AbstractModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorView;
