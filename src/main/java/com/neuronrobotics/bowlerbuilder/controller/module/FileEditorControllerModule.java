@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.module;
 
 import com.google.inject.AbstractModule;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 
 public class FileEditorControllerModule extends AbstractModule {

@@ -1,6 +1,8 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
 
 import com.neuronrobotics.bowlerbuilder.controller.FileEditorController;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.web.WebView;

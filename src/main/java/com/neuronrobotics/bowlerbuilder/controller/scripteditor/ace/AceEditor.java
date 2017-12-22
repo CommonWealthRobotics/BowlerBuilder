@@ -1,6 +1,7 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Worker;

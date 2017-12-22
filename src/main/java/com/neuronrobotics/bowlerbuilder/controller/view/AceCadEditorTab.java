@@ -5,14 +5,14 @@ import com.neuronrobotics.bowlerbuilder.controller.FileEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.FileEditorControllerModule;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 
 /**
  * {@link CadEditorTab} that uses an
- * {@link com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorView} and a
+ * {@link AceEditorView} and a
  * {@link com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine}.
  */
 public class AceCadEditorTab extends CadEditorTab<FileEditorController> {
