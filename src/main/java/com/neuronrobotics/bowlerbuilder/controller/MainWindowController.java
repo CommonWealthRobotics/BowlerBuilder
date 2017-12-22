@@ -5,6 +5,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TestGroovy;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
@@ -130,6 +131,8 @@ public class MainWindowController {
     }
 
     loadPreferences();
+
+//    ScriptingEngine.addScriptingLanguage(new TestGroovy());
   }
 
   @FXML
