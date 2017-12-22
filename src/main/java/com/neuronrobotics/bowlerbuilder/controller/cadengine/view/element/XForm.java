@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element;
 
 /*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.
