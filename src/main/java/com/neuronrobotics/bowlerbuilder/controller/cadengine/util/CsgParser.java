@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine.util;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;

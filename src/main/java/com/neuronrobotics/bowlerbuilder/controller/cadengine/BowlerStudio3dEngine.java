@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.controller.cadengine; //NOPMD
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraDevice;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
