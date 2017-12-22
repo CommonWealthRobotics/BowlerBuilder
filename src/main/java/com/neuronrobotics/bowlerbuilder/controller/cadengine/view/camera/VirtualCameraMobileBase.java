@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine;
+package com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera;
 
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;

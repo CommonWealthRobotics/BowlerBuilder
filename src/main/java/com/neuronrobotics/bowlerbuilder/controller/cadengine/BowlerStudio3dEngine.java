@@ -3,10 +3,12 @@ package com.neuronrobotics.bowlerbuilder.controller.cadengine; //NOPMD
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraDevice;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.OnEngineeringUnitsChange;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.XForm;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
