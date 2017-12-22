@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -47,6 +48,7 @@ public class AceCadEditorController {
       LoggerUtilities.getLogger(AceCadEditorController.class.getSimpleName());
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
+  private final ScriptRunner scriptRunner;
   @FXML
   private SplitPane fileEditorRoot;
   @FXML
@@ -70,9 +72,10 @@ public class AceCadEditorController {
   private Runnable reloadMenus;
 
   @Inject
-  public AceCadEditorController(ScriptEditorView scriptEditorView) {
+  public AceCadEditorController(ScriptEditorView scriptEditorView, ScriptRunner scriptRunner) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
+    this.scriptRunner = scriptRunner;
   }
 
   @FXML
@@ -102,7 +105,7 @@ public class AceCadEditorController {
 
           //Run the code
           logger.log(Level.FINE, "Running script.");
-          Object result = ScriptingEngine.inlineScriptStringRun(
+          Object result = scriptRunner.runScript(
               text.get(),
               new ArrayList<>(),
               "Groovy");
@@ -321,4 +324,17 @@ public class AceCadEditorController {
   public CADModelViewerController getCADViewerController() {
     return cadviewerController;
   }
+
+  public ScriptEditorView getScriptEditorView() {
+    return scriptEditorView;
+  }
+
+  public ScriptEditor getScriptEditor() {
+    return scriptEditor;
+  }
+
+  public ScriptRunner getScriptRunner() {
+    return scriptRunner;
+  }
+
 }

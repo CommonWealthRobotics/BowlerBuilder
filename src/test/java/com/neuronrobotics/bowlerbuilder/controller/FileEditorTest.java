@@ -6,8 +6,10 @@ import static org.junit.Assert.assertTrue;
 import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
+import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
-import com.neuronrobotics.bowlerbuilder.controller.module.FileEditorControllerModule;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.Test;
 public class FileEditorTest extends AutoClosingApplicationTest {
 
   private AceCadEditorController controller;
+  private ScriptRunner scriptRunner;
 
   @Override
   public void start(Stage stage) throws Exception {
@@ -27,10 +30,11 @@ public class FileEditorTest extends AutoClosingApplicationTest {
         null,
         null,
         Guice.createInjector(
-            new FileEditorControllerModule(scriptEditorView),
+            new AceCadEditorControllerModule(new AceEditorView()),
             new CadModelViewerControllerModule())::getInstance);
     SplitPane mainWindow = loader.load();
     controller = loader.getController();
+    scriptRunner = controller.getScriptRunner();
     stage.setScene(new Scene(mainWindow));
     stage.show();
   }
@@ -45,10 +49,14 @@ public class FileEditorTest extends AutoClosingApplicationTest {
   @Test
   void runCubeTest() {
     FxHelper.runAndWait(() -> controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()"));
-    ThreadUtil.wait(2000);
-
     FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());
-    ThreadUtil.wait(2000);
+
+    ThreadUtil.wait(1000);
+
+    while (scriptRunner.isScriptCompiling()
+        || scriptRunner.isScriptRunning()) {
+      ThreadUtil.wait(100);
+    }
 
     assertEquals(1, controller.getCADViewerController().getCsgMap().size());
   }

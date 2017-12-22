@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
-import com.neuronrobotics.bowlerbuilder.controller.module.FileEditorControllerModule;
+import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
@@ -29,7 +29,7 @@ public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
         null,
         null,
         Guice.createInjector(
-            new FileEditorControllerModule(getScriptEditorView()),
+            new AceCadEditorControllerModule(getScriptEditorView()),
             new CadModelViewerControllerModule())::getInstance);
 
     node = loader.load();
