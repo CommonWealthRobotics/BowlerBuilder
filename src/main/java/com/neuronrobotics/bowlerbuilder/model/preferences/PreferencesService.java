@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -24,12 +26,18 @@ import org.apache.commons.io.IOUtils;
  */
 public class PreferencesService {
 
+  private final Logger logger = Logger.getLogger(PreferencesService.class.getSimpleName());
+
   private static final String prefsSaveDirPath = LoggerUtilities.getBowlerDirectory()
       + File.separator
       + "preferences";
   private static final String prefsSaveFilePath = prefsSaveDirPath
       + File.separator
       + "preferences.json";
+
+  public PreferencesService() {
+    LoggerUtilities.setupLogger(logger);
+  }
 
   /**
    * Load saved preferences in from the default save file.
@@ -72,7 +80,7 @@ public class PreferencesService {
           Paths.get(prefsSaveFilePath),
           jsonObject.toString().getBytes(Charset.forName("UTF-8")));
     } else {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
+      logger.log(Level.SEVERE,
           "Creating preferences directory failed.\n");
     }
   }

@@ -18,12 +18,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   private boolean allowResize = true;
 
   public EngineeringUnitsSliderWidget(OnEngineeringUnitsChange listener,
-      double min,
-      double max,
-      double current,
-      double width,
-      String units,
-      boolean intCast) {
+                                      double min,
+                                      double max,
+                                      double current,
+                                      double width,
+                                      String units,
+                                      boolean intCast) {
     this(listener, min, max, current, width, units);
     this.intCast = intCast;
   }
@@ -109,7 +109,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
   @Override
   public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-      Number newValue) {
+                      Number newValue) {
     updateValue();
   }
 

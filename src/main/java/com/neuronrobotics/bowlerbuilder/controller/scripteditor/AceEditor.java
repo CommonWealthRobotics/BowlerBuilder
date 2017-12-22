@@ -2,14 +2,19 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.web.WebEngine;
 
 public final class AceEditor implements ScriptEditor {
+
+  private final Logger logger = Logger.getLogger(AceEditor.class.getSimpleName());
 
   private final WebEngine engine;
 
   public AceEditor(WebEngine engine) {
     this.engine = engine;
+
+    LoggerUtilities.setupLogger(logger);
   }
 
   /**
@@ -24,7 +29,7 @@ public final class AceEditor implements ScriptEditor {
     escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
     escaped = escaped.replace("\n", "\\n");
     escaped = escaped.replace("\r", "\\n");
-    LoggerUtilities.getLogger().log(Level.INFO,
+    logger.log(Level.INFO,
         "Inserting: " + escaped);
     engine.executeScript("editor.insert(\"" + escaped + "\");");
   }

@@ -27,7 +27,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
@@ -63,6 +65,8 @@ import org.apache.commons.io.FileUtils;
 import org.reactfx.util.FxTimer;
 
 public class BowlerStudio3dEngine extends Pane {
+
+  private final Logger logger = Logger.getLogger(BowlerStudio3dEngine.class.getSimpleName());
 
   private final Group axisGroup = new Group();
   private final Group gridGroup = new Group();
@@ -100,6 +104,8 @@ public class BowlerStudio3dEngine extends Pane {
   private long lastSelectedTime = System.currentTimeMillis();
 
   public BowlerStudio3dEngine() {
+    LoggerUtilities.setupLogger(logger);
+
     setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
     buildCamera();
@@ -220,7 +226,7 @@ public class BowlerStudio3dEngine extends Pane {
               + "\n"
               + "</root>");
     } catch (Exception e) {
-      LoggerUtilities.getLogger().log(Level.SEVERE,
+      logger.log(Level.SEVERE,
           "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
     }
 
@@ -235,7 +241,7 @@ public class BowlerStudio3dEngine extends Pane {
    * Builds the axes.
    */
   private void buildAxes() {
-    Thread buildThread = LoggerUtilities.newLoggingThread(() -> {
+    Thread buildThread = LoggerUtilities.newLoggingThread(logger, () -> {
       try {
         Image ruler = AssetFactory.loadAsset("ruler.png");
         Image groundLocal = AssetFactory.loadAsset("ground.png");
@@ -295,7 +301,7 @@ public class BowlerStudio3dEngine extends Pane {
           world.getChildren().addAll(lookGroup, axisGroup);
         });
       } catch (Exception e) {
-        LoggerUtilities.getLogger().log(Level.SEVERE,
+        logger.log(Level.SEVERE,
             "Could not load ruler/ground assets for CAD view.\n"
                 + Throwables.getStackTraceAsString(e));
       }
@@ -561,7 +567,7 @@ public class BowlerStudio3dEngine extends Pane {
               objsFromScriptLine.add(checker);
             }
           } catch (Exception e) {
-            LoggerUtilities.getLogger().log(Level.WARNING,
+            logger.log(Level.WARNING,
                 "Could not select CSG in script.\n" + Throwables.getStackTraceAsString(e));
           }
         }
@@ -603,10 +609,10 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   private void focusInterpolate(TransformNR start,
-      TransformNR target,
-      int depth,
-      int targetDepth,
-      Affine interpolator) {
+                                TransformNR target,
+                                int depth,
+                                int targetDepth,
+                                Affine interpolator) {
 
     double depthScale = 1 - (double) depth / (double) targetDepth;
     double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
@@ -769,7 +775,7 @@ public class BowlerStudio3dEngine extends Pane {
                       try {
                         csg.setParameterNewValue(key, newAngleDegrees);
                       } catch (Exception e) {
-                        LoggerUtilities.getLogger().log(Level.WARNING,
+                        logger.log(Level.WARNING,
                             "Could not set new parameter value.\n"
                                 + Throwables.getStackTraceAsString(e));
                       }
@@ -829,7 +835,7 @@ public class BowlerStudio3dEngine extends Pane {
             try {
               FileUtils.write(save, readyCSG.toStlString());
             } catch (IOException e) {
-              LoggerUtilities.getLogger().log(Level.SEVERE,
+              logger.log(Level.SEVERE,
                   "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
             }
           }
@@ -849,7 +855,7 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   private void fireRegenerate(String key, Set<CSG> currentObjectsToCheck) {
-    Thread thread = LoggerUtilities.newLoggingThread(() -> {
+    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
       List<CSG> toAdd = new ArrayList<>();
       List<CSG> toRemove = new ArrayList<>();
 
@@ -869,7 +875,7 @@ public class BowlerStudio3dEngine extends Pane {
       Platform.runLater(() ->
           toAdd.forEach(this::addCSG));
 
-      LoggerUtilities.getLogger().log(Level.INFO, "Saving CSG database");
+      logger.log(Level.INFO, "Saving CSG database");
       CSGDatabase.saveDatabase();
     });
 

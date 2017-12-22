@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -44,6 +46,8 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
 public class FileEditorController {
+
+  private final Logger logger = Logger.getLogger(FileEditorController.class.getSimpleName());
 
   @FXML
   private SplitPane root;
@@ -73,6 +77,10 @@ public class FileEditorController {
   private Tab tab;
   private Runnable reloadMenus;
 
+  public FileEditorController() {
+    LoggerUtilities.setupLogger(logger);
+  }
+
   @FXML
   protected void initialize() {
     requestedFile = Optional.empty();
@@ -99,7 +107,7 @@ public class FileEditorController {
               try {
                 aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
               } catch (IOException e) {
-                LoggerUtilities.getLogger().log(Level.WARNING,
+                logger.log(Level.WARNING,
                     "Could not load file: " + file.getAbsolutePath() + ".\n"
                         + Throwables.getStackTraceAsString(e));
               }
@@ -126,7 +134,7 @@ public class FileEditorController {
   @FXML
   private void runFile(ActionEvent actionEvent) {
     Runnable runnable = () -> {
-      Thread thread = LoggerUtilities.newLoggingThread(() -> {
+      Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
         try {
           //Grab code from FX thread
           ObjectProperty<String> text = new SimpleObjectProperty<>();
@@ -152,10 +160,10 @@ public class FileEditorController {
           });
           latch2.await();
         } catch (IOException e) {
-          LoggerUtilities.getLogger().log(Level.SEVERE,
+          logger.log(Level.SEVERE,
               "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
         } catch (GroovyRuntimeException e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
+          logger.log(Level.WARNING,
               "Error in CAD script: " + e.getMessage());
           Platform.runLater(() -> Notifications.create()
               .title("Error in CAD Script")
@@ -164,7 +172,7 @@ public class FileEditorController {
               .position(Pos.BOTTOM_RIGHT)
               .showInformation());
         } catch (Exception e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
+          logger.log(Level.WARNING,
               "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
         }
       });
@@ -217,12 +225,12 @@ public class FileEditorController {
               tab.setText(dialog.getName());
               reloadMenus.run();
             } catch (Exception e) {
-              LoggerUtilities.getLogger().log(Level.SEVERE,
+              logger.log(Level.SEVERE,
                   "Could not push code.\n" + Throwables.getStackTraceAsString(e));
             }
           });
         } catch (IOException e) {
-          LoggerUtilities.getLogger().log(Level.SEVERE,
+          logger.log(Level.SEVERE,
               "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
         }
       });
@@ -247,7 +255,7 @@ public class FileEditorController {
               commitMessage
           );
         } catch (Exception e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
+          logger.log(Level.WARNING,
               "Could not commit.\n" + Throwables.getStackTraceAsString(e));
         }
       });
@@ -316,7 +324,7 @@ public class FileEditorController {
         try {
           aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
         } catch (IOException e) {
-          LoggerUtilities.getLogger().log(Level.WARNING,
+          logger.log(Level.WARNING,
               "Could not load file: " + file.getAbsolutePath() + ".\n"
                   + Throwables.getStackTraceAsString(e));
         }
@@ -342,7 +350,7 @@ public class FileEditorController {
       gistURLField.setText(gist.getGitPushUrl());
       fileNameField.setText(gistFile.getFileName());
     } catch (GitAPIException | IOException e) {
-      LoggerUtilities.getLogger().log(Level.WARNING,
+      logger.log(Level.WARNING,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
     }
 

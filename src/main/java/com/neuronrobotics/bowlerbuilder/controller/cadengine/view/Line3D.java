@@ -1,12 +1,12 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
 
+import eu.mihosoft.vrl.v3d.Vector3d;
+import eu.mihosoft.vrl.v3d.Vertex;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Affine;
-import eu.mihosoft.vrl.v3d.Vector3d;
-import eu.mihosoft.vrl.v3d.Vertex;
 
 public class Line3D extends Cylinder {
 
@@ -30,7 +30,7 @@ public class Line3D extends Cylinder {
   }
 
   public Line3D(double startX, double startY, double startZ,
-      double endX, double endY, double endZ) {
+                double endX, double endY, double endZ) {
     super(
         0.1,
         Math.sqrt(Math.pow(endX - startX, 2)

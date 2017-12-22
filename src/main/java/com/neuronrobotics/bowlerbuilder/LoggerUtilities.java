@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,24 +15,32 @@ import org.apache.commons.io.FileUtils;
 
 public final class LoggerUtilities {
 
-  private static final Logger logger = Logger.getLogger("");
+  //Log file parent directory path
+  private static String logFileDirPath;
+
+  //Log file path
+  private static String logFilePath;
+
+  //FileHandler that saves to the log file
+  private static FileHandler fileHandler;
 
   static {
-    String path = getBowlerDirectory()
+    logFileDirPath = getBowlerDirectory()
         + File.separator
         + "logs"
         + File.separator;
-    File testFile = new File(path);
+
+    logFilePath = logFileDirPath
+        + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
+        .format(new Date());
+
+    File testFile = new File(logFileDirPath);
     try {
       if (testFile.exists() || testFile.mkdirs()) {
-        FileHandler fileHandler = new FileHandler(
-            path + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
-                .format(new Date()),
-            true);
+        fileHandler = new FileHandler(logFilePath, true);
         fileHandler.setFormatter(new SimpleFormatter());
-        logger.addHandler(fileHandler);
       } else {
-        throw new IOException("LoggerUtilities could not create the logging file: " + path);
+        throw new IOException("LoggerUtilities could not create the logging file: " + logFilePath);
       }
     } catch (IOException e) {
       //We can't call a logger here instead because we are the logger!
@@ -43,14 +52,22 @@ public final class LoggerUtilities {
     throw new UnsupportedOperationException("This is a utility class!");
   }
 
-  public static Logger getLogger() {
-    return logger;
+  public static String getLogFileDirPath() {
+    return logFileDirPath;
+  }
+
+  public static String getLogFilePath() {
+    return logFilePath;
+  }
+
+  public static FileHandler getFileHandler() {
+    return fileHandler;
   }
 
   /**
    * Get the BowlerBuilder directory for saving, logging, etc.
    *
-   * @return Path to BowlerBuilder directory
+   * @return path to BowlerBuilder directory
    */
   public static String getBowlerDirectory() {
     return FileUtils.getUserDirectoryPath()
@@ -61,14 +78,25 @@ public final class LoggerUtilities {
   /**
    * Return a new thread that logs uncaught exceptions.
    *
-   * @param runnable Thread runnable
+   * @param runnable thread runnable
    * @return logging thread
    */
-  public static Thread newLoggingThread(Runnable runnable) {
+  public static Thread newLoggingThread(Logger logger, Runnable runnable) {
     Thread thread = new Thread(runnable);
     thread.setUncaughtExceptionHandler((t, e) ->
-        LoggerUtilities.getLogger().log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
+        logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
     return thread;
+  }
+
+  /**
+   * Setup a logger with handlers and set its log level to ALL.
+   *
+   * @param logger logger to set up
+   */
+  public static void setupLogger(Logger logger) {
+    logger.addHandler(new ConsoleHandler());
+    logger.addHandler(LoggerUtilities.getFileHandler());
+    logger.setLevel(Level.ALL);
   }
 
 }
