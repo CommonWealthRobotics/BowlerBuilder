@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerbuilder;
 
 import static org.junit.Assert.assertTrue;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -13,7 +15,12 @@ class BowlerBuilderTest extends AutoClosingApplicationTest {
 
   @Override
   public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("MainWindow.fxml"));
+    Injector injector = Guice.createInjector();
+    FXMLLoader loader = new FXMLLoader(
+        BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
+        null,
+        null,
+        injector::getInstance);
     Pane mainWindow = loader.load();
     stage.setScene(new Scene(mainWindow));
     stage.show();
