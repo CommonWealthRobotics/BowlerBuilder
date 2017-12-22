@@ -1,5 +1,8 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 
+/**
+ * Interface to edit a text-based script.
+ */
 public interface ScriptEditor {
 
   /**

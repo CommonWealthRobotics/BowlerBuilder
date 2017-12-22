@@ -7,14 +7,10 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.web.WebView?>
 
-<SplitPane id="fileEditorRoot" fx:id="root" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.FileEditorController">
+<SplitPane id="fileEditorRoot" fx:id="fileEditorRoot" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.FileEditorController">
    <items>
-      <BorderPane>
-         <center>
-             <WebView id="webView" fx:id="webView" minHeight="-1.0" minWidth="-1.0" prefHeight="200.0" prefWidth="-1.0" />
-         </center>
+      <BorderPane fx:id="editorBorderPane">
          <bottom>
             <HBox alignment="CENTER_LEFT" maxHeight="30.0" nodeOrientation="LEFT_TO_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
                <children>

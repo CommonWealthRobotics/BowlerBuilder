@@ -2,10 +2,11 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
+import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,8 +24,6 @@ import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -35,8 +33,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
+import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
@@ -48,14 +45,12 @@ public class FileEditorController {
 
   private static final Logger logger =
       Logger.getLogger(FileEditorController.class.getSimpleName());
-
+  private final ScriptEditorView scriptEditorView;
+  private final ScriptEditor scriptEditor;
   @FXML
-  private SplitPane root;
+  private SplitPane fileEditorRoot;
   @FXML
-  private WebView webView;
-  private WebEngine webEngine; //NOPMD
-  private ScriptEditor aceEditor;
-  private int line;
+  private BorderPane editorBorderPane;
   @FXML
   private Button runButton;
   @FXML
@@ -67,9 +62,6 @@ public class FileEditorController {
   @FXML
   private CADModelViewerController cadviewerController;
 
-  private int requestedFontSize = 14;
-  private Optional<File> requestedFile;
-
   private GHGist gist;
   private GHGistFile gistFile;
 
@@ -77,58 +69,22 @@ public class FileEditorController {
   private Tab tab;
   private Runnable reloadMenus;
 
-  public FileEditorController() {
+  @Inject
+  public FileEditorController(ScriptEditorView scriptEditorView) {
+    this.scriptEditorView = scriptEditorView;
+    this.scriptEditor = scriptEditorView.getScriptEditor();
     LoggerUtilities.setupLogger(logger);
   }
 
   @FXML
   protected void initialize() {
-    requestedFile = Optional.empty();
+    editorBorderPane.setCenter(scriptEditorView.getView());
 
-    root.setDividerPosition(0, 0.8);
-    webEngine = webView.getEngine();
-    webEngine.setJavaScriptEnabled(true);
-    Platform.runLater(() -> webEngine.load(FileEditorController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/web/ace.html").toString()));
-    aceEditor = new AceEditor(webEngine);
+    fileEditorRoot.setDividerPosition(0, 0.8);
 
     runButton.setGraphic(new FontAwesome().create(String.valueOf(FontAwesome.Glyph.PLAY)));
     publishButton.setGraphic(
         new FontAwesome().create(String.valueOf(FontAwesome.Glyph.CLOUD_UPLOAD)));
-
-    //Stuff to run once the engine is done loading
-    webEngine.getLoadWorker().stateProperty().addListener(
-        (ObservableValue<? extends Worker.State> observable,
-         Worker.State oldValue,
-         Worker.State newValue) -> {
-          if (newValue == Worker.State.SUCCEEDED) {
-            aceEditor.setFontSize(requestedFontSize); //Set font size to the default
-            requestedFile.ifPresent(file -> {
-              try {
-                aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
-              } catch (IOException e) {
-                logger.log(Level.SEVERE,
-                    "Could not load file: " + file.getAbsolutePath() + ".\n"
-                        + Throwables.getStackTraceAsString(e));
-              }
-            });
-
-            //Hack to get scrolling to work
-            webView.setOnScroll(event -> {
-              int length = (int) webView.getEngine().executeScript("editor.session.getLength();");
-
-              line += (int) Math.copySign(5, -1 * event.getDeltaY());
-              if (line < 0) {
-                line = 0;
-              } else if (line > length) {
-                line = length;
-              }
-
-              webView.getEngine().executeScript(
-                  "editor.renderer.scrollCursorIntoView({row: " + line + ", column: 1}, 0.5);");
-            });
-          }
-        });
   }
 
   @FXML
@@ -140,7 +96,7 @@ public class FileEditorController {
           ObjectProperty<String> text = new SimpleObjectProperty<>();
           CountDownLatch latch = new CountDownLatch(1);
           Platform.runLater(() -> {
-            text.set(aceEditor.getText());
+            text.set(scriptEditor.getText());
             latch.countDown();
           });
           latch.await();
@@ -168,7 +124,7 @@ public class FileEditorController {
           Platform.runLater(() -> Notifications.create()
               .title("Error in CAD Script")
               .text(e.getMessage())
-              .owner(root)
+              .owner(fileEditorRoot)
               .position(Pos.BOTTOM_RIGHT)
               .showInformation());
         } catch (Exception e) {
@@ -180,16 +136,7 @@ public class FileEditorController {
       thread.start();
     };
 
-    //Runnable so we don't try to talk to ACE before it exists
-    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      runnable.run();
-    } else {
-      webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-        if (newValue == Worker.State.SUCCEEDED) {
-          runnable.run();
-        }
-      });
-    }
+    runnable.run();
   }
 
   @FXML
@@ -213,7 +160,7 @@ public class FileEditorController {
                   newGist.getGitPushUrl(),
                   ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
                   dialog.getName(),
-                  aceEditor.getText(),
+                  scriptEditor.getText(),
                   commitMessage
               );
 
@@ -251,7 +198,7 @@ public class FileEditorController {
               remote,
               ScriptingEngine.getFullBranch(remote),
               relativePath,
-              aceEditor.getText(),
+              scriptEditor.getText(),
               commitMessage
           );
         } catch (Exception e) {
@@ -289,11 +236,7 @@ public class FileEditorController {
    * @param fontSize font size
    */
   public void setFontSize(Integer fontSize) {
-    if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-      aceEditor.setFontSize(fontSize);
-    } else {
-      requestedFontSize = fontSize;
-    }
+    scriptEditor.setFontSize(fontSize);
   }
 
   /**
@@ -320,16 +263,12 @@ public class FileEditorController {
    */
   protected void loadFile(File file) {
     if (file != null) {
-      if (webEngine.getLoadWorker().stateProperty().get() == Worker.State.SUCCEEDED) {
-        try {
-          aceEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
-        } catch (IOException e) {
-          logger.log(Level.SEVERE,
-              "Could not load file: " + file.getAbsolutePath() + ".\n"
-                  + Throwables.getStackTraceAsString(e));
-        }
-      } else {
-        requestedFile = Optional.of(file);
+      try {
+        scriptEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not load file: " + file.getAbsolutePath() + ".\n"
+                + Throwables.getStackTraceAsString(e));
       }
     }
   }
@@ -373,7 +312,7 @@ public class FileEditorController {
    * @param text text to insert
    */
   public void insertAtCursor(String text) {
-    aceEditor.insertAtCursor(text);
+    scriptEditor.insertAtCursor(text);
   }
 
   public CADModelViewerController getCADViewerController() {

@@ -5,6 +5,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.view.FileEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
@@ -206,7 +207,8 @@ public class MainWindowController implements Initializable {
     try {
       FileEditorTab tab = new FileEditorTab(
           "Scratchpad",
-          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml");
+          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml",
+          new AceEditorView());
       FileEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));
@@ -293,7 +295,8 @@ public class MainWindowController implements Initializable {
     try {
       FileEditorTab tab = new FileEditorTab(
           gistFile.getFileName(),
-          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml");
+          "/com/neuronrobotics/bowlerbuilder/view/FileEditor.fxml",
+          new AceEditorView());
       FileEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));

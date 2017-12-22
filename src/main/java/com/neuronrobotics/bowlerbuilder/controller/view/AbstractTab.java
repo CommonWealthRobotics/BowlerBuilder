@@ -16,9 +16,9 @@ public abstract class AbstractTab<T> extends Tab {
 
   /**
    * Get the visual content of this tab.
-   * @return
+   * @return root node
    */
-  public abstract Node getRoot();
+  public abstract Node getView();
 
   /**
    * Get the controller for the content of this tab.

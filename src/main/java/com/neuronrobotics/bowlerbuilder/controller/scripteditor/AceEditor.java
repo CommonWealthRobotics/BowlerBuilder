@@ -3,17 +3,20 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 
+/**
+ * Editor for Cloud9 Ace.
+ */
 public final class AceEditor implements ScriptEditor {
 
   private static final Logger logger = Logger.getLogger(AceEditor.class.getSimpleName());
 
   private final WebEngine engine;
 
-  public AceEditor(WebEngine engine) {
-    this.engine = engine;
-
+  public AceEditor(WebEngine webEngine) {
+    this.engine = webEngine;
     LoggerUtilities.setupLogger(logger);
   }
 
@@ -23,15 +26,17 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to insert
    */
   public void insertAtCursor(String text) {
-    String escaped = text;
-    escaped = escaped.replace("\"", "\\\"");
-    escaped = escaped.replace("'", "\\'");
-    escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
-    escaped = escaped.replace("\n", "\\n");
-    escaped = escaped.replace("\r", "\\n");
-    logger.log(Level.FINE,
-        "Inserting: " + escaped);
-    engine.executeScript("editor.insert(\"" + escaped + "\");");
+    runAfterEngine(() -> {
+      String escaped = text;
+      escaped = escaped.replace("\"", "\\\"");
+      escaped = escaped.replace("'", "\\'");
+      escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
+      escaped = escaped.replace("\n", "\\n");
+      escaped = escaped.replace("\r", "\\n");
+      logger.log(Level.FINE,
+          "Inserting: " + escaped);
+      engine.executeScript("editor.insert(\"" + escaped + "\");");
+    });
   }
 
   /**
@@ -40,26 +45,38 @@ public final class AceEditor implements ScriptEditor {
    * @param fontSize Font size
    */
   public void setFontSize(int fontSize) {
-    engine.executeScript("document.getElementById('editor').style.fontSize='" + fontSize + "px';");
+    runAfterEngine(() ->
+        engine.executeScript(
+            "document.getElementById('editor').style.fontSize='"
+                + fontSize
+                + "px';"));
   }
 
   /**
-   * Get the entire document text.
+   * Get the entire document text. Returns an empty string if the engine is not done loading.
    *
    * @return All text in the editor
    */
   public String getText() {
-    return (String) engine.executeScript("editor.getValue();");
+    if (checkEngine()) {
+      return (String) engine.executeScript("editor.getValue();");
+    }
+
+    return "";
   }
 
   /**
-   * Get the selected text.
+   * Get the selected text. Returns an empty string if the engine is not done loading.
    *
    * @return The selected text
    */
   public String getSelectedText() {
-    return (String)
-        engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());");
+    if (checkEngine()) {
+      return (String)
+          engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());");
+    }
+
+    return "";
   }
 
   /**
@@ -68,17 +85,47 @@ public final class AceEditor implements ScriptEditor {
    * @param lineNumber Line number
    */
   public void gotoLine(int lineNumber) {
-    engine.executeScript("editor.gotoLine(" + lineNumber + ");");
+    runAfterEngine(() -> engine.executeScript("editor.gotoLine(" + lineNumber + ");"));
   }
 
   /**
    * Get the absolute cursor position as the number of characters in from the start of the text.
+   * Returns 1 if the engine is not done loading.
    *
    * @return Cursor position
    */
   public int getCursorPosition() {
-    return (int)
-        engine.executeScript("editor.session.doc.positionToIndex(editor.selection.getCursor());");
+    if (checkEngine()) {
+      return (int) engine.executeScript(
+          "editor.session.doc.positionToIndex(editor.selection.getCursor());");
+    }
+
+    return 1;
   }
 
+  /**
+   * Return if the engine is done loading, and is safe to execute scripts on.
+   *
+   * @return whether the engine is done loading
+   */
+  private boolean checkEngine() {
+    return engine.getLoadWorker().getState().equals(Worker.State.SUCCEEDED);
+  }
+
+  /**
+   * Run the runnable after the engine is done loading.
+   *
+   * @param runnable runnable to run
+   */
+  private void runAfterEngine(Runnable runnable) {
+    if (checkEngine()) {
+      runnable.run();
+    } else {
+      engine.getLoadWorker().stateProperty().addListener((observableValue, state, t1) -> {
+        if (t1.equals(Worker.State.SUCCEEDED)) {
+          runnable.run();
+        }
+      });
+    }
+  }
 }
