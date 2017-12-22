@@ -64,7 +64,7 @@ public class MainWindowController {
   private static final Logger logger =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   //Open file editors
-  private final List<FileEditorController> fileEditors;
+  private final List<AceCadEditorController> fileEditors;
   private final PreferencesService preferencesService;
   private Preferences preferences;
 
@@ -205,7 +205,7 @@ public class MainWindowController {
   private void onOpenScratchpad(ActionEvent actionEvent) {
     try {
       AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-      FileEditorController controller = tab.getController();
+      AceCadEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));
       controller.initScratchpad(tab, this::reloadGitMenus);
@@ -290,7 +290,7 @@ public class MainWindowController {
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
     try {
       AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
-      FileEditorController controller = tab.getController();
+      AceCadEditorController controller = tab.getController();
 
       controller.setFontSize(preferences.get("Font Size"));
       controller.loadGist(gist, gistFile);
@@ -557,15 +557,6 @@ public class MainWindowController {
   }
 
   /**
-   * Add a tab to the tab pane.
-   *
-   * @param tab tab to add
-   */
-  public void addTab(Tab tab) {
-    tabPane.getTabs().add(tab);
-  }
-
-  /**
    * Save work and quit.
    */
   public void saveAndQuit() {
@@ -584,6 +575,24 @@ public class MainWindowController {
   private void quit() {
     root.getScene().getWindow().hide();
     Platform.exit();
+  }
+
+  /**
+   * Add a tab to the tab pane.
+   *
+   * @param tab tab to add
+   */
+  public void addTab(Tab tab) {
+    tabPane.getTabs().add(tab);
+  }
+
+  /**
+   * Get the currently selected tab.
+   *
+   * @return current tab
+   */
+  public Tab getSelectedTab() {
+    return tabPane.getSelectionModel().getSelectedItem();
   }
 
   //Simple stream to append input characters to a text area

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 public class FileEditorTest extends AutoClosingApplicationTest {
 
-  private FileEditorController controller;
+  private AceCadEditorController controller;
 
   @Override
   public void start(Stage stage) throws Exception {

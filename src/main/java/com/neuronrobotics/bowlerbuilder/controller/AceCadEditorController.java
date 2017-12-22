@@ -41,10 +41,10 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
-public class FileEditorController {
+public class AceCadEditorController {
 
   private static final Logger logger =
-      LoggerUtilities.getLogger(FileEditorController.class.getSimpleName());
+      LoggerUtilities.getLogger(AceCadEditorController.class.getSimpleName());
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   @FXML
@@ -70,7 +70,7 @@ public class FileEditorController {
   private Runnable reloadMenus;
 
   @Inject
-  public FileEditorController(ScriptEditorView scriptEditorView) {
+  public AceCadEditorController(ScriptEditorView scriptEditorView) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
   }

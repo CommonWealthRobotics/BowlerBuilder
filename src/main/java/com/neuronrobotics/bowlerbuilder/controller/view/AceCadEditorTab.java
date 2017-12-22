@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.view;
 
 import com.google.inject.Guice;
-import com.neuronrobotics.bowlerbuilder.controller.FileEditorController;
+import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.FileEditorControllerModule;
@@ -15,9 +15,9 @@ import javafx.scene.Node;
  * {@link AceEditorView} and a
  * {@link com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngine}.
  */
-public class AceCadEditorTab extends CadEditorTab<FileEditorController> {
+public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
 
-  private final FileEditorController controller;
+  private final AceCadEditorController controller;
   private final Node node;
 
   public AceCadEditorTab(String title)
@@ -43,7 +43,7 @@ public class AceCadEditorTab extends CadEditorTab<FileEditorController> {
   }
 
   @Override
-  public FileEditorController getController() {
+  public AceCadEditorController getController() {
     return controller;
   }
 
