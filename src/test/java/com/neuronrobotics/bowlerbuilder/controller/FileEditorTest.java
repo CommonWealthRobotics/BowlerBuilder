@@ -35,11 +35,6 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     stage.show();
   }
 
-  //  @AfterEach
-  //  void afterEach() {
-  //    closeCurrentWindow();
-  //  }
-
   @Test
   void runEmptyFileTest() {
     FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());

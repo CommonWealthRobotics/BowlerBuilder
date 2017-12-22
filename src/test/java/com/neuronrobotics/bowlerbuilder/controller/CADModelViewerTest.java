@@ -6,11 +6,17 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerStudio3dEngin
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import java.util.Arrays;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class CADModelViewerTest {
   private final CADModelViewerController controller
       = new CADModelViewerController(new BowlerStudio3dEngine());
+
+  @AfterEach
+  void afterEach() {
+    controller.clearMeshes();
+  }
 
   @Test
   void addCSGTest() {
@@ -39,4 +45,5 @@ public class CADModelViewerTest {
     assertTrue(controller.getCsgMap().containsKey(foo));
     assertTrue(controller.getCsgMap().containsKey(bar));
   }
+
 }

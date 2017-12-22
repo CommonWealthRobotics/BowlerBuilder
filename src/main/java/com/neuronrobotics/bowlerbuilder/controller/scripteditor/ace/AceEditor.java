@@ -5,7 +5,6 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Worker;
-import javafx.scene.web.WebEngine;
 
 /**
  * Editor for Cloud9 Ace.

@@ -3,7 +3,7 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 import static org.junit.Assert.assertEquals;
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AceInterfaceTest {
 

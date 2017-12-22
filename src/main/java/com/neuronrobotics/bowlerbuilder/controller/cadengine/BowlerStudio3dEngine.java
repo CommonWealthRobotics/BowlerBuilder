@@ -596,7 +596,7 @@ public class BowlerStudio3dEngine extends Pane implements CadEngine {
    * @param lineNumber line number in script
    */
   public void setSelectedCsg(File script, int lineNumber) {
-    Collection<CSG> csgs = csgParser.parseCsgFromSource(script, lineNumber, csgMap);
+    Collection<CSG> csgs = csgParser.parseCsgFromSource(script.getName(), lineNumber, csgMap);
 
     lastSelectedTime = System.currentTimeMillis();
 
@@ -876,6 +876,7 @@ public class BowlerStudio3dEngine extends Pane implements CadEngine {
   @Override
   public void clearMeshes() {
     meshViewGroup.getChildren().clear();
+    csgMap.clear();
   }
 
   @Override

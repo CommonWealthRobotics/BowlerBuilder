@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 class BowlerBuilderTest extends AutoClosingApplicationTest {
@@ -21,18 +20,10 @@ class BowlerBuilderTest extends AutoClosingApplicationTest {
         null,
         null,
         injector::getInstance);
+
     Pane mainWindow = loader.load();
     stage.setScene(new Scene(mainWindow));
     stage.show();
-  }
-
-  @AfterEach
-  public void afterEach() {
-    try {
-      Thread.sleep(1);
-    } catch (InterruptedException e) {
-      e.printStackTrace(); //NOPMD
-    }
   }
 
   @Test
