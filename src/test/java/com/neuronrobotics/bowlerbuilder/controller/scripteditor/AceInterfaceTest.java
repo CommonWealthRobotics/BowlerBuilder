@@ -37,4 +37,18 @@ public class AceInterfaceTest {
         mockAdapter.lastExecutedScript);
   }
 
+  @Test
+  public void fontSizeTest() {
+    aceEditor.setFontSize(1);
+    assertEquals("document.getElementById('editor').style.fontSize='1px';",
+        mockAdapter.lastExecutedScript);
+  }
+
+  @Test
+  public void gotoLineTest() {
+    aceEditor.gotoLine(1);
+    assertEquals("editor.gotoLine(1);",
+        mockAdapter.lastExecutedScript);
+  }
+
 }
