@@ -1,48 +1,40 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
 
-//class AceInterfaceTest extends AutoClosingApplicationTest {
-//
-//  private AceEditor aceInterface;
-//  private WebView webView;
-//
-//  @Override
-//  public void start(Stage stage) throws Exception {
-//    webView = new WebView();
-//    stage.setScene(new Scene(webView));
-//    stage.show();
-//    aceInterface = new AceEditor(webView.getEngine());
-//  }
-//
-//  @Test
-//  void insertBasicCommandTest() {
-//    FxHelper.runAndWait(() -> {
-//      webView.getEngine().getLoadWorker().stateProperty()
-// .addListener((observable, oldValue, newValue) -> {
-//        if (newValue == Worker.State.SUCCEEDED) {
-//          aceInterface.insertAtCursor("Cube foo = new Cube(1, 2, 3).toCSG();");
-//          assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");",
-// aceInterface.getText());
-//        }
-//      });
-//    });
-//
-////    assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");",
-// aceInterface.getText());
-////    FxHelper.runAndWait(() ->
-// assertEquals("editor.insert(\"Cube foo = new Cube(1, 2, 3).toCSG();\");",
-// aceInterface.getText()));
-//  }
-//
-////  @Test
-////  void insertCommentTest() {
-////    aceInterface.insertAtCursor("//I am a comment");
-////    assertEquals("editor.insert(\"//I am a comment\");", result);
-////  }
-////
-////  @Test
-////  void insertEscapedTest() {
-////    aceInterface.insertAtCursor("\"\\\"");
-////    assertEquals("editor.insert(\"\"\\\"\");", result);
-////  }
-//
-//}
+import static org.junit.Assert.assertEquals;
+
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditor;
+import org.junit.Test;
+
+public class AceInterfaceTest {
+
+  private final MockAdapter mockAdapter = new MockAdapter();
+  private final AceEditor aceEditor = new AceEditor(mockAdapter);
+
+  @Test
+  public void insertTextTest() {
+    aceEditor.insertAtCursor("test");
+    assertEquals("editor.insert(\"test\");", mockAdapter.lastExecutedScript);
+  }
+
+  @Test
+  public void insertTextTest2() {
+    aceEditor.insertAtCursor("CSG foo = new Cube(1,1,1).toCSG();");
+    assertEquals("editor.insert(\"CSG foo = new Cube(1,1,1).toCSG();\");",
+        mockAdapter.lastExecutedScript);
+  }
+
+  @Test
+  public void insertTextTest3() {
+    aceEditor.insertAtCursor("\n\t");
+    assertEquals("editor.insert(\"\\n\t\");",
+        mockAdapter.lastExecutedScript);
+  }
+
+  @Test
+  public void insertTextTest4() {
+    aceEditor.insertAtCursor("\\'\"");
+    assertEquals("editor.insert(\"\\\\'\\\"\");",
+        mockAdapter.lastExecutedScript);
+  }
+
+}

@@ -5,6 +5,7 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 /**
@@ -17,11 +18,12 @@ public class AceEditorView implements ScriptEditorView {
 
   public AceEditorView() {
     webView = new WebView();
-    this.scriptEditor = new AceEditor(webView.getEngine());
-
+    WebEngine webEngine = webView.getEngine();
     webView.getEngine().setJavaScriptEnabled(true);
     Platform.runLater(() -> webView.getEngine().load(FileEditorController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/web/ace.html").toString()));
+
+    this.scriptEditor = new AceEditor(new AceWebEngine(webEngine));
   }
 
   @Override

@@ -14,9 +14,9 @@ public final class AceEditor implements ScriptEditor {
 
   private static final Logger logger = Logger.getLogger(AceEditor.class.getSimpleName());
 
-  private final WebEngine engine;
+  private final WebEngineAdapter engine;
 
-  public AceEditor(WebEngine webEngine) {
+  public AceEditor(WebEngineAdapter webEngine) {
     this.engine = webEngine;
     LoggerUtilities.setupLogger(logger);
   }
