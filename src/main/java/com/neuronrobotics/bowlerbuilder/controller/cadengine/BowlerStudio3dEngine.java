@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine; //NOPMD
 
 import com.google.common.base.Throwables;
+import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.Axis;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
@@ -21,9 +22,9 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -93,6 +94,8 @@ public class BowlerStudio3dEngine extends Pane {
   private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
   private CSG selectedCsg;
+  @Inject
+  private CsgParser csgParser;
   private long lastMouseMovementTime = System.currentTimeMillis();
 
   private TransformNR previousTarget = new TransformNR();
@@ -554,98 +557,76 @@ public class BowlerStudio3dEngine extends Pane {
   }
 
   /**
-   * Select a CSG from the line in the script.
+   * Select all CSGs from the line in the script.
    *
    * @param script script containing CSG source
    * @param lineNumber line number in script
    */
   public void setSelectedCsg(File script, int lineNumber) {
-    List<CSG> objsFromScriptLine = new ArrayList<>();
+    Collection<CSG> csgs = csgParser.parseCsgFromSource(script, lineNumber, csgMap);
 
-    // check all visible CSGs
-    for (CSG checker : getCsgMap().keySet()) {
-      for (String trace : checker.getCreationEventStackTraceList()) {
-        String[] traceParts = trace.split(":");
-        if (traceParts[0]
-            .trim()
-            .toLowerCase(Locale.US)
-            .contains(script.getName()
-                .toLowerCase(Locale.US)
-                .trim())) {
-          try {
-            int num = Integer.parseInt(traceParts[1].trim());
+    lastSelectedTime = System.currentTimeMillis();
 
-            if (num == lineNumber) {
-              objsFromScriptLine.add(checker);
-            }
-          } catch (Exception e) {
-            logger.log(Level.WARNING,
-                "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
-          }
-        }
-      }
-    }
-
-    if (!objsFromScriptLine.isEmpty()) {
-      setSelectedCsg(objsFromScriptLine.get(0));
-      setSelectedCsg(objsFromScriptLine);
-    }
-  }
-
-  /**
-   * Select each CSG in the list.
-   *
-   * @param selectedCsg list of CSGs to select
-   */
-  private void setSelectedCsg(List<CSG> selectedCsg) {
-    for (int in = 1; in < selectedCsg.size(); in++) {
-      MeshView mesh = getCsgMap().get(selectedCsg.get(in));
-      if (mesh != null) {
-        FxTimer.runLater(Duration.ofMillis(20), () ->
-            mesh.setMaterial(new PhongMaterial(Color.GOLD))); //NOPMD
-      }
+    if (csgs.size() == 1) {
+      selectCSG(csgs.iterator().next(), csgMap);
+    } else {
+      selectCSGs(csgs, csgMap);
     }
 
     resetMouseTime();
   }
 
   /**
-   * Select a CSG.
+   * Select all CSGs in the collection.
    *
-   * @param scg new CSG
+   * @param selection CSGs to select
+   * @param csgMap map containing CSGs MeshViews
    */
-  private void setSelectedCsg(CSG scg) {
-    if (scg.equals(selectedCsg)) {
+  private void selectCSGs(Collection<CSG> selection, Map<CSG, MeshView> csgMap) {
+    selection.forEach(csg -> {
+      MeshView meshView = csgMap.get(csg);
+      if (meshView != null) {
+        FxTimer.runLater(Duration.ofMillis(20), () ->
+            meshView.setMaterial(new PhongMaterial(Color.GOLD)));
+      }
+    });
+  }
+
+  /**
+   * Select a CSG and pan the camera to that CSG.
+   *
+   * @param selection CSG to select
+   * @param csgMap map containing CSGs MeshViews
+   */
+  private void selectCSG(CSG selection, Map<CSG, MeshView> csgMap) {
+    if (selection.equals(selectedCsg)) {
       return;
     }
 
-    for (CSG key : getCsgMap().keySet()) {
-      Platform.runLater(() ->
-          getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
-    }
+    csgMap.keySet().forEach(key -> Platform.runLater(() ->
+        csgMap.get(key).setMaterial(new PhongMaterial(key.getColor()))));
 
     lastSelectedTime = System.currentTimeMillis();
-    selectedCsg = scg;
+    selectedCsg = selection;
 
     FxTimer.runLater(Duration.ofMillis(20), () ->
         getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
 
-    double xCenter = selectedCsg.getMaxX() / 2 + selectedCsg.getMinX() / 2;
-    double yCenter = selectedCsg.getMaxY() / 2 + selectedCsg.getMinY() / 2;
-    double zCenter = selectedCsg.getMaxZ() / 2 + selectedCsg.getMinZ() / 2;
+    double xCenter = selectedCsg.getCenterX();
+    double yCenter = selectedCsg.getCenterY();
+    double zCenter = selectedCsg.getCenterZ();
 
     TransformNR poseToMove = new TransformNR();
-    CSG finalCSG = selectedCsg;
+
     if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
-      finalCSG = finalCSG.movex(-xCenter);
       poseToMove.translateX(xCenter);
     }
+
     if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
-      finalCSG = finalCSG.movey(-yCenter);
       poseToMove.translateY(yCenter);
     }
+
     if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
-      finalCSG = finalCSG.movez(-zCenter);
       poseToMove.translateZ(zCenter);
     }
 
@@ -687,11 +668,6 @@ public class BowlerStudio3dEngine extends Pane {
       }
       focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
     });
-    resetMouseTime();
-  }
-
-  public XForm getWorld() {
-    return world;
   }
 
   /**
@@ -714,7 +690,9 @@ public class BowlerStudio3dEngine extends Pane {
     }
 
     mesh.setOnMouseClicked(mouseEvent -> {
-      if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+      if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+        selectCSG(csg, csgMap);
+      } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
         ContextMenu menu = new ContextMenu();
         menu.setAutoHide(true);
 
