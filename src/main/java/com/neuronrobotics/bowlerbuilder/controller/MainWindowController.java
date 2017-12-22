@@ -39,7 +39,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
@@ -115,7 +114,6 @@ public class MainWindowController {
     try {
       ScriptingEngine.runLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-        showLoginNotification();
         setupMenusOnLogin();
       }
     } catch (IOException e) {
@@ -319,7 +317,6 @@ public class MainWindowController {
     try {
       ScriptingEngine.waitForLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-        showLoginNotification();
         setupMenusOnLogin();
       }
     } catch (IOException e) {
@@ -335,25 +332,6 @@ public class MainWindowController {
       LoggerUtilities.getLogger().log(Level.SEVERE,
           "Could not log in.\n" + Throwables.getStackTraceAsString(e));
     }
-  }
-
-  /**
-   * Show a GitHub login toast.
-   */
-  private void showLoginNotification() {
-    Platform.runLater(() -> {
-      try {
-        Notifications.create()
-            .title("Login Success")
-            .text(ScriptingEngine.getGithub().getMyself().getLogin())
-            .owner(root)
-            .position(Pos.BOTTOM_RIGHT)
-            .showInformation();
-      } catch (IOException e) {
-        LoggerUtilities.getLogger().log(Level.WARNING,
-            "Unable to get GitHub.\n" + Throwables.getStackTraceAsString(e));
-      }
-    });
   }
 
   /**

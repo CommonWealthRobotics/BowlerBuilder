@@ -27,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -35,6 +36,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -155,6 +157,12 @@ public class FileEditorController {
         } catch (GroovyRuntimeException e) {
           LoggerUtilities.getLogger().log(Level.WARNING,
               "Error in CAD script: " + e.getMessage());
+          Platform.runLater(() -> Notifications.create()
+              .title("Error in CAD Script")
+              .text(e.getMessage())
+              .owner(root)
+              .position(Pos.BOTTOM_RIGHT)
+              .showInformation());
         } catch (Exception e) {
           LoggerUtilities.getLogger().log(Level.WARNING,
               "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
