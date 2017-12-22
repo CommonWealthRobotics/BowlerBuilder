@@ -236,7 +236,7 @@ public class MainWindowController {
    *
    * @param url URL to load
    */
-  private void loadPage(String url) {
+  public void loadPage(String url) {
     webBrowserController.loadPage(url);
   }
 
@@ -246,7 +246,7 @@ public class MainWindowController {
    * @param tabName name for new tab
    * @param url URL to load
    */
-  private void loadPageIntoNewTab(String tabName, String url) {
+  public void loadPageIntoNewTab(String tabName, String url) {
     FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
 
