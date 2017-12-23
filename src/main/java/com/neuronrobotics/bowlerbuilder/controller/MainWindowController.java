@@ -5,6 +5,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -236,7 +238,7 @@ public class MainWindowController {
    * @param url URL to load
    */
   public void loadPage(String url) {
-    webBrowserController.loadPage(url);
+    FxHelper.runFX(() -> webBrowserController.loadPage(url));
   }
 
   /**
@@ -246,19 +248,21 @@ public class MainWindowController {
    * @param url URL to load
    */
   public void loadPageIntoNewTab(String tabName, String url) {
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
+    FxHelper.runFX(() -> {
+      FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+          "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
 
-    try {
-      Tab tab = new Tab(tabName, loader.load());
-      WebBrowserController controller = loader.getController();
-      controller.loadPage(url);
-      tabPane.getTabs().add(tab);
-      tabPane.getSelectionModel().select(tab);
-    } catch (IOException e) {
-      logger.log(Level.SEVERE,
-          "Could not load WebBrowser.\n" + Throwables.getStackTraceAsString(e));
-    }
+      try {
+        Tab tab = new Tab(tabName, loader.load());
+        WebBrowserController controller = loader.getController();
+        controller.loadPage(url);
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not load WebBrowser.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
   }
 
   /**
@@ -287,22 +291,24 @@ public class MainWindowController {
    * @param gistFile File
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
-    try {
-      AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
-      AceCadEditorController controller = tab.getController();
+    FxHelper.runFX(() -> {
+      try {
+        AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
+        AceCadEditorController controller = tab.getController();
 
-      controller.setFontSize(preferences.get("Font Size"));
-      controller.loadGist(gist, gistFile);
-      fileEditors.add(tab.getController());
+        controller.setFontSize(preferences.get("Font Size"));
+        controller.loadGist(gist, gistFile);
+        fileEditors.add(tab.getController());
 
-      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+        tab.setOnCloseRequest(event -> fileEditors.remove(controller));
 
-      tabPane.getTabs().add(tab);
-      tabPane.getSelectionModel().select(tab);
-    } catch (IOException e) {
-      logger.log(Level.SEVERE,
-          "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
   }
 
   private void tryLogin() {
@@ -358,76 +364,80 @@ public class MainWindowController {
    * Reload the GitHub-related menus.
    */
   public void reloadGitMenus() {
-    //Wait for GitHub to load in
-    GitHub gitHub;
+    FxHelper.runFX(() -> {
+      //Wait for GitHub to load in
+      GitHub gitHub;
 
-    while ((gitHub = ScriptingEngine.getGithub()) == null) {
-      ThreadUtil.wait(20);
-    }
+      while ((gitHub = ScriptingEngine.getGithub()) == null) {
+        ThreadUtil.wait(20);
+      }
 
-    myGists.getItems().clear();
-    myOrgs.getItems().clear();
-    myRepos.getItems().clear();
+      myGists.getItems().clear();
+      myOrgs.getItems().clear();
+      myRepos.getItems().clear();
 
-    GHMyself myself;
-    try {
-      myself = gitHub.getMyself();
+      GHMyself myself;
+      try {
+        myself = gitHub.getMyself();
 
-      LoggerUtilities.newLoggingThread(logger, () -> {
-        try {
-          loadGistsIntoMenus(myGists, myself.listGists());
-        } catch (IOException e) {
-          logger.log(Level.SEVERE,
-              "Unable to list gists.\n" + Throwables.getStackTraceAsString(e));
-        }
-      }).start();
+        LoggerUtilities.newLoggingThread(logger, () -> {
+          try {
+            loadGistsIntoMenus(myGists, myself.listGists());
+          } catch (IOException e) {
+            logger.log(Level.SEVERE,
+                "Unable to list gists.\n" + Throwables.getStackTraceAsString(e));
+          }
+        }).start();
 
-      LoggerUtilities.newLoggingThread(logger, () -> {
-        try {
-          loadOrgsIntoMenus(myOrgs, myself.getAllOrganizations());
-        } catch (IOException e) {
-          logger.log(Level.SEVERE,
-              "Unable to get organizations.\n" + Throwables.getStackTraceAsString(e));
-        }
-      }).start();
+        LoggerUtilities.newLoggingThread(logger, () -> {
+          try {
+            loadOrgsIntoMenus(myOrgs, myself.getAllOrganizations());
+          } catch (IOException e) {
+            logger.log(Level.SEVERE,
+                "Unable to get organizations.\n" + Throwables.getStackTraceAsString(e));
+          }
+        }).start();
 
-      LoggerUtilities.newLoggingThread(logger, () ->
-          loadReposIntoMenus(myRepos, myself.listRepositories())).start();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE,
-          "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
-    }
+        LoggerUtilities.newLoggingThread(logger, () ->
+            loadReposIntoMenus(myRepos, myself.listRepositories())).start();
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
   }
 
   /**
    * Reload the CAD menus.
    */
   public void reloadCadMenus() {
-    cadVitamins.getItems().clear();
+    FxHelper.runFX(() -> {
+      cadVitamins.getItems().clear();
 
-    LoggerUtilities.newLoggingThread(logger, () ->
-        Vitamins.listVitaminTypes().stream().sorted().forEach(vitamin -> {
+      LoggerUtilities.newLoggingThread(logger, () ->
+          Vitamins.listVitaminTypes().stream().sorted().forEach(vitamin -> {
 
-          Menu vitaminMenu = new Menu(vitamin);
+            Menu vitaminMenu = new Menu(vitamin);
 
-          Vitamins.listVitaminSizes(vitamin).stream().sorted().forEach(size -> {
-            MenuItem sizeMenu = new MenuItem(size);
+            Vitamins.listVitaminSizes(vitamin).stream().sorted().forEach(size -> {
+              MenuItem sizeMenu = new MenuItem(size);
 
-            sizeMenu.setOnAction(event1 -> {
-              Tab selection = tabPane.getSelectionModel().getSelectedItem();
-              if (selection instanceof AceCadEditorTab) {
-                AceCadEditorTab editorTab = (AceCadEditorTab) selection;
-                String insertion =
-                    "CSG foo = Vitamins.get(\"" + vitamin + "\", \"" + size + "\");";
-                editorTab.getController().insertAtCursor(insertion);
-              }
+              sizeMenu.setOnAction(event1 -> {
+                Tab selection = tabPane.getSelectionModel().getSelectedItem();
+                if (selection instanceof AceCadEditorTab) {
+                  AceCadEditorTab editorTab = (AceCadEditorTab) selection;
+                  String insertion =
+                      "CSG foo = Vitamins.get(\"" + vitamin + "\", \"" + size + "\");";
+                  editorTab.getController().insertAtCursor(insertion);
+                }
+              });
+
+              vitaminMenu.getItems().add(sizeMenu);
             });
 
-            vitaminMenu.getItems().add(sizeMenu);
-          });
-
-          cadVitamins.getItems().add(vitaminMenu);
-        })).start();
+            cadVitamins.getItems().add(vitaminMenu);
+          })).start();
+    });
   }
 
   /**
@@ -582,7 +592,7 @@ public class MainWindowController {
    * @param tab tab to add
    */
   public void addTab(Tab tab) {
-    tabPane.getTabs().add(tab);
+    FxHelper.runFX(() -> tabPane.getTabs().add(tab));
   }
 
   /**
@@ -590,8 +600,15 @@ public class MainWindowController {
    *
    * @return current tab
    */
-  public Tab getSelectedTab() {
-    return tabPane.getSelectionModel().getSelectedItem();
+  public Optional<Tab> getSelectedTab() {
+    try {
+      return Optional.of(FxHelper.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
+    } catch (ExecutionException | InterruptedException e) {
+      logger.log(Level.SEVERE,
+          "Could not get selected tab.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    return Optional.empty();
   }
 
   //Simple stream to append input characters to a text area
