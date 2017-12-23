@@ -53,9 +53,9 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     BooleanProperty doneCompiling = new SimpleBooleanProperty(false);
     BooleanProperty doneRunning = new SimpleBooleanProperty(false);
 
-    controller.getScriptRunner().scriptCompilingProperty().addListener(observable ->
+    scriptRunner.scriptCompilingProperty().addListener((observable, oldVal, newVal) ->
         doneCompiling.setValue(true));
-    controller.getScriptRunner().scriptRunningProperty().addListener(observable ->
+    scriptRunner.scriptRunningProperty().addListener((observable, oldVal, newVal) ->
         doneRunning.setValue(true));
 
     FxHelper.runAndWait(() -> controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()"));
@@ -64,6 +64,8 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     while (!doneCompiling.getValue() || !doneRunning.getValue()) {
       ThreadUtil.wait(100);
     }
+
+    ThreadUtil.wait(1000);
 
     assertEquals(1, controller.getCADViewerController().getCsgMap().size());
   }
