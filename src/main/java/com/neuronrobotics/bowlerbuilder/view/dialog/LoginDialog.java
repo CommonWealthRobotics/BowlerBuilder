@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
+import javafx.beans.binding.Bindings;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
@@ -30,6 +32,14 @@ public class LoginDialog extends Dialog<Boolean> {
     setTitle("Login to GitHub");
     getDialogPane().setContent(vBox);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
+            !(!nameField.getText().isEmpty()
+                && !passField.getText().isEmpty()),
+        nameField.textProperty(),
+        passField.textProperty()));
+    addButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> !buttonType.getButtonData().isCancelButton());
   }

@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import java.util.Optional;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -17,18 +19,20 @@ import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 public class AddFileToGistDialog extends Dialog<String> {
 
   private final TextField nameField;
+  private final BooleanProperty invalidNameProperty;
 
   public AddFileToGistDialog() {
     super();
 
-    nameField = new TextField();
+    invalidNameProperty = new SimpleBooleanProperty(false);
 
+    nameField = new TextField();
     nameField.setId("nameField");
 
     setTitle("New File");
 
     GridPane pane = new GridPane();
-    pane.setId("newGistRoot");
+    pane.setId("root");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);
     pane.setVgap(5);
@@ -56,6 +60,8 @@ public class AddFileToGistDialog extends Dialog<String> {
           false);
     });
 
+    invalidNameProperty.bind(validator.invalidProperty());
+
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -69,6 +75,7 @@ public class AddFileToGistDialog extends Dialog<String> {
       if (buttonType.equals(ButtonType.OK)) {
         return nameField.getText();
       }
+
       return null;
     });
   }
@@ -89,6 +96,14 @@ public class AddFileToGistDialog extends Dialog<String> {
 
   public String getName() {
     return nameField.getText();
+  }
+
+  public boolean isInvalidName() {
+    return invalidNameProperty.get();
+  }
+
+  public BooleanProperty invalidNameProperty() {
+    return invalidNameProperty;
   }
 
 }

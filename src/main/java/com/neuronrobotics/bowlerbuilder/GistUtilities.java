@@ -1,11 +1,8 @@
 package com.neuronrobotics.bowlerbuilder;
 
-import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -67,24 +64,6 @@ public final class GistUtilities {
     }
 
     return gist;
-  }
-
-  /**
-   * Use reflection to get the id of a gist, because the API does not provide this for some reason.
-   *
-   * @param gist gist with id
-   * @return id of gist
-   */
-  public static Optional<String> getGistID(GHGist gist) {
-    try {
-      Field id = GHGist.class.getDeclaredField("id");
-      return Optional.of((String) id.get(gist));
-    } catch (Exception e) {
-      logger.log(Level.SEVERE,
-          "Could not get gist id.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    return Optional.empty();
   }
 
 }
