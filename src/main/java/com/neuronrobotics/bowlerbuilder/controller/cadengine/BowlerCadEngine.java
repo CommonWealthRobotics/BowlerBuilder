@@ -82,6 +82,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final XForm world = new XForm();
   private final PerspectiveCamera camera = new PerspectiveCamera(true);
 
+  private final CsgParser csgParser;
+
   private final Group root = new Group();
   private final Group lookGroup = new Group();
   private final Group focusGroup = new Group();
@@ -102,8 +104,6 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private TransformNR defaultCameraView;
   private Map<CSG, MeshView> csgMap = new HashMap<>();
   private CSG selectedCsg;
-  @Inject
-  private CsgParser csgParser;
   private long lastMouseMovementTime = System.currentTimeMillis();
 
   private TransformNR previousTarget = new TransformNR();
@@ -113,7 +113,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final BooleanProperty axisShowingProperty;
   private final BooleanProperty handShowingProperty;
 
-  public BowlerCadEngine() {
+  @Inject
+  public BowlerCadEngine(CsgParser csgParser) {
+    this.csgParser = csgParser;
+
     axisShowingProperty = new SimpleBooleanProperty(true);
     handShowingProperty = new SimpleBooleanProperty(true);
 

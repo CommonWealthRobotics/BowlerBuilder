@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
@@ -32,7 +33,8 @@ public class FileEditorTest extends AutoClosingApplicationTest {
         null,
         null,
         Guice.createInjector(
-            new AceCadEditorControllerModule(new AceEditorView()),
+            new AceCadEditorControllerModule(
+                BowlerBuilder.getInjector().getInstance(AceEditorView.class)),
             new CadModelViewerControllerModule())::getInstance);
     SplitPane mainWindow = loader.load();
     controller = loader.getController();

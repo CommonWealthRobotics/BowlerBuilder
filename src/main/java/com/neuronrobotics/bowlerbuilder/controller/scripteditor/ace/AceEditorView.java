@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
 
+import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
@@ -16,8 +17,10 @@ public class AceEditorView implements ScriptEditorView {
   private final WebView webView;
   private final AceEditor scriptEditor;
 
-  public AceEditorView() {
-    webView = new WebView();
+  @Inject
+  public AceEditorView(WebView webView) {
+    this.webView = webView;
+
     WebEngine webEngine = webView.getEngine();
     webView.getEngine().setJavaScriptEnabled(true);
     Platform.runLater(() -> webView.getEngine().load(AceCadEditorController.class.getResource(
