@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner;
 
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
@@ -12,6 +13,7 @@ import groovy.lang.Script;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,6 +24,9 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
  * Simple copy of {@link GroovyHelper} that keeps a flag for when it is compiling or running.
  */
 public class AwareGroovyLanguage implements IScriptingLanguage {
+
+  private static final Logger logger
+      = LoggerUtilities.getLogger(AwareGroovyLanguage.class.getSimpleName());
   private final BooleanProperty compilingProperty;
   private final BooleanProperty runningProperty;
 
@@ -59,7 +64,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     compilingProperty.setValue(true);
 
     CompilerConfiguration cc = new CompilerConfiguration();
-    cc.addCompilationCustomizers((new ImportCustomizer())
+    cc.addCompilationCustomizers(new ImportCustomizer()
         .addStarImports(ScriptingEngine.getImports())
         .addStaticStars(
             "com.neuronrobotics.sdk.util.ThreadUtil",

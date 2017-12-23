@@ -10,7 +10,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
  */
 public class BowlerScriptRunner implements ScriptRunner {
 
-  private AwareGroovyLanguage language;
+  private final AwareGroovyLanguage language;
 
   @Inject
   public BowlerScriptRunner(AwareGroovyLanguage language) {
