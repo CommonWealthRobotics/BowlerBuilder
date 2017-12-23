@@ -93,7 +93,6 @@ public class MainWindowController {
   public MainWindowController(PreferencesService preferencesService) {
     this.preferencesService = preferencesService;
     this.fileEditors = new ArrayList<>();
-    logger.info("me: " + this);
   }
 
   @FXML

@@ -15,15 +15,12 @@ public class BowlerScriptRunner implements ScriptRunner {
   @Inject
   public BowlerScriptRunner(AwareGroovyLanguage language) {
     this.language = language;
+    ScriptingEngine.addScriptingLanguage(language);
   }
 
   @Override
   public Object runScript(String script, ArrayList<Object> arguments, String languageName)
       throws Exception {
-    if (!ScriptingEngine.getAllLangauges().contains(language.getShellType())) {
-      ScriptingEngine.addScriptingLanguage(language);
-    }
-
     return ScriptingEngine.inlineScriptStringRun(script, arguments, languageName);
   }
 

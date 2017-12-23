@@ -37,7 +37,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
   @Override
   public String getShellType() {
-    return "CompilingAwareGroovy";
+    return "AwareGroovy";
   }
 
   @Override

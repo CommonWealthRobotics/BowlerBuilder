@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
@@ -49,6 +50,7 @@ public class AceCadEditorController {
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
+  private final String scriptLangName;
   @FXML
   private SplitPane fileEditorRoot;
   @FXML
@@ -72,10 +74,14 @@ public class AceCadEditorController {
   private Runnable reloadMenus;
 
   @Inject
-  public AceCadEditorController(ScriptEditorView scriptEditorView, ScriptRunner scriptRunner) {
+  public AceCadEditorController(ScriptEditorView scriptEditorView,
+                                ScriptRunner scriptRunner,
+                                @Named("scriptLangName") String scriptLangName) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
+    this.scriptLangName = scriptLangName;
+    logger.log(Level.FINE, "Running with language: " + scriptLangName);
   }
 
   @FXML
@@ -108,7 +114,7 @@ public class AceCadEditorController {
           Object result = scriptRunner.runScript(
               text.get(),
               new ArrayList<>(),
-              "Groovy");
+              scriptLangName);
 
           logger.log(Level.FINER, "Result is: " + result);
 
@@ -121,6 +127,7 @@ public class AceCadEditorController {
             latch2.countDown();
           });
           latch2.await();
+          logger.log(Level.FINE, "Parsing done.");
         } catch (IOException e) {
           logger.log(Level.SEVERE,
               "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));

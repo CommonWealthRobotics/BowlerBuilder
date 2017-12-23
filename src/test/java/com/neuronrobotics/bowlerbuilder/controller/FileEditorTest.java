@@ -11,6 +11,8 @@ import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControll
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -48,13 +50,18 @@ public class FileEditorTest extends AutoClosingApplicationTest {
 
   @Test
   void runCubeTest() {
+    BooleanProperty doneCompiling = new SimpleBooleanProperty(false);
+    BooleanProperty doneRunning = new SimpleBooleanProperty(false);
+
+    controller.getScriptRunner().scriptCompilingProperty().addListener(observable ->
+        doneCompiling.setValue(true));
+    controller.getScriptRunner().scriptRunningProperty().addListener(observable ->
+        doneRunning.setValue(true));
+
     FxHelper.runAndWait(() -> controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()"));
     FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());
 
-    ThreadUtil.wait(1000);
-
-    while (scriptRunner.isScriptCompiling()
-        || scriptRunner.isScriptRunning()) {
+    while (!doneCompiling.getValue() || !doneRunning.getValue()) {
       ThreadUtil.wait(100);
     }
 
