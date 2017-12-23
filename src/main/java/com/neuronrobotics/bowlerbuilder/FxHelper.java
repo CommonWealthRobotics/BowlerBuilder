@@ -10,16 +10,19 @@ import javafx.application.Platform;
  */
 public final class FxHelper {
 
+  private FxHelper() {
+  }
+
   /**
    * Run the runnable on the FX thread if not already on that thread.
    *
    * @param runnable runnable to run
    */
   public static void runFX(Runnable runnable) {
-    if (!Platform.isFxApplicationThread()) {
-      Platform.runLater(runnable);
-    } else {
+    if (Platform.isFxApplicationThread()) {
       runnable.run();
+    } else {
+      Platform.runLater(runnable);
     }
   }
 
