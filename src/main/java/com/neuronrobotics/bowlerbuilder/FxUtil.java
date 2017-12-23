@@ -8,9 +8,9 @@ import javafx.application.Platform;
 /**
  * JavaFX helper utility class.
  */
-public final class FxHelper {
+public final class FxUtil {
 
-  private FxHelper() {
+  private FxUtil() {
   }
 
   /**

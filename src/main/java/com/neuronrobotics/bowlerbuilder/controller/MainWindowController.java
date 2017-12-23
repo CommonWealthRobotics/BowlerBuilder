@@ -5,7 +5,7 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.neuronrobotics.bowlerbuilder.FxHelper;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
@@ -238,7 +238,7 @@ public class MainWindowController {
    * @param url URL to load
    */
   public void loadPage(String url) {
-    FxHelper.runFX(() -> webBrowserController.loadPage(url));
+    FxUtil.runFX(() -> webBrowserController.loadPage(url));
   }
 
   /**
@@ -248,7 +248,7 @@ public class MainWindowController {
    * @param url URL to load
    */
   public void loadPageIntoNewTab(String tabName, String url) {
-    FxHelper.runFX(() -> {
+    FxUtil.runFX(() -> {
       FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
           "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
 
@@ -291,7 +291,7 @@ public class MainWindowController {
    * @param gistFile File
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
-    FxHelper.runFX(() -> {
+    FxUtil.runFX(() -> {
       try {
         AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
         AceCadEditorController controller = tab.getController();
@@ -364,7 +364,7 @@ public class MainWindowController {
    * Reload the GitHub-related menus.
    */
   public void reloadGitMenus() {
-    FxHelper.runFX(() -> {
+    FxUtil.runFX(() -> {
       //Wait for GitHub to load in
       GitHub gitHub;
 
@@ -411,7 +411,7 @@ public class MainWindowController {
    * Reload the CAD menus.
    */
   public void reloadCadMenus() {
-    FxHelper.runFX(() -> {
+    FxUtil.runFX(() -> {
       cadVitamins.getItems().clear();
 
       LoggerUtilities.newLoggingThread(logger, () ->
@@ -592,7 +592,7 @@ public class MainWindowController {
    * @param tab tab to add
    */
   public void addTab(Tab tab) {
-    FxHelper.runFX(() -> tabPane.getTabs().add(tab));
+    FxUtil.runFX(() -> tabPane.getTabs().add(tab));
   }
 
   /**
@@ -602,7 +602,7 @@ public class MainWindowController {
    */
   public Optional<Tab> getSelectedTab() {
     try {
-      return Optional.of(FxHelper.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
+      return Optional.of(FxUtil.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
     } catch (ExecutionException | InterruptedException e) {
       logger.log(Level.SEVERE,
           "Could not get selected tab.\n" + Throwables.getStackTraceAsString(e));
