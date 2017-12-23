@@ -7,7 +7,6 @@ import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
