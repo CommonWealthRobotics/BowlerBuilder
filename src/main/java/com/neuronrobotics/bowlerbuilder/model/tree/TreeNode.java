@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.model.tree;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * k-ary tree node.
@@ -11,16 +11,16 @@ import java.util.Set;
 public class TreeNode<T> {
 
   private T data;
-  private Set<TreeNode<T>> children;
+  private List<TreeNode<T>> children;
   private TreeNode<T> parent;
 
   public TreeNode() {
-    children = new HashSet<>();
+    children = new ArrayList<>();
   }
 
   public TreeNode(T data) {
     this.data = data;
-    children = new HashSet<>();
+    children = new ArrayList<>();
   }
 
   public int getNumberOfChildren() {
@@ -53,7 +53,7 @@ public class TreeNode<T> {
     return data;
   }
 
-  public Set<TreeNode<T>> getChildren() {
+  public List<TreeNode<T>> getChildren() {
     return children;
   }
 
