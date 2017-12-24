@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.model.tree.AST;
+import com.neuronrobotics.bowlerbuilder.model.tree.ASTNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.TreeNode;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
@@ -19,7 +20,6 @@ import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.GroovyCodeVisitor;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ArrayExpression;
@@ -192,16 +192,16 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
     private TreeVisitor visitor = new TreeVisitor();
 
-    public TreeNode<String> getTree() {
+    public ASTNode getTree() {
       return visitor.getRoot();
     }
 
     @Override
-    public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
+    public void visit(org.codehaus.groovy.ast.ASTNode[] astNodes, SourceUnit sourceUnit) {
       sourceUnit.getAST().getClasses().forEach(klass -> {
-        TreeNode<String> classNode = new TreeNode<>("Class: " + klass.getName());
+        ASTNode classNode = new ASTNode("Class: " + klass.getName());
         klass.getMethods().forEach(method -> {
-          TreeNode<String> methodNode = new TreeNode<>("Method: " + method.getName());
+          ASTNode methodNode = new ASTNode("Method: " + method.getName());
           TreeVisitor temp = new TreeVisitor();
           method.getCode().visit(temp);
           methodNode.addChild(temp.getRoot());
@@ -212,16 +212,16 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     }
 
     private class TreeVisitor implements GroovyCodeVisitor {
-      
-      private TreeNode<String> root = new TreeNode<>("root");
 
-      public TreeNode<String> getRoot() {
+      private ASTNode root = new ASTNode("root");
+
+      public ASTNode getRoot() {
         return root;
       }
 
       @Override
       public void visitBlockStatement(BlockStatement blockStatement) {
-        TreeNode<String> node = new TreeNode<>("<block>");
+        ASTNode node = new ASTNode("<block>");
         blockStatement.getStatements().forEach(statement -> {
           TreeVisitor visitor = new TreeVisitor();
           statement.visit(visitor);
@@ -232,7 +232,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitForLoop(ForStatement forStatement) {
-        TreeNode<String> node = new TreeNode<>("<for>");
+        ASTNode node = new ASTNode("<for>");
 
         TreeVisitor visitor = new TreeVisitor();
         forStatement.getCollectionExpression().visit(visitor);
@@ -247,21 +247,21 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitWhileLoop(WhileStatement whileStatement) {
-        TreeNode<String> node = new TreeNode<>("<while>");
+        ASTNode node = new ASTNode("<while>");
         node.addChild(whileStatement.getLoopBlock().getStatementLabel());
         root.addChild(node);
       }
 
       @Override
       public void visitDoWhileLoop(DoWhileStatement doWhileStatement) {
-        TreeNode<String> node = new TreeNode<>("<do while>");
+        ASTNode node = new ASTNode("<do while>");
         node.addChild(doWhileStatement.getLoopBlock().getStatementLabel());
         root.addChild(node);
       }
 
       @Override
       public void visitIfElse(IfStatement ifStatement) {
-        TreeNode<String> node = new TreeNode<>("<if statement>");
+        ASTNode node = new ASTNode("<if statement>");
         node.addChild(ifStatement.getBooleanExpression().getText());
 
         TreeVisitor ifVisitor = new TreeVisitor();
@@ -277,7 +277,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitExpressionStatement(ExpressionStatement expressionStatement) {
-        TreeNode<String> node = new TreeNode<>("<expression>");
+        ASTNode node = new ASTNode("<expression>");
         TreeVisitor visitor = new TreeVisitor();
         expressionStatement.getExpression().visit(visitor);
         node.addChild(visitor.getRoot());
@@ -291,7 +291,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitAssertStatement(AssertStatement assertStatement) {
-        TreeNode<String> node = new TreeNode<>("<assert>");
+        ASTNode node = new ASTNode("<assert>");
         node.addChild(assertStatement.getBooleanExpression().getText());
         node.addChild(assertStatement.getMessageExpression().getText());
         root.addChild(node);
@@ -299,13 +299,13 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitTryCatchFinally(TryCatchStatement tryCatchStatement) {
-        TreeNode<String> node = new TreeNode<>("<try catch>");
+        ASTNode node = new ASTNode("<try catch>");
 
         TreeVisitor tryVisitor = new TreeVisitor();
         tryCatchStatement.getTryStatement().visit(tryVisitor);
         node.addChild(tryVisitor.getRoot());
 
-        TreeNode<String> catchNodes = new TreeNode<>("<catches>");
+        ASTNode catchNodes = new ASTNode("<catches>");
         tryCatchStatement.getCatchStatements().forEach(catchStatement -> {
           TreeVisitor catchVisitor = new TreeVisitor();
           catchStatement.getCode().visit(catchVisitor);
@@ -322,13 +322,13 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitSwitch(SwitchStatement switchStatement) {
-        TreeNode<String> node = new TreeNode<>("<switch>");
+        ASTNode node = new ASTNode("<switch>");
 
         TreeVisitor visitor = new TreeVisitor();
         switchStatement.getExpression().visit(visitor);
         node.addChild(visitor.getRoot());
 
-        TreeNode<String> caseNodes = new TreeNode<>("<cases>");
+        ASTNode caseNodes = new ASTNode("<cases>");
         switchStatement.getCaseStatements().forEach(caseStatement -> {
           TreeVisitor caseVisitor = new TreeVisitor();
           caseStatement.getCode().visit(caseVisitor);
@@ -369,7 +369,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitSynchronizedStatement(SynchronizedStatement synchronizedStatement) {
-        TreeNode<String> node = new TreeNode<>("<synchronized>");
+        ASTNode node = new ASTNode("<synchronized>");
 
         TreeVisitor exVisitor = new TreeVisitor();
         synchronizedStatement.getExpression().visit(exVisitor);
@@ -395,12 +395,14 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
       }
 
       @Override
-      public void visitStaticMethodCallExpression(StaticMethodCallExpression staticMethodCallExpression) {
+      public void visitStaticMethodCallExpression(StaticMethodCallExpression
+                                                      staticMethodCallExpression) {
         root.addChild(staticMethodCallExpression.getText());
       }
 
       @Override
-      public void visitConstructorCallExpression(ConstructorCallExpression constructorCallExpression) {
+      public void visitConstructorCallExpression(ConstructorCallExpression
+                                                     constructorCallExpression) {
         root.addChild(constructorCallExpression.getText());
       }
 
@@ -416,7 +418,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitBinaryExpression(BinaryExpression binaryExpression) {
-        TreeNode<String> node = new TreeNode<>("<binary expression>");
+        ASTNode node = new ASTNode("<binary expression>");
 
         TreeVisitor leftVisitor = new TreeVisitor();
         binaryExpression.getLeftExpression().visit(leftVisitor);
@@ -463,7 +465,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitMapEntryExpression(MapEntryExpression mapEntryExpression) {
-        TreeNode<String> node = new TreeNode<>("<map entry>");
+        ASTNode node = new ASTNode("<map entry>");
 
         TreeVisitor keyVisitor = new TreeVisitor();
         mapEntryExpression.getKeyExpression().visit(keyVisitor);
@@ -518,13 +520,13 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitVariableExpression(VariableExpression variableExpression) {
-        TreeNode<String> node = new TreeNode<>("<variable>");
+        ASTNode node = new ASTNode("<variable>");
 
-        TreeNode<String> typeNode = new TreeNode<>("<type>");
+        ASTNode typeNode = new ASTNode("<type>");
         typeNode.addChild(variableExpression.getType().getName());
         node.addChild(typeNode);
 
-        TreeNode<String> nameNode = new TreeNode<>("<name>");
+        ASTNode nameNode = new ASTNode("<name>");
         nameNode.addChild(variableExpression.getText());
         node.addChild(nameNode);
 
@@ -533,7 +535,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitDeclarationExpression(DeclarationExpression declarationExpression) {
-        TreeNode<String> node = new TreeNode<>("<declaration>");
+        ASTNode node = new ASTNode("<declaration>");
 
         TreeVisitor visitor = new TreeVisitor();
         declarationExpression.getVariableExpression().visit(visitor);
@@ -582,7 +584,8 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
       }
 
       @Override
-      public void visitBitwiseNegationExpression(BitwiseNegationExpression bitwiseNegationExpression) {
+      public void visitBitwiseNegationExpression(BitwiseNegationExpression
+                                                     bitwiseNegationExpression) {
         root.addChild(bitwiseNegationExpression.getText());
       }
 

@@ -1,72 +1,64 @@
 package com.neuronrobotics.bowlerbuilder.model.tree;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * k-ary tree node.
- *
- * @param <T> data type
  */
-public class TreeNode<T> {
+public interface TreeNode<T> {
 
-  private T data;
-  private List<TreeNode<T>> children;
-  private TreeNode<T> parent;
+  /**
+   * Construct a new node with the data and add it to the child list.
+   *
+   * @param data data for new node
+   */
+  void addChild(T data);
 
-  public TreeNode() {
-    children = new ArrayList<>();
-  }
+  /**
+   * Add the node to the child list.
+   *
+   * @param child node to add
+   */
+  void addChild(TreeNode<T> child);
 
-  public TreeNode(T data) {
-    this.data = data;
-    children = new ArrayList<>();
-  }
+  /**
+   * Remove a child from the list.
+   *
+   * @param child node to remove
+   */
+  void removeChild(TreeNode<T> child);
 
-  public int getNumberOfChildren() {
-    return children.size();
-  }
+  /**
+   * Remove all children.
+   */
+  void removeChildren();
 
-  public boolean hasChildren() {
-    return !children.isEmpty();
-  }
+  /**
+   * Get the list of children.
+   *
+   * @return children
+   */
+  List<TreeNode<T>> getChildren();
 
-  public void addChild(T data) {
-    TreeNode<T> child = new TreeNode<>(data);
-    addChild(child);
-  }
+  /**
+   * Get the parent node.
+   *
+   * @return parent node
+   */
+  TreeNode<T> getParent();
 
-  public void addChild(TreeNode<T> child) {
-    if ("root".equals(child.getData())) {
-      child.getChildren().forEach(this::addChild);
-    } else {
-      children.add(child);
-      child.setParent(this);
-    }
-  }
+  /**
+   * Set the parent node.
+   *
+   * @param parent new parent
+   */
+  void setParent(TreeNode<T> parent);
 
-  public void removeChild(TreeNode<T> child) {
-    children.remove(child);
-  }
-
-  public T getData() {
-    return data;
-  }
-
-  public List<TreeNode<T>> getChildren() {
-    return children;
-  }
-
-  public TreeNode<T> getParent() {
-    return parent;
-  }
-
-  public void setParent(TreeNode<T> parent) {
-    this.parent = parent;
-  }
-
-  public void removeChildren() {
-    children = null;
-  }
+  /**
+   * Get the data held by this node.
+   *
+   * @return data
+   */
+  T getData();
 
 }

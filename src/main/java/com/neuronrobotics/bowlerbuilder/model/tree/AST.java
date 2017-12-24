@@ -1,17 +1,26 @@
 package com.neuronrobotics.bowlerbuilder.model.tree;
 
-public class AST extends KTree<String> {
+/**
+ * k-ary tree of {@link ASTNode}.
+ */
+public class AST {
+
+  private ASTNode root;
 
   public AST() {
-    super();
+    this(new ASTNode());
   }
 
-  public AST(String rootData) {
-    super(rootData);
+  public AST(String rootName) {
+    this(new ASTNode(rootName));
   }
 
-  public AST(TreeNode<String> root) {
-    super(root);
+  public AST(ASTNode root) {
+    this.root = root;
+  }
+
+  public ASTNode getRoot() {
+    return root;
   }
 
 }
