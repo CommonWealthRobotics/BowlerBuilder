@@ -102,7 +102,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
-  private Map<CSG, MeshView> csgMap = new HashMap<>();
+  private Map<CSG, MeshView> csgMap = new WeakHashMap<>();
   private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
 

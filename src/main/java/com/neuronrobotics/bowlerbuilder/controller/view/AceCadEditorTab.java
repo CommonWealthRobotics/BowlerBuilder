@@ -20,8 +20,7 @@ public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
   private final AceCadEditorController controller;
   private final Node node;
 
-  public AceCadEditorTab(String title)
-      throws IOException {
+  public AceCadEditorTab(String title) throws IOException {
     super(
         title,
         Guice.createInjector().getInstance(AceEditorView.class),
