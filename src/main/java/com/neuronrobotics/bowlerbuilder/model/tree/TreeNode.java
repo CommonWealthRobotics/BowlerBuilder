@@ -1,10 +1,11 @@
-package com.neuronrobotics.bowlerbuilder.model;
+package com.neuronrobotics.bowlerbuilder.model.tree;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * k-ary tree node.
+ *
  * @param <T> data type
  */
 public class TreeNode<T> {
@@ -31,11 +32,17 @@ public class TreeNode<T> {
   }
 
   public void addChild(T data) {
-    children.add(new TreeNode<>(data));
+    TreeNode<T> child = new TreeNode<>(data);
+    addChild(child);
   }
 
   public void addChild(TreeNode<T> child) {
     children.add(child);
+    child.setParent(this);
+  }
+
+  public void removeChild(TreeNode<T> child) {
+    children.remove(child);
   }
 
   public T getData() {
@@ -48,6 +55,10 @@ public class TreeNode<T> {
 
   public TreeNode<T> getParent() {
     return parent;
+  }
+
+  public void setParent(TreeNode<T> parent) {
+    this.parent = parent;
   }
 
 }
