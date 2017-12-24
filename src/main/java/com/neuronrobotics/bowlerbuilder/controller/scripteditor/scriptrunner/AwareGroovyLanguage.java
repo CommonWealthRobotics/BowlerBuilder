@@ -277,9 +277,11 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitExpressionStatement(ExpressionStatement expressionStatement) {
+        TreeNode<String> node = new TreeNode<>("<expression>");
         TreeVisitor visitor = new TreeVisitor();
         expressionStatement.getExpression().visit(visitor);
-        root.addChild(visitor.getRoot());
+        node.addChild(visitor.getRoot());
+        root.addChild(node);
       }
 
       @Override
@@ -414,7 +416,19 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitBinaryExpression(BinaryExpression binaryExpression) {
-        root.addChild(binaryExpression.getText());
+        TreeNode<String> node = new TreeNode<>("<binary expression>");
+
+        TreeVisitor leftVisitor = new TreeVisitor();
+        binaryExpression.getLeftExpression().visit(leftVisitor);
+        node.addChild(leftVisitor.getRoot());
+
+        node.addChild(binaryExpression.getOperation().getText());
+
+        TreeVisitor rightVisitor = new TreeVisitor();
+        binaryExpression.getRightExpression().visit(rightVisitor);
+        node.addChild(rightVisitor.getRoot());
+
+        root.addChild(node);
       }
 
       @Override
@@ -484,7 +498,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitFieldExpression(FieldExpression fieldExpression) {
-        root.addChild(fieldExpression.getText());
+        root.addChild(fieldExpression.toString());
       }
 
       @Override
@@ -494,7 +508,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitConstantExpression(ConstantExpression constantExpression) {
-        root.addChild(constantExpression.getText());
+        root.addChild(constantExpression.toString());
       }
 
       @Override
@@ -504,12 +518,32 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
       @Override
       public void visitVariableExpression(VariableExpression variableExpression) {
-        root.addChild(variableExpression.getText());
+        TreeNode<String> node = new TreeNode<>("<variable>");
+
+        TreeNode<String> typeNode = new TreeNode<>("<type>");
+        typeNode.addChild(variableExpression.getType().getName());
+        node.addChild(typeNode);
+
+        TreeNode<String> nameNode = new TreeNode<>("<name>");
+        nameNode.addChild(variableExpression.getText());
+        node.addChild(nameNode);
+
+        root.addChild(node);
       }
 
       @Override
       public void visitDeclarationExpression(DeclarationExpression declarationExpression) {
-        root.addChild(declarationExpression.getVariableExpression().getText());
+        TreeNode<String> node = new TreeNode<>("<declaration>");
+
+        TreeVisitor visitor = new TreeVisitor();
+        declarationExpression.getVariableExpression().visit(visitor);
+        node.addChild(visitor.getRoot());
+
+        TreeVisitor rightVisitor = new TreeVisitor();
+        declarationExpression.getRightExpression().visit(rightVisitor);
+        node.addChild(rightVisitor.getRoot());
+
+        root.addChild(node);
       }
 
       @Override
