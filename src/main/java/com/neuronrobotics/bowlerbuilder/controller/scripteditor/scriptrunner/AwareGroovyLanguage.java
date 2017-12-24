@@ -165,7 +165,6 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     runningProperty.setValue(false);
 
     AST ast = new AST(transformation.getTree());
-    ast.optimizeTree();
     printTree(ast.getRoot(), "");
 
     return result;
