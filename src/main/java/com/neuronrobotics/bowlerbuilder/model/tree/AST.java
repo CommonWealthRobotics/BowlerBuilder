@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.model.tree;
 
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
+
 /**
  * k-ary tree of {@link ASTNode}.
  */

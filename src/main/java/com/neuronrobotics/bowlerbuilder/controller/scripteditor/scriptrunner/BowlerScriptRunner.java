@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner;
 
 import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.AwareGroovyLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyBooleanProperty;

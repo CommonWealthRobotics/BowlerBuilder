@@ -1,6 +1,7 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner;
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast.GroovyTreeTransformation;
 import com.neuronrobotics.bowlerbuilder.model.tree.AST;
 import com.neuronrobotics.bowlerbuilder.model.tree.TreeNode;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
@@ -73,7 +74,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
             "com.neuronrobotics.sdk.util.ThreadUtil",
             "eu.mihosoft.vrl.v3d.Transform",
             "com.neuronrobotics.bowlerstudio.vitamins.Vitamins"));
-    TreeTransformation transformation = new TreeTransformation();
+    GroovyTreeTransformation transformation = new GroovyTreeTransformation();
     cc.addCompilationCustomizers(new ASTTransformationCustomizer(transformation));
 
     Binding binding = new Binding();

@@ -1,5 +1,6 @@
-package com.neuronrobotics.bowlerbuilder.model.tree;
+package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
 
+import com.neuronrobotics.bowlerbuilder.model.tree.TreeNode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,59 @@ import java.util.List;
  * k-ary {@link TreeNode} of {@link String}.
  */
 public class ASTNode implements TreeNode<String> {
+
+  public enum ASTNodeType {
+//    classDeclarationNode,
+//    methodNode,
+//    blockNode,
+//    forNode,
+//    whileNode,
+//    doWhileNode,
+//    ifNode,
+//    expressionNode,
+//    returnNode,
+//    assertNode,
+//    tryCatchFinallyNode,
+//    switchBlockNode,
+//    breakNode,
+//    continueNode,
+//    throwNode,
+//    synchronizedBlockNode,
+//    methodCallNode,
+//    staticMethodCallNode,
+//    constructorCallNode,
+//    ternaryNode,
+//    shortTernaryNode,
+//    binaryNode,
+//    prefixNode,
+//    postfixNode,
+//    booleanNode,
+//    closureNode,
+//    tupleNode,
+//    mapNode,
+//    mapEntryNode,
+//    listNode,
+//    rangeNode,
+//    propertyNode,
+//    attributeNode,
+//    fieldNode,
+//    methodPointerNode,
+//    constantNode,
+//    classExpressionNode,
+//    variableNode,
+//    declarationNode,
+//    gStringNode,
+//    arrayNode,
+//    spreadNode,
+//    spreadMapNode,
+//    unaryMinusNode,
+//    unaryPlusNode,
+//    bitwiseNegationNode,
+//    castNode,
+//    argumentListNode,
+//    closureListNode,
+//    bytecodeNode
+  }
 
   protected String data;
   protected List<TreeNode<String>> children;

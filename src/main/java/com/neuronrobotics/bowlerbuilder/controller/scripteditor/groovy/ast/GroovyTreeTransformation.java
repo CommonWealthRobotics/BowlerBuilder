@@ -1,6 +1,6 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner; //NOPMD
+package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast; //NOPMD
 
-import com.neuronrobotics.bowlerbuilder.model.tree.ASTNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.GroovyCodeVisitor;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ArrayExpression;
@@ -62,7 +62,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
  * {@link ASTTransformation} to build an AST.
  */
 @GroovyASTTransformation(phase = CompilePhase.INSTRUCTION_SELECTION)
-class TreeTransformation implements ASTTransformation {
+public class GroovyTreeTransformation implements ASTTransformation {
 
   private final TreeVisitor visitor = new TreeVisitor();
 
@@ -87,7 +87,7 @@ class TreeTransformation implements ASTTransformation {
 
   /**
    * {@link GroovyCodeVisitor} to add a statement to the internal tree. Used by
-   * {@link TreeTransformation} to build a full AST.
+   * {@link GroovyTreeTransformation} to build a full AST.
    */
   private class TreeVisitor implements GroovyCodeVisitor {
 
