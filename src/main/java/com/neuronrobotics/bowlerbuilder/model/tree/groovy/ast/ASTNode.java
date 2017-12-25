@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
 
 import com.neuronrobotics.bowlerbuilder.model.tree.TreeNode;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -72,7 +73,7 @@ public class ASTNode implements TreeNode<String> {
 
   public ASTNode(String name) {
     data = name;
-    children = new ArrayList<>();
+    children = new LinkedList<>();
   }
 
   @Override
