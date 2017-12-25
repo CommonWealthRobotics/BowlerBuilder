@@ -1,7 +1,10 @@
 package com.neuronrobotics.bowlerbuilder.view;
 
+import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ast.ASTNodeView;
 import com.neuronrobotics.bowlerbuilder.model.tree.KTree;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeViewFactory;
 import javafx.scene.canvas.Canvas;
 
 /**
@@ -10,14 +13,16 @@ import javafx.scene.canvas.Canvas;
 public class ASTView {
 
   private Canvas canvas;
-  private KTree<ASTNode> tree;
+  private ASTNodeViewFactory factory;
 
-  public ASTView(KTree<ASTNode> tree) {
-    this.tree = tree;
+  @Inject
+  public ASTView(ASTNodeViewFactory factory) {
+    this.factory = factory;
     canvas = new Canvas(200, 200);
   }
 
-  public void generateView() {
+  public void generateView(KTree<ASTNode> tree) {
+    ASTNodeView rootView = factory.getNodeView(tree.getRoot());
   }
 
   public Canvas getCanvas() {

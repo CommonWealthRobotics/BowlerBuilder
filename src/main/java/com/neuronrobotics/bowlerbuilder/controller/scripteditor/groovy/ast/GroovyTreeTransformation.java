@@ -14,6 +14,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BytecodeNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.CaseNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.CastNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.CatchNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClassDeclarationNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClassExpressionNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClosureListNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClosureNode;
@@ -31,6 +32,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ListNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MapEntryNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MapNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MethodCallNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MethodNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MethodPointerNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.NotNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.PostfixNode;
@@ -126,14 +128,20 @@ public class GroovyTreeTransformation implements ASTTransformation {
   @Override
   public void visit(org.codehaus.groovy.ast.ASTNode[] astNodes, SourceUnit sourceUnit) {
     sourceUnit.getAST().getClasses().forEach(klass -> {
-      ASTNode classNode = new ASTNode("Class: " + klass.getName());
+      ClassDeclarationNode classNode = new ClassDeclarationNode(
+          klass.getName(),
+          klass.getLineNumber());
+
       klass.getMethods().forEach(method -> {
-        ASTNode methodNode = new ASTNode("Method: " + method.getName());
+        MethodNode methodNode = new MethodNode(method.getName(), method.getLineNumber());
+
         TreeVisitor temp = new TreeVisitor();
         method.getCode().visit(temp);
         methodNode.addChild(temp.getRoot());
+
         classNode.addChild(methodNode);
       });
+
       visitor.getRoot().addChild(classNode);
     });
   }
