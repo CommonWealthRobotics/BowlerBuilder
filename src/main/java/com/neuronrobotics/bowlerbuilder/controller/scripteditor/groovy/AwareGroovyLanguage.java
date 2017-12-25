@@ -2,8 +2,9 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast.GroovyTreeTransformation;
-import com.neuronrobotics.bowlerbuilder.model.tree.AST;
+import com.neuronrobotics.bowlerbuilder.model.tree.KTree;
 import com.neuronrobotics.bowlerbuilder.model.tree.TreeNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
@@ -108,7 +109,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     Object result = script.run();
     runningProperty.setValue(false);
 
-    AST ast = new AST(transformation.getTree());
+    KTree<ASTNode> ast = new KTree<>(transformation.getTree());
     printTree(ast.getRoot(), "");
 
     return result;

@@ -1,10 +1,10 @@
 package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
 
-public class ExpressionNode extends ASTNode {
+public class CatchNode extends ASTNode {
 
   private ASTNode statementNode;
 
-  public ExpressionNode(ASTNode statementNode) {
+  public CatchNode(ASTNode statementNode) {
     super();
     this.statementNode = statementNode;
   }

@@ -6,6 +6,7 @@ public class ForNode extends ASTNode {
   private ASTNode loopBlockNode;
 
   public ForNode(ASTNode collectionNode, ASTNode loopBlockNode) {
+    super();
     this.collectionNode = collectionNode;
     this.loopBlockNode = loopBlockNode;
   }

@@ -1,6 +1,59 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast; //NOPMD
 
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ArgumentListNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ArrayNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.AssertNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.AttributeNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BinaryNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BitwiseNegationNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BlockNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BooleanNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BreakNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.BytecodeNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.CaseNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.CastNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.CatchNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClassExpressionNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClosureListNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ClosureNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ConstantNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ConstructorCallNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ContinueNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.DeclarationNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.DoWhileNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ExpressionNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.FieldNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ForNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.GStringNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.IfElseNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ListNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MapEntryNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MapNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MethodCallNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.MethodPointerNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.NotNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.PostfixNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.PrefixNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.PropertyNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.RangeNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ReturnNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ShortTernaryNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.SpreadMapNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.SpreadNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.StaticMethodCallNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.SwitchNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.SynchronizedNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.TernaryNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ThrowNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.TryCatchFinallyNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.TupleNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.UnaryMinusNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.UnaryPlusNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.VariableNode;
+import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.WhileNode;
+import java.util.LinkedList;
+import java.util.List;
 import org.codehaus.groovy.ast.GroovyCodeVisitor;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ArrayExpression;
@@ -59,7 +112,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
 /**
- * {@link ASTTransformation} to build an AST.
+ * {@link ASTTransformation} to build an KTree.
  */
 @GroovyASTTransformation(phase = CompilePhase.INSTRUCTION_SELECTION)
 public class GroovyTreeTransformation implements ASTTransformation {
@@ -87,7 +140,7 @@ public class GroovyTreeTransformation implements ASTTransformation {
 
   /**
    * {@link GroovyCodeVisitor} to add a statement to the internal tree. Used by
-   * {@link GroovyTreeTransformation} to build a full AST.
+   * {@link GroovyTreeTransformation} to build a full KTree.
    */
   private class TreeVisitor implements GroovyCodeVisitor {
 
@@ -99,392 +152,356 @@ public class GroovyTreeTransformation implements ASTTransformation {
 
     @Override
     public void visitBlockStatement(BlockStatement blockStatement) {
-      ASTNode node = new ASTNode("<block>");
+      List<ASTNode> children = new LinkedList<>();
+
       blockStatement.getStatements().forEach(statement -> {
         TreeVisitor visitor = new TreeVisitor();
         statement.visit(visitor);
-        node.addChild(visitor.getRoot());
+        children.add(visitor.getRoot());
       });
-      root.addChild(node);
+
+      root.addChild(new BlockNode(children));
     }
 
     @Override
     public void visitForLoop(ForStatement forStatement) {
-      ASTNode node = new ASTNode("<for>");
-
-      TreeVisitor visitor = new TreeVisitor();
-      forStatement.getCollectionExpression().visit(visitor);
-      node.addChild(visitor.getRoot());
+      TreeVisitor collectionVisitor = new TreeVisitor();
+      forStatement.getCollectionExpression().visit(collectionVisitor);
 
       TreeVisitor loopVisitor = new TreeVisitor();
       forStatement.getLoopBlock().visit(loopVisitor);
-      node.addChild(loopVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new ForNode(collectionVisitor.getRoot(), loopVisitor.getRoot()));
     }
 
     @Override
     public void visitWhileLoop(WhileStatement whileStatement) {
-      ASTNode node = new ASTNode("<while>");
-      node.addChild(whileStatement.getLoopBlock().getStatementLabel());
-      root.addChild(node);
+      root.addChild(new WhileNode(whileStatement.getLoopBlock().getStatementLabel()));
     }
 
     @Override
     public void visitDoWhileLoop(DoWhileStatement doWhileStatement) {
-      ASTNode node = new ASTNode("<do while>");
-      node.addChild(doWhileStatement.getLoopBlock().getStatementLabel());
-      root.addChild(node);
+      root.addChild(new DoWhileNode(doWhileStatement.getLoopBlock().getStatementLabel()));
     }
 
     @Override
     public void visitIfElse(IfStatement ifStatement) {
-      ASTNode node = new ASTNode("<if statement>");
-      node.addChild(ifStatement.getBooleanExpression().getText());
-
       TreeVisitor ifVisitor = new TreeVisitor();
       ifStatement.getIfBlock().visit(ifVisitor);
-      node.addChild(ifVisitor.getRoot());
 
       TreeVisitor elseVisitor = new TreeVisitor();
       ifStatement.getElseBlock().visit(elseVisitor);
-      node.addChild(elseVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new IfElseNode(
+          ifStatement.getBooleanExpression().getText(),
+          ifVisitor.getRoot(),
+          elseVisitor.getRoot()));
     }
 
     @Override
     public void visitExpressionStatement(ExpressionStatement expressionStatement) {
-      ASTNode node = new ASTNode("<expression>");
       TreeVisitor visitor = new TreeVisitor();
       expressionStatement.getExpression().visit(visitor);
-      node.addChild(visitor.getRoot());
-      root.addChild(node);
+      root.addChild(new ExpressionNode(visitor.getRoot()));
     }
 
     @Override
     public void visitReturnStatement(ReturnStatement returnStatement) {
-      root.addChild(returnStatement.getText());
+      root.addChild(new ReturnNode(returnStatement.getText()));
     }
 
     @Override
     public void visitAssertStatement(AssertStatement assertStatement) {
-      ASTNode node = new ASTNode("<assert>");
-      node.addChild(assertStatement.getBooleanExpression().getText());
-      node.addChild(assertStatement.getMessageExpression().getText());
-      root.addChild(node);
+      root.addChild(new AssertNode(
+          assertStatement.getBooleanExpression().getText(),
+          assertStatement.getMessageExpression().getText()));
     }
 
     @Override
     public void visitTryCatchFinally(TryCatchStatement tryCatchStatement) {
-      ASTNode node = new ASTNode("<try catch>");
-
       TreeVisitor tryVisitor = new TreeVisitor();
       tryCatchStatement.getTryStatement().visit(tryVisitor);
-      node.addChild(tryVisitor.getRoot());
 
-      ASTNode catchNodes = new ASTNode("<catches>");
+      List<ASTNode> catchNodes = new LinkedList<>();
       tryCatchStatement.getCatchStatements().forEach(catchStatement -> {
         TreeVisitor catchVisitor = new TreeVisitor();
         catchStatement.getCode().visit(catchVisitor);
-        catchNodes.addChild(catchVisitor.getRoot());
+        catchNodes.add(catchVisitor.getRoot());
       });
-      node.addChild(catchNodes);
 
       TreeVisitor finallyVisitor = new TreeVisitor();
       tryCatchStatement.getFinallyStatement().visit(finallyVisitor);
-      node.addChild(finallyVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new TryCatchFinallyNode(
+          tryVisitor.getRoot(),
+          catchNodes,
+          finallyVisitor.getRoot()
+      ));
     }
 
     @Override
     public void visitSwitch(SwitchStatement switchStatement) {
-      ASTNode node = new ASTNode("<switch>");
-
       TreeVisitor visitor = new TreeVisitor();
       switchStatement.getExpression().visit(visitor);
-      node.addChild(visitor.getRoot());
 
-      ASTNode caseNodes = new ASTNode("<cases>");
+      List<ASTNode> caseNodes = new LinkedList<>();
       switchStatement.getCaseStatements().forEach(caseStatement -> {
         TreeVisitor caseVisitor = new TreeVisitor();
         caseStatement.getCode().visit(caseVisitor);
-        caseNodes.addChild(caseVisitor.getRoot());
+        caseNodes.add(caseVisitor.getRoot());
       });
-      node.addChild(caseNodes);
 
       TreeVisitor defaultVisitor = new TreeVisitor();
       switchStatement.getDefaultStatement().visit(defaultVisitor);
-      root.addChild(defaultVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new SwitchNode(
+          visitor.getRoot(),
+          caseNodes,
+          defaultVisitor.getRoot()
+      ));
     }
 
     @Override
     public void visitCaseStatement(CaseStatement caseStatement) {
       TreeVisitor visitor = new TreeVisitor();
       caseStatement.getCode().visit(visitor);
-      root.addChild(visitor.getRoot());
+      root.addChild(new CaseNode(visitor.getRoot()));
     }
 
     @Override
     public void visitBreakStatement(BreakStatement breakStatement) {
-      root.addChild("<break>");
+      root.addChild(new BreakNode());
     }
 
     @Override
     public void visitContinueStatement(ContinueStatement continueStatement) {
-      root.addChild("<continue>");
+      root.addChild(new ContinueNode());
     }
 
     @Override
     public void visitThrowStatement(ThrowStatement throwStatement) {
       TreeVisitor visitor = new TreeVisitor();
       throwStatement.getExpression().visit(visitor);
-      root.addChild(visitor.getRoot());
+      root.addChild(new ThrowNode(visitor.getRoot()));
     }
 
     @Override
     public void visitSynchronizedStatement(SynchronizedStatement synchronizedStatement) {
-      ASTNode node = new ASTNode("<synchronized>");
-
       TreeVisitor exVisitor = new TreeVisitor();
       synchronizedStatement.getExpression().visit(exVisitor);
-      node.addChild(exVisitor.getRoot());
 
       TreeVisitor stmtVisitor = new TreeVisitor();
       synchronizedStatement.getCode().visit(stmtVisitor);
-      node.addChild(stmtVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new SynchronizedNode(exVisitor.getRoot(), stmtVisitor.getRoot()));
     }
 
     @Override
     public void visitCatchStatement(CatchStatement catchStatement) {
       TreeVisitor visitor = new TreeVisitor();
       catchStatement.getCode().visit(visitor);
-      root.addChild(visitor.getRoot());
+      root.addChild(new CatchNode(visitor.getRoot()));
     }
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression methodCallExpression) {
-      root.addChild(methodCallExpression.getText());
+      root.addChild(new MethodCallNode(methodCallExpression.getText()));
     }
 
     @Override
     public void visitStaticMethodCallExpression(StaticMethodCallExpression
                                                     staticMethodCallExpression) {
-      root.addChild(staticMethodCallExpression.getText());
+      root.addChild(new StaticMethodCallNode(staticMethodCallExpression.getText()));
     }
 
     @Override
     public void visitConstructorCallExpression(ConstructorCallExpression
                                                    constructorCallExpression) {
-      root.addChild(constructorCallExpression.getText());
+      root.addChild(new ConstructorCallNode(constructorCallExpression.getText()));
     }
 
     @Override
     public void visitTernaryExpression(TernaryExpression ternaryExpression) {
-      root.addChild(ternaryExpression.getText());
+      root.addChild(new TernaryNode(ternaryExpression.getText()));
     }
 
     @Override
     public void visitShortTernaryExpression(ElvisOperatorExpression elvisOperatorExpression) {
-      root.addChild("<elvis>");
+      root.addChild(new ShortTernaryNode());
     }
 
     @Override
     public void visitBinaryExpression(BinaryExpression binaryExpression) {
-      ASTNode node = new ASTNode("<binary expression>");
-
       TreeVisitor leftVisitor = new TreeVisitor();
       binaryExpression.getLeftExpression().visit(leftVisitor);
-      node.addChild(leftVisitor.getRoot());
-
-      node.addChild(binaryExpression.getOperation().getText());
 
       TreeVisitor rightVisitor = new TreeVisitor();
       binaryExpression.getRightExpression().visit(rightVisitor);
-      node.addChild(rightVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new BinaryNode(
+          leftVisitor.getRoot(),
+          binaryExpression.getOperation().getText(),
+          rightVisitor.getRoot()));
     }
 
     @Override
     public void visitPrefixExpression(PrefixExpression prefixExpression) {
-      root.addChild(prefixExpression.getText());
+      root.addChild(new PrefixNode(prefixExpression.getText()));
     }
 
     @Override
     public void visitPostfixExpression(PostfixExpression postfixExpression) {
-      root.addChild(postfixExpression.getText());
+      root.addChild(new PostfixNode(postfixExpression.getText()));
     }
 
     @Override
     public void visitBooleanExpression(BooleanExpression booleanExpression) {
-      root.addChild(booleanExpression.getText());
+      root.addChild(new BooleanNode(booleanExpression.getText()));
     }
 
     @Override
     public void visitClosureExpression(ClosureExpression closureExpression) {
-      root.addChild(closureExpression.getText());
+      root.addChild(new ClosureNode(closureExpression.getText()));
     }
 
     @Override
     public void visitTupleExpression(TupleExpression tupleExpression) {
-      root.addChild(tupleExpression.getText());
+      root.addChild(new TupleNode(tupleExpression.getText()));
     }
 
     @Override
     public void visitMapExpression(MapExpression mapExpression) {
-      root.addChild(mapExpression.getText());
+      root.addChild(new MapNode(mapExpression.getText()));
     }
 
     @Override
     public void visitMapEntryExpression(MapEntryExpression mapEntryExpression) {
-      ASTNode node = new ASTNode("<map entry>");
-
       TreeVisitor keyVisitor = new TreeVisitor();
       mapEntryExpression.getKeyExpression().visit(keyVisitor);
-      node.addChild(keyVisitor.getRoot());
 
       TreeVisitor valueVisitor = new TreeVisitor();
       mapEntryExpression.getValueExpression().visit(valueVisitor);
-      node.addChild(valueVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new MapEntryNode(keyVisitor.getRoot(), valueVisitor.getRoot()));
     }
 
     @Override
     public void visitListExpression(ListExpression listExpression) {
-      root.addChild(listExpression.getText());
+      root.addChild(new ListNode(listExpression.getText()));
     }
 
     @Override
     public void visitRangeExpression(RangeExpression rangeExpression) {
-      root.addChild(rangeExpression.getText());
+      root.addChild(new RangeNode(rangeExpression.getText()));
     }
 
     @Override
     public void visitPropertyExpression(PropertyExpression propertyExpression) {
-      root.addChild(propertyExpression.getText());
+      root.addChild(new PropertyNode(propertyExpression.getText()));
     }
 
     @Override
     public void visitAttributeExpression(AttributeExpression attributeExpression) {
-      root.addChild("<attribute>");
+      root.addChild(new AttributeNode());
     }
 
     @Override
     public void visitFieldExpression(FieldExpression fieldExpression) {
-      root.addChild(fieldExpression.toString());
+      root.addChild(new FieldNode(fieldExpression.toString()));
     }
 
     @Override
     public void visitMethodPointerExpression(MethodPointerExpression methodPointerExpression) {
-      root.addChild(methodPointerExpression.getText());
+      root.addChild(new MethodPointerNode(methodPointerExpression.getText()));
     }
 
     @Override
     public void visitConstantExpression(ConstantExpression constantExpression) {
-      root.addChild(constantExpression.toString());
+      root.addChild(new ConstantNode(constantExpression.toString()));
     }
 
     @Override
     public void visitClassExpression(ClassExpression classExpression) {
-      root.addChild(classExpression.getText());
+      root.addChild(new ClassExpressionNode(classExpression.getText()));
     }
 
     @Override
     public void visitVariableExpression(VariableExpression variableExpression) {
-      ASTNode node = new ASTNode("<variable>");
-
-      ASTNode typeNode = new ASTNode("<type>");
-      typeNode.addChild(variableExpression.getType().getName());
-      node.addChild(typeNode);
-
-      ASTNode nameNode = new ASTNode("<name>");
-      nameNode.addChild(variableExpression.getText());
-      node.addChild(nameNode);
-
-      root.addChild(node);
+      root.addChild(new VariableNode(
+          variableExpression.getType().getName(),
+          variableExpression.getText()));
     }
 
     @Override
     public void visitDeclarationExpression(DeclarationExpression declarationExpression) {
-      ASTNode node = new ASTNode("<declaration>");
-
-      TreeVisitor visitor = new TreeVisitor();
-      declarationExpression.getVariableExpression().visit(visitor);
-      node.addChild(visitor.getRoot());
+      TreeVisitor leftVisitor = new TreeVisitor();
+      declarationExpression.getVariableExpression().visit(leftVisitor);
 
       TreeVisitor rightVisitor = new TreeVisitor();
       declarationExpression.getRightExpression().visit(rightVisitor);
-      node.addChild(rightVisitor.getRoot());
 
-      root.addChild(node);
+      root.addChild(new DeclarationNode(leftVisitor.getRoot(), rightVisitor.getRoot()));
     }
 
     @Override
     public void visitGStringExpression(GStringExpression gStringExpression) {
-      root.addChild(gStringExpression.getText());
+      root.addChild(new GStringNode(gStringExpression.getText()));
     }
 
     @Override
     public void visitArrayExpression(ArrayExpression arrayExpression) {
-      root.addChild(arrayExpression.getText());
+      root.addChild(new ArrayNode(arrayExpression.getText()));
     }
 
     @Override
     public void visitSpreadExpression(SpreadExpression spreadExpression) {
-      root.addChild(spreadExpression.getText());
+      root.addChild(new SpreadNode(spreadExpression.getText()));
     }
 
     @Override
     public void visitSpreadMapExpression(SpreadMapExpression spreadMapExpression) {
-      root.addChild(spreadMapExpression.getText());
+      root.addChild(new SpreadMapNode(spreadMapExpression.getText()));
     }
 
     @Override
     public void visitNotExpression(NotExpression notExpression) {
-      root.addChild("<not>");
+      root.addChild(new NotNode());
     }
 
     @Override
     public void visitUnaryMinusExpression(UnaryMinusExpression unaryMinusExpression) {
-      root.addChild(unaryMinusExpression.getText());
+      root.addChild(new UnaryMinusNode(unaryMinusExpression.getText()));
     }
 
     @Override
     public void visitUnaryPlusExpression(UnaryPlusExpression unaryPlusExpression) {
-      root.addChild(unaryPlusExpression.getText());
+      root.addChild(new UnaryPlusNode(unaryPlusExpression.getText()));
     }
 
     @Override
     public void visitBitwiseNegationExpression(BitwiseNegationExpression
                                                    bitwiseNegationExpression) {
-      root.addChild(bitwiseNegationExpression.getText());
+      root.addChild(new BitwiseNegationNode(bitwiseNegationExpression.getText()));
     }
 
     @Override
     public void visitCastExpression(CastExpression castExpression) {
-      root.addChild(castExpression.getText());
+      root.addChild(new CastNode(castExpression.getText()));
     }
 
     @Override
     public void visitArgumentlistExpression(ArgumentListExpression argumentListExpression) {
-      root.addChild("<argument list>");
+      root.addChild(new ArgumentListNode());
     }
 
     @Override
     public void visitClosureListExpression(ClosureListExpression closureListExpression) {
-      root.addChild(closureListExpression.getText());
+      root.addChild(new ClosureListNode(closureListExpression.getText()));
     }
 
     @Override
     public void visitBytecodeExpression(BytecodeExpression bytecodeExpression) {
-      root.addChild("<bytecode>");
+      root.addChild(new BytecodeNode());
     }
 
   }

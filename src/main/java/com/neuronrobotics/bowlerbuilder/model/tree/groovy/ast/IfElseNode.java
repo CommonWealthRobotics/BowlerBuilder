@@ -7,6 +7,7 @@ public class IfElseNode extends ASTNode {
   private ASTNode elseNode;
 
   public IfElseNode(String booleanExpression, ASTNode ifNode, ASTNode elseNode) {
+    super();
     this.booleanExpression = booleanExpression;
     this.ifNode = ifNode;
     this.elseNode = elseNode;

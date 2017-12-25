@@ -2,14 +2,15 @@ package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
 
 public class DoWhileNode extends ASTNode {
 
-  private ASTNode loopBlockNode;
+  private String loopBlock;
 
-  public DoWhileNode(ASTNode loopBlockNode) {
-    this.loopBlockNode = loopBlockNode;
+  public DoWhileNode(String loopBlock) {
+    super();
+    this.loopBlock = loopBlock;
   }
 
-  public ASTNode getLoopBlockNode() {
-    return loopBlockNode;
+  public String getLoopBlock() {
+    return loopBlock;
   }
 
 }

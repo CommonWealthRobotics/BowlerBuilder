@@ -2,21 +2,21 @@ package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
 
 public class VariableNode extends ASTNode {
 
-  private ASTNode typeNode;
-  private ASTNode nameNode;
+  private String type;
+  private String name;
 
-  public VariableNode(ASTNode typeNode, ASTNode nameNode) {
+  public VariableNode(String type, String name) {
     super();
-    this.typeNode = typeNode;
-    this.nameNode = nameNode;
+    this.type = type;
+    this.name = name;
   }
 
-  public ASTNode getTypeNode() {
-    return typeNode;
+  public String getType() {
+    return type;
   }
 
-  public ASTNode getNameNode() {
-    return nameNode;
+  public String getName() {
+    return name;
   }
 
 }

@@ -2,15 +2,15 @@ package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
 
 public class WhileNode extends ASTNode {
 
-  private ASTNode loopBlockNode;
+  private String loopBlock;
 
-  public WhileNode(ASTNode loopBlockNode) {
+  public WhileNode(String loopBlock) {
     super();
-    this.loopBlockNode = loopBlockNode;
+    this.loopBlock = loopBlock;
   }
 
-  public ASTNode getLoopBlockNode() {
-    return loopBlockNode;
+  public String getLoopBlock() {
+    return loopBlock;
   }
 
 }
