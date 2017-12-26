@@ -53,6 +53,10 @@ public class PreferencesService {
       fontSize.setValue(jsonObject.getInt("Font Size"));
       data.put("Font Size", fontSize);
 
+      IntegerProperty maxToastLen = new SimpleIntegerProperty(null, "Max Toast Length");
+      maxToastLen.setValue(jsonObject.getInt("Max Toast Length"));
+      data.put("Max Toast Length", maxToastLen);
+
       return Optional.of(new Preferences(data));
     }
 
@@ -92,6 +96,10 @@ public class PreferencesService {
     IntegerProperty fontSize = new SimpleIntegerProperty(null, "Font Size");
     fontSize.setValue(14);
     data.put("Font Size", fontSize);
+
+    IntegerProperty maxToastLen = new SimpleIntegerProperty(null, "Max Toast Length");
+    maxToastLen.setValue(15);
+    data.put("Max Toast Length", maxToastLen);
 
     return new Preferences(data);
   }

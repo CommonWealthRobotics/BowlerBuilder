@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
+import com.neuronrobotics.bowlerbuilder.controller.util.StringClipper;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -25,6 +26,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,6 +53,7 @@ public class AceCadEditorController {
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
   private final String scriptLangName;
+  private final StringClipper stringClipper;
   @FXML
   private SplitPane fileEditorRoot;
   @FXML
@@ -73,14 +76,19 @@ public class AceCadEditorController {
   private Tab tab;
   private Runnable reloadMenus;
 
+  private IntegerProperty maxToastLength;
+
   @Inject
   public AceCadEditorController(ScriptEditorView scriptEditorView,
                                 ScriptRunner scriptRunner,
-                                @Named("scriptLangName") String scriptLangName) {
+                                @Named("scriptLangName") String scriptLangName,
+                                StringClipper stringClipper) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
     this.scriptLangName = scriptLangName;
+    this.stringClipper = stringClipper;
+    maxToastLength = new SimpleIntegerProperty(15);
     logger.log(Level.FINE, "Running with language: " + scriptLangName);
   }
 
@@ -136,7 +144,7 @@ public class AceCadEditorController {
               "Error in CAD script: " + e.getMessage());
           Platform.runLater(() -> Notifications.create()
               .title("Error in CAD Script")
-              .text(e.getMessage())
+              .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
               .owner(fileEditorRoot)
               .position(Pos.BOTTOM_RIGHT)
               .showInformation());
@@ -250,6 +258,28 @@ public class AceCadEditorController {
    */
   public void setFontSize(Integer fontSize) {
     scriptEditor.setFontSize(fontSize);
+  }
+
+  /**
+   * Set the maximum number of lines that can be in a toast.
+   *
+   * @param max max lines object ({@link IntegerProperty} or {@link Integer})
+   */
+  public void setMaxToastLength(Object max) {
+    if (max instanceof IntegerProperty) {
+      setMaxToastLength(((IntegerProperty) max).getValue());
+    } else if (max instanceof Integer) {
+      setFontSize((Integer) max);
+    }
+  }
+
+  /**
+   * Set the maximum number of lines that can be in a toast.
+   *
+   * @param max max lines
+   */
+  public void setMaxToastLength(Integer max) {
+    maxToastLength.setValue(max);
   }
 
   /**
