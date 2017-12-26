@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class VariableNode extends ASTNode {
 
-  private String dataType;
-  private String name;
+  private final String dataType;
+  private final String name;
 
   public VariableNode(String dataType, String name) {
     super(ASTNodeType.VariableNode);

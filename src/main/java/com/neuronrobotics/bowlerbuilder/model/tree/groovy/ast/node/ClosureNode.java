@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class ClosureNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public ClosureNode(String expression) {
     super(ASTNodeType.ClosureNode);

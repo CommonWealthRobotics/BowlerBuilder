@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class SynchronizedNode extends ASTNode {
 
-  private ASTNode expressionNode;
-  private ASTNode blockNode;
+  private final ASTNode expressionNode;
+  private final ASTNode blockNode;
 
   public SynchronizedNode(ASTNode expressionNode, ASTNode blockNode) {
     super(ASTNodeType.SynchronizedNode);

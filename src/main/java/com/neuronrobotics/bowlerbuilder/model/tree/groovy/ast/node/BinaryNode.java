@@ -5,9 +5,9 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class BinaryNode extends ASTNode {
 
-  private ASTNode leftExpression;
-  private String operation;
-  private ASTNode rightExpression;
+  private final ASTNode leftExpression;
+  private final String operation;
+  private final ASTNode rightExpression;
 
   public BinaryNode(ASTNode leftExpression, String operation, ASTNode rightExpression) {
     super(ASTNodeType.BinaryNode);

@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class MethodNode extends ASTNode {
 
-  private String methodName;
-  private int lineNumber;
+  private final String methodName;
+  private final int lineNumber;
 
   public MethodNode(String methodName, int lineNumber) {
     super(ASTNodeType.MethodNode);

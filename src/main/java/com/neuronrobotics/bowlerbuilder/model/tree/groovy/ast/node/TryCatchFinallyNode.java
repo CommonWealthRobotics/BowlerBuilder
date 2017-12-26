@@ -6,9 +6,9 @@ import java.util.List;
 
 public class TryCatchFinallyNode extends ASTNode {
 
-  private ASTNode tryNode;
-  private List<ASTNode> catchNodes;
-  private ASTNode finallyNode;
+  private final ASTNode tryNode;
+  private final List<ASTNode> catchNodes;
+  private final ASTNode finallyNode;
 
   public TryCatchFinallyNode(ASTNode tryNode, List<ASTNode> catchNodes, ASTNode finallyNode) {
     super(ASTNodeType.TryCatchFinallyNode);

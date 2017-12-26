@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class ThrowNode extends ASTNode {
 
-  private ASTNode expressionNode;
+  private final ASTNode expressionNode;
 
   public ThrowNode(ASTNode expressionNode) {
     super(ASTNodeType.ThrowNode);

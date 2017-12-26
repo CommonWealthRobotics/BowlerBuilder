@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class ForNode extends ASTNode {
 
-  private ASTNode collectionNode;
-  private ASTNode loopBlockNode;
+  private final ASTNode collectionNode;
+  private final ASTNode loopBlockNode;
 
   public ForNode(ASTNode collectionNode, ASTNode loopBlockNode) {
     super(ASTNodeType.ForNode);

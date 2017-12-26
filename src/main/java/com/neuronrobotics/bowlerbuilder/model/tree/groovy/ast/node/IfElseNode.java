@@ -5,9 +5,9 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class IfElseNode extends ASTNode {
 
-  private String booleanExpression;
-  private ASTNode ifNode;
-  private ASTNode elseNode;
+  private final String booleanExpression;
+  private final ASTNode ifNode;
+  private final ASTNode elseNode;
 
   public IfElseNode(String booleanExpression, ASTNode ifNode, ASTNode elseNode) {
     super(ASTNodeType.IfElseNode);

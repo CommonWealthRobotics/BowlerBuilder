@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class PrefixNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public PrefixNode(String expression) {
     super(ASTNodeType.PrefixNode);

@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class BooleanNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public BooleanNode(String expression) {
     super(ASTNodeType.BooleanNode);

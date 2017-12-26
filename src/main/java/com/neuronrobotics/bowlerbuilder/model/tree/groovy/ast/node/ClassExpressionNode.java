@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class ClassExpressionNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public ClassExpressionNode(String expression) {
     super(ASTNodeType.ClassExpressionNode);

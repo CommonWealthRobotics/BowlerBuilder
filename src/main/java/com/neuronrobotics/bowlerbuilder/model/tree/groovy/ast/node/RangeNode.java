@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class RangeNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public RangeNode(String expression) {
     super(ASTNodeType.RangeNode);

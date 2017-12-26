@@ -3,8 +3,17 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import javafx.scene.Node;
 
+/**
+ * Factory to create an {@link ASTNode} view.
+ */
 public class ASTNodeViewFactory {
 
+  /**
+   * Create a view for a node.
+   *
+   * @param node node to make view for
+   * @return view
+   */
   public Node createView(ASTNode node) {
     switch (node.getType()) {
       case ArgumentListNode:
@@ -77,6 +86,8 @@ public class ASTNodeViewFactory {
       case VariableNode:
         break;
       case RootNode:
+        break;
+      default:
         break;
     }
 

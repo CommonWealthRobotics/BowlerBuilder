@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class AssertNode extends ASTNode {
 
-  private String booleanExpression;
-  private String messageExpression;
+  private final String booleanExpression;
+  private final String messageExpression;
 
   public AssertNode(String booleanExpression, String messageExpression) {
     super(ASTNodeType.AssertNode);

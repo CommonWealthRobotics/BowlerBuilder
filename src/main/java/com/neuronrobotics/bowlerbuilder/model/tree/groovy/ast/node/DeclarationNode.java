@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class DeclarationNode extends ASTNode {
 
-  private ASTNode leftExpression;
-  private ASTNode rightExpression;
+  private final ASTNode leftExpression;
+  private final ASTNode rightExpression;
 
   public DeclarationNode(ASTNode leftExpression, ASTNode rightExpression) {
     super(ASTNodeType.DeclarationNode);

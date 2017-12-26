@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class CaseNode extends ASTNode {
 
-  private ASTNode statementNode;
+  private final ASTNode statementNode;
 
   public CaseNode(ASTNode statementNode) {
     super(ASTNodeType.CaseNode);

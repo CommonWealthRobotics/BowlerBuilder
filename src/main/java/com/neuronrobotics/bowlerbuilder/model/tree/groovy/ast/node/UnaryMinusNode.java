@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class UnaryMinusNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public UnaryMinusNode(String expression) {
     super(ASTNodeType.UnaryMinusNode);

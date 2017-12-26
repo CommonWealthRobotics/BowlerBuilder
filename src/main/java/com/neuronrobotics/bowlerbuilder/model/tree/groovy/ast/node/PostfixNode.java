@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class PostfixNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public PostfixNode(String expression) {
     super(ASTNodeType.PostfixNode);

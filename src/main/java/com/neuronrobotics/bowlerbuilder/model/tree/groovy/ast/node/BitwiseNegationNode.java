@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class BitwiseNegationNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public BitwiseNegationNode(String expression) {
     super(ASTNodeType.BitwiseNegationNode);

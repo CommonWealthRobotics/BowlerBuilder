@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class ConstructorCallNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public ConstructorCallNode(String expression) {
     super(ASTNodeType.ConstructorCallNode);

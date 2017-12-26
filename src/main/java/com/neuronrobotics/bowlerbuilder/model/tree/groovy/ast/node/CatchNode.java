@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class CatchNode extends ASTNode {
 
-  private ASTNode statementNode;
+  private final ASTNode statementNode;
 
   public CatchNode(ASTNode statementNode) {
     super(ASTNodeType.CatchNode);

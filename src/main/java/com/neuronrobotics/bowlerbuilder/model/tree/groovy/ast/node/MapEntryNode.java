@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class MapEntryNode extends ASTNode {
 
-  private ASTNode keyNode;
-  private ASTNode entryNode;
+  private final ASTNode keyNode;
+  private final ASTNode entryNode;
 
   public MapEntryNode(ASTNode keyNode, ASTNode entryNode) {
     super(ASTNodeType.MapEntryNode);

@@ -6,9 +6,9 @@ import java.util.List;
 
 public class SwitchNode extends ASTNode {
 
-  private ASTNode expressionNode;
-  private List<ASTNode> caseNodes;
-  private ASTNode defaultNode;
+  private final ASTNode expressionNode;
+  private final List<ASTNode> caseNodes;
+  private final ASTNode defaultNode;
 
   public SwitchNode(ASTNode expressionNode, List<ASTNode> caseNodes, ASTNode defaultNode) {
     super(ASTNodeType.SwitchNode);

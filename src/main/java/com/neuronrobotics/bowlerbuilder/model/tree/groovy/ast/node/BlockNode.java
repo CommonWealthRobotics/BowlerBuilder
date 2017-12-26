@@ -6,7 +6,7 @@ import java.util.List;
 
 public class BlockNode extends ASTNode {
 
-  private List<ASTNode> nodes;
+  private final List<ASTNode> nodes;
 
   public BlockNode(List<ASTNode> nodes) {
     super(ASTNodeType.BlockNode);

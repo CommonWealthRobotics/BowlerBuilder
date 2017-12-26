@@ -5,8 +5,8 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class ClassDeclarationNode extends ASTNode {
 
-  private String className;
-  private int lineNumber;
+  private final String className;
+  private final int lineNumber;
 
   public ClassDeclarationNode(String className, int lineNumber) {
     super(ASTNodeType.ClassDeclarationNode);

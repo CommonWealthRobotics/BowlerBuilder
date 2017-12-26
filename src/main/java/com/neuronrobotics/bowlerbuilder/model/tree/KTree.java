@@ -5,7 +5,7 @@ package com.neuronrobotics.bowlerbuilder.model.tree;
  */
 public class KTree<T extends TreeNode> {
 
-  private T root;
+  private final T root;
 
   public KTree(T root) {
     this.root = root;

@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;
 
 public class SpreadMapNode extends ASTNode {
 
-  private String expression;
+  private final String expression;
 
   public SpreadMapNode(String expression) {
     super(ASTNodeType.SpreadMapNode);
