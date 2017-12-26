@@ -283,7 +283,7 @@ public class MainWindowController {
     preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
         fileEditors.forEach(editor -> editor.setFontSize(newValue)));
     preferences.get("Max Toast Length").addListener((observableValue, oldValue, newValue) ->
-      fileEditors.forEach(editor -> editor.setMaxToastLength(newValue)));
+        fileEditors.forEach(editor -> editor.setMaxToastLength(newValue)));
   }
 
   /**

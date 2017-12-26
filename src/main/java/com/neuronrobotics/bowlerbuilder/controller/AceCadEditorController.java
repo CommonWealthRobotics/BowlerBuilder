@@ -76,7 +76,7 @@ public class AceCadEditorController {
   private Tab tab;
   private Runnable reloadMenus;
 
-  private IntegerProperty maxToastLength;
+  private final IntegerProperty maxToastLength;
 
   @Inject
   public AceCadEditorController(ScriptEditorView scriptEditorView,

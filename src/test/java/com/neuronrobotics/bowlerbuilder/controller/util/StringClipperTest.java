@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class StringClipperTest {
 
-  private StringClipper stringClipper = new StringClipper();
+  private final StringClipper stringClipper = new StringClipper();
 
   @Test
   void emptyInputTest() {

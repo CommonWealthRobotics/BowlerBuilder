@@ -17,7 +17,7 @@ public class StringClipper {
       String line = allLines[i];
       out.append(line);
       if (i < lines - 1) {
-        out.append("\n");
+        out.append('\n');
       }
     }
 
