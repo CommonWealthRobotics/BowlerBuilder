@@ -20,6 +20,7 @@ public class ASTNode implements TreeNode<ASTNode, String> {
 
   public ASTNode(String name, ASTNodeType type) {
     data = name;
+    this.type = type;
     children = new LinkedList<>();
   }
 

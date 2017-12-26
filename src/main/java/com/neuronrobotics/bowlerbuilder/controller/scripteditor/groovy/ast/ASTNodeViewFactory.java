@@ -76,6 +76,8 @@ public class ASTNodeViewFactory {
         break;
       case VariableNode:
         break;
+      case RootNode:
+        break;
     }
 
     return null;

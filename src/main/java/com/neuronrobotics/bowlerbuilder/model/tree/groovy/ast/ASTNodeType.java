@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast;
  */
 public enum ASTNodeType {
 
+  RootNode, //Special type for roots of an AST
   ArgumentListNode,
   ArrayNode,
   AssertNode,
