@@ -7,7 +7,7 @@ public class BlockNode extends ASTNode {
   private List<ASTNode> nodes;
 
   public BlockNode(List<ASTNode> nodes) {
-    super();
+    super(ASTNodeType.BlockNode);
     this.nodes = nodes;
   }
 

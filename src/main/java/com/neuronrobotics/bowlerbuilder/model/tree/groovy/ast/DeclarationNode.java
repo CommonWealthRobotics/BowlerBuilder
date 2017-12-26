@@ -6,7 +6,7 @@ public class DeclarationNode extends ASTNode {
   private ASTNode rightExpression;
 
   public DeclarationNode(ASTNode leftExpression, ASTNode rightExpression) {
-    super();
+    super(ASTNodeType.DeclarationNode);
     this.leftExpression = leftExpression;
     this.rightExpression = rightExpression;
   }

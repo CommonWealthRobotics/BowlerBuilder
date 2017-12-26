@@ -5,28 +5,21 @@ import java.util.List;
 /**
  * k-ary tree node.
  */
-public interface TreeNode<T> {
-
-  /**
-   * Construct a new node with the data and add it to the child list.
-   *
-   * @param data data for new node
-   */
-  void addChild(T data);
+public interface TreeNode<T, D> {
 
   /**
    * Add the node to the child list.
    *
    * @param child node to add
    */
-  void addChild(TreeNode<T> child);
+  void addChild(T child);
 
   /**
    * Remove a child from the list.
    *
    * @param child node to remove
    */
-  void removeChild(TreeNode<T> child);
+  void removeChild(T child);
 
   /**
    * Remove all children.
@@ -38,27 +31,27 @@ public interface TreeNode<T> {
    *
    * @return children
    */
-  List<TreeNode<T>> getChildren();
+  List<T> getChildren();
 
   /**
    * Get the parent node.
    *
    * @return parent node
    */
-  TreeNode<T> getParent();
+  T getParent();
 
   /**
    * Set the parent node.
    *
    * @param parent new parent
    */
-  void setParent(TreeNode<T> parent);
+  void setParent(T parent);
 
   /**
    * Get the data held by this node.
    *
    * @return data
    */
-  T getData();
+  D getData();
 
 }

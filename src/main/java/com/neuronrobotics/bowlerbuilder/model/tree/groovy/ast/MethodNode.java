@@ -6,7 +6,7 @@ public class MethodNode extends ASTNode {
   private int lineNumber;
 
   public MethodNode(String methodName, int lineNumber) {
-    super();
+    super(ASTNodeType.MethodNode);
     this.methodName = methodName;
     this.lineNumber = lineNumber;
   }

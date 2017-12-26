@@ -2,8 +2,6 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast.GroovyTreeTransformation;
-import com.neuronrobotics.bowlerbuilder.model.tree.KTree;
-import com.neuronrobotics.bowlerbuilder.model.tree.TreeNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
@@ -109,8 +107,15 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     Object result = script.run();
     runningProperty.setValue(false);
 
-    KTree<ASTNode> ast = new KTree<>(transformation.getTree());
-    printTree(ast.getRoot(), "");
+    /*Platform.runLater(() -> {
+      KTree<ASTNode> ast = new KTree<>(transformation.getTree());
+      ASTViewGenerator generator = new ASTViewGenerator();
+      Dialog dialog = new Dialog();
+      dialog.getDialogPane().setContent(generator.generateView(ast));
+      dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+      dialog.showAndWait();
+      printTree(ast.getRoot(), "");
+    });*/
 
     return result;
   }
@@ -121,7 +126,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
    * @param node root node
    * @param prefix starting prefix
    */
-  private void printTree(TreeNode<String> node, String prefix) {
+  private void printTree(ASTNode node, String prefix) {
     System.out.println(prefix + node.getData()); //NOPMD
     node.getChildren().forEach(child -> printTree(child, prefix + "\t"));
   }

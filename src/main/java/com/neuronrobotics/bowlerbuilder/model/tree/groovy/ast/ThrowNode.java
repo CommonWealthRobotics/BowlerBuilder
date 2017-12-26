@@ -5,7 +5,7 @@ public class ThrowNode extends ASTNode {
   private ASTNode expressionNode;
 
   public ThrowNode(ASTNode expressionNode) {
-    super();
+    super(ASTNodeType.ThrowNode);
     this.expressionNode = expressionNode;
   }
 

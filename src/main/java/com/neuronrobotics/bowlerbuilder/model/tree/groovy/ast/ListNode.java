@@ -5,7 +5,7 @@ public class ListNode extends ASTNode {
   private String expression;
 
   public ListNode(String expression) {
-    super();
+    super(ASTNodeType.ListNode);
     this.expression = expression;
   }
 

@@ -6,7 +6,7 @@ public class SynchronizedNode extends ASTNode {
   private ASTNode blockNode;
 
   public SynchronizedNode(ASTNode expressionNode, ASTNode blockNode) {
-    super();
+    super(ASTNodeType.SynchronizedNode);
     this.expressionNode = expressionNode;
     this.blockNode = blockNode;
   }

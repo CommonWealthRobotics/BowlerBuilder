@@ -5,7 +5,7 @@ public class PrefixNode extends ASTNode {
   private String expression;
 
   public PrefixNode(String expression) {
-    super();
+    super(ASTNodeType.PrefixNode);
     this.expression = expression;
   }
 

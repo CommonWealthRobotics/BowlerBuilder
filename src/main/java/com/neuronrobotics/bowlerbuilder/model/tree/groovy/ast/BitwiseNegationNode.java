@@ -5,7 +5,7 @@ public class BitwiseNegationNode extends ASTNode {
   private String expression;
 
   public BitwiseNegationNode(String expression) {
-    super();
+    super(ASTNodeType.BitwiseNegationNode);
     this.expression = expression;
   }
 

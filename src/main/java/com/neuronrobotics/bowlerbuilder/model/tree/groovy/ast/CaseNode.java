@@ -5,7 +5,7 @@ public class CaseNode extends ASTNode {
   private ASTNode statementNode;
 
   public CaseNode(ASTNode statementNode) {
-    super();
+    super(ASTNodeType.CaseNode);
     this.statementNode = statementNode;
   }
 

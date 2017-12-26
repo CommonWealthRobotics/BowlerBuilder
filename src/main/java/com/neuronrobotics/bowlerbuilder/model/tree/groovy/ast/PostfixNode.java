@@ -5,7 +5,7 @@ public class PostfixNode extends ASTNode {
   private String expression;
 
   public PostfixNode(String expression) {
-    super();
+    super(ASTNodeType.PostfixNode);
     this.expression = expression;
   }
 

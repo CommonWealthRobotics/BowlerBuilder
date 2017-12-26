@@ -5,7 +5,7 @@ public class ConstructorCallNode extends ASTNode {
   private String expression;
 
   public ConstructorCallNode(String expression) {
-    super();
+    super(ASTNodeType.ConstructorCallNode);
     this.expression = expression;
   }
 

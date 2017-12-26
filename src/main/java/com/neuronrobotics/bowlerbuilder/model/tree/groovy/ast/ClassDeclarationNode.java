@@ -6,7 +6,7 @@ public class ClassDeclarationNode extends ASTNode {
   private int lineNumber;
 
   public ClassDeclarationNode(String className, int lineNumber) {
-    super();
+    super(ASTNodeType.ClassDeclarationNode);
     this.className = className;
     this.lineNumber = lineNumber;
   }

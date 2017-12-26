@@ -7,7 +7,7 @@ public class BinaryNode extends ASTNode {
   private ASTNode rightExpression;
 
   public BinaryNode(ASTNode leftExpression, String operation, ASTNode rightExpression) {
-    super();
+    super(ASTNodeType.BinaryNode);
     this.leftExpression = leftExpression;
     this.operation = operation;
     this.rightExpression = rightExpression;

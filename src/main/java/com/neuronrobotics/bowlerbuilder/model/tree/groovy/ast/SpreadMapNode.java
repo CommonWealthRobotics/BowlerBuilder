@@ -5,7 +5,7 @@ public class SpreadMapNode extends ASTNode {
   private String expression;
 
   public SpreadMapNode(String expression) {
-    super();
+    super(ASTNodeType.SpreadMapNode);
     this.expression = expression;
   }
 

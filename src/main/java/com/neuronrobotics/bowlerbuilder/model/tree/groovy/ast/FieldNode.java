@@ -5,7 +5,7 @@ public class FieldNode extends ASTNode {
   private String expression;
 
   public FieldNode(String expression) {
-    super();
+    super(ASTNodeType.FieldNode);
     this.expression = expression;
   }
 

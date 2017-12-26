@@ -9,7 +9,7 @@ public class SwitchNode extends ASTNode {
   private ASTNode defaultNode;
 
   public SwitchNode(ASTNode expressionNode, List<ASTNode> caseNodes, ASTNode defaultNode) {
-    super();
+    super(ASTNodeType.SwitchNode);
     this.expressionNode = expressionNode;
     this.caseNodes = caseNodes;
     this.defaultNode = defaultNode;

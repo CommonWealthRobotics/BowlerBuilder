@@ -5,7 +5,7 @@ public class ReturnNode extends ASTNode {
   private String expression;
 
   public ReturnNode(String expression) {
-    super();
+    super(ASTNodeType.ReturnNode);
     this.expression = expression;
   }
 

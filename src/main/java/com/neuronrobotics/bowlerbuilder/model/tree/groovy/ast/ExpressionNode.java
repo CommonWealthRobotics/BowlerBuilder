@@ -5,7 +5,7 @@ public class ExpressionNode extends ASTNode {
   private ASTNode statementNode;
 
   public ExpressionNode(ASTNode statementNode) {
-    super();
+    super(ASTNodeType.ExpressionNode);
     this.statementNode = statementNode;
   }
 

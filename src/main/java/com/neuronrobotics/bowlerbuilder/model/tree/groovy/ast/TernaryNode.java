@@ -5,7 +5,7 @@ public class TernaryNode extends ASTNode {
   private String expression;
 
   public TernaryNode(String expression) {
-    super();
+    super(ASTNodeType.TernaryNode);
     this.expression = expression;
   }
 

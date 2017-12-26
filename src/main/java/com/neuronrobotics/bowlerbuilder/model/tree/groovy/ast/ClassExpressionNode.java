@@ -5,7 +5,7 @@ public class ClassExpressionNode extends ASTNode {
   private String expression;
 
   public ClassExpressionNode(String expression) {
-    super();
+    super(ASTNodeType.ClassExpressionNode);
     this.expression = expression;
   }
 

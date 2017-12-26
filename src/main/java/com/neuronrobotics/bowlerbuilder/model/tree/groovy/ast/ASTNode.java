@@ -7,81 +7,28 @@ import java.util.List;
 /**
  * k-ary {@link TreeNode} of {@link String}.
  */
-public class ASTNode implements TreeNode<String> {
-
-  public enum ASTNodeType {
-    //    classDeclarationNode,
-    //    methodNode,
-    //    blockNode,
-    //    forNode,
-    //    whileNode,
-    //    doWhileNode,
-    //    ifNode,
-    //    expressionNode,
-    //    returnNode,
-    //    assertNode,
-    //    tryCatchFinallyNode,
-    //    switchBlockNode,
-    //    breakNode,
-    //    continueNode,
-    //    throwNode,
-    //    synchronizedBlockNode,
-    //    methodCallNode,
-    //    staticMethodCallNode,
-    //    constructorCallNode,
-    //    ternaryNode,
-    //    shortTernaryNode,
-    //    binaryNode,
-    //    prefixNode,
-    //    postfixNode,
-    //    booleanNode,
-    //    closureNode,
-    //    tupleNode,
-    //    mapNode,
-    //    mapEntryNode,
-    //    listNode,
-    //    rangeNode,
-    //    propertyNode,
-    //    attributeNode,
-    //    fieldNode,
-    //    methodPointerNode,
-    //    constantNode,
-    //    classExpressionNode,
-    //    variableNode,
-    //    declarationNode,
-    //    gStringNode,
-    //    arrayNode,
-    //    spreadNode,
-    //    spreadMapNode,
-    //    unaryMinusNode,
-    //    unaryPlusNode,
-    //    bitwiseNegationNode,
-    //    castNode,
-    //    argumentListNode,
-    //    closureListNode,
-    //    bytecodeNode
-  }
+public class ASTNode implements TreeNode<ASTNode, String> {
 
   protected String data;
-  protected List<TreeNode<String>> children;
-  protected TreeNode<String> parent;
+  protected ASTNodeType type;
+  protected List<ASTNode> children;
+  protected ASTNode parent;
 
-  public ASTNode() {
-    this("root");
+  public ASTNode(ASTNodeType type) {
+    this("root", type);
   }
 
-  public ASTNode(String name) {
+  public ASTNode(String name, ASTNodeType type) {
     data = name;
     children = new LinkedList<>();
   }
 
-  @Override
-  public void addChild(String name) {
-    addChild(new ASTNode(name));
+  public void addChild(String name, ASTNodeType type) {
+    addChild(new ASTNode(name, type));
   }
 
   @Override
-  public void addChild(TreeNode<String> child) {
+  public void addChild(ASTNode child) {
     if ("root".equals(child.getData())) {
       child.getChildren().forEach(this::addChild);
     } else {
@@ -91,7 +38,7 @@ public class ASTNode implements TreeNode<String> {
   }
 
   @Override
-  public void removeChild(TreeNode<String> child) {
+  public void removeChild(ASTNode child) {
     children.remove(child);
   }
 
@@ -105,22 +52,26 @@ public class ASTNode implements TreeNode<String> {
     return data;
   }
 
+  public ASTNodeType getType() {
+    return type;
+  }
+
   @Override
-  public List<TreeNode<String>> getChildren() {
+  public List<ASTNode> getChildren() {
     return children;
   }
 
-  public void setChildren(List<TreeNode<String>> children) {
+  public void setChildren(List<ASTNode> children) {
     this.children = children;
   }
 
   @Override
-  public TreeNode<String> getParent() {
+  public ASTNode getParent() {
     return parent;
   }
 
   @Override
-  public void setParent(TreeNode<String> parent) {
+  public void setParent(ASTNode parent) {
     this.parent = parent;
   }
 

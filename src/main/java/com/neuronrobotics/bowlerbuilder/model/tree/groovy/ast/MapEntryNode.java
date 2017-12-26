@@ -6,7 +6,7 @@ public class MapEntryNode extends ASTNode {
   private ASTNode entryNode;
 
   public MapEntryNode(ASTNode keyNode, ASTNode entryNode) {
-    super();
+    super(ASTNodeType.MapEntryNode);
     this.keyNode = keyNode;
     this.entryNode = entryNode;
   }

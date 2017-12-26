@@ -9,7 +9,7 @@ public class TryCatchFinallyNode extends ASTNode {
   private ASTNode finallyNode;
 
   public TryCatchFinallyNode(ASTNode tryNode, List<ASTNode> catchNodes, ASTNode finallyNode) {
-    super();
+    super(ASTNodeType.TryCatchFinallyNode);
     this.tryNode = tryNode;
     this.catchNodes = catchNodes;
     this.finallyNode = finallyNode;

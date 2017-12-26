@@ -5,7 +5,7 @@ public class RangeNode extends ASTNode {
   private String expression;
 
   public RangeNode(String expression) {
-    super();
+    super(ASTNodeType.RangeNode);
     this.expression = expression;
   }
 

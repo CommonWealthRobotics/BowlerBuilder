@@ -5,7 +5,7 @@ public class TupleNode extends ASTNode {
   private String expression;
 
   public TupleNode(String expression) {
-    super();
+    super(ASTNodeType.TupleNode);
     this.expression = expression;
   }
 

@@ -5,7 +5,7 @@ public class MapNode extends ASTNode {
   private String expression;
 
   public MapNode(String expression) {
-    super();
+    super(ASTNodeType.MapEntryNode);
     this.expression = expression;
   }
 

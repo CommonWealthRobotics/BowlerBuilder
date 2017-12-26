@@ -5,7 +5,7 @@ public class CatchNode extends ASTNode {
   private ASTNode statementNode;
 
   public CatchNode(ASTNode statementNode) {
-    super();
+    super(ASTNodeType.CatchNode);
     this.statementNode = statementNode;
   }
 

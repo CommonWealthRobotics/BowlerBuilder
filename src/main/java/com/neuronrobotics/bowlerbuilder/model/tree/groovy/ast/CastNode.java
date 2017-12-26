@@ -5,7 +5,7 @@ public class CastNode extends ASTNode {
   private String expression;
 
   public CastNode(String expression) {
-    super();
+    super(ASTNodeType.CastNode);
     this.expression = expression;
   }
 

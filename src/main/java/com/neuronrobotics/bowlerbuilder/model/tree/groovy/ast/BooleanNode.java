@@ -5,7 +5,7 @@ public class BooleanNode extends ASTNode {
   private String expression;
 
   public BooleanNode(String expression) {
-    super();
+    super(ASTNodeType.BooleanNode);
     this.expression = expression;
   }
 

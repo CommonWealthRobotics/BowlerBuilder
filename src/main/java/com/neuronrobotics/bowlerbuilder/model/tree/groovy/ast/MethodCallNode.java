@@ -5,7 +5,7 @@ public class MethodCallNode extends ASTNode {
   private String expression;
 
   public MethodCallNode(String expression) {
-    super();
+    super(ASTNodeType.MethodCallNode);
     this.expression = expression;
   }
 

@@ -6,7 +6,7 @@ public class AssertNode extends ASTNode {
   private String messageExpression;
 
   public AssertNode(String booleanExpression, String messageExpression) {
-    super();
+    super(ASTNodeType.AssertNode);
     this.booleanExpression = booleanExpression;
     this.messageExpression = messageExpression;
   }

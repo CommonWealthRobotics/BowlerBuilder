@@ -5,7 +5,7 @@ public class PropertyNode extends ASTNode {
   private String expression;
 
   public PropertyNode(String expression) {
-    super();
+    super(ASTNodeType.PropertyNode);
     this.expression = expression;
   }
 

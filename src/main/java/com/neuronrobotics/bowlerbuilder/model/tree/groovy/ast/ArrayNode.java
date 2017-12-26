@@ -5,7 +5,7 @@ public class ArrayNode extends ASTNode {
   private String expression;
 
   public ArrayNode(String expression) {
-    super();
+    super(ASTNodeType.ArrayNode);
     this.expression = expression;
   }
 

@@ -5,7 +5,7 @@ public class UnaryMinusNode extends ASTNode {
   private String expression;
 
   public UnaryMinusNode(String expression) {
-    super();
+    super(ASTNodeType.UnaryMinusNode);
     this.expression = expression;
   }
 

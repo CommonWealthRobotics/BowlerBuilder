@@ -5,7 +5,7 @@ public class ClosureListNode extends ASTNode {
   private String expression;
 
   public ClosureListNode(String expression) {
-    super();
+    super(ASTNodeType.ClosureListNode);
     this.expression = expression;
   }
 

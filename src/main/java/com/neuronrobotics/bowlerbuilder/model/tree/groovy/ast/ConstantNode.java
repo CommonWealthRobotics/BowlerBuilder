@@ -5,7 +5,7 @@ public class ConstantNode extends ASTNode {
   private String expression;
 
   public ConstantNode(String expression) {
-    super();
+    super(ASTNodeType.ConstantNode);
     this.expression = expression;
   }
 

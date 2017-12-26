@@ -5,7 +5,7 @@ public class GStringNode extends ASTNode {
   private String expression;
 
   public GStringNode(String expression) {
-    super();
+    super(ASTNodeType.GStringNode);
     this.expression = expression;
   }
 

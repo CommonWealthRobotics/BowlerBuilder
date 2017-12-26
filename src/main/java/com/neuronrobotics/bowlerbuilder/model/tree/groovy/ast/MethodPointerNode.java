@@ -5,7 +5,7 @@ public class MethodPointerNode extends ASTNode {
   private String expression;
 
   public MethodPointerNode(String expression) {
-    super();
+    super(ASTNodeType.MethodPointerNode);
     this.expression = expression;
   }
 
