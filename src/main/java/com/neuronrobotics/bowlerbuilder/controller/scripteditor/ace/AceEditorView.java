@@ -18,7 +18,7 @@ public class AceEditorView implements ScriptEditorView {
   private final AceEditor scriptEditor;
 
   @Inject
-  public AceEditorView(WebView webView) {
+  public AceEditorView(WebView webView, AceWebEngineFactory aceWebEngineFactory) {
     this.webView = webView;
 
     WebEngine webEngine = webView.getEngine();
@@ -26,7 +26,7 @@ public class AceEditorView implements ScriptEditorView {
     Platform.runLater(() -> webView.getEngine().load(AceCadEditorController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/web/ace.html").toString()));
 
-    this.scriptEditor = new AceEditor(new AceWebEngine(webEngine));
+    this.scriptEditor = new AceEditor(aceWebEngineFactory.create(webEngine));
   }
 
   @Override
