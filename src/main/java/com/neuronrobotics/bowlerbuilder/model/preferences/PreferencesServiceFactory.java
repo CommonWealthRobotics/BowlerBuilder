@@ -11,7 +11,7 @@ public class PreferencesServiceFactory {
   private static final Map<String, PreferencesService> preferencesMap = new ConcurrentHashMap<>();
 
   /**
-   * Make a new {@link PreferencesService}, or use the previous one if it is in the map;
+   * Make a new {@link PreferencesService}, or use the previous one if it is in the map.
    *
    * @param folderName preferences service folder name
    * @return service

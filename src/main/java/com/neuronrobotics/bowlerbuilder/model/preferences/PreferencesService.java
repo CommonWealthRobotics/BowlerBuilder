@@ -23,10 +23,10 @@ public class PreferencesService {
 
   private static final Logger logger
       = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
-  private String prefsSaveDirPath;
-  private String prefsSaveFilePath;
+  private final String prefsSaveDirPath;
+  private final String prefsSaveFilePath;
   private Map<String, Serializable> data;
-  private Map<String, PreferenceListener> listeners;
+  private final Map<String, PreferenceListener> listeners;
 
   /**
    * The folder name is used to contain preferences within its own folder on disk, separate from
@@ -118,8 +118,8 @@ public class PreferencesService {
   public void save() {
     File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
-      try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream
-          (prefsSaveFilePath))) {
+      try (ObjectOutputStream stream
+               = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
         stream.writeObject(data);
       } catch (FileNotFoundException e) {
         logger.log(Level.SEVERE,

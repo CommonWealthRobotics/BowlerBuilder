@@ -5,23 +5,17 @@ import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraDevice;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.OnEngineeringUnitsChange;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraDevice;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
-import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -75,7 +69,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.reactfx.util.FxTimer;
 
 public class BowlerCadEngine extends Pane implements CadEngine {
@@ -160,55 +153,58 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
-//    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-//      IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
-//        @Override
-//        public void setAllCSG(Collection<CSG> collection, File file) {
-//          clearMeshes();
-//          addAllCSGs(collection);
-//        }
-//
-//        @Override
-//        public void addCSG(Collection<CSG> collection, File file) {
-//          addAllCSGs(collection);
-//        }
-//
-//        @Override
-//        public void highlightException(File file, Exception e) {
-//        }
-//
-//        @Override
-//        public Set<CSG> getVisibleCSGs() {
-//          return getCsgMap().keySet();
-//        }
-//
-//        @Override
-//        public void setSelectedCsg(Collection<CSG> collection) {
-//          selectCSGs(collection, csgMap);
-//        }
-//      };
-//
-//      try {
-//        String[] file = {"https://github.com/madhephaestus/carl-the-hexapod.git", "CarlTheRobot.xml"};
-//        String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
-//        MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-//        mobileBase.setGitSelfSource(file);
-//        mobileBase.connect();
-//        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase, mobileBaseUI);
-//        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-//        MobileBaseCadManager.get(mobileBase).generateCad();
-//        System.out.println("Waiting for cad to generate");
-//        ThreadUtil.wait(1000);
-//        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
-//          System.out.println("Waiting: " + MobileBaseCadManager.get(mobileBase).getProcesIndictor().get());
-//          ThreadUtil.wait(1000);
-//        }
-//      } catch (Exception e) {
-//        e.printStackTrace();
-//      }
-//    });
-//    thread.setDaemon(true);
-//    thread.start();
+    //    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+    //      IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
+    //        @Override
+    //        public void setAllCSG(Collection<CSG> collection, File file) {
+    //          clearMeshes();
+    //          addAllCSGs(collection);
+    //        }
+    //
+    //        @Override
+    //        public void addCSG(Collection<CSG> collection, File file) {
+    //          addAllCSGs(collection);
+    //        }
+    //
+    //        @Override
+    //        public void highlightException(File file, Exception e) {
+    //        }
+    //
+    //        @Override
+    //        public Set<CSG> getVisibleCSGs() {
+    //          return getCsgMap().keySet();
+    //        }
+    //
+    //        @Override
+    //        public void setSelectedCsg(Collection<CSG> collection) {
+    //          selectCSGs(collection, csgMap);
+    //        }
+    //      };
+    //
+    //      try {
+    //        String[] file = {"https://github.com/madhephaestus/carl-the-hexapod.git",
+    // "CarlTheRobot.xml"};
+    //        String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
+    //        MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+    //        mobileBase.setGitSelfSource(file);
+    //        mobileBase.connect();
+    //        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
+    // mobileBaseUI);
+    //        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+    //        MobileBaseCadManager.get(mobileBase).generateCad();
+    //        System.out.println("Waiting for cad to generate");
+    //        ThreadUtil.wait(1000);
+    //        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
+    //          System.out.println("Waiting: " + MobileBaseCadManager.get(mobileBase)
+    // .getProcesIndictor().get());
+    //          ThreadUtil.wait(1000);
+    //        }
+    //      } catch (Exception e) {
+    //        e.printStackTrace();
+    //      }
+    //    });
+    //    thread.setDaemon(true);
+    //    thread.start();
   }
 
   /**

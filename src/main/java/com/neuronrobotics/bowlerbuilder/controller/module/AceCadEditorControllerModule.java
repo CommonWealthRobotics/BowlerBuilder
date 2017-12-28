@@ -5,7 +5,6 @@ import com.google.inject.name.Names;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.BowlerScriptRunner;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 
 public class AceCadEditorControllerModule extends AbstractModule {
 

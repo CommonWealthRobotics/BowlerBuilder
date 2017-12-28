@@ -20,7 +20,6 @@ import eu.mihosoft.vrl.v3d.CSG;
 import groovy.lang.GroovyRuntimeException;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,6 @@ public class AceCadEditorController {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(AceCadEditorController.class.getSimpleName());
-  private final PreferencesService preferencesService;
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
@@ -95,7 +93,8 @@ public class AceCadEditorController {
 
     logger.info("factory: " + preferencesServiceFactory);
 
-    preferencesService = preferencesServiceFactory.create("AceCadEditorController");
+    PreferencesService preferencesService
+        = preferencesServiceFactory.create("AceCadEditorController");
     fontSize = new SimpleIntegerProperty(preferencesService.get("Font Size", 14));
     preferencesService.addListener("Font Size",
         (PreferenceListener<Integer>) (oldVal, newVal) -> {
