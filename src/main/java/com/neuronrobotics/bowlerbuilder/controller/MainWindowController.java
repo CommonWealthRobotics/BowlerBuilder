@@ -86,7 +86,7 @@ public class MainWindowController {
   private TextArea console;
 
   @Inject
-  public MainWindowController(PreferencesServiceFactory preferencesServiceFactory) {
+  protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.fileEditors = new ArrayList<>();
     logger.info("mwc: factory: " + preferencesServiceFactory);
