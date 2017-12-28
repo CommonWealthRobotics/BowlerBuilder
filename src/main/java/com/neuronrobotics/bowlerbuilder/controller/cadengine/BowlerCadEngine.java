@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.cadengine; //NOPMD
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraDevice;
@@ -11,10 +12,16 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUni
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.OnEngineeringUnitsChange;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -68,6 +75,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.reactfx.util.FxTimer;
 
 public class BowlerCadEngine extends Pane implements CadEngine {
@@ -151,6 +159,56 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         hideHand();
       }
     });
+
+//    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+//      IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
+//        @Override
+//        public void setAllCSG(Collection<CSG> collection, File file) {
+//          clearMeshes();
+//          addAllCSGs(collection);
+//        }
+//
+//        @Override
+//        public void addCSG(Collection<CSG> collection, File file) {
+//          addAllCSGs(collection);
+//        }
+//
+//        @Override
+//        public void highlightException(File file, Exception e) {
+//        }
+//
+//        @Override
+//        public Set<CSG> getVisibleCSGs() {
+//          return getCsgMap().keySet();
+//        }
+//
+//        @Override
+//        public void setSelectedCsg(Collection<CSG> collection) {
+//          selectCSGs(collection, csgMap);
+//        }
+//      };
+//
+//      try {
+//        String[] file = {"https://github.com/madhephaestus/carl-the-hexapod.git", "CarlTheRobot.xml"};
+//        String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
+//        MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+//        mobileBase.setGitSelfSource(file);
+//        mobileBase.connect();
+//        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase, mobileBaseUI);
+//        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+//        MobileBaseCadManager.get(mobileBase).generateCad();
+//        System.out.println("Waiting for cad to generate");
+//        ThreadUtil.wait(1000);
+//        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
+//          System.out.println("Waiting: " + MobileBaseCadManager.get(mobileBase).getProcesIndictor().get());
+//          ThreadUtil.wait(1000);
+//        }
+//      } catch (Exception e) {
+//        e.printStackTrace();
+//      }
+//    });
+//    thread.setDaemon(true);
+//    thread.start();
   }
 
   /**
@@ -597,17 +655,19 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param lineNumber line number in script
    */
   public void setSelectedCsg(File script, int lineNumber) {
-    Collection<CSG> csgs = csgParser.parseCsgFromSource(script.getName(), lineNumber, csgMap);
+    FxUtil.runFX(() -> {
+      Collection<CSG> csgs = csgParser.parseCsgFromSource(script.getName(), lineNumber, csgMap);
 
-    lastSelectedTime = System.currentTimeMillis();
+      lastSelectedTime = System.currentTimeMillis();
 
-    if (csgs.size() == 1) {
-      selectCSG(csgs.iterator().next(), csgMap);
-    } else {
-      selectCSGs(csgs, csgMap);
-    }
+      if (csgs.size() == 1) {
+        selectCSG(csgs.iterator().next(), csgMap);
+      } else {
+        selectCSGs(csgs, csgMap);
+      }
 
-    resetMouseTime();
+      resetMouseTime();
+    });
   }
 
   /**
@@ -711,173 +771,177 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   @Override
   public void addCSG(CSG csg) {
-    MeshView mesh = csg.getMesh();
-    mesh.setMaterial(new PhongMaterial(Color.RED));
-    mesh.setDepthTest(DepthTest.ENABLE);
-    mesh.setCullFace(CullFace.BACK);
+    FxUtil.runFX(() -> {
+      MeshView mesh = csg.getMesh();
+      mesh.setMaterial(new PhongMaterial(Color.RED));
+      mesh.setDepthTest(DepthTest.ENABLE);
+      mesh.setCullFace(CullFace.BACK);
 
-    if (csg.getName() != null
-        && !"".equals(csg.getName())
-        && csgNameMap.containsKey(csg.getName())) {
-      mesh.setDrawMode(csgNameMap.get(csg.getName()).getDrawMode());
-    } else {
-      mesh.setDrawMode(DrawMode.FILL);
-    }
+      if (csg.getName() != null
+          && !"".equals(csg.getName())
+          && csgNameMap.containsKey(csg.getName())) {
+        mesh.setDrawMode(csgNameMap.get(csg.getName()).getDrawMode());
+      } else {
+        mesh.setDrawMode(DrawMode.FILL);
+      }
 
-    mesh.setOnMouseClicked(mouseEvent -> {
-      if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-        selectCSG(csg, csgMap);
-      } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-        ContextMenu menu = new ContextMenu();
-        menu.setAutoHide(true);
+      mesh.setOnMouseClicked(mouseEvent -> {
+        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+          selectCSG(csg, csgMap);
+        } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+          ContextMenu menu = new ContextMenu();
+          menu.setAutoHide(true);
 
-        //Wireframe/Solid draw toggle
-        MenuItem wireframe;
+          //Wireframe/Solid draw toggle
+          MenuItem wireframe;
 
-        //Set the title of the MenuItem to the opposite of the current draw
-        if (mesh.getDrawMode().equals(DrawMode.LINE)) {
-          wireframe = new MenuItem("Show As Solid");
-        } else {
-          wireframe = new MenuItem("Show As Wireframe");
-        }
-
-        //Set the onAction of the MenuItem to flip the draw state
-        wireframe.setOnAction(actionEvent -> {
-          if (mesh.getDrawMode().equals(DrawMode.FILL)) {
-            mesh.setDrawMode(DrawMode.LINE);
-            wireframe.setText("Show As Solid");
+          //Set the title of the MenuItem to the opposite of the current draw
+          if (mesh.getDrawMode().equals(DrawMode.LINE)) {
+            wireframe = new MenuItem("Show As Solid");
           } else {
-            mesh.setDrawMode(DrawMode.FILL);
-            wireframe.setText("Show As Wireframe");
+            wireframe = new MenuItem("Show As Wireframe");
           }
-        });
 
-        Set<String> params = csg.getParameters();
-        if (params != null) {
-          Menu parameters = new Menu("Parameters");
-          params.forEach(key -> {
-            //Regenerate all objects if their parameters have changed
-            Runnable regenerateObjects = () -> {
-              //Get the set of objects to check for regeneration after the initial regeneration
-              //cycle
-              Set<CSG> objects = getCsgMap().keySet();
-
-              //Hide the menu because the parameter is done being changed
-              menu.hide();
-
-              fireRegenerate(key, objects);
-              resetMouseTime();
-            };
-
-            Parameter param = CSGDatabase.get(key);
-            csg.setParameterIfNull(key);
-
-            if (param instanceof LengthParameter) {
-              LengthParameter lp = (LengthParameter) param;
-
-              EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
-                  new OnEngineeringUnitsChange() {
-                    @Override
-                    public void onSliderMoving(
-                        EngineeringUnitsSliderWidget sliderWidget,
-                        double newAngleDegrees) {
-                      try {
-                        csg.setParameterNewValue(key, newAngleDegrees);
-                      } catch (Exception e) {
-                        logger.log(Level.SEVERE, //NOPMD
-                            "Could not set new parameter value.\n"
-                                + Throwables.getStackTraceAsString(e));
-                      }
-                    }
-
-                    @Override
-                    public void onSliderDoneMoving(
-                        EngineeringUnitsSliderWidget sliderWidget,
-                        double newAngleDegrees) {
-                      regenerateObjects.run();
-                    }
-                  },
-                  Double.parseDouble(lp.getOptions().get(1)),
-                  Double.parseDouble(lp.getOptions().get(0)),
-                  lp.getMM(),
-                  400,
-                  key);
-
-              CustomMenuItem customMenuItem = new CustomMenuItem(widget);
-              customMenuItem.setHideOnClick(false); //Regen will hide the menu
-              parameters.getItems().add(customMenuItem);
+          //Set the onAction of the MenuItem to flip the draw state
+          wireframe.setOnAction(actionEvent -> {
+            if (mesh.getDrawMode().equals(DrawMode.FILL)) {
+              mesh.setDrawMode(DrawMode.LINE);
+              wireframe.setText("Show As Solid");
             } else {
-              if (param != null) {
-                Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
+              mesh.setDrawMode(DrawMode.FILL);
+              wireframe.setText("Show As Wireframe");
+            }
+          });
 
-                param.getOptions().forEach(option -> {
-                  MenuItem customMenuItem = new MenuItem(option);
-                  customMenuItem.setOnAction(event -> {
-                    param.setStrValue(option);
-                    CSGDatabase.get(param.getName()).setStrValue(option);
-                    CSGDatabase.getParamListeners(param.getName())
-                        .forEach(l -> l.parameterChanged(param.getName(), param));
-                    regenerateObjects.run();
+          Set<String> params = csg.getParameters();
+          if (params != null) {
+            Menu parameters = new Menu("Parameters");
+            params.forEach(key -> {
+              //Regenerate all objects if their parameters have changed
+              Runnable regenerateObjects = () -> {
+                //Get the set of objects to check for regeneration after the initial regeneration
+                //cycle
+                Set<CSG> objects = getCsgMap().keySet();
+
+                //Hide the menu because the parameter is done being changed
+                menu.hide();
+
+                fireRegenerate(key, objects);
+                resetMouseTime();
+              };
+
+              Parameter param = CSGDatabase.get(key);
+              csg.setParameterIfNull(key);
+
+              if (param instanceof LengthParameter) {
+                LengthParameter lp = (LengthParameter) param;
+
+                EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
+                    new OnEngineeringUnitsChange() {
+                      @Override
+                      public void onSliderMoving(
+                          EngineeringUnitsSliderWidget sliderWidget,
+                          double newAngleDegrees) {
+                        try {
+                          csg.setParameterNewValue(key, newAngleDegrees);
+                        } catch (Exception e) {
+                          logger.log(Level.SEVERE, //NOPMD
+                              "Could not set new parameter value.\n"
+                                  + Throwables.getStackTraceAsString(e));
+                        }
+                      }
+
+                      @Override
+                      public void onSliderDoneMoving(
+                          EngineeringUnitsSliderWidget sliderWidget,
+                          double newAngleDegrees) {
+                        regenerateObjects.run();
+                      }
+                    },
+                    Double.parseDouble(lp.getOptions().get(1)),
+                    Double.parseDouble(lp.getOptions().get(0)),
+                    lp.getMM(),
+                    400,
+                    key);
+
+                CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+                customMenuItem.setHideOnClick(false); //Regen will hide the menu
+                parameters.getItems().add(customMenuItem);
+              } else {
+                if (param != null) {
+                  Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
+
+                  param.getOptions().forEach(option -> {
+                    MenuItem customMenuItem = new MenuItem(option);
+                    customMenuItem.setOnAction(event -> {
+                      param.setStrValue(option);
+                      CSGDatabase.get(param.getName()).setStrValue(option);
+                      CSGDatabase.getParamListeners(param.getName())
+                          .forEach(l -> l.parameterChanged(param.getName(), param));
+                      regenerateObjects.run();
+                    });
+
+                    paramTypes.getItems().add(customMenuItem);
                   });
 
-                  paramTypes.getItems().add(customMenuItem);
-                });
+                  parameters.getItems().add(paramTypes);
+                }
+              }
+            });
 
-                parameters.getItems().add(paramTypes);
+            menu.getItems().add(parameters);
+          }
+
+          MenuItem exportSTL = new MenuItem("Export as STL");
+          exportSTL.setOnAction(event -> {
+            FileChooser chooser = new FileChooser();
+            File save = chooser.showSaveDialog(root.getScene().getWindow());
+            if (save != null) {
+              if (!save.getPath().endsWith(".stl")) {
+                save = new File(save.getAbsolutePath() + ".stl");
+              }
+
+              CSG readyCSG = csg.prepForManufacturing();
+              try {
+                FileUtils.write(save, readyCSG.toStlString());
+              } catch (IOException e) {
+                logger.log(Level.SEVERE,
+                    "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
               }
             }
           });
 
-          menu.getItems().add(parameters);
+          menu.getItems().addAll(wireframe, exportSTL);
+          //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
+          //right-click somewhere else
+          mesh.setOnContextMenuRequested(event ->
+              menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
         }
+      });
 
-        MenuItem exportSTL = new MenuItem("Export as STL");
-        exportSTL.setOnAction(event -> {
-          FileChooser chooser = new FileChooser();
-          File save = chooser.showSaveDialog(root.getScene().getWindow());
-          if (save != null) {
-            if (!save.getPath().endsWith(".stl")) {
-              save = new File(save.getAbsolutePath() + ".stl");
-            }
-
-            CSG readyCSG = csg.prepForManufacturing();
-            try {
-              FileUtils.write(save, readyCSG.toStlString());
-            } catch (IOException e) {
-              logger.log(Level.SEVERE,
-                  "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
-            }
-          }
-        });
-
-        menu.getItems().addAll(wireframe, exportSTL);
-        //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
-        //right-click somewhere else
-        mesh.setOnContextMenuRequested(event ->
-            menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
-      }
+      meshViewGroup.getChildren().add(mesh);
+      csgMap.put(csg, mesh);
+      csgNameMap.put(csg.getName(), mesh);
+      logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
     });
-
-    meshViewGroup.getChildren().add(mesh);
-    csgMap.put(csg, mesh);
-    csgNameMap.put(csg.getName(), mesh);
-    logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
   @Override
   public void addAllCSGs(CSG... csgs) {
-    Arrays.stream(csgs).forEach(this::addCSG);
+    FxUtil.runFX(() -> Arrays.stream(csgs).forEach(this::addCSG));
   }
 
   @Override
   public void addAllCSGs(Collection<CSG> csgs) {
-    csgs.forEach(this::addCSG);
+    FxUtil.runFX(() -> csgs.forEach(this::addCSG));
   }
 
   @Override
   public void clearMeshes() {
-    meshViewGroup.getChildren().clear();
-    csgMap.clear();
+    FxUtil.runFX(() -> {
+      meshViewGroup.getChildren().clear();
+      csgMap.clear();
+    });
   }
 
   @Override

@@ -10,6 +10,9 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerbuilder.controller.util.StringClipper;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -17,6 +20,7 @@ import eu.mihosoft.vrl.v3d.CSG;
 import groovy.lang.GroovyRuntimeException;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +53,14 @@ public class AceCadEditorController {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(AceCadEditorController.class.getSimpleName());
+  private final PreferencesService preferencesService;
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
   private final String scriptLangName;
   private final StringClipper stringClipper;
+  private final IntegerProperty fontSize;
+  private final IntegerProperty maxToastLength;
   @FXML
   private SplitPane fileEditorRoot;
   @FXML
@@ -68,18 +75,15 @@ public class AceCadEditorController {
   private TextField gistURLField;
   @FXML
   private CADModelViewerController cadviewerController;
-
   private GHGist gist;
   private GHGistFile gistFile;
-
   private boolean isScratchpad = true;
   private Tab tab;
   private Runnable reloadMenus;
 
-  private final IntegerProperty maxToastLength;
-
   @Inject
-  public AceCadEditorController(ScriptEditorView scriptEditorView,
+  public AceCadEditorController(PreferencesServiceFactory preferencesServiceFactory,
+                                ScriptEditorView scriptEditorView,
                                 ScriptRunner scriptRunner,
                                 @Named("scriptLangName") String scriptLangName,
                                 StringClipper stringClipper) {
@@ -88,7 +92,21 @@ public class AceCadEditorController {
     this.scriptRunner = scriptRunner;
     this.scriptLangName = scriptLangName;
     this.stringClipper = stringClipper;
-    maxToastLength = new SimpleIntegerProperty(15);
+
+    logger.info("factory: " + preferencesServiceFactory);
+
+    preferencesService = preferencesServiceFactory.create("AceCadEditorController");
+    fontSize = new SimpleIntegerProperty(preferencesService.get("Font Size", 14));
+    preferencesService.addListener("Font Size",
+        (PreferenceListener<Integer>) (oldVal, newVal) -> {
+          fontSize.setValue(newVal);
+          scriptEditor.setFontSize(newVal);
+        });
+
+    maxToastLength = new SimpleIntegerProperty(preferencesService.get("Max Toast Length", 15));
+    preferencesService.addListener("Max Toast Length",
+        (PreferenceListener<Integer>) (oldVal, newVal) -> maxToastLength.setValue(newVal));
+
     logger.log(Level.FINE, "Running with language: " + scriptLangName);
   }
 
@@ -236,50 +254,6 @@ public class AceCadEditorController {
     ClipboardContent content = new ClipboardContent();
     content.putString(gistURLField.getText());
     Clipboard.getSystemClipboard().setContent(content);
-  }
-
-  /**
-   * Set the font size of this editor.
-   *
-   * @param fontSize font size object ({@link IntegerProperty} or {@link Integer})
-   */
-  public void setFontSize(Object fontSize) {
-    if (fontSize instanceof IntegerProperty) {
-      setFontSize(((IntegerProperty) fontSize).getValue());
-    } else if (fontSize instanceof Integer) {
-      setFontSize((Integer) fontSize);
-    }
-  }
-
-  /**
-   * Set the font size of this editor.
-   *
-   * @param fontSize font size
-   */
-  public void setFontSize(Integer fontSize) {
-    scriptEditor.setFontSize(fontSize);
-  }
-
-  /**
-   * Set the maximum number of lines that can be in a toast.
-   *
-   * @param max max lines object ({@link IntegerProperty} or {@link Integer})
-   */
-  public void setMaxToastLength(Object max) {
-    if (max instanceof IntegerProperty) {
-      setMaxToastLength(((IntegerProperty) max).getValue());
-    } else if (max instanceof Integer) {
-      setFontSize((Integer) max);
-    }
-  }
-
-  /**
-   * Set the maximum number of lines that can be in a toast.
-   *
-   * @param max max lines
-   */
-  public void setMaxToastLength(Integer max) {
-    maxToastLength.setValue(max);
   }
 
   /**

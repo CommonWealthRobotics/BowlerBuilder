@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.view;
 
-import com.google.inject.Guice;
+import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
@@ -23,14 +23,14 @@ public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
   public AceCadEditorTab(String title) throws IOException {
     super(
         title,
-        Guice.createInjector().getInstance(AceEditorView.class),
-        Guice.createInjector().getInstance(BowlerCadEngine.class));
+        BowlerBuilder.getInjector().getInstance(AceEditorView.class),
+        BowlerBuilder.getInjector().getInstance(BowlerCadEngine.class));
 
     FXMLLoader loader = new FXMLLoader(AceCadEditorTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/AceCadEditor.fxml"),
         null,
         null,
-        Guice.createInjector(
+        BowlerBuilder.getInjector().createChildInjector(
             new AceCadEditorControllerModule(getScriptEditorView()),
             new CadModelViewerControllerModule())::getInstance);
 

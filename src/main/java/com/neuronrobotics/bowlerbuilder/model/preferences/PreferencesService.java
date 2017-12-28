@@ -1,107 +1,145 @@
 package com.neuronrobotics.bowlerbuilder.model.preferences;
 
-import static org.apache.commons.lang3.CharEncoding.UTF_8;
-
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleIntegerProperty;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-import org.apache.commons.io.IOUtils;
 
 /**
- * Loads and saves {@link Preferences} to a file.
+ * Loads/saves preferences from/to a file.
  */
 public class PreferencesService {
 
   private static final Logger logger
       = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
-
-  private static final String prefsSaveDirPath = LoggerUtilities.getBowlerDirectory()
-      + File.separator
-      + "preferences";
-  private static final String prefsSaveFilePath = prefsSaveDirPath
-      + File.separator
-      + "preferences.json";
+  private String prefsSaveDirPath;
+  private String prefsSaveFilePath;
+  private Map<String, Serializable> data;
+  private Map<String, PreferenceListener> listeners;
 
   /**
-   * Load saved preferences in from the default save file.
+   * The folder name is used to contain preferences within its own folder on disk, separate from
+   * other preferences services.
    *
-   * @return preferences from file
-   * @throws IOException reading bytes from the save file can fail
+   * @param folderName unique folder name
    */
-  public Optional<Preferences> loadPreferencesFromFile() throws IOException {
+  public PreferencesService(String folderName) {
+    data = new ConcurrentHashMap<>();
+    listeners = new ConcurrentHashMap<>();
+
+    prefsSaveDirPath = LoggerUtilities.getBowlerDirectory()
+        + File.separator
+        + "preferences"
+        + File.separator
+        + folderName;
+
+    prefsSaveFilePath = prefsSaveDirPath
+        + File.separator
+        + "preferences.ser";
+  }
+
+  /**
+   * Get a value from the preferences data map.
+   *
+   * @param name name of entry
+   * @param defaultValue default value if entry is not present
+   * @param <T> type of entry
+   * @return entry if present, else default value
+   */
+  public <T extends Serializable> T get(String name, T defaultValue) {
+    if (data.containsKey(name)) {
+      Serializable value = data.get(name);
+      if (value.getClass().isInstance(defaultValue)) {
+        return (T) value;
+      } else {
+        throw new RuntimeException(
+            "Preferences map entry type is not aligned with default value type.");
+      }
+    } else {
+      data.put(name, defaultValue);
+      return defaultValue;
+    }
+  }
+
+  public <T extends Serializable> void addListener(String name, PreferenceListener<T> listener) {
+    listeners.put(name, listener);
+  }
+
+  /**
+   * Set a value in the preferences data map.
+   *
+   * @param name name of entry
+   * @param value value of entry
+   * @param <T> type of entry
+   */
+  public <T extends Serializable> void set(String name, T value) {
+    Serializable prev = data.put(name, value);
+    if (listeners.containsKey(name)) {
+      listeners.get(name).changed(prev, value);
+    }
+  }
+
+  /**
+   * Load in preferences from the save file.
+   */
+  public void load() {
     File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
-      JSONObject jsonObject = (JSONObject) JSONSerializer.toJSON(
-          IOUtils.toString(Files.readAllBytes(Paths.get(prefsSaveFilePath)), UTF_8));
-
-      Map<String, Property> data = new HashMap<>();
-
-      IntegerProperty fontSize = new SimpleIntegerProperty(null, "Font Size");
-      fontSize.setValue(jsonObject.getInt("Font Size"));
-      data.put("Font Size", fontSize);
-
-      IntegerProperty maxToastLen = new SimpleIntegerProperty(null, "Max Toast Length");
-      maxToastLen.setValue(jsonObject.getInt("Max Toast Length"));
-      data.put("Max Toast Length", maxToastLen);
-
-      return Optional.of(new Preferences(data));
-    }
-
-    return Optional.empty();
-  }
-
-  /**
-   * Save a Preferences to the default save file.
-   *
-   * @param preferences preferences to save
-   * @throws IOException writing to the save file can fail
-   */
-  public void savePreferencesToFile(Preferences preferences) throws IOException {
-    File preferencesSaveDirectory = new File(prefsSaveDirPath);
-
-    if (preferencesSaveDirectory.exists() || preferencesSaveDirectory.mkdirs()) {
-      JSONObject jsonObject = new JSONObject();
-      preferences.getPropertyMap().forEach((key, value) -> jsonObject.put(key, value.getValue()));
-
-      Files.write(
-          Paths.get(prefsSaveFilePath),
-          jsonObject.toString().getBytes(Charset.forName("UTF-8")));
+      try (ObjectInputStream stream
+               = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
+        data = (Map<String, Serializable>) stream.readObject();
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not open preferences save file.\n" + Throwables.getStackTraceAsString(e));
+      } catch (ClassNotFoundException e) {
+        logger.log(Level.SEVERE,
+            "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
+      }
     } else {
       logger.log(Level.SEVERE,
-          "Creating preferences directory failed.\n");
+          "Preferences save file does not exist or is a directory: " + prefsSaveFilePath);
     }
   }
 
   /**
-   * Get the default Preferences.
-   *
-   * @return default preferences
+   * Overwrite the preferences file with the current preferences.
    */
-  public Preferences getDefaultPreferences() {
-    Map<String, Property> data = new HashMap<>();
+  public void save() {
+    File saveDirectory = new File(prefsSaveDirPath);
+    if (saveDirectory.exists() || saveDirectory.mkdirs()) {
+      try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream
+          (prefsSaveFilePath))) {
+        stream.writeObject(data);
+      } catch (FileNotFoundException e) {
+        logger.log(Level.SEVERE,
+            "Could not find preferences save file.\n" + Throwables.getStackTraceAsString(e));
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
+      }
+    } else {
+      logger.log(Level.SEVERE,
+          "Could not create file to save preferences for save file: " + prefsSaveFilePath);
+    }
+  }
 
-    IntegerProperty fontSize = new SimpleIntegerProperty(null, "Font Size");
-    fontSize.setValue(14);
-    data.put("Font Size", fontSize);
+  public Collection<Serializable> getAllValues() {
+    return data.values();
+  }
 
-    IntegerProperty maxToastLen = new SimpleIntegerProperty(null, "Max Toast Length");
-    maxToastLen.setValue(15);
-    data.put("Max Toast Length", maxToastLen);
-
-    return new Preferences(data);
+  public Map<String, Serializable> getAll() {
+    return data;
   }
 
 }

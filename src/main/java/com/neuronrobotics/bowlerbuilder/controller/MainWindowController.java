@@ -9,12 +9,10 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
-import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
-import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -22,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,12 +34,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
@@ -48,6 +51,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.PropertySheet;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -65,10 +69,9 @@ public class MainWindowController {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
+  private final PreferencesServiceFactory preferencesServiceFactory;
   //Open file editors
   private final List<AceCadEditorController> fileEditors;
-  private final PreferencesService preferencesService;
-  private Preferences preferences;
 
   @FXML
   private BorderPane root;
@@ -92,9 +95,10 @@ public class MainWindowController {
   private TextArea console;
 
   @Inject
-  public MainWindowController(PreferencesService preferencesService) {
-    this.preferencesService = preferencesService;
+  public MainWindowController(PreferencesServiceFactory preferencesServiceFactory) {
+    this.preferencesServiceFactory = preferencesServiceFactory;
     this.fileEditors = new ArrayList<>();
+    logger.info("mwc: factory: " + preferencesServiceFactory);
   }
 
   @FXML
@@ -138,12 +142,26 @@ public class MainWindowController {
 
   @FXML
   private void openPreferences(ActionEvent actionEvent) {
-    PropertySheet propertySheet = new PropertySheet(FXCollections.observableArrayList(
-        preferences.getAllProperties().stream()
-            .map(BeanPropertySheetItem::new)
-            .collect(Collectors.toList())));
+    List<PropertySheet> propertySheets = new ArrayList<>();
+    preferencesServiceFactory.getAllPreferencesServices()
+        .forEach(service -> {
+          List<Property> props = service.getAll().entrySet().stream().map(entry -> {
+            ObjectProperty<Serializable> property = new SimpleObjectProperty<>(
+                null, entry.getKey(), entry.getValue());
+            property.addListener((observableValue, o, t1) -> service.set(entry.getKey(), t1));
+            return property;
+          }).collect(Collectors.toList());
 
-    PreferencesDialog dialog = new PreferencesDialog(propertySheet);
+          propertySheets.add(new PropertySheet(FXCollections.observableArrayList(
+              props.stream().map(BeanPropertySheetItem::new).collect(Collectors.toList())
+          )));
+        });
+
+    Dialog dialog = new Dialog();
+    VBox vBox = new VBox(5);
+    propertySheets.forEach(vBox.getChildren()::add);
+    dialog.getDialogPane().setContent(vBox);
+    dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
     dialog.showAndWait();
   }
 
@@ -208,7 +226,7 @@ public class MainWindowController {
       AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
       AceCadEditorController controller = tab.getController();
 
-      controller.setFontSize(preferences.get("Font Size"));
+      //      controller.setFontSize(preferences.get("Font Size"));
       controller.initScratchpad(tab, this::reloadGitMenus);
       fileEditors.add(controller);
 
@@ -269,21 +287,22 @@ public class MainWindowController {
    * Load user preferences.
    */
   private void loadPreferences() {
-    Optional<Preferences> loadedPreferences = Optional.empty();
-
-    try {
-      loadedPreferences = preferencesService.loadPreferencesFromFile();
-    } catch (IOException e) {
-      logger.log(Level.SEVERE,
-          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
-
-    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
-        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
-    preferences.get("Max Toast Length").addListener((observableValue, oldValue, newValue) ->
-        fileEditors.forEach(editor -> editor.setMaxToastLength(newValue)));
+    //    Optional<Preferences> loadedPreferences = Optional.empty();
+    //
+    //    try {
+    //      loadedPreferences = preferencesService.loadPreferencesFromFile();
+    //    } catch (IOException e) {
+    //      logger.log(Level.SEVERE,
+    //          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString
+    // (e));
+    //    }
+    //
+    //    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
+    //
+    //    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
+    //        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
+    //    preferences.get("Max Toast Length").addListener((observableValue, oldValue, newValue) ->
+    //        fileEditors.forEach(editor -> editor.setMaxToastLength(newValue)));
   }
 
   /**
@@ -298,7 +317,7 @@ public class MainWindowController {
         AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
         AceCadEditorController controller = tab.getController();
 
-        controller.setFontSize(preferences.get("Font Size"));
+        //        controller.setFontSize(preferences.get("Font Size"));
         controller.loadGist(gist, gistFile);
         fileEditors.add(tab.getController());
 
@@ -571,12 +590,7 @@ public class MainWindowController {
    * Save work and quit.
    */
   public void saveAndQuit() {
-    try {
-      preferencesService.savePreferencesToFile(preferences);
-    } catch (IOException e) {
-      logger.log(Level.SEVERE,
-          "Could not save preferences.\n" + Throwables.getStackTraceAsString(e));
-    }
+    preferencesServiceFactory.saveAllCached();
     quit();
   }
 
