@@ -127,8 +127,6 @@ public class MainWindowController {
           "Could not automatically log in.\n");
       logOut.setDisable(true); //Can't log out when not logged in
     }
-
-    loadPreferences();
   }
 
   @FXML
@@ -197,7 +195,6 @@ public class MainWindowController {
       AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
       AceCadEditorController controller = tab.getController();
 
-      //      controller.setFontSize(preferences.get("Font Size"));
       controller.initScratchpad(tab, this::reloadGitMenus);
       fileEditors.add(controller);
 
@@ -255,28 +252,6 @@ public class MainWindowController {
   }
 
   /**
-   * Load user preferences.
-   */
-  private void loadPreferences() {
-    //    Optional<Preferences> loadedPreferences = Optional.empty();
-    //
-    //    try {
-    //      loadedPreferences = preferencesService.loadPreferencesFromFile();
-    //    } catch (IOException e) {
-    //      logger.log(Level.SEVERE,
-    //          "Could not load preferences from save file.\n" + Throwables.getStackTraceAsString
-    // (e));
-    //    }
-    //
-    //    preferences = loadedPreferences.orElseGet(preferencesService::getDefaultPreferences);
-    //
-    //    preferences.get("Font Size").addListener((observable, oldValue, newValue) ->
-    //        fileEditors.forEach(editor -> editor.setFontSize(newValue)));
-    //    preferences.get("Max Toast Length").addListener((observableValue, oldValue, newValue) ->
-    //        fileEditors.forEach(editor -> editor.setMaxToastLength(newValue)));
-  }
-
-  /**
    * Open a gist file in the file editor.
    *
    * @param gist Gist containing file
@@ -288,7 +263,6 @@ public class MainWindowController {
         AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
         AceCadEditorController controller = tab.getController();
 
-        //        controller.setFontSize(preferences.get("Font Size"));
         controller.loadGist(gist, gistFile);
         fileEditors.add(tab.getController());
 
