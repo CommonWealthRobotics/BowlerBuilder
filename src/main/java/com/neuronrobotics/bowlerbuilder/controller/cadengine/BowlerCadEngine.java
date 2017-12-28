@@ -767,177 +767,173 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   @Override
   public void addCSG(CSG csg) {
-    FxUtil.runFX(() -> {
-      MeshView mesh = csg.getMesh();
-      mesh.setMaterial(new PhongMaterial(Color.RED));
-      mesh.setDepthTest(DepthTest.ENABLE);
-      mesh.setCullFace(CullFace.BACK);
+    MeshView mesh = csg.getMesh();
+    mesh.setMaterial(new PhongMaterial(Color.RED));
+    mesh.setDepthTest(DepthTest.ENABLE);
+    mesh.setCullFace(CullFace.BACK);
 
-      if (csg.getName() != null
-          && !"".equals(csg.getName())
-          && csgNameMap.containsKey(csg.getName())) {
-        mesh.setDrawMode(csgNameMap.get(csg.getName()).getDrawMode());
-      } else {
-        mesh.setDrawMode(DrawMode.FILL);
-      }
+    if (csg.getName() != null
+        && !"".equals(csg.getName())
+        && csgNameMap.containsKey(csg.getName())) {
+      mesh.setDrawMode(csgNameMap.get(csg.getName()).getDrawMode());
+    } else {
+      mesh.setDrawMode(DrawMode.FILL);
+    }
 
-      mesh.setOnMouseClicked(mouseEvent -> {
-        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-          selectCSG(csg, csgMap);
-        } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-          ContextMenu menu = new ContextMenu();
-          menu.setAutoHide(true);
+    mesh.setOnMouseClicked(mouseEvent -> {
+      if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+        selectCSG(csg, csgMap);
+      } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
+        ContextMenu menu = new ContextMenu();
+        menu.setAutoHide(true);
 
-          //Wireframe/Solid draw toggle
-          MenuItem wireframe;
+        //Wireframe/Solid draw toggle
+        MenuItem wireframe;
 
-          //Set the title of the MenuItem to the opposite of the current draw
-          if (mesh.getDrawMode().equals(DrawMode.LINE)) {
-            wireframe = new MenuItem("Show As Solid");
+        //Set the title of the MenuItem to the opposite of the current draw
+        if (mesh.getDrawMode().equals(DrawMode.LINE)) {
+          wireframe = new MenuItem("Show As Solid");
+        } else {
+          wireframe = new MenuItem("Show As Wireframe");
+        }
+
+        //Set the onAction of the MenuItem to flip the draw state
+        wireframe.setOnAction(actionEvent -> {
+          if (mesh.getDrawMode().equals(DrawMode.FILL)) {
+            mesh.setDrawMode(DrawMode.LINE);
+            wireframe.setText("Show As Solid");
           } else {
-            wireframe = new MenuItem("Show As Wireframe");
+            mesh.setDrawMode(DrawMode.FILL);
+            wireframe.setText("Show As Wireframe");
           }
+        });
 
-          //Set the onAction of the MenuItem to flip the draw state
-          wireframe.setOnAction(actionEvent -> {
-            if (mesh.getDrawMode().equals(DrawMode.FILL)) {
-              mesh.setDrawMode(DrawMode.LINE);
-              wireframe.setText("Show As Solid");
-            } else {
-              mesh.setDrawMode(DrawMode.FILL);
-              wireframe.setText("Show As Wireframe");
-            }
-          });
+        Set<String> params = csg.getParameters();
+        if (params != null) {
+          Menu parameters = new Menu("Parameters");
+          params.forEach(key -> {
+            //Regenerate all objects if their parameters have changed
+            Runnable regenerateObjects = () -> {
+              //Get the set of objects to check for regeneration after the initial regeneration
+              //cycle
+              Set<CSG> objects = getCsgMap().keySet();
 
-          Set<String> params = csg.getParameters();
-          if (params != null) {
-            Menu parameters = new Menu("Parameters");
-            params.forEach(key -> {
-              //Regenerate all objects if their parameters have changed
-              Runnable regenerateObjects = () -> {
-                //Get the set of objects to check for regeneration after the initial regeneration
-                //cycle
-                Set<CSG> objects = getCsgMap().keySet();
+              //Hide the menu because the parameter is done being changed
+              menu.hide();
 
-                //Hide the menu because the parameter is done being changed
-                menu.hide();
+              fireRegenerate(key, objects);
+              resetMouseTime();
+            };
 
-                fireRegenerate(key, objects);
-                resetMouseTime();
-              };
+            Parameter param = CSGDatabase.get(key);
+            csg.setParameterIfNull(key);
 
-              Parameter param = CSGDatabase.get(key);
-              csg.setParameterIfNull(key);
+            if (param instanceof LengthParameter) {
+              LengthParameter lp = (LengthParameter) param;
 
-              if (param instanceof LengthParameter) {
-                LengthParameter lp = (LengthParameter) param;
-
-                EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
-                    new OnEngineeringUnitsChange() {
-                      @Override
-                      public void onSliderMoving(
-                          EngineeringUnitsSliderWidget sliderWidget,
-                          double newAngleDegrees) {
-                        try {
-                          csg.setParameterNewValue(key, newAngleDegrees);
-                        } catch (Exception e) {
-                          logger.log(Level.SEVERE, //NOPMD
-                              "Could not set new parameter value.\n"
-                                  + Throwables.getStackTraceAsString(e));
-                        }
+              EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
+                  new OnEngineeringUnitsChange() {
+                    @Override
+                    public void onSliderMoving(
+                        EngineeringUnitsSliderWidget sliderWidget,
+                        double newAngleDegrees) {
+                      try {
+                        csg.setParameterNewValue(key, newAngleDegrees);
+                      } catch (Exception e) {
+                        logger.log(Level.SEVERE, //NOPMD
+                            "Could not set new parameter value.\n"
+                                + Throwables.getStackTraceAsString(e));
                       }
+                    }
 
-                      @Override
-                      public void onSliderDoneMoving(
-                          EngineeringUnitsSliderWidget sliderWidget,
-                          double newAngleDegrees) {
-                        regenerateObjects.run();
-                      }
-                    },
-                    Double.parseDouble(lp.getOptions().get(1)),
-                    Double.parseDouble(lp.getOptions().get(0)),
-                    lp.getMM(),
-                    400,
-                    key);
-
-                CustomMenuItem customMenuItem = new CustomMenuItem(widget);
-                customMenuItem.setHideOnClick(false); //Regen will hide the menu
-                parameters.getItems().add(customMenuItem);
-              } else {
-                if (param != null) {
-                  Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
-
-                  param.getOptions().forEach(option -> {
-                    MenuItem customMenuItem = new MenuItem(option);
-                    customMenuItem.setOnAction(event -> {
-                      param.setStrValue(option);
-                      CSGDatabase.get(param.getName()).setStrValue(option);
-                      CSGDatabase.getParamListeners(param.getName())
-                          .forEach(l -> l.parameterChanged(param.getName(), param));
+                    @Override
+                    public void onSliderDoneMoving(
+                        EngineeringUnitsSliderWidget sliderWidget,
+                        double newAngleDegrees) {
                       regenerateObjects.run();
-                    });
+                    }
+                  },
+                  Double.parseDouble(lp.getOptions().get(1)),
+                  Double.parseDouble(lp.getOptions().get(0)),
+                  lp.getMM(),
+                  400,
+                  key);
 
-                    paramTypes.getItems().add(customMenuItem);
+              CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+              customMenuItem.setHideOnClick(false); //Regen will hide the menu
+              parameters.getItems().add(customMenuItem);
+            } else {
+              if (param != null) {
+                Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
+
+                param.getOptions().forEach(option -> {
+                  MenuItem customMenuItem = new MenuItem(option);
+                  customMenuItem.setOnAction(event -> {
+                    param.setStrValue(option);
+                    CSGDatabase.get(param.getName()).setStrValue(option);
+                    CSGDatabase.getParamListeners(param.getName())
+                        .forEach(l -> l.parameterChanged(param.getName(), param));
+                    regenerateObjects.run();
                   });
 
-                  parameters.getItems().add(paramTypes);
-                }
-              }
-            });
+                  paramTypes.getItems().add(customMenuItem);
+                });
 
-            menu.getItems().add(parameters);
-          }
-
-          MenuItem exportSTL = new MenuItem("Export as STL");
-          exportSTL.setOnAction(event -> {
-            FileChooser chooser = new FileChooser();
-            File save = chooser.showSaveDialog(root.getScene().getWindow());
-            if (save != null) {
-              if (!save.getPath().endsWith(".stl")) {
-                save = new File(save.getAbsolutePath() + ".stl");
-              }
-
-              CSG readyCSG = csg.prepForManufacturing();
-              try {
-                FileUtils.write(save, readyCSG.toStlString());
-              } catch (IOException e) {
-                logger.log(Level.SEVERE,
-                    "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
+                parameters.getItems().add(paramTypes);
               }
             }
           });
 
-          menu.getItems().addAll(wireframe, exportSTL);
-          //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
-          //right-click somewhere else
-          mesh.setOnContextMenuRequested(event ->
-              menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
+          menu.getItems().add(parameters);
         }
-      });
 
-      meshViewGroup.getChildren().add(mesh);
-      csgMap.put(csg, mesh);
-      csgNameMap.put(csg.getName(), mesh);
-      logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
+        MenuItem exportSTL = new MenuItem("Export as STL");
+        exportSTL.setOnAction(event -> {
+          FileChooser chooser = new FileChooser();
+          File save = chooser.showSaveDialog(root.getScene().getWindow());
+          if (save != null) {
+            if (!save.getPath().endsWith(".stl")) {
+              save = new File(save.getAbsolutePath() + ".stl");
+            }
+
+            CSG readyCSG = csg.prepForManufacturing();
+            try {
+              FileUtils.write(save, readyCSG.toStlString());
+            } catch (IOException e) {
+              logger.log(Level.SEVERE,
+                  "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
+            }
+          }
+        });
+
+        menu.getItems().addAll(wireframe, exportSTL);
+        //Need to set the root as mesh.getScene().getWindow() so setAutoHide() works when we
+        //right-click somewhere else
+        mesh.setOnContextMenuRequested(event ->
+            menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
+      }
     });
+
+    meshViewGroup.getChildren().add(mesh);
+    csgMap.put(csg, mesh);
+    csgNameMap.put(csg.getName(), mesh);
+    logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
   @Override
   public void addAllCSGs(CSG... csgs) {
-    FxUtil.runFX(() -> Arrays.stream(csgs).forEach(this::addCSG));
+    Arrays.stream(csgs).forEach(this::addCSG);
   }
 
   @Override
   public void addAllCSGs(Collection<CSG> csgs) {
-    FxUtil.runFX(() -> csgs.forEach(this::addCSG));
+    csgs.forEach(this::addCSG);
   }
 
   @Override
   public void clearMeshes() {
-    FxUtil.runFX(() -> {
-      meshViewGroup.getChildren().clear();
-      csgMap.clear();
-    });
+    meshViewGroup.getChildren().clear();
+    csgMap.clear();
   }
 
   @Override
