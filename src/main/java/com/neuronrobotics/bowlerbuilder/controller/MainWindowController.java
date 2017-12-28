@@ -13,6 +13,7 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFact
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -142,27 +143,7 @@ public class MainWindowController {
 
   @FXML
   private void openPreferences(ActionEvent actionEvent) {
-    List<PropertySheet> propertySheets = new ArrayList<>();
-    preferencesServiceFactory.getAllPreferencesServices()
-        .forEach(service -> {
-          List<Property> props = service.getAll().entrySet().stream().map(entry -> {
-            ObjectProperty<Serializable> property = new SimpleObjectProperty<>(
-                null, entry.getKey(), entry.getValue());
-            property.addListener((observableValue, o, t1) -> service.set(entry.getKey(), t1));
-            return property;
-          }).collect(Collectors.toList());
-
-          propertySheets.add(new PropertySheet(FXCollections.observableArrayList(
-              props.stream().map(BeanPropertySheetItem::new).collect(Collectors.toList())
-          )));
-        });
-
-    Dialog dialog = new Dialog();
-    VBox vBox = new VBox(5);
-    propertySheets.forEach(vBox.getChildren()::add);
-    dialog.getDialogPane().setContent(vBox);
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-    dialog.showAndWait();
+    new PreferencesDialog(preferencesServiceFactory.getAllPreferencesServices()).showAndWait();
   }
 
   @FXML
