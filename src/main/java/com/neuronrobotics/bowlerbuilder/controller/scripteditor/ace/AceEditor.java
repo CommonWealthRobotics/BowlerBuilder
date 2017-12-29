@@ -1,7 +1,11 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
 
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Worker;
@@ -58,11 +62,13 @@ public final class AceEditor implements ScriptEditor {
    * @return All text in the editor
    */
   public String getText() {
-    if (checkEngine()) {
-      return (String) engine.executeScript("editor.getValue();");
+    try {
+      return returnAfterEngine(() -> (String) engine.executeScript("editor.getValue();"));
+    } catch (Exception e) {
+      logger.log(Level.SEVERE,
+          "Could not get editor text.\n" + Throwables.getStackTraceAsString(e));
+      return "";
     }
-
-    return "";
   }
 
   /**
@@ -71,12 +77,14 @@ public final class AceEditor implements ScriptEditor {
    * @return The selected text
    */
   public String getSelectedText() {
-    if (checkEngine()) {
-      return (String)
-          engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());");
+    try {
+      return returnAfterEngine(() -> (String)
+          engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());"));
+    } catch (Exception e) {
+      logger.log(Level.SEVERE,
+          "Could not get selected text.\n" + Throwables.getStackTraceAsString(e));
+      return "";
     }
-
-    return "";
   }
 
   /**
@@ -95,12 +103,14 @@ public final class AceEditor implements ScriptEditor {
    * @return Cursor position
    */
   public int getCursorPosition() {
-    if (checkEngine()) {
-      return (int) engine.executeScript(
-          "editor.session.doc.positionToIndex(editor.selection.getCursor());");
+    try {
+      return returnAfterEngine(() -> (int) engine.executeScript(
+          "editor.session.doc.positionToIndex(editor.selection.getCursor());"));
+    } catch (Exception e) {
+      logger.log(Level.SEVERE,
+          "Could not get editor cursor position.\n" + Throwables.getStackTraceAsString(e));
+      return 1;
     }
-
-    return 1;
   }
 
   /**
@@ -128,4 +138,21 @@ public final class AceEditor implements ScriptEditor {
       });
     }
   }
+
+  /**
+   * Run the callable after the engine is done loading and return the result.
+   *
+   * @param callable callable to run
+   * @param <T> return type of callable
+   * @return callable return value
+   * @throws ExecutionException when running callable
+   * @throws InterruptedException when running callable
+   */
+  private <T> T returnAfterEngine(Callable<T> callable)
+      throws Exception {
+    final FutureTask<T> query = new FutureTask<>(callable);
+    runAfterEngine(query);
+    return query.get();
+  }
+
 }

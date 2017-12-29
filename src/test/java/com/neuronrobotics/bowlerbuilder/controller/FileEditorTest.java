@@ -7,17 +7,20 @@ import com.google.inject.Guice;
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import java.util.concurrent.ExecutionException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +73,23 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     ThreadUtil.wait(1000);
 
     assertEquals(1, controller.getCADViewerController().getCsgMap().size());
+  }
+
+  @Test
+  void getTextTest() throws ExecutionException, InterruptedException {
+    FxHelper.runAndWait(() -> controller.getScriptEditor().insertAtCursor("foo\nbar"));
+    assertEquals("foo\nbar", FxUtil.returnFX(() -> controller.getScriptEditor().getText()));
+  }
+
+  @Test
+  void getSelectedTextTest() throws ExecutionException, InterruptedException {
+    FxHelper.runAndWait(() -> controller.getScriptEditor().insertAtCursor("foo\nbar"));
+    clickOn(controller.getScriptEditorView().getView())
+        .press(KeyCode.CONTROL)
+        .type(KeyCode.A)
+        .release(KeyCode.CONTROL);
+    assertEquals("foo\nbar",
+        FxUtil.returnFX(() -> controller.getScriptEditor().getSelectedText()));
   }
 
 }
