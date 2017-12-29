@@ -39,7 +39,7 @@ public class PreferencesDialogTest extends AutoClosingApplicationTest {
     clickOn("OK");
 
     assertEquals("bar", service.get("a", "baz"));
-    assertEquals(new Integer(98), service.get("b", 100));
+    assertEquals(Integer.valueOf(98), service.get("b", 100));
   }
 
   @Test
