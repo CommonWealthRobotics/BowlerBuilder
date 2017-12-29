@@ -107,15 +107,15 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     Object result = script.run();
     runningProperty.setValue(false);
 
-    /*Platform.runLater(() -> {
-      KTree<ASTNode> ast = new KTree<>(transformation.getTree());
-      ASTViewGenerator generator = new ASTViewGenerator();
-      Dialog dialog = new Dialog();
-      dialog.getDialogPane().setContent(generator.generateView(ast));
-      dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-      dialog.showAndWait();
-      printTree(ast.getRoot(), "");
-    });*/
+    //    Platform.runLater(() -> {
+    //      KTree<ASTNode> ast = new KTree<>(transformation.getTree());
+    //      ASTViewGenerator generator = new ASTViewGenerator();
+    //      Dialog dialog = new Dialog();
+    //      dialog.getDialogPane().setContent(generator.generateView(ast));
+    //      dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+    //      dialog.showAndWait();
+    //      printTree(ast.getRoot(), "");
+    //    });
 
     return result;
   }

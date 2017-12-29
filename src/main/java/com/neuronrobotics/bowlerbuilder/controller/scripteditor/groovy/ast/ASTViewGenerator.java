@@ -17,12 +17,13 @@ public class ASTViewGenerator {
   private Group generateView(ASTNode root) {
     Group view = new Group();
     Node rootView = makeViewForNode(root);
+    rootView.setManaged(false);
     view.getChildren().add(rootView);
 
     root.getChildren().forEach(child -> {
       Node childView = makeViewForNode(child);
       Line connection = makeConnection(rootView, childView);
-      Node subViews = layoutNode(rootView, generateView(child));
+      Node subViews = layoutNode(child, rootView, generateView(child));
       view.getChildren().add(childView);
       view.getChildren().add(connection);
       view.getChildren().add(subViews);
@@ -31,7 +32,8 @@ public class ASTViewGenerator {
     return view;
   }
 
-  private Node layoutNode(Node parent, Node child) {
+  private Node layoutNode(ASTNode node, Node parent, Node child) {
+    child.setManaged(false);
     child.setTranslateY(parent.getTranslateY() + 10);
     return child;
   }
