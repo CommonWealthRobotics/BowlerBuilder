@@ -20,7 +20,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
@@ -79,17 +78,6 @@ public class FileEditorTest extends AutoClosingApplicationTest {
   void getTextTest() throws ExecutionException, InterruptedException {
     FxHelper.runAndWait(() -> controller.getScriptEditor().insertAtCursor("foo\nbar"));
     assertEquals("foo\nbar", FxUtil.returnFX(() -> controller.getScriptEditor().getText()));
-  }
-
-  @Test
-  void getSelectedTextTest() throws ExecutionException, InterruptedException {
-    FxHelper.runAndWait(() -> controller.getScriptEditor().insertAtCursor("foo\nbar"));
-    clickOn(controller.getScriptEditorView().getView())
-        .press(KeyCode.CONTROL)
-        .type(KeyCode.A)
-        .release(KeyCode.CONTROL);
-    assertEquals("foo\nbar",
-        FxUtil.returnFX(() -> controller.getScriptEditor().getSelectedText()));
   }
 
 }
