@@ -10,6 +10,7 @@ import org.testfx.api.FxToolkit;
 import org.testfx.util.WaitForAsyncUtils;
 
 class BowlerBuilderApplicationTest extends FxRobot {
+
   @BeforeEach
   void before() throws Exception {
     FxToolkit.registerPrimaryStage();
@@ -28,4 +29,5 @@ class BowlerBuilderApplicationTest extends FxRobot {
   void testStart() {
     //Nothing here, just test to make sure we start without exceptions
   }
+
 }
