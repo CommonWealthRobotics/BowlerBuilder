@@ -8,11 +8,14 @@ import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.controller.widget.Widget;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.widget.ManageWidgetsDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -31,7 +34,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -61,6 +66,7 @@ public class MainWindowController {
   private static final Logger logger =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   private final PreferencesServiceFactory preferencesServiceFactory;
+  private final PreferencesService preferencesService;
   //Open file editors
   private final List<AceCadEditorController> fileEditors;
 
@@ -77,6 +83,8 @@ public class MainWindowController {
   @FXML
   private Menu cadVitamins;
   @FXML
+  private Menu installedWidgets;
+  @FXML
   private TabPane tabPane;
   @FXML
   private Tab homeTab;
@@ -89,7 +97,9 @@ public class MainWindowController {
   protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.fileEditors = new ArrayList<>();
-    logger.info("mwc: factory: " + preferencesServiceFactory);
+
+    preferencesService = preferencesServiceFactory.create("MainWindowController");
+    preferencesService.load();
   }
 
   @FXML
@@ -127,6 +137,8 @@ public class MainWindowController {
           "Could not automatically log in.\n");
       logOut.setDisable(true); //Can't log out when not logged in
     }
+
+    reloadWidgets(preferencesService.get("Widgets", new ArrayList<>()));
   }
 
   @FXML
@@ -211,6 +223,16 @@ public class MainWindowController {
   @FXML
   private void onReloadVitamins(ActionEvent actionEvent) {
     reloadCadMenus();
+  }
+
+  @FXML
+  private void onManageWidgets(ActionEvent actionEvent) {
+    ManageWidgetsDialog dialog = new ManageWidgetsDialog(FXCollections.observableArrayList(
+        preferencesService.get("Widgets", new ArrayList<>())));
+    dialog.showAndWait().ifPresent(widgets -> {
+      preferencesService.set("Widgets", new ArrayList<>(widgets));
+      reloadWidgets(widgets);
+    });
   }
 
   @FXML
@@ -529,6 +551,23 @@ public class MainWindowController {
               repo.gitHttpTransportUrl()));
       menu.getItems().add(menuItem);
     });
+  }
+
+  private void reloadWidgets(List<Widget> widgets) {
+    installedWidgets.getItems().clear();
+    installedWidgets.getItems().addAll(widgets.stream().map(widget -> {
+      MenuItem item = new MenuItem(widget.getDisplayName());
+      item.setOnAction(event -> {
+        try {
+          widget.run();
+        } catch (Exception e) {
+          logger.log(Level.SEVERE,
+              "Unable to run widget " + widget.getGitSource() + "\n"
+                  + Throwables.getStackTraceAsString(e));
+        }
+      });
+      return item;
+    }).collect(Collectors.toList()));
   }
 
   /**

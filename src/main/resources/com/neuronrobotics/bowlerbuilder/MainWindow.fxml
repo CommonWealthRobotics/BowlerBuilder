@@ -50,6 +50,12 @@
                 <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
             </items>
           </Menu>
+          <Menu mnemonicParsing="false" text="Widgets">
+            <items>
+                <MenuItem mnemonicParsing="false" onAction="#onManageWidgets" text="Manage Widgets" />
+                <Menu mnemonicParsing="false" fx:id="installedWidgets" text="Installed Widgets" />
+            </items>
+          </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#openEditorHelp" text="Editor Guide" />
