@@ -13,12 +13,16 @@ import javafx.scene.layout.VBox;
 
 public class ManageWidgetsDialog extends Dialog<List<Widget>> {
 
+  private final ListView<Widget> widgetListView;
+
   public ManageWidgetsDialog(ObservableList<Widget> widgets) {
     super();
 
-    ListView<Widget> widgetListView = new ListView<>(widgets);
+    widgetListView = new ListView<>(widgets);
+    widgetListView.setId("widgetList");
 
     Button addWidgetButton = new Button("Add Widget");
+    addWidgetButton.setId("addWidget");
     addWidgetButton.setOnAction(event -> {
       AddWidgetDialog dialog = new AddWidgetDialog();
       final Optional<Boolean> result = dialog.showAndWait();
@@ -28,8 +32,10 @@ public class ManageWidgetsDialog extends Dialog<List<Widget>> {
     });
 
     Button removeWidgetButton = new Button("Remove Widget");
+    removeWidgetButton.setId("removeWidget");
     removeWidgetButton.setOnAction(event ->
-        widgetListView.getSelectionModel().getSelectedItems().forEach(widgets::remove));
+        widgetListView.getSelectionModel().getSelectedItems()
+            .forEach(widgetListView.getItems()::remove));
 
     HBox controlBox = new HBox(5, addWidgetButton, removeWidgetButton);
 
@@ -40,7 +46,11 @@ public class ManageWidgetsDialog extends Dialog<List<Widget>> {
     getDialogPane().getButtonTypes().add(ButtonType.OK);
     getDialogPane().setId("manageWidgetsDialogPane");
 
-    setResultConverter(buttonType -> widgets);
+    setResultConverter(buttonType -> widgetListView.getItems());
+  }
+
+  public void setWidgets(ObservableList<Widget> widgets) {
+    widgetListView.setItems(widgets);
   }
 
 }
