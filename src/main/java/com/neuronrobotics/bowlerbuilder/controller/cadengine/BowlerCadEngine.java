@@ -405,7 +405,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   /**
    * Show the axes.
    */
-  private final void showAxis() {
+  private void showAxis() {
     FxUtil.runFX(() -> axisGroup.getChildren().add(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.show());
   }
@@ -413,12 +413,12 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   /**
    * Hide the axes.
    */
-  private final void hideAxis() {
+  private void hideAxis() {
     FxUtil.runFX(() -> axisGroup.getChildren().remove(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.hide());
   }
 
-  private final void showHand() {
+  private void showHand() {
     hand.setVisible(true);
   }
 
