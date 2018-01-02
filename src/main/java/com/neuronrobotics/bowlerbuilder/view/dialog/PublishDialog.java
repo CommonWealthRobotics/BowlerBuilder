@@ -18,7 +18,7 @@ public class PublishDialog extends Dialog<String> {
     commitMessage = new TextArea();
     commitMessage.setId("commitMessageTextArea");
     commitMessage.setPrefHeight(100);
-    commitMessage.setPrefWidth(250);
+    commitMessage.setPrefWidth(300);
 
     GridPane pane = new GridPane();
     pane.setId("publishDialogRoot");
