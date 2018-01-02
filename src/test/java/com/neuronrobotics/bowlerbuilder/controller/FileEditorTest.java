@@ -11,11 +11,7 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace.AceEditorView;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.scriptrunner.ScriptRunner;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.util.concurrent.ExecutionException;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,7 +22,7 @@ import org.junit.jupiter.api.Test;
 public class FileEditorTest extends AutoClosingApplicationTest {
 
   private AceCadEditorController controller;
-  private ScriptRunner scriptRunner;
+  //private ScriptRunner scriptRunner;
 
   @Override
   public void start(Stage stage) throws Exception {
@@ -40,7 +36,7 @@ public class FileEditorTest extends AutoClosingApplicationTest {
             new CadModelViewerControllerModule())::getInstance);
     SplitPane mainWindow = loader.load();
     controller = loader.getController();
-    scriptRunner = controller.getScriptRunner();
+    //scriptRunner = controller.getScriptRunner();
     stage.setScene(new Scene(mainWindow));
     stage.show();
   }
@@ -52,7 +48,7 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
   }
 
-  @Test
+  /*@Test
   void runCubeTest() {
     BooleanProperty doneCompiling = new SimpleBooleanProperty(false);
     BooleanProperty doneRunning = new SimpleBooleanProperty(false);
@@ -72,7 +68,7 @@ public class FileEditorTest extends AutoClosingApplicationTest {
     ThreadUtil.wait(1000);
 
     assertEquals(1, controller.getCADViewerController().getCsgMap().size());
-  }
+  }*/
 
   @Test
   void getTextTest() throws ExecutionException, InterruptedException {
