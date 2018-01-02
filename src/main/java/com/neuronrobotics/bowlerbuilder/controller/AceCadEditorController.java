@@ -4,6 +4,7 @@ import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -122,59 +122,9 @@ public class AceCadEditorController {
 
   @FXML
   private void runFile(ActionEvent actionEvent) {
-    Runnable runnable = () -> {
-      Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-        try {
-          //Grab code from FX thread
-          ObjectProperty<String> text = new SimpleObjectProperty<>();
-          CountDownLatch latch = new CountDownLatch(1);
-          Platform.runLater(() -> {
-            text.set(scriptEditor.getText());
-            latch.countDown();
-          });
-          latch.await();
-
-          //Run the code
-          logger.log(Level.FINE, "Running script.");
-          Object result = scriptRunner.runScript(
-              text.get(),
-              new ArrayList<>(),
-              scriptLangName);
-
-          logger.log(Level.FINER, "Result is: " + result);
-
-          //Add CSGs
-          logger.log(Level.FINE, "Parsing result.");
-          CountDownLatch latch2 = new CountDownLatch(1);
-          Platform.runLater(() -> {
-            cadviewerController.clearMeshes();
-            parseCSG(cadviewerController, result);
-            latch2.countDown();
-          });
-          latch2.await();
-          logger.log(Level.FINE, "Parsing done.");
-        } catch (IOException e) {
-          logger.log(Level.SEVERE,
-              "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
-        } catch (GroovyRuntimeException e) {
-          logger.log(Level.WARNING,
-              "Error in CAD script: " + e.getMessage());
-          Platform.runLater(() -> Notifications.create()
-              .title("Error in CAD Script")
-              .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
-              .owner(fileEditorRoot)
-              .position(Pos.BOTTOM_RIGHT)
-              .showInformation());
-        } catch (Exception e) {
-          logger.log(Level.SEVERE,
-              "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
-        }
-      });
-      thread.setDaemon(true);
-      thread.start();
-    };
-
-    runnable.run();
+    Thread thread = LoggerUtilities.newLoggingThread(logger, this::runEditorContent);
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
@@ -277,7 +227,7 @@ public class AceCadEditorController {
    *
    * @param file File to load
    */
-  protected void loadFile(File file) {
+  public void loadFile(File file) {
     if (file != null) {
       try {
         scriptEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
@@ -310,6 +260,92 @@ public class AceCadEditorController {
     }
 
     loadFile(file);
+  }
+
+  /**
+   * Run the content inside the editor.
+   *
+   * @return result from the script
+   */
+  public Object runEditorContent() {
+    //Grab code from FX thread
+    ObjectProperty<String> text = new SimpleObjectProperty<>();
+    CountDownLatch latch = new CountDownLatch(1);
+    FxUtil.runFX(() -> {
+      text.set(scriptEditor.getText());
+      latch.countDown();
+    });
+
+    try {
+      latch.await();
+      return runStringScript(text.get(), new ArrayList<>(), scriptLangName);
+    } catch (InterruptedException e) {
+      logger.log(Level.WARNING,
+          "CountDownLatch interrupted while waiting to get editor content.\n"
+              + Throwables.getStackTraceAsString(e));
+    }
+
+    return null;
+  }
+
+  /**
+   * Run a script from a string in the editor's environment.
+   *
+   * @param script script content
+   * @param arguments script arguments
+   * @param languageName scripting language name
+   * @return script result
+   */
+  public Object runStringScript(String script, ArrayList<Object> arguments, String languageName) {
+    try {
+      //Grab code from FX thread
+      ObjectProperty<String> text = new SimpleObjectProperty<>();
+      CountDownLatch latch = new CountDownLatch(1);
+      FxUtil.runFX(() -> {
+        text.set(scriptEditor.getText());
+        latch.countDown();
+      });
+      latch.await();
+
+      //Run the code
+      logger.log(Level.FINE, "Running script.");
+      Object result = scriptRunner.runScript(
+          script,
+          arguments,
+          languageName);
+
+      logger.log(Level.FINER, "Result is: " + result);
+
+      //Add CSGs
+      logger.log(Level.FINE, "Parsing result.");
+      CountDownLatch latch2 = new CountDownLatch(1);
+      FxUtil.runFX(() -> {
+        cadviewerController.clearMeshes();
+        parseCSG(cadviewerController, result);
+        latch2.countDown();
+      });
+      latch2.await();
+      logger.log(Level.FINE, "Parsing done.");
+
+      return result;
+    } catch (IOException e) {
+      logger.log(Level.SEVERE,
+          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+    } catch (GroovyRuntimeException e) {
+      logger.log(Level.WARNING,
+          "Error in CAD script: " + e.getMessage());
+      FxUtil.runFX(() -> Notifications.create()
+          .title("Error in CAD Script")
+          .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
+          .owner(fileEditorRoot)
+          .position(Pos.BOTTOM_RIGHT)
+          .showInformation());
+    } catch (Exception e) {
+      logger.log(Level.SEVERE,
+          "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+    }
+
+    return null;
   }
 
   /**
