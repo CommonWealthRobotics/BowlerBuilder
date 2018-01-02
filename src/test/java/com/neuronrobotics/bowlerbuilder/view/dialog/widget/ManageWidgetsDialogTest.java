@@ -14,7 +14,7 @@ public class ManageWidgetsDialogTest extends AutoClosingApplicationTest {
   private ManageWidgetsDialog dialog;
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
     dialog = new ManageWidgetsDialog(FXCollections.observableArrayList());
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();

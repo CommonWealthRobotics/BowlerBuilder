@@ -13,7 +13,7 @@ public class AddWidgetDialogTest extends AutoClosingApplicationTest {
   private AddWidgetDialog dialog;
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
     dialog = new AddWidgetDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();
