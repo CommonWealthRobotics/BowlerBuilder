@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -364,7 +363,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         xp.appendScale(scale, scale, scale);
         xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 
-        Platform.runLater(() -> {
+        FxUtil.runFX(() -> {
           ImageView groundView = new ImageView(groundLocal);
           groundView.getTransforms().addAll(groundMove, downset);
           groundView.setOpacity(0.3);
@@ -407,7 +406,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * Show the axes.
    */
   private final void showAxis() {
-    Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
+    FxUtil.runFX(() -> axisGroup.getChildren().add(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.show());
   }
 
@@ -415,7 +414,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * Hide the axes.
    */
   private final void hideAxis() {
-    Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
+    FxUtil.runFX(() -> axisGroup.getChildren().remove(gridGroup));
     axisMap.forEach((mesh, axis) -> axis.hide());
   }
 
@@ -539,7 +538,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   private void cancelSelection() {
     for (CSG key : getCsgMap().keySet()) {
-      Platform.runLater(() ->
+      FxUtil.runFX(() ->
           getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
     }
 
@@ -549,7 +548,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     Affine interpolator = new Affine();
     TransformFactory.nrToAffine(startSelectNr, interpolator);
 
-    Platform.runLater(() -> {
+    FxUtil.runFX(() -> {
       removeAllFocusTransforms();
       focusGroup.getTransforms().add(interpolator);
       focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator);
@@ -577,7 +576,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     double yIncrement = (start.getY() - target.getY()) * sinunsoidalScale;
     double zIncrement = (start.getZ() - target.getZ()) * sinunsoidalScale;
 
-    Platform.runLater(() -> {
+    FxUtil.runFX(() -> {
       interpolator.setTx(xIncrement);
       interpolator.setTy(yIncrement);
       interpolator.setTz(zIncrement);
@@ -587,7 +586,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       FxTimer.runLater(Duration.ofMillis(16), () ->
           focusInterpolate(start, target, depth + 1, targetDepth, interpolator));
     } else {
-      Platform.runLater(() -> focusGroup.getTransforms().remove(interpolator));
+      FxUtil.runFX(() -> focusGroup.getTransforms().remove(interpolator));
       previousTarget = target.copy();
       previousTarget.setRotation(new RotationNR());
     }
@@ -693,7 +692,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       return;
     }
 
-    csgMap.keySet().forEach(key -> Platform.runLater(() ->
+    csgMap.keySet().forEach(key -> FxUtil.runFX(() ->
         csgMap.get(key).setMaterial(new PhongMaterial(key.getColor()))));
 
     lastSelectedTime = System.currentTimeMillis();
@@ -742,7 +741,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     Affine interpolator = new Affine();
     Affine correction = TransformFactory.nrToAffine(reverseRotation);
 
-    Platform.runLater(() -> {
+    FxUtil.runFX(() -> {
       interpolator.setTx(startSelectNr.getX() - targetNR.getX());
       interpolator.setTy(startSelectNr.getY() - targetNR.getY());
       interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
@@ -972,9 +971,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         }
       }));
 
-      Platform.runLater(() ->
+      FxUtil.runFX(() ->
           toRemove.forEach(item -> meshViewGroup.getChildren().remove(item.getMesh())));
-      Platform.runLater(() ->
+      FxUtil.runFX(() ->
           toAdd.forEach(this::addCSG));
 
       logger.log(Level.INFO, "Saving CSG database");
