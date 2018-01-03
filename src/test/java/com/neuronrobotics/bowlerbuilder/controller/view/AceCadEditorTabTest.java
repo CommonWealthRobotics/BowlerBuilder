@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
+import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 import javafx.stage.Stage;

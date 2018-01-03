@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.view.AceCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.controller.widget.Widget;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;

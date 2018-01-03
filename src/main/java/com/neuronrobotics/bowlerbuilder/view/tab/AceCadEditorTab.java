@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.view;
+package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;

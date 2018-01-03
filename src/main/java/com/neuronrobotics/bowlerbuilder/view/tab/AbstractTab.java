@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.view;
+package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
