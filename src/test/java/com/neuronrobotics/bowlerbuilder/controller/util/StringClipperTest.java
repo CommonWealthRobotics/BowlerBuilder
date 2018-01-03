@@ -43,4 +43,9 @@ public class StringClipperTest {
     assertEquals("a\nb", stringClipper.clipStringToLines("a\nb", 2));
   }
 
+  @Test
+  void lineOOBTest() {
+    assertEquals("a", stringClipper.clipStringToLines("a", 2));
+  }
+
 }

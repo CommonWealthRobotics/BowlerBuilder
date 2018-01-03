@@ -13,10 +13,12 @@ public class StringClipper {
     String[] allLines = input.split("[\n|\r]");
 
     StringBuilder out = new StringBuilder();
-    for (int i = 0; i < lines; i++) {
+    final int upperBound = Math.min(lines, allLines.length);
+
+    for (int i = 0; i < upperBound; i++) {
       String line = allLines[i];
       out.append(line);
-      if (i < lines - 1) {
+      if (i < upperBound - 1) {
         out.append('\n');
       }
     }
