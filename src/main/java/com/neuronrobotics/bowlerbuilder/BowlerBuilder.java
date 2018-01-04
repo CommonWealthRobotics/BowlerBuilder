@@ -19,7 +19,6 @@ public class BowlerBuilder extends Application {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(BowlerBuilder.class.getSimpleName());
-
   private static final Injector injector = Guice.createInjector();
 
   @Override
