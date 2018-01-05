@@ -1,8 +1,8 @@
-package com.neuronrobotics.bowlerbuilder.scripting.scripteditor;
+package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor;
 
 import static org.junit.Assert.assertEquals;
 
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ace.AceEditor;
+import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditor;
 import org.junit.jupiter.api.Test;
 
 public class AceInterfaceTest {

@@ -1,6 +1,6 @@
-package com.neuronrobotics.bowlerbuilder.scripting.scripteditor;
+package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor;
 
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ace.WebEngineAdapter;
+import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.WebEngineAdapter;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;

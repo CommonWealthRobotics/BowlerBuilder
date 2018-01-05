@@ -10,7 +10,7 @@ import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ace.AceEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditorView;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;

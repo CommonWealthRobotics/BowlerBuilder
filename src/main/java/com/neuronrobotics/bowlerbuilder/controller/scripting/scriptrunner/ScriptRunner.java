@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.scripting.scriptrunner;
+package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner;
 
 import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyBooleanProperty;

@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.view.tab;
 
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditorView;
+import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
 import javafx.scene.Node;
 
 /**
