@@ -1,7 +1,7 @@
-package com.neuronrobotics.bowlerbuilder.scripting.scripteditor.groovy;
+package com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowlerscriptrunner;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.groovy.ast.GroovyTreeTransformation;
+import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowlerscriptrunner.ast.GroovyTreeTransformation;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
