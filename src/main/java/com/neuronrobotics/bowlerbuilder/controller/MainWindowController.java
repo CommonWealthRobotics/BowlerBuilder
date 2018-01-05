@@ -2,12 +2,13 @@ package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
+import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.controller.widget.Widget;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
@@ -16,6 +17,7 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.widget.ManageWidgetsDialog;
+import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -49,6 +51,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
@@ -181,7 +184,7 @@ public class MainWindowController {
               "Unable to delete cache.\n" + Throwables.getStackTraceAsString(e));
         }
 
-        Platform.runLater(this::quit);
+        FxUtil.runFX(this::quit);
       }).start();
     }
   }
@@ -441,7 +444,7 @@ public class MainWindowController {
           loadPageIntoNewTab(gist.getDescription(), gist.getHtmlUrl()));
 
       MenuItem addFileToGist = new MenuItem("Add File");
-      addFileToGist.setOnAction(event -> Platform.runLater(() -> {
+      addFileToGist.setOnAction(event -> FxUtil.runFX(() -> {
         AddFileToGistDialog dialog = new AddFileToGistDialog();
         dialog.showAndWait().ifPresent(name -> {
           try {
@@ -464,6 +467,27 @@ public class MainWindowController {
         });
       }));
 
+      MenuItem addFileFromDisk = new MenuItem("Add File from Disk");
+      addFileFromDisk.setOnAction(event -> FxUtil.runFX(() -> {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select File to Add");
+        File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
+        if (selection != null && selection.isFile()) {
+          try {
+            ScriptingEngine.pushCodeToGit(
+                gist.getGitPushUrl(),
+                ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
+                selection.getName(),
+                Files.readLines(selection, Charsets.UTF_8).stream().collect(Collectors.joining()),
+                "Add file: " + selection.getName());
+            reloadGitMenus();
+          } catch (Exception e) {
+            logger.log(Level.SEVERE,
+                "Could not add file from disk to gist.\n" + Throwables.getStackTraceAsString(e));
+          }
+        }
+      }));
+
       String gistMenuText = gist.getDescription();
       if (gistMenuText == null || gistMenuText.length() == 0) {
         Set<String> filenames = gist.getFiles().keySet();
@@ -478,7 +502,7 @@ public class MainWindowController {
       gistMenuText = gistMenuText.substring(0, Math.min(25, gistMenuText.length()));
 
       Menu gistMenu = new Menu(gistMenuText);
-      gistMenu.getItems().addAll(showWebGist, addFileToGist);
+      gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
 
       gist.getFiles().forEach((name, gistFile) -> {
         MenuItem gistFileItem = new MenuItem(name);
@@ -622,7 +646,7 @@ public class MainWindowController {
 
     @Override
     public void write(int character) {
-      Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
+      FxUtil.runFX(() -> textArea.appendText(String.valueOf((char) character)));
     }
   }
 
