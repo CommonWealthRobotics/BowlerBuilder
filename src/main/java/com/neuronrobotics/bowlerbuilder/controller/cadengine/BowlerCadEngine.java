@@ -331,75 +331,69 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * Builds the axes.
    */
   private void buildAxes() {
-    Thread buildThread = LoggerUtilities.newLoggingThread(logger, () -> {
-      try {
-        Image ruler = AssetFactory.loadAsset("ruler.png");
-        Image groundLocal = AssetFactory.loadAsset("ground.png");
-        Affine groundMove = new Affine();
-        groundMove.setTx(-groundLocal.getHeight() / 2);
-        groundMove.setTy(-groundLocal.getWidth() / 2);
+    try {
+      Image ruler = AssetFactory.loadAsset("ruler.png");
+      Image groundLocal = AssetFactory.loadAsset("ground.png");
+      Affine groundMove = new Affine();
+      groundMove.setTx(-groundLocal.getHeight() / 2);
+      groundMove.setTy(-groundLocal.getWidth() / 2);
 
-        double scale = 0.25;
-        Affine zRuler = new Affine();
-        zRuler.setTz(-20 * scale);
-        zRuler.appendScale(scale, scale, scale);
-        zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
-        zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
-        zRuler.appendRotation(90, 0, 0, 0, 0, 1, 0);
-        zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+      double scale = 0.25;
+      Affine zRuler = new Affine();
+      zRuler.setTz(-20 * scale);
+      zRuler.appendScale(scale, scale, scale);
+      zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
+      zRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+      zRuler.appendRotation(90, 0, 0, 0, 0, 1, 0);
+      zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 
-        Affine yRuler = new Affine();
-        yRuler.setTx(-130 * scale);
-        yRuler.setTy(-20 * scale);
-        yRuler.appendScale(scale, scale, scale);
-        yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
-        yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
+      Affine yRuler = new Affine();
+      yRuler.setTx(-130 * scale);
+      yRuler.setTy(-20 * scale);
+      yRuler.appendScale(scale, scale, scale);
+      yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
+      yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
 
-        Affine downset = new Affine();
-        downset.setTz(0.1);
+      Affine downset = new Affine();
+      downset.setTz(0.1);
 
-        Affine xp = new Affine();
-        xp.setTx(-20 * scale);
-        xp.appendScale(scale, scale, scale);
-        xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
+      Affine xp = new Affine();
+      xp.setTx(-20 * scale);
+      xp.appendScale(scale, scale, scale);
+      xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 
-        FxUtil.runFX(() -> {
-          ImageView groundView = new ImageView(groundLocal);
-          groundView.getTransforms().addAll(groundMove, downset);
-          groundView.setOpacity(0.3);
+      FxUtil.runFX(() -> {
+        ImageView groundView = new ImageView(groundLocal);
+        groundView.getTransforms().addAll(groundMove, downset);
+        groundView.setOpacity(0.3);
 
-          ImageView zrulerImage = new ImageView(ruler);
-          zrulerImage.getTransforms().addAll(zRuler, downset);
+        ImageView zrulerImage = new ImageView(ruler);
+        zrulerImage.getTransforms().addAll(zRuler, downset);
 
-          ImageView rulerImage = new ImageView(ruler);
-          rulerImage.getTransforms().addAll(xp, downset);
+        ImageView rulerImage = new ImageView(ruler);
+        rulerImage.getTransforms().addAll(xp, downset);
 
-          ImageView yrulerImage = new ImageView(ruler);
-          yrulerImage.getTransforms().addAll(yRuler, downset);
+        ImageView yrulerImage = new ImageView(ruler);
+        yrulerImage.getTransforms().addAll(yRuler, downset);
 
-          gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
+        gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
-          Affine groundPlacement = new Affine();
-          groundPlacement.setTz(-1);
-          ground = new Group();
-          ground.getTransforms().add(groundPlacement);
-          focusGroup.getChildren().add(getVirtualCam().getCameraFrame());
+        Affine groundPlacement = new Affine();
+        groundPlacement.setTz(-1);
+        ground = new Group();
+        ground.getTransforms().add(groundPlacement);
+        focusGroup.getChildren().add(getVirtualCam().getCameraFrame());
 
-          gridGroup.getChildren().addAll(new Axis(), ground);
-          showAxis();
-          axisGroup.getChildren().addAll(focusGroup, meshViewGroup);
-          world.getChildren().addAll(lookGroup, axisGroup);
-        });
-      } catch (Exception e) {
-        logger.log(Level.WARNING,
-            "Could not load ruler/ground assets for CAD view.\n"
-                + Throwables.getStackTraceAsString(e));
-      }
-    });
-
-    buildThread.setDaemon(true);
-    buildThread.setName("Axis builder thread");
-    buildThread.start();
+        gridGroup.getChildren().addAll(new Axis(), ground);
+        showAxis();
+        axisGroup.getChildren().addAll(focusGroup, meshViewGroup);
+        world.getChildren().addAll(lookGroup, axisGroup);
+      });
+    } catch (Exception e) {
+      logger.log(Level.WARNING,
+          "Could not load ruler/ground assets for CAD view.\n"
+              + Throwables.getStackTraceAsString(e));
+    }
   }
 
   /**
