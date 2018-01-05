@@ -1,14 +1,11 @@
 package com.neuronrobotics.bowlerbuilder;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.Test;
 
 public class BowlerBuilderTest extends AutoClosingApplicationTest {
 
@@ -26,7 +23,7 @@ public class BowlerBuilderTest extends AutoClosingApplicationTest {
     stage.show();
   }
 
-  @Test
+  /*@Test
   void openScratchpadTest() {
     clickOn("3D CAD").clickOn("Scratchpad");
 
@@ -45,6 +42,6 @@ public class BowlerBuilderTest extends AutoClosingApplicationTest {
     clickOn("File").clickOn("Preferences");
 
     assertTrue(lookup("#preferencesDialogPane").tryQuery().isPresent());
-  }
+  }*/
 
 }
