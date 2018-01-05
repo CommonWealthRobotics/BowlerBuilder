@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor;
+package com.neuronrobotics.bowlerbuilder.scripting.scripteditor;
 
 /**
  * Interface to edit a text-based script.

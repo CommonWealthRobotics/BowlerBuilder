@@ -1,9 +1,9 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
+package com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ace;
 
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditorView;
+import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
+import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditorView;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.web.WebEngine;

@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast;
+package com.neuronrobotics.bowlerbuilder.scripting.scripteditor.groovy.ast;
 
 import com.neuronrobotics.bowlerbuilder.model.tree.KTree;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;

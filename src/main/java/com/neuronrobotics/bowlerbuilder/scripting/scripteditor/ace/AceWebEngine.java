@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
+package com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ace;
 
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;

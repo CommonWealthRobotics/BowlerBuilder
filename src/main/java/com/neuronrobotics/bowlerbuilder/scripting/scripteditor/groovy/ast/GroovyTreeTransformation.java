@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.groovy.ast; //NOPMD
+package com.neuronrobotics.bowlerbuilder.scripting.scripteditor.groovy.ast; //NOPMD
 
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNodeType;

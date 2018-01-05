@@ -1,8 +1,8 @@
-package com.neuronrobotics.bowlerbuilder.controller.scripteditor.ace;
+package com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ace;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor;
+import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
