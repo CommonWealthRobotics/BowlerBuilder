@@ -29,12 +29,14 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -529,14 +531,24 @@ public class MainWindowController {
    * @param orgs organizations
    */
   private void loadOrgsIntoMenus(Menu menu, GHPersonSet<GHOrganization> orgs) {
-    orgs.forEach(org -> {
+    Function<GHOrganization, String> getName = org -> {
       try {
         String name = org.getName();
         if (name == null || name.length() == 0) {
           name = org.getLogin();
         }
+        return name;
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Error while sanitizing organization name.\n" + Throwables.getStackTraceAsString(e));
+      }
 
-        Menu orgMenu = new Menu(name);
+      return "";
+    };
+
+    orgs.stream().sorted(Comparator.comparing(getName)).forEach(org -> {
+      try {
+        Menu orgMenu = new Menu(getName.apply(org));
         org.getRepositories().forEach((key, value) -> {
           MenuItem repoMenu = new MenuItem(key);
           repoMenu.setOnAction(event -> {
@@ -575,7 +587,7 @@ public class MainWindowController {
    * @param repos repositories
    */
   private void loadReposIntoMenus(Menu menu, PagedIterable<GHRepository> repos) {
-    repos.forEach(repo -> {
+    repos.asList().stream().sorted(Comparator.comparing(GHRepository::getName)).forEach(repo -> {
       MenuItem menuItem = new MenuItem(repo.getName());
       menuItem.setOnAction(event ->
           loadPageIntoNewTab(
