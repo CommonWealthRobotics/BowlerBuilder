@@ -18,6 +18,7 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.widget.ManageWidgetsDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
+import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -142,6 +143,13 @@ public class MainWindowController {
     }
 
     reloadWidgets(preferencesService.get("Widgets", new ArrayList<>()));
+
+    try {
+      ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
+    } catch (Exception e) {
+      logger.log(Level.WARNING,
+          "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   @FXML

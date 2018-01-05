@@ -391,7 +391,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
           world.getChildren().addAll(lookGroup, axisGroup);
         });
       } catch (Exception e) {
-        logger.log(Level.SEVERE,
+        logger.log(Level.WARNING,
             "Could not load ruler/ground assets for CAD view.\n"
                 + Throwables.getStackTraceAsString(e));
       }
