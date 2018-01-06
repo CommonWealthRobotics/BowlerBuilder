@@ -488,7 +488,8 @@ public class MainWindowController {
                 gist.getGitPushUrl(),
                 ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
                 selection.getName(),
-                Files.readLines(selection, Charsets.UTF_8).stream().collect(Collectors.joining()),
+                Files.readLines(selection, Charsets.UTF_8).stream()
+                    .collect(Collectors.joining("\n")),
                 "Add file: " + selection.getName());
             reloadGitMenus();
           } catch (Exception e) {
