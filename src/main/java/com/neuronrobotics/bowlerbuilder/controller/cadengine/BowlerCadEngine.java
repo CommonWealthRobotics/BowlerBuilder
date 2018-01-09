@@ -152,58 +152,61 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
-    //    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-    //      IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
-    //        @Override
-    //        public void setAllCSG(Collection<CSG> collection, File file) {
-    //          clearMeshes();
-    //          addAllCSGs(collection);
-    //        }
-    //
-    //        @Override
-    //        public void addCSG(Collection<CSG> collection, File file) {
-    //          addAllCSGs(collection);
-    //        }
-    //
-    //        @Override
-    //        public void highlightException(File file, Exception e) {
-    //        }
-    //
-    //        @Override
-    //        public Set<CSG> getVisibleCSGs() {
-    //          return getCsgMap().keySet();
-    //        }
-    //
-    //        @Override
-    //        public void setSelectedCsg(Collection<CSG> collection) {
-    //          selectCSGs(collection, csgMap);
-    //        }
-    //      };
-    //
-    //      try {
-    //        String[] file = {"https://github.com/madhephaestus/carl-the-hexapod.git",
-    // "CarlTheRobot.xml"};
-    //        String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
-    //        MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-    //        mobileBase.setGitSelfSource(file);
-    //        mobileBase.connect();
-    //        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
-    // mobileBaseUI);
-    //        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-    //        MobileBaseCadManager.get(mobileBase).generateCad();
-    //        System.out.println("Waiting for cad to generate");
-    //        ThreadUtil.wait(1000);
-    //        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
-    //          System.out.println("Waiting: " + MobileBaseCadManager.get(mobileBase)
-    // .getProcesIndictor().get());
-    //          ThreadUtil.wait(1000);
-    //        }
-    //      } catch (Exception e) {
-    //        e.printStackTrace();
-    //      }
-    //    });
-    //    thread.setDaemon(true);
-    //    thread.start();
+    /*Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+      IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
+        @Override
+        public void setAllCSG(Collection<CSG> collection, File file) {
+          FxUtil.runFX(() -> {
+            clearMeshes();
+            addAllCSGs(collection);
+          });
+        }
+
+        @Override
+        public void addCSG(Collection<CSG> collection, File file) {
+          FxUtil.runFX(() -> addAllCSGs(collection));
+        }
+
+        @Override
+        public void highlightException(File file, Exception e) {
+        }
+
+        @Override
+        public Set<CSG> getVisibleCSGs() {
+          return getCsgMap().keySet();
+        }
+
+        @Override
+        public void setSelectedCsg(Collection<CSG> collection) {
+          FxUtil.runFX(() -> selectCSGs(collection, csgMap));
+        }
+      };
+
+      try {
+        String[] file = {"https://github.com/madhephaestus/carl-the-hexapod.git", "CarlTheRobot.xml"};
+        String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
+        MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+        mobileBase.setGitSelfSource(file);
+        mobileBase.connect();
+        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase, mobileBaseUI);
+        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+        MobileBaseCadManager.get(mobileBase).generateCad();
+        System.out.println("Waiting for cad to generate");
+        ThreadUtil.wait(1000);
+        int counter = 0;
+        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
+          System.out.println("Waiting: " + MobileBaseCadManager.get(mobileBase).getProcesIndictor().get());
+          if (counter++ >= 5) {
+            break;
+          }
+          ThreadUtil.wait(1000);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+    thread.setDaemon(true);
+    thread.start();*/
   }
 
   /**
