@@ -1,11 +1,11 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.Collection;
 import java.util.Map;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.SubScene;
@@ -28,7 +28,7 @@ public class CADModelViewerController {
 
   @FXML
   protected void initialize() {
-    Platform.runLater(() -> {
+    FxUtil.runFX(() -> {
       SubScene subScene = engine.getSubScene();
       subScene.setFocusTraversable(false);
       subScene.widthProperty().bind(root.widthProperty());

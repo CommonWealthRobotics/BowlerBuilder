@@ -1,10 +1,10 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace;
 
 import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -23,7 +23,7 @@ public class AceEditorView implements ScriptEditorView {
 
     WebEngine webEngine = webView.getEngine();
     webView.getEngine().setJavaScriptEnabled(true);
-    Platform.runLater(() -> webView.getEngine().load(AceCadEditorController.class.getResource(
+    FxUtil.runFX(() -> webView.getEngine().load(AceCadEditorController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/web/ace.html").toString()));
 
     this.scriptEditor = new AceEditor(aceWebEngineFactory.create(webEngine));
