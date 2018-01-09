@@ -188,14 +188,16 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
         mobileBase.setGitSelfSource(file);
         mobileBase.connect();
-        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase, mobileBaseUI);
+        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
+        mobileBaseUI);
         DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
         MobileBaseCadManager.get(mobileBase).generateCad();
         System.out.println("Waiting for cad to generate");
         ThreadUtil.wait(1000);
         int counter = 0;
         while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
-          System.out.println("Waiting: " + MobileBaseCadManager.get(mobileBase).getProcesIndictor().get());
+          System.out.println("Waiting: "
+          + MobileBaseCadManager.get(mobileBase).getProcesIndictor().get());
           if (counter++ >= 5) {
             break;
           }
