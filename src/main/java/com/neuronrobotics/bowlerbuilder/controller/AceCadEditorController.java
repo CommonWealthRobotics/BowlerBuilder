@@ -24,13 +24,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -81,17 +79,17 @@ public class AceCadEditorController {
 
   @Inject
   public AceCadEditorController(PreferencesServiceFactory preferencesServiceFactory,
-                                ScriptEditorView scriptEditorView,
-                                ScriptRunner scriptRunner,
-                                @Named("scriptLangName") String scriptLangName,
-                                StringClipper stringClipper) {
+      ScriptEditorView scriptEditorView,
+      ScriptRunner scriptRunner,
+      @Named("scriptLangName") String scriptLangName,
+      StringClipper stringClipper) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
     this.scriptLangName = scriptLangName;
     this.stringClipper = stringClipper;
 
-    logger.info("factory: " + preferencesServiceFactory);
+    logger.log(Level.FINE, "factory: " + preferencesServiceFactory);
 
     PreferencesService preferencesService
         = preferencesServiceFactory.create("AceCadEditorController");
@@ -130,71 +128,84 @@ public class AceCadEditorController {
   @FXML
   private void publishFile(ActionEvent actionEvent) {
     if (isScratchpad) {
-      NewGistDialog dialog = new NewGistDialog();
-      dialog.showAndWait().ifPresent(__ -> {
-        try {
-          //Make a new gist
-          GHGist newGist = GistUtilities.createNewGist(
-              dialog.getName(),
-              dialog.getDescription(),
-              dialog.getIsPublic()
-          );
-
-          PublishDialog publishDialog = new PublishDialog();
-          publishDialog.showAndWait().ifPresent(commitMessage -> {
-            try {
-              //Push the new gist
-              ScriptingEngine.pushCodeToGit(
-                  newGist.getGitPushUrl(),
-                  ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
-                  dialog.getName(),
-                  scriptEditor.getText(),
-                  commitMessage
-              );
-
-              isScratchpad = false;
-              gistURLField.setText(newGist.getGitPushUrl());
-              fileNameField.setText(dialog.getName());
-              gist = newGist;
-              gistFile = newGist.getFiles().get(dialog.getName());
-              tab.setText(dialog.getName());
-              reloadMenus.run();
-            } catch (Exception e) {
-              logger.log(Level.SEVERE,
-                  "Could not push code.\n" + Throwables.getStackTraceAsString(e));
-            }
-          });
-        } catch (IOException e) {
-          logger.log(Level.SEVERE,
-              "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
-        }
-      });
+      publishScratchpad();
     } else {
-      PublishDialog dialog = new PublishDialog();
-      dialog.showAndWait().ifPresent(commitMessage -> {
-        try {
-          File currentFile = ScriptingEngine.fileFromGit(
-              gist.getGitPushUrl(),
-              gistFile.getFileName()
-          );
-          Git git = ScriptingEngine.locateGit(currentFile);
-          String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-          String relativePath = ScriptingEngine.findLocalPath(currentFile, git);
-
-          //Push to existing gist
-          ScriptingEngine.pushCodeToGit(
-              remote,
-              ScriptingEngine.getFullBranch(remote),
-              relativePath,
-              scriptEditor.getText(),
-              commitMessage
-          );
-        } catch (Exception e) {
-          logger.log(Level.SEVERE,
-              "Could not commit.\n" + Throwables.getStackTraceAsString(e));
-        }
-      });
+      publishNormal();
     }
+  }
+
+  /**
+   * Publish the editor contents normally (not scratchpad).
+   */
+  private void publishNormal() {
+    new PublishDialog().showAndWait().ifPresent(commitMessage -> {
+      try {
+        File currentFile = ScriptingEngine.fileFromGit(
+            gist.getGitPushUrl(),
+            gistFile.getFileName()
+        );
+        Git git = ScriptingEngine.locateGit(currentFile);
+        String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+        String relativePath = ScriptingEngine.findLocalPath(currentFile, git);
+
+        //Push to existing gist
+        ScriptingEngine.pushCodeToGit(
+            remote,
+            ScriptingEngine.getFullBranch(remote),
+            relativePath,
+            scriptEditor.getText(),
+            commitMessage
+        );
+      } catch (Exception e) {
+        logger.log(Level.SEVERE,
+            "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
+  }
+
+  /**
+   * Publish the editor contents during scratchpad mode.
+   */
+  private void publishScratchpad() {
+    NewGistDialog dialog = new NewGistDialog();
+    dialog.showAndWait().ifPresent(__ -> {
+      try {
+        //Make a new gist
+        GHGist newGist = GistUtilities.createNewGist(
+            dialog.getName(),
+            dialog.getDescription(),
+            dialog.getIsPublic()
+        );
+
+        PublishDialog publishDialog = new PublishDialog();
+        publishDialog.showAndWait().ifPresent(commitMessage -> {
+          try {
+            //Push the new gist
+            ScriptingEngine.pushCodeToGit(
+                newGist.getGitPushUrl(),
+                ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
+                dialog.getName(),
+                scriptEditor.getText(),
+                commitMessage
+            );
+
+            isScratchpad = false;
+            gistURLField.setText(newGist.getGitPushUrl());
+            fileNameField.setText(dialog.getName());
+            gist = newGist;
+            gistFile = newGist.getFiles().get(dialog.getName());
+            tab.setText(dialog.getName());
+            reloadMenus.run();
+          } catch (Exception e) {
+            logger.log(Level.SEVERE,
+                "Could not push code.\n" + Throwables.getStackTraceAsString(e));
+          }
+        });
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
   }
 
   @FXML
@@ -268,17 +279,14 @@ public class AceCadEditorController {
    * @return result from the script
    */
   public Object runEditorContent() {
-    //Grab code from FX thread
-    ObjectProperty<String> text = new SimpleObjectProperty<>();
-    CountDownLatch latch = new CountDownLatch(1);
-    FxUtil.runFX(() -> {
-      text.set(scriptEditor.getText());
-      latch.countDown();
-    });
-
     try {
-      latch.await();
-      return runStringScript(text.get(), new ArrayList<>(), scriptLangName);
+      try {
+        return runStringScript(
+            FxUtil.returnFX(scriptEditor::getText), new ArrayList<>(), scriptLangName);
+      } catch (ExecutionException e) {
+        logger.log(Level.SEVERE,
+            "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
+      }
     } catch (InterruptedException e) {
       logger.log(Level.WARNING,
           "CountDownLatch interrupted while waiting to get editor content.\n"
@@ -298,33 +306,18 @@ public class AceCadEditorController {
    */
   public Object runStringScript(String script, ArrayList<Object> arguments, String languageName) {
     try {
-      //Grab code from FX thread
-      ObjectProperty<String> text = new SimpleObjectProperty<>();
-      CountDownLatch latch = new CountDownLatch(1);
-      FxUtil.runFX(() -> {
-        text.set(scriptEditor.getText());
-        latch.countDown();
-      });
-      latch.await();
-
       //Run the code
       logger.log(Level.FINE, "Running script.");
-      Object result = scriptRunner.runScript(
-          script,
-          arguments,
-          languageName);
+      Object result = scriptRunner.runScript(script, arguments, languageName);
 
       logger.log(Level.FINER, "Result is: " + result);
 
       //Add CSGs
       logger.log(Level.FINE, "Parsing result.");
-      CountDownLatch latch2 = new CountDownLatch(1);
-      FxUtil.runFX(() -> {
+      FxUtil.runFXAndWait(() -> {
         cadviewerController.clearMeshes();
         parseCSG(cadviewerController, result);
-        latch2.countDown();
       });
-      latch2.await();
       logger.log(Level.FINE, "Parsing done.");
 
       return result;
