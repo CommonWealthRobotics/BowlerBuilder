@@ -727,9 +727,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
     TransformNR startSelectNr = previousTarget.copy();
     TransformNR targetNR;
-    if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-        || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-        || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+
+    if (checkManipulator()) {
       targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
     } else {
       targetNR = TransformFactory.affineToNr(centering);
@@ -744,9 +743,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
       removeAllFocusTransforms();
       focusGroup.getTransforms().add(interpolator);
-      if (Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-          || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-          || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1) {
+      if (checkManipulator()) {
         focusGroup.getTransforms().add(selectedCsg.getManipulator());
         focusGroup.getTransforms().add(correction);
       } else {
@@ -754,6 +751,12 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
       focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
     });
+  }
+
+  private boolean checkManipulator() {
+    return Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
+        || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
+        || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1;
   }
 
   /**
