@@ -2,31 +2,24 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
+import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import org.controlsfx.validation.Severity;
-import org.controlsfx.validation.ValidationResult;
-import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
 public class AddFileToGistDialog extends Dialog<String> {
 
-  private final TextField nameField;
-  private final BooleanProperty invalidNameProperty;
+  private final ValidatedTextField nameField;
 
   public AddFileToGistDialog() {
     super();
 
-    invalidNameProperty = new SimpleBooleanProperty(false);
-
-    nameField = new TextField();
+    nameField = new ValidatedTextField("Invalid File Name", name ->
+        GistUtilities.isValidCodeFileName(name).isPresent());
     nameField.setId("nameField");
 
     setTitle("New File");
@@ -40,35 +33,13 @@ public class AddFileToGistDialog extends Dialog<String> {
     pane.add(new Label("Name"), 0, 0);
     pane.add(nameField, 1, 0);
 
-    ValidationSupport validator = new ValidationSupport();
-    validator.setValidationDecorator(new StyleClassValidationDecoration(
-        "text-field-error",
-        "text-field-warning"));
-    validator.registerValidator(nameField, false, (control, value) -> {
-      if (value instanceof String) {
-        return ValidationResult.fromMessageIf(
-            control,
-            "Invalid File Name",
-            Severity.ERROR,
-            !GistUtilities.isValidCodeFileName((String) value).isPresent());
-      }
-
-      return ValidationResult.fromMessageIf(
-          control,
-          "Invalid File Name",
-          Severity.ERROR,
-          false);
-    });
-
-    invalidNameProperty.bind(validator.invalidProperty());
-
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     FxUtil.runFX(nameField::requestFocus);
 
     Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    addButton.disableProperty().bind(validator.invalidProperty());
+    addButton.disableProperty().bind(nameField.invalidProperty());
     addButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
@@ -85,11 +56,11 @@ public class AddFileToGistDialog extends Dialog<String> {
   }
 
   public boolean isInvalidName() {
-    return invalidNameProperty.get();
+    return nameField.invalidProperty().get();
   }
 
   public BooleanProperty invalidNameProperty() {
-    return invalidNameProperty;
+    return nameField.invalidProperty();
   }
 
 }
