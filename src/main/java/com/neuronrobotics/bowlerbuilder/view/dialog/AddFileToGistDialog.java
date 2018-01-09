@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import java.util.Optional;
-import javafx.application.Platform;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
+import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
@@ -50,7 +50,7 @@ public class AddFileToGistDialog extends Dialog<String> {
             control,
             "Invalid File Name",
             Severity.ERROR,
-            !validateFileName((String) value).isPresent());
+            !GistUtilities.isValidCodeFileName((String) value).isPresent());
       }
 
       return ValidationResult.fromMessageIf(
@@ -65,7 +65,7 @@ public class AddFileToGistDialog extends Dialog<String> {
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    Platform.runLater(nameField::requestFocus);
+    FxUtil.runFX(nameField::requestFocus);
 
     Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(validator.invalidProperty());
@@ -78,20 +78,6 @@ public class AddFileToGistDialog extends Dialog<String> {
 
       return null;
     });
-  }
-
-  /**
-   * Validate a file name. A valid file name has an extension.
-   *
-   * @param name File name to validate
-   * @return An optional containing a valid file name, empty otherwise
-   */
-  private Optional<String> validateFileName(String name) {
-    if (name.matches("^.*\\.[^\\\\]+$")) {
-      return Optional.of(name);
-    }
-
-    return Optional.empty();
   }
 
   public String getName() {

@@ -22,15 +22,15 @@ public class NewGistDialogTest extends AutoClosingApplicationTest {
 
   @Test
   void basicTest() {
-    clickOn("#nameField").write("a");
+    clickOn("#nameField").write("a.b");
     clickOn("#descField").write("b");
 
     assertFalse(lookup("OK").query().isDisabled());
 
     clickOn("OK");
 
-    assertEquals(Arrays.asList("a", "b"), dialog.getResult());
-    assertEquals("a", dialog.getName());
+    assertEquals(Arrays.asList("a.b", "b"), dialog.getResult());
+    assertEquals("a.b", dialog.getName());
     assertEquals("b", dialog.getDescription());
     assertTrue(dialog.getIsPublic());
   }
@@ -44,6 +44,22 @@ public class NewGistDialogTest extends AutoClosingApplicationTest {
 
   @Test
   void onlyDescTest() {
+    clickOn("#descField").write("b");
+
+    assertTrue(lookup("OK").query().isDisabled());
+  }
+
+  @Test
+  void invalidNameTest1() {
+    clickOn("#nameField").write("a");
+    clickOn("#descField").write("b");
+
+    assertTrue(lookup("OK").query().isDisabled());
+  }
+
+  @Test
+  void invalidNameTest2() {
+    clickOn("#nameField").write("a.");
     clickOn("#descField").write("b");
 
     assertTrue(lookup("OK").query().isDisabled());

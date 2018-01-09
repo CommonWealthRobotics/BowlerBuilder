@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -64,6 +65,20 @@ public final class GistUtilities {
     }
 
     return gist;
+  }
+
+  /**
+   * Validate a file name. A valid file name has an extension.
+   *
+   * @param fileName File name to validate
+   * @return An optional containing a valid file name, empty otherwise
+   */
+  public static Optional<String> isValidCodeFileName(String fileName) {
+    if (fileName.matches("^.*\\.[^\\\\]+$")) {
+      return Optional.of(fileName);
+    }
+
+    return Optional.empty();
   }
 
 }
