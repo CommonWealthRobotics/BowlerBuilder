@@ -1,8 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner.ast.GroovyTreeTransformation;
-import com.neuronrobotics.bowlerbuilder.model.tree.groovy.ast.ASTNode;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
@@ -20,7 +18,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 /**
@@ -77,8 +74,6 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
             "com.neuronrobotics.sdk.util.ThreadUtil",
             "eu.mihosoft.vrl.v3d.Transform",
             "com.neuronrobotics.bowlerstudio.vitamins.Vitamins"));
-    GroovyTreeTransformation transformation = new GroovyTreeTransformation();
-    cc.addCompilationCustomizers(new ASTTransformationCustomizer(transformation));
 
     Binding binding = new Binding();
 
@@ -111,28 +106,7 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
     Object result = script.run();
     runningProperty.setValue(false);
 
-    //    Platform.runLater(() -> {
-    //      KTree<ASTNode> ast = new KTree<>(transformation.getTree());
-    //      ASTViewGenerator generator = new ASTViewGenerator();
-    //      Dialog dialog = new Dialog();
-    //      dialog.getDialogPane().setContent(generator.generateView(ast));
-    //      dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-    //      dialog.showAndWait();
-    //      printTree(ast.getRoot(), "");
-    //    });
-
     return result;
-  }
-
-  /**
-   * Helper to print a tree for debugging.
-   *
-   * @param node root node
-   * @param prefix starting prefix
-   */
-  private void printTree(ASTNode node, String prefix) {
-    System.out.println(prefix + node.getData()); //NOPMD
-    node.getChildren().forEach(child -> printTree(child, prefix + "\t"));
   }
 
   public ReadOnlyBooleanProperty compilingProperty() {
