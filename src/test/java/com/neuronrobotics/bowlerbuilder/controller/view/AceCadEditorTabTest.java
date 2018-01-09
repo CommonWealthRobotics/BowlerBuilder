@@ -28,7 +28,7 @@ public class AceCadEditorTabTest extends AutoClosingApplicationTest {
     Object result = FxUtil.returnFX(() -> tab.getController().getScriptRunner().runScript(
         tab.getController().getScriptEditor().getText(),
         new ArrayList<>(),
-        "AwareGroovy"
+        "BowlerGroovy"
     ));
 
     assertTrue(result instanceof CSG);

@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowle
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
-import com.neuronrobotics.bowlerstudio.scripting.IDebugScriptRunner;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
@@ -23,21 +22,21 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 /**
  * Simple copy of {@link GroovyHelper} that keeps a flag for when it is compiling or running.
  */
-public class AwareGroovyLanguage implements IScriptingLanguage {
+public class BowlerGroovy implements IScriptingLanguage {
 
   private static final Logger logger
-      = LoggerUtilities.getLogger(AwareGroovyLanguage.class.getSimpleName());
+      = LoggerUtilities.getLogger(BowlerGroovy.class.getSimpleName());
   private final BooleanProperty compilingProperty;
   private final BooleanProperty runningProperty;
 
-  public AwareGroovyLanguage() {
+  public BowlerGroovy() {
     compilingProperty = new SimpleBooleanProperty(false);
     runningProperty = new SimpleBooleanProperty(false);
   }
 
   @Override
   public String getShellType() {
-    return "AwareGroovy";
+    return "BowlerGroovy";
   }
 
   @Override
@@ -115,10 +114,6 @@ public class AwareGroovyLanguage implements IScriptingLanguage {
 
   public ReadOnlyBooleanProperty runningProperty() {
     return runningProperty;
-  }
-
-  public IDebugScriptRunner compileDebug(File file) {
-    return () -> new String[]{"fileame.groovy", "345"};
   }
 
 }

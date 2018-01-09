@@ -69,7 +69,7 @@ public class AceCadEditorTest extends AutoClosingApplicationTest {
     assertTrue(
         controller.runStringScript("CSG foo = new Sphere(10).toCSG();",
             new ArrayList<>(),
-            "Groovy")
+            "BowlerGroovy")
             instanceof CSG);
   }
 
