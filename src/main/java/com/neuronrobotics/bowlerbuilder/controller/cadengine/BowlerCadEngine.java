@@ -12,10 +12,16 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.Virtual
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import com.neuronrobotics.sdk.common.DeviceManager;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -48,6 +54,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -68,6 +75,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.reactfx.util.FxTimer;
 
 public class BowlerCadEngine extends Pane implements CadEngine {
@@ -113,7 +121,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final BooleanProperty handShowingProperty;
 
   @Inject
-  public BowlerCadEngine(CsgParser csgParser) {
+  public BowlerCadEngine(CsgParser csgParser, ProgressIndicator progressIndicator) {
     this.csgParser = csgParser;
 
     axisShowingProperty = new SimpleBooleanProperty(true);
@@ -152,7 +160,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
-    /*Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
       IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
         @Override
         public void setAllCSG(Collection<CSG> collection, File file) {
@@ -183,7 +191,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       };
 
       try {
-        String[] file = {"https://github.com/madhephaestus/carl-the-hexapod.git", "CarlTheRobot.xml"};
+        String[] file = {
+            "https://github.com/madhephaestus/carl-the-hexapod.git",
+            "CarlTheRobot.xml"};
         String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
         MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
         mobileBase.setGitSelfSource(file);
@@ -194,10 +204,11 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         MobileBaseCadManager.get(mobileBase).generateCad();
         System.out.println("Waiting for cad to generate");
         ThreadUtil.wait(1000);
+        progressIndicator.progressProperty().bind(
+            MobileBaseCadManager.get(mobileBase).getProcesIndictor());
         int counter = 0;
-        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
-          System.out.println("Waiting: "
-          + MobileBaseCadManager.get(mobileBase).getProcesIndictor().get());
+        while (progressIndicator.getProgress() < 1) {
+          System.out.println("Waiting: " + progressIndicator.getProgress());
           if (counter++ >= 5) {
             break;
           }
@@ -208,7 +219,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
     thread.setDaemon(true);
-    thread.start();*/
+    thread.start();
   }
 
   /**

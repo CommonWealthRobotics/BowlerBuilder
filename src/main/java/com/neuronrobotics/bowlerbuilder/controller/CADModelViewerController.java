@@ -2,28 +2,36 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngineFactory;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.Collection;
 import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.SubScene;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
 
 public class CADModelViewerController {
 
-  private final CadEngine engine;
   @FXML
   private BorderPane root;
+  @FXML
+  private ProgressIndicator cadProgressIndicator;
+  private CadEngine engine;
+  private CsgParser parser;
+  private BowlerCadEngineFactory factory;
   private boolean axisShowing = true;
   private boolean handShowing = true;
 
   @Inject
-  public CADModelViewerController(CadEngine engine) {
-    this.engine = engine;
+  public CADModelViewerController(CsgParser parser, BowlerCadEngineFactory factory) {
+    this.parser = parser;
+    this.factory = factory;
   }
 
   @FXML
@@ -41,6 +49,8 @@ public class CADModelViewerController {
 
     root.setCenter(engine.getView());
     root.setId("cadViewerBorderPane");
+
+    this.engine = factory.create(parser, cadProgressIndicator);
   }
 
   /**
