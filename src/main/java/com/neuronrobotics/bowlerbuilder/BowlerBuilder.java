@@ -27,6 +27,9 @@ public class BowlerBuilder extends Application {
     Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
         logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
 
+    Thread.setDefaultUncaughtExceptionHandler((t, e) ->
+        logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
+
     FXMLLoader loader = new FXMLLoader(
         BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
         null,
