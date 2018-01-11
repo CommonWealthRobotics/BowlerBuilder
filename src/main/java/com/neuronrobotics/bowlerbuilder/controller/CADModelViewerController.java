@@ -36,6 +36,8 @@ public class CADModelViewerController {
 
   @FXML
   protected void initialize() {
+    this.engine = factory.create(parser, cadProgressIndicator);
+
     FxUtil.runFX(() -> {
       SubScene subScene = engine.getSubScene();
       subScene.setFocusTraversable(false);
@@ -49,8 +51,6 @@ public class CADModelViewerController {
 
     root.setCenter(engine.getView());
     root.setId("cadViewerBorderPane");
-
-    this.engine = factory.create(parser, cadProgressIndicator);
   }
 
   /**

@@ -161,57 +161,56 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     });
 
     Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-      IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
-        @Override
-        public void setAllCSG(Collection<CSG> collection, File file) {
-          FxUtil.runFX(() -> {
-            clearMeshes();
-            addAllCSGs(collection);
-          });
-        }
-
-        @Override
-        public void addCSG(Collection<CSG> collection, File file) {
-          FxUtil.runFX(() -> addAllCSGs(collection));
-        }
-
-        @Override
-        public void highlightException(File file, Exception e) {
-        }
-
-        @Override
-        public Set<CSG> getVisibleCSGs() {
-          return getCsgMap().keySet();
-        }
-
-        @Override
-        public void setSelectedCsg(Collection<CSG> collection) {
-          FxUtil.runFX(() -> selectCSGs(collection, csgMap));
-        }
-      };
-
       try {
-        String[] file = {
-            "https://github.com/madhephaestus/carl-the-hexapod.git",
-            "CarlTheRobot.xml"};
+        IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
+          @Override
+          public void setAllCSG(Collection<CSG> collection, File file) {
+            System.out.println("Setting CSG's # " + collection.size());
+            FxUtil.runFX(() -> {
+              clearMeshes();
+              addAllCSGs(collection);
+            });
+          }
+
+          @Override
+          public void addCSG(Collection<CSG> collection, File file) {
+            System.out.println("Adding CSG's # " + collection.size());
+            FxUtil.runFX(() -> addAllCSGs(collection));
+          }
+
+          @Override
+          public void highlightException(File file, Exception e) {
+            e.printStackTrace();
+          }
+
+          @Override
+          public Set<CSG> getVisibleCSGs() {
+            return csgMap.keySet();
+          }
+
+          @Override
+          public void setSelectedCsg(Collection<CSG> collection) {
+            FxUtil.runFX(() -> selectCSGs(collection, csgMap));
+          }
+        };
+
+        CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
+          // TODO Auto-generated method stub
+        });
+
+        String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
+            "seaArm.xml"};
         String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
         MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
         mobileBase.setGitSelfSource(file);
         mobileBase.connect();
-        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
-        mobileBaseUI);
+        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(
+            mobileBase, mobileBaseUI);
         DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-        MobileBaseCadManager.get(mobileBase).generateCad();
+        mobileBaseCadManager.generateCad();
         System.out.println("Waiting for cad to generate");
         ThreadUtil.wait(1000);
-        progressIndicator.progressProperty().bind(
-            MobileBaseCadManager.get(mobileBase).getProcesIndictor());
-        int counter = 0;
-        while (progressIndicator.getProgress() < 1) {
-          System.out.println("Waiting: " + progressIndicator.getProgress());
-          if (counter++ >= 5) {
-            break;
-          }
+        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
           ThreadUtil.wait(1000);
         }
       } catch (Exception e) {
