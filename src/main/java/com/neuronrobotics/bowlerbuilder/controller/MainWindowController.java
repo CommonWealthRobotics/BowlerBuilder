@@ -137,6 +137,13 @@ public class MainWindowController {
       ScriptingEngine.runLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
         setupMenusOnLogin();
+
+        try {
+          ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
+        } catch (Exception e) {
+          logger.log(Level.WARNING,
+              "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
+        }
       }
     } catch (IOException e) {
       logger.log(Level.WARNING,
@@ -145,13 +152,6 @@ public class MainWindowController {
     }
 
     reloadWidgets(preferencesService.get("Widgets", new ArrayList<>()));
-
-    try {
-      ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
-    } catch (Exception e) {
-      logger.log(Level.WARNING,
-          "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
-    }
   }
 
   @FXML
