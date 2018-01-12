@@ -4,7 +4,6 @@ import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
-import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditorView;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
@@ -31,8 +30,7 @@ public class AceCadEditorTab extends CadEditorTab<AceCadEditorController> {
         null,
         null,
         BowlerBuilder.getInjector().createChildInjector(
-            new AceCadEditorControllerModule(getScriptEditorView()),
-            new CadModelViewerControllerModule())::getInstance);
+            new AceCadEditorControllerModule(getScriptEditorView()))::getInstance);
 
     node = loader.load();
     controller = loader.getController();

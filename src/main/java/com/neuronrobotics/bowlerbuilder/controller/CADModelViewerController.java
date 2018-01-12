@@ -23,8 +23,8 @@ public class CADModelViewerController {
   @FXML
   private ProgressIndicator cadProgressIndicator;
   private CadEngine engine;
-  private CsgParser parser;
-  private BowlerCadEngineFactory factory;
+  private final CsgParser parser;
+  private final BowlerCadEngineFactory factory;
   private boolean axisShowing = true;
   private boolean handShowing = true;
 

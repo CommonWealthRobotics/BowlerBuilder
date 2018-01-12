@@ -9,7 +9,6 @@ import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
-import com.neuronrobotics.bowlerbuilder.controller.module.CadModelViewerControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditorView;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
@@ -33,8 +32,7 @@ public class AceCadEditorTest extends AutoClosingApplicationTest {
         null,
         Guice.createInjector(
             new AceCadEditorControllerModule(
-                BowlerBuilder.getInjector().getInstance(AceEditorView.class)),
-            new CadModelViewerControllerModule())::getInstance);
+                BowlerBuilder.getInjector().getInstance(AceEditorView.class)))::getInstance);
     SplitPane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));

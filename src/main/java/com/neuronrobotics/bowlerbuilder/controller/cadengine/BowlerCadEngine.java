@@ -11,6 +11,7 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.Virtual
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
