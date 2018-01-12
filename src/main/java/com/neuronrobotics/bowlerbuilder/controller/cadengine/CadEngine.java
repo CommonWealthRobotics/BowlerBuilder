@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import javafx.beans.property.BooleanProperty;
@@ -35,10 +36,24 @@ public interface CadEngine {
   void addAllCSGs(Collection<CSG> csgs);
 
   /**
+   * Select all CSGs from the line in the script.
+   *
+   * @param script script containing CSG source
+   * @param lineNumber line number in script
+   */
+  void setSelectedCsg(File script, int lineNumber);
+
+  /**
+   * Select all CSGs in the collection.
+   *
+   * @param selection CSGs to select
+   */
+  void selectCSGs(Collection<CSG> selection);
+
+  /**
    * Removes all meshes except for the background.
    */
   void clearMeshes();
-
 
   /**
    * Home the camera.

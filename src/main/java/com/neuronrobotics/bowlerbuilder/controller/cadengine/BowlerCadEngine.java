@@ -12,16 +12,10 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.Virtual
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
-import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import com.neuronrobotics.sdk.common.DeviceManager;
-import com.neuronrobotics.sdk.util.ThreadUtil;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cylinder;
 import eu.mihosoft.vrl.v3d.parametrics.CSGDatabase;
@@ -75,7 +69,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.reactfx.util.FxTimer;
 
 public class BowlerCadEngine extends Pane implements CadEngine {
@@ -161,61 +154,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     });
 
     Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-      try {
-        IMobileBaseUI mobileBaseUI = new IMobileBaseUI() {
-          @Override
-          public void setAllCSG(Collection<CSG> collection, File file) {
-            System.out.println("Setting CSG's # " + collection.size());
-            FxUtil.runFX(() -> {
-              clearMeshes();
-              addAllCSGs(collection);
-            });
-          }
-
-          @Override
-          public void addCSG(Collection<CSG> collection, File file) {
-            System.out.println("Adding CSG's # " + collection.size());
-            FxUtil.runFX(() -> addAllCSGs(collection));
-          }
-
-          @Override
-          public void highlightException(File file, Exception e) {
-            e.printStackTrace();
-          }
-
-          @Override
-          public Set<CSG> getVisibleCSGs() {
-            return csgMap.keySet();
-          }
-
-          @Override
-          public void setSelectedCsg(Collection<CSG> collection) {
-            FxUtil.runFX(() -> selectCSGs(collection, csgMap));
-          }
-        };
-
-        CSG.setProgressMoniter((currentIndex, finalIndex, type, intermediateShape) -> {
-          // TODO Auto-generated method stub
-        });
-
-        String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
-            "seaArm.xml"};
-        String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
-        MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-        mobileBase.setGitSelfSource(file);
-        mobileBase.connect();
-        MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(
-            mobileBase, mobileBaseUI);
-        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-        mobileBaseCadManager.generateCad();
-        System.out.println("Waiting for cad to generate");
-        ThreadUtil.wait(1000);
-        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
-          ThreadUtil.wait(1000);
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      RobotManager robotManager = new RobotManager(this);
     });
     thread.setDaemon(true);
     thread.start();
@@ -658,6 +597,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param script script containing CSG source
    * @param lineNumber line number in script
    */
+  @Override
   public void setSelectedCsg(File script, int lineNumber) {
     FxUtil.runFX(() -> {
       Collection<CSG> csgs = csgParser.parseCsgFromSource(script.getName(), lineNumber, csgMap);
@@ -667,7 +607,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       if (csgs.size() == 1) {
         selectCSG(csgs.iterator().next(), csgMap);
       } else {
-        selectCSGs(csgs, csgMap);
+        selectCSGs(csgs);
       }
 
       resetMouseTime();
@@ -678,9 +618,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * Select all CSGs in the collection.
    *
    * @param selection CSGs to select
-   * @param csgMap map containing CSGs MeshViews
    */
-  private void selectCSGs(Collection<CSG> selection, Map<CSG, MeshView> csgMap) {
+  @Override
+  public void selectCSGs(Collection<CSG> selection) {
     selection.forEach(csg -> {
       MeshView meshView = csgMap.get(csg);
       if (meshView != null) {
