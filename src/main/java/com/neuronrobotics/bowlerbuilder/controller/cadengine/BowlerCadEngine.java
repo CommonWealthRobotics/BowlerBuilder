@@ -866,6 +866,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
+    mesh.getTransforms().addAll(csg.getManipulator());
     meshViewGroup.getChildren().add(mesh);
     csgMap.put(csg, mesh);
     csgNameMap.put(csg.getName(), mesh);
