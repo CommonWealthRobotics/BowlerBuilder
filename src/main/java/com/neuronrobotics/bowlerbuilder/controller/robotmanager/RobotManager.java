@@ -13,6 +13,7 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.ProgressIndicator;
 import org.apache.commons.io.IOUtils;
 
 public class RobotManager {
@@ -20,7 +21,7 @@ public class RobotManager {
   private static final Logger logger
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
 
-  public RobotManager(CadEngine cadEngine) {
+  public RobotManager(CadEngine cadEngine, ProgressIndicator progressIndicator) {
     try {
       String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
           "seaArm.xml"};
@@ -34,6 +35,7 @@ public class RobotManager {
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
+      progressIndicator.progressProperty().bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
       ThreadUtil.wait(1000);
       while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
         ThreadUtil.wait(1000);

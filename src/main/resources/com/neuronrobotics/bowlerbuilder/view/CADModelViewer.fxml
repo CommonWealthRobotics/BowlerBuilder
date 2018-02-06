@@ -8,9 +8,9 @@
 
 <BorderPane id="cadViewerBorderPane" fx:id="root" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.CADModelViewerController">
    <bottom>
-      <HBox maxHeight="35.0" minHeight="35.0" spacing="5" BorderPane.alignment="CENTER_LEFT">
+      <HBox alignment="CENTER_LEFT" spacing="5" BorderPane.alignment="CENTER_LEFT">
          <children>
-            <ProgressIndicator fx:id="cadProgressIndicator" progress="0.0" />
+            <ProgressIndicator fx:id="cadProgressIndicator" minHeight="30.0" minWidth="30.0" progress="0.0" />
             <Button mnemonicParsing="false" onAction="#onHomeCamera" text="Home Camera" />
             <Button mnemonicParsing="false" onAction="#onAxis" text="Show/Hide Axis" />
             <Button mnemonicParsing="false" onAction="#onHand" text="Show/Hide Hand" />

@@ -155,7 +155,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     });
 
     Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-      RobotManager robotManager = new RobotManager(this);
+      RobotManager robotManager = new RobotManager(this, progressIndicator);
     });
     thread.setDaemon(true);
     thread.start();
