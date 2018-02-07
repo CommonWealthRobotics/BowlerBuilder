@@ -720,7 +720,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   @Override
   public void addCSG(CSG csg) {
     MeshView mesh = csg.getMesh();
-    mesh.setMaterial(new PhongMaterial(Color.RED));
+    mesh.setMaterial(new PhongMaterial(csg.getColor()));
     mesh.setDepthTest(DepthTest.ENABLE);
     mesh.setCullFace(CullFace.BACK);
 
