@@ -5,6 +5,7 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -33,23 +34,25 @@ public class RobotManager {
           mobileBase, new BowlerMobileBaseUI(cadEngine));
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+      loadRobotMenus(mobileBase);
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
-      progressIndicator.progressProperty().bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
+      progressIndicator.progressProperty()
+          .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
       ThreadUtil.wait(1000);
       while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
         ThreadUtil.wait(1000);
       }
       while (true) {
         DHParameterKinematics leg0 = mobileBase.getAllDHChains().get(0);
-        double zLift=25;
+        double zLift = 25;
         TransformNR current = leg0.getCurrentPoseTarget();
         current.translateZ(zLift);
-        leg0.setDesiredTaskSpaceTransform(current,  2.0);
+        leg0.setDesiredTaskSpaceTransform(current, 2.0);
         ThreadUtil.wait(2000);
 
         current.translateZ(-zLift);
-        leg0.setDesiredTaskSpaceTransform(current,  2.0);
+        leg0.setDesiredTaskSpaceTransform(current, 2.0);
         ThreadUtil.wait(2000);
       }
     } catch (IOException e) {
@@ -59,6 +62,16 @@ public class RobotManager {
       logger.log(Level.SEVERE,
           "Could not start building robot.\n" + Throwables.getStackTraceAsString(e));
     }
+  }
+
+  private void loadRobotMenus(MobileBase device) {
+    device.getAppendages().forEach(leg -> {
+      leg.getFactory().getLinkConfigurations().forEach(conf -> {
+        DHLink link = leg.getChain().getLinks().get(0);
+        link.setDelta(110);
+//        LinkSliderWidget linkSliderWidget = new LinkSliderWidget(0, link, device);
+      });
+    });
   }
 
 }
