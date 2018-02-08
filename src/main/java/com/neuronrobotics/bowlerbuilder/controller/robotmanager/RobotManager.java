@@ -15,14 +15,18 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
-import org.greenrobot.eventbus.EventBus;
 
 public class RobotManager {
 
   private static final Logger logger
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
+  private final CadEngine cadEngine;
+  private final CreatureLabController creatureLab;
 
   public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab) {
+    this.cadEngine = cadEngine;
+    this.creatureLab = creatureLab;
+
     try {
       String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
           "seaArm.xml"};
@@ -34,7 +38,7 @@ public class RobotManager {
           mobileBase, new BowlerMobileBaseUI(cadEngine));
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-      EventBus.getDefault().post(new RobotLoadedEvent(mobileBase));
+      creatureLab.generateMenus(mobileBase);
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
       creatureLab.getCadProgress().progressProperty()

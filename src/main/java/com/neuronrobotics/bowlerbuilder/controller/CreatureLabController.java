@@ -3,7 +3,6 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotLoadedEvent;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.view.JogView;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -21,7 +20,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -41,7 +39,6 @@ public class CreatureLabController {
   @FXML
   private BorderPane contentPane;
 
-  private MobileBase device;
   private WeakHashMap<TreeItem<String>, Runnable> treeViewOnActions;
 
   @Inject
@@ -51,13 +48,10 @@ public class CreatureLabController {
 
   @FXML
   protected void initialize() {
-    EventBus.getDefault().register(this);
   }
 
   @Subscribe(threadMode = ThreadMode.ASYNC)
-  public void generateMenus(RobotLoadedEvent event) {
-    this.device = event.device;
-
+  public void generateMenus(MobileBase device) {
     logger.log(Level.INFO, "Got RobotLoaded event on: " + Thread.currentThread().getName());
 
     FxUtil.runFX(() -> {
