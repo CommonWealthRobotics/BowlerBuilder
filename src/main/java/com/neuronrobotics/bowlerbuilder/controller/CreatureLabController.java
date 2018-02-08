@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.inject.Inject;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.view.JogView;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -16,12 +15,10 @@ import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 public class CreatureLabController {
 
@@ -29,13 +26,15 @@ public class CreatureLabController {
       LoggerUtilities.getLogger(CreatureLabController.class.getSimpleName());
 
   @FXML
-  private AnchorPane infoPane;
-  @FXML
   private ProgressIndicator cadProgress;
   @FXML
   private CheckBox autoRegenCAD;
   @FXML
-  private TreeView<String> treeView;
+  private TabPane creatureTabPane;
+  @FXML
+  private Tab blackTab;
+  @FXML
+  private Tab blueTab;
   @FXML
   private BorderPane contentPane;
 
@@ -48,34 +47,35 @@ public class CreatureLabController {
 
   @FXML
   protected void initialize() {
+    blackTab.setGraphic(AssetFactory.loadIcon("creature.png"));
+    blueTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
   }
 
-  @Subscribe(threadMode = ThreadMode.ASYNC)
   public void generateMenus(MobileBase device) {
     logger.log(Level.INFO, "Got RobotLoaded event on: " + Thread.currentThread().getName());
 
-    FxUtil.runFX(() -> {
-      TreeItem<String> root = new TreeItem<>(device.getScriptingName(),
-          AssetFactory.loadIcon("creature.png"));
-      treeView.setRoot(root);
-
-      root.getChildren().add(loadLimbs(new TreeItem<>("Legs",
-          AssetFactory.loadIcon("Load-Limb-Legs.png")), device.getLegs()));
-      root.getChildren().add(loadLimbs(new TreeItem<>("Arms",
-          AssetFactory.loadIcon("Load-Limb-Arms.png")), device.getAppendages()));
-      root.getChildren().add(loadLimbs(new TreeItem<>("Steerable Wheels",
-          AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png")), device.getSteerable()));
-      root.getChildren().add(loadLimbs(new TreeItem<>("Fixed Wheels",
-          AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png")), device.getDrivable()));
-
-      treeView.getSelectionModel().selectedItemProperty()
-          .addListener((observable, oldValue, newValue) -> {
-            Runnable runnable = treeViewOnActions.get(newValue);
-            if (runnable != null) {
-              runnable.run();
-            }
-          });
-    });
+    //    FxUtil.runFX(() -> {
+    //      TreeItem<String> root = new TreeItem<>(device.getScriptingName(),
+    //          AssetFactory.loadIcon("creature.png"));
+    //      treeView.setRoot(root);
+    //
+    //      root.getChildren().add(loadLimbs(new TreeItem<>("Legs",
+    //          AssetFactory.loadIcon("Load-Limb-Legs.png")), device.getLegs()));
+    //      root.getChildren().add(loadLimbs(new TreeItem<>("Arms",
+    //          AssetFactory.loadIcon("Load-Limb-Arms.png")), device.getAppendages()));
+    //      root.getChildren().add(loadLimbs(new TreeItem<>("Steerable Wheels",
+    //          AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png")), device.getSteerable()));
+    //      root.getChildren().add(loadLimbs(new TreeItem<>("Fixed Wheels",
+    //          AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png")), device.getDrivable()));
+    //
+    //      treeView.getSelectionModel().selectedItemProperty()
+    //          .addListener((observable, oldValue, newValue) -> {
+    //            Runnable runnable = treeViewOnActions.get(newValue);
+    //            if (runnable != null) {
+    //              runnable.run();
+    //            }
+    //          });
+    //    });
   }
 
   private TreeItem<String> loadLimbs(TreeItem<String> root, List<DHParameterKinematics> drivable) {
@@ -113,12 +113,12 @@ public class CreatureLabController {
   }
 
   private TreeItem<String> loadSingleLink(LinkConfiguration conf,
-      DHParameterKinematics dh, Integer index) {
+                                          DHParameterKinematics dh, Integer index) {
     TreeItem<String> link = new TreeItem<>(conf.getName(),
         AssetFactory.loadIcon("Move-Single-Motor.png"));
 
     DHLink dhLink = dh.getChain().getLinks().get(index);
-//    LinkSliderWidget linkSliderWidget = new LinkSliderWidget(index, dhLink, device);
+    //    LinkSliderWidget linkSliderWidget = new LinkSliderWidget(index, dhLink, device);
 
     TreeItem<String> design = new TreeItem<>("Design Parameters " + conf.getName(),
         AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
