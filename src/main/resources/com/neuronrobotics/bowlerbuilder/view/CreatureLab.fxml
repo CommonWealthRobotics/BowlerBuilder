@@ -18,10 +18,10 @@
                   <HBox alignment="CENTER_LEFT" spacing="5.0">
                      <children>
                         <Label text="CAD Progress:" />
-                        <ProgressIndicator progress="0.0" />
+                        <ProgressIndicator fx:id="cadProgress" progress="0.0" />
                      </children>
                   </HBox>
-                  <CheckBox mnemonicParsing="false" text="Auto-Regenerate CAD" />
+                  <CheckBox fx:id="autoRegenCAD" mnemonicParsing="false" text="Auto-Regenerate CAD" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" top="5.0" />

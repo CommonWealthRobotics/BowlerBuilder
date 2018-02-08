@@ -11,7 +11,6 @@ import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.SubScene;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
@@ -20,8 +19,6 @@ public class CADModelViewerController {
 
   @FXML
   private BorderPane root;
-  @FXML
-  private ProgressIndicator cadProgressIndicator;
   private CadEngine engine;
   private final CsgParser parser;
   private final BowlerCadEngineFactory factory;
@@ -36,7 +33,7 @@ public class CADModelViewerController {
 
   @FXML
   protected void initialize() {
-    this.engine = factory.create(parser, cadProgressIndicator);
+    this.engine = factory.create(parser);
 
     FxUtil.runFX(() -> {
       SubScene subScene = engine.getSubScene();
@@ -111,6 +108,10 @@ public class CADModelViewerController {
 
   public Map<CSG, MeshView> getCsgMap() {
     return engine.getCsgMap();
+  }
+
+  public CadEngine getEngine() {
+    return engine;
   }
 
 }

@@ -11,7 +11,6 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.Virtual
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element.Axis;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -49,7 +48,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -115,7 +113,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final BooleanProperty handShowingProperty;
 
   @Inject
-  public BowlerCadEngine(CsgParser csgParser, ProgressIndicator progressIndicator) {
+  public BowlerCadEngine(CsgParser csgParser) {
     this.csgParser = csgParser;
 
     axisShowingProperty = new SimpleBooleanProperty(true);
@@ -153,12 +151,6 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         hideHand();
       }
     });
-
-    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-      RobotManager robotManager = new RobotManager(this, progressIndicator);
-    });
-    thread.setDaemon(true);
-    thread.start();
   }
 
   /**

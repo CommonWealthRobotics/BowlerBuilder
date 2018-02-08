@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.CreatureLabController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -13,7 +14,6 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.ProgressIndicator;
 import org.apache.commons.io.IOUtils;
 import org.greenrobot.eventbus.EventBus;
 
@@ -22,7 +22,7 @@ public class RobotManager {
   private static final Logger logger
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
 
-  public RobotManager(CadEngine cadEngine, ProgressIndicator progressIndicator) {
+  public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab) {
     try {
       String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
           "seaArm.xml"};
@@ -37,7 +37,7 @@ public class RobotManager {
       EventBus.getDefault().post(new RobotLoadedEvent(mobileBase));
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
-      progressIndicator.progressProperty()
+      creatureLab.getCadProgress().progressProperty()
           .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
       ThreadUtil.wait(1000);
       while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {

@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
+import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotLoadedEvent;
@@ -11,8 +12,11 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
@@ -29,12 +33,18 @@ public class CreatureLabController {
   @FXML
   private AnchorPane infoPane;
   @FXML
+  private ProgressIndicator cadProgress;
+  @FXML
+  private CheckBox autoRegenCAD;
+  @FXML
   private TreeView<String> treeView;
   @FXML
   private BorderPane contentPane;
+
   private MobileBase device;
   private WeakHashMap<TreeItem<String>, Runnable> treeViewOnActions;
 
+  @Inject
   public CreatureLabController() {
     treeViewOnActions = new WeakHashMap<>();
   }
@@ -47,6 +57,8 @@ public class CreatureLabController {
   @Subscribe(threadMode = ThreadMode.ASYNC)
   public void generateMenus(RobotLoadedEvent event) {
     this.device = event.device;
+
+    logger.log(Level.INFO, "Got RobotLoaded event on: " + Thread.currentThread().getName());
 
     FxUtil.runFX(() -> {
       TreeItem<String> root = new TreeItem<>(device.getScriptingName(),
@@ -134,6 +146,10 @@ public class CreatureLabController {
     link.getChildren().add(remove);
 
     return link;
+  }
+
+  public ProgressIndicator getCadProgress() {
+    return cadProgress;
   }
 
 }
