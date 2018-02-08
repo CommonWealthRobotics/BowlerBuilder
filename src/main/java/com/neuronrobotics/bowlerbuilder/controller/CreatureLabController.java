@@ -10,10 +10,13 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import java.util.List;
+import java.util.WeakHashMap;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -24,8 +27,17 @@ public class CreatureLabController {
       LoggerUtilities.getLogger(CreatureLabController.class.getSimpleName());
 
   @FXML
+  private AnchorPane infoPane;
+  @FXML
   private TreeView<String> treeView;
+  @FXML
+  private BorderPane contentPane;
   private MobileBase device;
+  private WeakHashMap<TreeItem<String>, Runnable> treeViewOnActions;
+
+  public CreatureLabController() {
+    treeViewOnActions = new WeakHashMap<>();
+  }
 
   @FXML
   protected void initialize() {
@@ -49,6 +61,14 @@ public class CreatureLabController {
           AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png")), device.getSteerable()));
       root.getChildren().add(loadLimbs(new TreeItem<>("Fixed Wheels",
           AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png")), device.getDrivable()));
+
+      treeView.getSelectionModel().selectedItemProperty()
+          .addListener((observable, oldValue, newValue) -> {
+            Runnable runnable = treeViewOnActions.get(newValue);
+            if (runnable != null) {
+              runnable.run();
+            }
+          });
     });
   }
 
@@ -60,7 +80,7 @@ public class CreatureLabController {
   private TreeItem<String> loadSingleLimb(DHParameterKinematics dh) {
     TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(),
         AssetFactory.loadIcon("Move-Limb.png"));
-    JogView jogView = new JogView();
+    treeViewOnActions.put(dhItem, () -> contentPane.setCenter(new JogView()));
 
     int i = 0;
     for (LinkConfiguration conf : dh.getFactory().getLinkConfigurations()) {
@@ -97,6 +117,10 @@ public class CreatureLabController {
     TreeItem<String> design = new TreeItem<>("Design Parameters " + conf.getName(),
         AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
     link.getChildren().add(design);
+
+    TreeItem<String> hwConfig = new TreeItem<>("Hardware Config " + conf.getName(),
+        AssetFactory.loadIcon("Hardware-Config.png"));
+    link.getChildren().add(hwConfig);
 
     TreeItem<String> slaves = new TreeItem<>("Slaves to " + conf.getName(),
         AssetFactory.loadIcon("Slave-Links.png"));
