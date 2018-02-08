@@ -81,6 +81,7 @@ dependencies {
     compile(group = "com.google.inject.extensions", name = "guice-assistedinject", version = "4.1.0")
     compile(group = "org.apache.commons", name = "commons-text", version = "1.1")
     compile(group = "commons-io", name = "commons-io", version = "2.6")
+    compile(group = "org.greenrobot", name = "eventbus", version = "3.1.1")
 //    compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")
 //    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.28.0")
 //    compile(group = "org.kohsuke", name = "github-api", version = "1.90")

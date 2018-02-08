@@ -70,6 +70,8 @@ public class AceCadEditorController {
   @FXML
   private TextField gistURLField;
   @FXML
+  private CreatureLabController creatureLabController;
+  @FXML
   private CADModelViewerController cadviewerController;
   private GHGist gist;
   private GHGistFile gistFile;

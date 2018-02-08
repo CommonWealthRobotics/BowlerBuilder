@@ -38,6 +38,11 @@
          <top>
          </top>
       </BorderPane>
-      <fx:include fx:id="cadviewer" source="CADModelViewer.fxml" />
+     <SplitPane>
+       <items>
+         <fx:include fx:id="creatureLab" source="CreatureLab.fxml" />
+         <fx:include fx:id="cadviewer" source="CADModelViewer.fxml" />
+       </items>
+     </SplitPane>
    </items>
 </SplitPane>
