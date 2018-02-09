@@ -3,6 +3,9 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LinkSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -10,6 +13,8 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import java.util.List;
 import java.util.logging.Logger;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +27,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -38,25 +44,31 @@ public class CreatureLabController {
   @FXML
   private TabPane creatureTabPane;
   @FXML
-  private Tab blackTab;
+  private Tab limbTab;
   @FXML
-  private Tab blueTab;
+  private Tab movementTab;
+  private final AnchorPane limbWidget;
+  private ObjectProperty<Selection> selectionProperty;
 
   @Inject
   public CreatureLabController() {
+    limbWidget = new AnchorPane();
+    selectionProperty = new SimpleObjectProperty<>();
+    selectionProperty.addListener((observable, oldValue, newValue) ->
+        limbWidget.getChildren().setAll(newValue.getWidget()));
   }
 
   @FXML
   protected void initialize() {
-    blackTab.setGraphic(AssetFactory.loadIcon("creature.png"));
-    blackTab.setStyle("-fx-padding: 5px;");
-    blueTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
-    blueTab.setStyle("-fx-padding: 5px;");
+    limbTab.setGraphic(AssetFactory.loadIcon("creature.png"));
+    limbTab.setStyle("-fx-padding: 5px;");
+    movementTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
+    movementTab.setStyle("-fx-padding: 5px;");
   }
 
   public void generateMenus(MobileBase device) {
-    VBox blackVBox = new VBox(10);
-    blackVBox.getChildren().addAll(
+    VBox limbSelector = new VBox(10);
+    limbSelector.getChildren().addAll(
         getLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
             AssetFactory.loadIcon("Add-Leg.png"), device.getLegs()),
         getLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
@@ -66,30 +78,10 @@ public class CreatureLabController {
         getLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
             AssetFactory.loadIcon("Add-Fixed-Wheel.png"), device.getDrivable()));
 
-    FxUtil.runFX(() -> blackTab.setContent(blackVBox));
+    VBox limbContent = new VBox(10);
+    limbContent.getChildren().addAll(limbSelector, limbWidget);
 
-    //    FxUtil.runFX(() -> {
-    //      TreeItem<String> root = new TreeItem<>(device.getScriptingName(),
-    //          AssetFactory.loadIcon("creature.png"));
-    //      treeView.setRoot(root);
-    //
-    //      root.getChildren().add(loadLimbs(new TreeItem<>("Legs",
-    //          AssetFactory.loadIcon("Load-Limb-Legs.png")), device.getLegs()));
-    //      root.getChildren().add(loadLimbs(new TreeItem<>("Arms",
-    //          AssetFactory.loadIcon("Load-Limb-Arms.png")), device.getAppendages()));
-    //      root.getChildren().add(loadLimbs(new TreeItem<>("Steerable Wheels",
-    //          AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png")), device.getSteerable()));
-    //      root.getChildren().add(loadLimbs(new TreeItem<>("Fixed Wheels",
-    //          AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png")), device.getDrivable()));
-    //
-    //      treeView.getSelectionModel().selectedItemProperty()
-    //          .addListener((observable, oldValue, newValue) -> {
-    //            Runnable runnable = treeViewOnActions.get(newValue);
-    //            if (runnable != null) {
-    //              runnable.run();
-    //            }
-    //          });
-    //    });
+    FxUtil.runFX(() -> limbTab.setContent(limbContent));
   }
 
   private HBox getLimbHBox(ImageView icon, ImageView addIcon, List<DHParameterKinematics> limbs) {
@@ -108,16 +100,24 @@ public class CreatureLabController {
     scrollPaneContent.setPadding(new Insets(5));
     scrollPane.setContent(scrollPaneContent);
 
-    limbs.forEach(dhParameterKinematics -> {
+    limbs.forEach(limb -> {
       VBox vBox = new VBox(5);
       vBox.setPadding(new Insets(5));
+      //Shaded background to denote ownership of links to limb
       vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
       vBox.setAlignment(Pos.CENTER);
-      vBox.getChildren().add(new Button(dhParameterKinematics.getScriptingName()));
+
+      Button limbButton = new Button(limb.getScriptingName());
+      //Set the selection to this limb
+      limbButton.setOnAction(event -> selectionProperty.set(new LimbSelection(limb)));
+      vBox.getChildren().add(limbButton);
 
       HBox hBoxInner = new HBox(5);
-      dhParameterKinematics.getFactory().getLinkConfigurations().forEach(linkConfiguration -> {
-        hBoxInner.getChildren().add(new Button(linkConfiguration.getName()));
+      limb.getFactory().getLinkConfigurations().forEach(link -> {
+        Button linkButton = new Button(link.getName());
+        //Set the selection to this link
+        linkButton.setOnAction(event -> selectionProperty.set(new LinkSelection(link)));
+        hBoxInner.getChildren().add(linkButton);
       });
       vBox.getChildren().add(hBoxInner);
 

@@ -31,7 +31,7 @@
       </HBox>
       <TabPane fx:id="creatureTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <tabs>
-          <Tab fx:id="blackTab" text="Black">
+          <Tab fx:id="limbTab" text="">
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
@@ -58,7 +58,7 @@
                   </VBox>
                </content>
           </Tab>
-          <Tab fx:id="blueTab" text="Blue" />
+          <Tab fx:id="movementTab" text="" />
         </tabs>
       </TabPane>
    </children>
