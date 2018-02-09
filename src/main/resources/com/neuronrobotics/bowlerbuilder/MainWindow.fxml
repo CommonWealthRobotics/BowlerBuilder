@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -9,11 +7,8 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.web.WebView?>
 
 <BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
    <top>
@@ -52,8 +47,8 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Widgets">
             <items>
-                <MenuItem mnemonicParsing="false" onAction="#onManageWidgets" text="Manage Widgets" />
-                <Menu mnemonicParsing="false" fx:id="installedWidgets" text="Installed Widgets" />
+                <MenuItem mnemonicParsing="false" onAction="#onManageWidgets" text="Manage Plugins" />
+                <Menu mnemonicParsing="false" fx:id="installedPlugins" text="Installed Plugins" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

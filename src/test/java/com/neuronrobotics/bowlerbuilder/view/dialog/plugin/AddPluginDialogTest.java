@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.view.dialog.widget;
+package com.neuronrobotics.bowlerbuilder.view.dialog.plugin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,13 +8,13 @@ import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class AddWidgetDialogTest extends AutoClosingApplicationTest {
+public class AddPluginDialogTest extends AutoClosingApplicationTest {
 
-  private AddWidgetDialog dialog;
+  private AddPluginDialog dialog;
 
   @Override
   public void start(Stage stage) {
-    dialog = new AddWidgetDialog();
+    dialog = new AddPluginDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();
   }

@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.view.dialog.widget;
+package com.neuronrobotics.bowlerbuilder.view.dialog.plugin;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Button;
@@ -7,12 +7,12 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-public class AddWidgetDialog extends Dialog<Boolean> {
+public class AddPluginDialog extends Dialog<Boolean> {
 
   private final TextField sourceField;
   private final TextField displayNameField;
 
-  public AddWidgetDialog() {
+  public AddPluginDialog() {
     super();
 
     sourceField = new TextField();
@@ -28,7 +28,7 @@ public class AddWidgetDialog extends Dialog<Boolean> {
     vBox.getChildren().addAll(sourceField, displayNameField);
     sourceField.requestFocus();
 
-    setTitle("Add Widget");
+    setTitle("Add Plugin");
     getDialogPane().setContent(vBox);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 

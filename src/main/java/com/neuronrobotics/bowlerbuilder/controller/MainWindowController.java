@@ -9,14 +9,14 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.widget.Widget;
+import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
-import com.neuronrobotics.bowlerbuilder.view.dialog.widget.ManageWidgetsDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -89,7 +89,7 @@ public class MainWindowController {
   @FXML
   private Menu cadVitamins;
   @FXML
-  private Menu installedWidgets;
+  private Menu installedPlugins;
   @FXML
   private TabPane tabPane;
   @FXML
@@ -151,7 +151,7 @@ public class MainWindowController {
       logOut.setDisable(true); //Can't log out when not logged in
     }
 
-    reloadWidgets(preferencesService.get("Widgets", new ArrayList<>()));
+    reloadPlugins(preferencesService.get("Widgets", new ArrayList<>()));
   }
 
   @FXML
@@ -240,11 +240,11 @@ public class MainWindowController {
 
   @FXML
   private void onManageWidgets(ActionEvent actionEvent) {
-    ManageWidgetsDialog dialog = new ManageWidgetsDialog(FXCollections.observableArrayList(
+    ManagePluginsDialog dialog = new ManagePluginsDialog(FXCollections.observableArrayList(
         preferencesService.get("Widgets", new ArrayList<>())));
     dialog.showAndWait().ifPresent(widgets -> {
       preferencesService.set("Widgets", new ArrayList<>(widgets));
-      reloadWidgets(widgets);
+      reloadPlugins(widgets);
     });
   }
 
@@ -598,16 +598,16 @@ public class MainWindowController {
     });
   }
 
-  private void reloadWidgets(List<Widget> widgets) {
-    installedWidgets.getItems().clear();
-    installedWidgets.getItems().addAll(widgets.stream().map(widget -> {
-      MenuItem item = new MenuItem(widget.getDisplayName());
+  private void reloadPlugins(List<Plugin> plugins) {
+    installedPlugins.getItems().clear();
+    installedPlugins.getItems().addAll(plugins.stream().map(plugin -> {
+      MenuItem item = new MenuItem(plugin.getDisplayName());
       item.setOnAction(event -> {
         try {
-          widget.run();
+          plugin.run();
         } catch (Exception e) {
           logger.log(Level.SEVERE,
-              "Unable to run widget " + widget.getGitSource() + "\n"
+              "Unable to run plugin " + plugin.getGitSource() + "\n"
                   + Throwables.getStackTraceAsString(e));
         }
       });

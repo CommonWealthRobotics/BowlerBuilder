@@ -1,21 +1,21 @@
-package com.neuronrobotics.bowlerbuilder.controller.widget;
+package com.neuronrobotics.bowlerbuilder.controller.plugin;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Widget implements Serializable {
+public class Plugin implements Serializable {
 
   private final String gitSource;
   private final String displayName;
 
-  public Widget(String gitSource, String displayName) {
+  public Plugin(String gitSource, String displayName) {
     this.gitSource = gitSource;
     this.displayName = displayName;
   }
 
   /**
-   * Clone and run the gist code for this Widget.
+   * Clone and run the gist code for this Plugin.
    */
   public void run() throws Exception {
     ScriptingEngine.gitScriptRun(gitSource, "main.groovy", new ArrayList<>());
