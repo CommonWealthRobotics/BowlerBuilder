@@ -29,12 +29,11 @@ public class CADModelViewerController {
   public CADModelViewerController(CsgParser parser, BowlerCadEngineFactory factory) {
     this.parser = parser;
     this.factory = factory;
+    engine = factory.create(parser);
   }
 
   @FXML
   protected void initialize() {
-    this.engine = factory.create(parser);
-
     FxUtil.runFX(() -> {
       SubScene subScene = engine.getSubScene();
       subScene.setFocusTraversable(false);
