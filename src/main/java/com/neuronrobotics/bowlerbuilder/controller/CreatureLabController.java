@@ -9,7 +9,6 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -50,19 +49,22 @@ public class CreatureLabController {
   @FXML
   protected void initialize() {
     blackTab.setGraphic(AssetFactory.loadIcon("creature.png"));
+    blackTab.setStyle("-fx-padding: 5px;");
     blueTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
+    blueTab.setStyle("-fx-padding: 5px;");
   }
 
   public void generateMenus(MobileBase device) {
-    logger.log(Level.INFO, "Got RobotLoaded event on: " + Thread.currentThread().getName());
-
     VBox blackVBox = new VBox(10);
     blackVBox.getChildren().addAll(
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"), device.getLegs()),
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"), device.getAppendages()),
+        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
+            AssetFactory.loadIcon("Add-Leg.png"), device.getLegs()),
+        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
+            AssetFactory.loadIcon("Add-Arm.png"), device.getAppendages()),
         getLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            device.getSteerable()),
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"), device.getDrivable()));
+            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), device.getSteerable()),
+        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
+            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), device.getDrivable()));
 
     FxUtil.runFX(() -> blackTab.setContent(blackVBox));
 
@@ -90,7 +92,7 @@ public class CreatureLabController {
     //    });
   }
 
-  private HBox getLimbHBox(ImageView icon, List<DHParameterKinematics> limbs) {
+  private HBox getLimbHBox(ImageView icon, ImageView addIcon, List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -109,7 +111,7 @@ public class CreatureLabController {
     limbs.forEach(dhParameterKinematics -> {
       VBox vBox = new VBox(5);
       vBox.setPadding(new Insets(5));
-      vBox.setStyle("-fx-background-color: rgba(255, 0, 0, 0.3);");
+      vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
       vBox.setAlignment(Pos.CENTER);
       vBox.getChildren().add(new Button(dhParameterKinematics.getScriptingName()));
 
@@ -129,9 +131,9 @@ public class CreatureLabController {
     addRemoveLinkHBox.setAlignment(Pos.CENTER_RIGHT);
 
     Button addLinkButton = new Button();
-    addLinkButton.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
+    addLinkButton.setGraphic(addIcon);
     Button removeLinkButton = new Button();
-    removeLinkButton.setGraphic(AssetFactory.loadIcon("Remove-Link.png"));
+    removeLinkButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
     addRemoveLinkHBox.getChildren().addAll(addLinkButton, removeLinkButton);
 
     hBox.getChildren().add(addRemoveLinkHBox);
