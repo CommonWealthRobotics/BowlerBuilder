@@ -7,14 +7,16 @@ import javafx.scene.Node;
 public class LimbSelection implements Selection {
 
   private DHParameterKinematics limb;
+  private JogWidget jogWidget;
 
   public LimbSelection(DHParameterKinematics limb) {
     this.limb = limb;
+    jogWidget = new JogWidget(limb);
   }
 
   @Override
   public Node getWidget() {
-    return new JogWidget(limb);
+    return jogWidget.getView();
   }
 
   public DHParameterKinematics getLimb() {
