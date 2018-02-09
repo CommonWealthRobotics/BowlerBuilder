@@ -101,16 +101,25 @@ public class CreatureLabController {
     ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-    scrollPane.setPrefHeight(0);
     HBox scrollPaneContent = new HBox(5);
     HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
     scrollPaneContent.setPadding(new Insets(5));
     scrollPane.setContent(scrollPaneContent);
 
     limbs.forEach(dhParameterKinematics -> {
+      VBox vBox = new VBox(5);
+      vBox.setPadding(new Insets(5));
+      vBox.setStyle("-fx-background-color: rgba(255, 0, 0, 0.3);");
+      vBox.setAlignment(Pos.CENTER);
+      vBox.getChildren().add(new Button(dhParameterKinematics.getScriptingName()));
+
+      HBox hBoxInner = new HBox(5);
       dhParameterKinematics.getFactory().getLinkConfigurations().forEach(linkConfiguration -> {
-        scrollPaneContent.getChildren().add(new Button(linkConfiguration.getName()));
+        hBoxInner.getChildren().add(new Button(linkConfiguration.getName()));
       });
+      vBox.getChildren().add(hBoxInner);
+
+      scrollPaneContent.getChildren().add(vBox);
     });
 
     hBox.getChildren().add(scrollPane);
