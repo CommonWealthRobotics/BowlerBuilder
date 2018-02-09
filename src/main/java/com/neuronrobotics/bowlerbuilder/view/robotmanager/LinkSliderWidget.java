@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.robotmanager.view;
+package com.neuronrobotics.bowlerbuilder.view.robotmanager;
 
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.OnEngineeringUnitsChange;
