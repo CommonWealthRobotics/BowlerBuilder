@@ -7,6 +7,7 @@ import com.google.inject.name.Named;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.ScriptRunner;
@@ -119,12 +120,12 @@ public class AceCadEditorController {
     publishButton.setGraphic(
         new FontAwesome().create(String.valueOf(FontAwesome.Glyph.CLOUD_UPLOAD)));
 
-//    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-//      RobotManager robotManager = new RobotManager(getCADViewerController().getEngine(),
-//          getCreatureLabController());
-//    });
-//    thread.setDaemon(true);
-//    thread.start();
+    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+      RobotManager robotManager = new RobotManager(getCADViewerController().getEngine(),
+          getCreatureLabController());
+    });
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
