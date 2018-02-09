@@ -1,8 +1,8 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model;
 
+import com.neuronrobotics.bowlerbuilder.view.robotmanager.JogWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 
 public class LimbSelection implements Selection {
 
@@ -14,8 +14,7 @@ public class LimbSelection implements Selection {
 
   @Override
   public Node getWidget() {
-    return new Label(limb.getScriptingName() + " selected!");
-//    return new JogWidget();
+    return new JogWidget(limb);
   }
 
   public DHParameterKinematics getLimb() {
