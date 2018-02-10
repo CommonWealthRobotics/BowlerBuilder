@@ -3,8 +3,9 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LimbTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LinkSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.MovementTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -48,18 +49,36 @@ public class CreatureLabController {
   @FXML
   private Tab movementTab;
   private final AnchorPane limbWidget;
-  private ObjectProperty<Selection> selectionProperty;
+  private final AnchorPane movementWidget;
+  private final ObjectProperty<Selection> selectionProperty;
+  private final ObjectProperty<AnchorPane> selectedWidgetPane;
 
   @Inject
   public CreatureLabController() {
     limbWidget = new AnchorPane();
+    movementWidget = new AnchorPane();
     selectionProperty = new SimpleObjectProperty<>();
-    selectionProperty.addListener((observable, oldValue, newValue) ->
-        limbWidget.getChildren().setAll(newValue.getWidget()));
+    selectedWidgetPane = new SimpleObjectProperty<>();
   }
 
   @FXML
   protected void initialize() {
+    selectedWidgetPane.set(limbWidget); //Limb widget to start
+
+    //Change the widget pane new widgets go into when the user changes tabs
+    creatureTabPane.getSelectionModel().selectedItemProperty()
+        .addListener((observable, oldValue, newValue) -> {
+          if (newValue == limbTab) {
+            selectedWidgetPane.set(limbWidget);
+          } else if (newValue == movementTab) {
+            selectedWidgetPane.set(movementWidget);
+          }
+        });
+
+    //Fill the widget pane with the widget for the selection
+    selectionProperty.addListener((observable, oldValue, newValue) ->
+        selectedWidgetPane.get().getChildren().setAll(newValue.getWidget()));
+
     limbTab.setGraphic(AssetFactory.loadIcon("creature.png"));
     limbTab.setStyle("-fx-padding: 5px;");
     movementTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
@@ -67,24 +86,90 @@ public class CreatureLabController {
   }
 
   public void generateMenus(MobileBase device) {
-    VBox limbSelector = new VBox(10);
-    limbSelector.getChildren().addAll(
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            AssetFactory.loadIcon("Add-Leg.png"), device.getLegs()),
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            AssetFactory.loadIcon("Add-Arm.png"), device.getAppendages()),
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), device.getSteerable()),
-        getLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), device.getDrivable()));
-
-    VBox limbContent = new VBox(10);
-    limbContent.getChildren().addAll(limbSelector, limbWidget);
-
-    FxUtil.runFX(() -> limbTab.setContent(limbContent));
+    generateLimbTab(device);
+    generateMovementTab(device);
   }
 
-  private HBox getLimbHBox(ImageView icon, ImageView addIcon, List<DHParameterKinematics> limbs) {
+  private void generateLimbTab(MobileBase device) {
+    VBox limbSelector = new VBox(10);
+    limbSelector.getChildren().addAll(
+        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
+            AssetFactory.loadIcon("Add-Leg.png"), device.getLegs()),
+        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
+            AssetFactory.loadIcon("Add-Arm.png"), device.getAppendages()),
+        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
+            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), device.getSteerable()),
+        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
+            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), device.getDrivable()));
+
+    VBox content = new VBox(10);
+    content.getChildren().addAll(limbSelector, limbWidget);
+
+    FxUtil.runFX(() -> limbTab.setContent(content));
+  }
+
+  private void generateMovementTab(MobileBase device) {
+    VBox limbSelector = new VBox(10);
+    limbSelector.getChildren().addAll(
+        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
+            device.getLegs()),
+        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
+            device.getAppendages()),
+        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
+            device.getSteerable()),
+        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
+            device.getDrivable()));
+
+    VBox content = new VBox(10);
+    content.getChildren().addAll(limbSelector, movementWidget);
+
+    FxUtil.runFX(() -> movementTab.setContent(content));
+  }
+
+  private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
+      List<DHParameterKinematics> limbs) {
+    HBox hBox = new HBox(5);
+    HBox.setHgrow(hBox, Priority.NEVER);
+    hBox.setAlignment(Pos.CENTER_LEFT);
+    hBox.setPadding(new Insets(5));
+
+    hBox.getChildren().add(icon);
+
+    ScrollPane scrollPane = new ScrollPane();
+    HBox.setHgrow(scrollPane, Priority.ALWAYS);
+    scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
+    HBox scrollPaneContent = new HBox(5);
+    HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
+    scrollPaneContent.setPadding(new Insets(5));
+    scrollPane.setContent(scrollPaneContent);
+
+    limbs.forEach(limb -> {
+      Button limbButton = new Button(limb.getScriptingName());
+      //Set the selection to this limb
+      limbButton
+          .setOnAction(event -> selectionProperty.set(new LimbTabLimbSelection(limb)));
+      scrollPaneContent.getChildren().add(limbButton);
+    });
+
+    hBox.getChildren().add(scrollPane);
+
+    HBox addRemoveLinkHBox = new HBox(5);
+    HBox.setHgrow(addRemoveLinkHBox, Priority.NEVER);
+    addRemoveLinkHBox.setAlignment(Pos.CENTER_RIGHT);
+
+    Button addLinkButton = new Button();
+    addLinkButton.setGraphic(addIcon);
+    Button removeLinkButton = new Button();
+    removeLinkButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
+    addRemoveLinkHBox.getChildren().addAll(addLinkButton, removeLinkButton);
+
+    hBox.getChildren().add(addRemoveLinkHBox);
+
+    return hBox;
+  }
+
+  private HBox getMovementLimbHBox(ImageView icon,
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -109,7 +194,8 @@ public class CreatureLabController {
 
       Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
-      limbButton.setOnAction(event -> selectionProperty.set(new LimbSelection(limb)));
+      limbButton.setOnAction(
+          event -> selectionProperty.set(new MovementTabLimbSelection(limb)));
       vBox.getChildren().add(limbButton);
 
       HBox hBoxInner = new HBox(5);
@@ -125,18 +211,6 @@ public class CreatureLabController {
     });
 
     hBox.getChildren().add(scrollPane);
-
-    HBox addRemoveLinkHBox = new HBox(5);
-    HBox.setHgrow(addRemoveLinkHBox, Priority.NEVER);
-    addRemoveLinkHBox.setAlignment(Pos.CENTER_RIGHT);
-
-    Button addLinkButton = new Button();
-    addLinkButton.setGraphic(addIcon);
-    Button removeLinkButton = new Button();
-    removeLinkButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
-    addRemoveLinkHBox.getChildren().addAll(addLinkButton, removeLinkButton);
-
-    hBox.getChildren().add(addRemoveLinkHBox);
 
     return hBox;
   }
