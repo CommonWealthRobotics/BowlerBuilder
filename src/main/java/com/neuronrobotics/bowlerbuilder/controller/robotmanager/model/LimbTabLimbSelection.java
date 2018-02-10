@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 public class LimbTabLimbSelection implements Selection {
 
@@ -38,7 +39,7 @@ public class LimbTabLimbSelection implements Selection {
     content.setAlignment(Pos.CENTER_LEFT);
     content.setPadding(new Insets(5));
 
-    view.getChildren().addAll(content, widget);
+    view.getChildren().addAll(getLabel(limb.getScriptingName()), content, widget);
 
     ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
@@ -60,7 +61,7 @@ public class LimbTabLimbSelection implements Selection {
     selectionProperty.addListener((observable, oldValue, newValue) -> {
       Button removeLink = new Button();
       removeLink.setGraphic(AssetFactory.loadIcon("Remove-Link.png"));
-      VBox vBox = new VBox(5, new Label(newValue.getName()), removeLink);
+      VBox vBox = new VBox(5, getLabel(newValue.getName()), removeLink);
       widget.getChildren().setAll(vBox);
     });
 
@@ -72,6 +73,12 @@ public class LimbTabLimbSelection implements Selection {
     controlsBox.setPadding(new Insets(5));
     HBox.setHgrow(controlsBox, Priority.NEVER);
     content.getChildren().add(controlsBox);
+  }
+
+  private Label getLabel(String text) {
+    Label label = new Label(text);
+    label.setFont(Font.font(16));
+    return label;
   }
 
   @Override
