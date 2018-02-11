@@ -57,7 +57,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     content.getChildren().add(scrollPane);
 
     selectionProperty.addListener((observable, oldValue, newValue) ->
-        widget.getChildren().setAll(new LimbTabLinkSelection(newValue).getWidget()));
+        widget.getChildren().setAll(new LimbTabLinkSelection(0, null, newValue, null).getWidget()));
 
     Button addLink;
     addLink = new Button();

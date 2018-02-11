@@ -3,10 +3,12 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.ConfigTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.MovementTabLimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -53,6 +55,7 @@ public class CreatureLabController {
 
   private final AnchorPane limbWidget;
   private final AnchorPane movementWidget;
+  private final AnchorPane configWidget;
   private final ObjectProperty<Selection> selectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
 
@@ -60,6 +63,7 @@ public class CreatureLabController {
   public CreatureLabController() {
     limbWidget = new AnchorPane();
     movementWidget = new AnchorPane();
+    configWidget = new AnchorPane();
     selectionProperty = new SimpleObjectProperty<>();
     selectedWidgetPane = new SimpleObjectProperty<>();
   }
@@ -75,6 +79,8 @@ public class CreatureLabController {
             selectedWidgetPane.set(limbWidget);
           } else if (newValue == movementTab) {
             selectedWidgetPane.set(movementWidget);
+          } else if (newValue == configTab) {
+            selectedWidgetPane.set(configWidget);
           }
         });
 
@@ -86,11 +92,14 @@ public class CreatureLabController {
     limbTab.setStyle("-fx-padding: 5px;");
     movementTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
     movementTab.setStyle("-fx-padding: 5px;");
+    configTab.setGraphic(AssetFactory.loadIcon("Advanced-Configuration.png"));
+    configTab.setStyle("-fx-padding: 5px;");
   }
 
   public void generateMenus(MobileBase device) {
     generateLimbTab(device);
     generateMovementTab(device);
+    generateConfigTab(device);
   }
 
   private void generateLimbTab(MobileBase device) {
@@ -130,7 +139,21 @@ public class CreatureLabController {
   }
 
   private void generateConfigTab(MobileBase device) {
+    VBox limbSelector = new VBox(10);
+    limbSelector.getChildren().addAll(
+        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
+            device.getLegs()),
+        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
+            device.getAppendages()),
+        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
+            device.getSteerable()),
+        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
+            device.getDrivable()));
 
+    VBox content = new VBox(10);
+    content.getChildren().addAll(limbSelector, configWidget);
+
+    FxUtil.runFX(() -> configTab.setContent(content));
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
@@ -177,11 +200,6 @@ public class CreatureLabController {
 
   private HBox getMovementLimbHBox(ImageView icon,
       List<DHParameterKinematics> limbs) {
-    return getGenericHBox(icon, limbs);
-  }
-
-  private HBox getGenericHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -221,6 +239,59 @@ public class CreatureLabController {
         //Set the selection to this link
         linkButton.setOnAction(event ->
             selectionProperty.set(new MovementTabLinkSelection(finalI, link, configuration, limb)));
+        hBoxInner.getChildren().add(linkButton);
+      }
+      vBox.getChildren().add(hBoxInner);
+
+      scrollPaneContent.getChildren().add(vBox);
+    });
+
+    hBox.getChildren().add(scrollPane);
+
+    return hBox;
+  }
+
+  private HBox getConfigTabLimbHBox(ImageView icon,
+      List<DHParameterKinematics> limbs) {
+    HBox hBox = new HBox(5);
+    HBox.setHgrow(hBox, Priority.NEVER);
+    hBox.setAlignment(Pos.CENTER_LEFT);
+    hBox.setPadding(new Insets(5));
+
+    hBox.getChildren().add(icon);
+
+    ScrollPane scrollPane = new ScrollPane();
+    HBox.setHgrow(scrollPane, Priority.ALWAYS);
+    scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
+    HBox scrollPaneContent = new HBox(5);
+    HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
+    scrollPaneContent.setPadding(new Insets(5));
+    scrollPane.setContent(scrollPaneContent);
+
+    limbs.forEach(limb -> {
+      VBox vBox = new VBox(5);
+      vBox.setPadding(new Insets(5));
+      //Shaded background to denote ownership of links to limb
+      vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
+      vBox.setAlignment(Pos.CENTER);
+
+      Button limbButton = new Button(limb.getScriptingName());
+      //Set the selection to this limb
+      limbButton.setOnAction(
+          event -> selectionProperty.set(new ConfigTabLimbSelection(limb)));
+      vBox.getChildren().add(limbButton);
+
+      HBox hBoxInner = new HBox(5);
+      List<DHLink> links = limb.getChain().getLinks();
+      for (int i = 0; i < links.size(); i++) {
+        final DHLink link = links.get(i);
+        final LinkConfiguration configuration = limb.getLinkConfiguration(i);
+        final int finalI = i; //For lambda
+
+        Button linkButton = new Button(configuration.getName());
+        //Set the selection to this link
+        linkButton.setOnAction(event ->
+            selectionProperty.set(new ConfigTabLinkSelection(finalI, link, configuration, limb)));
         hBoxInner.getChildren().add(linkButton);
       }
       vBox.getChildren().add(hBoxInner);
