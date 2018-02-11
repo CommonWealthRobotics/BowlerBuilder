@@ -3,9 +3,9 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LimbTabLimbSelection;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.MovementTabLimbSelection;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.MovementTabLinkSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbTabLimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.MovementTabLimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -48,6 +48,9 @@ public class CreatureLabController {
   private Tab limbTab;
   @FXML
   private Tab movementTab;
+  @FXML
+  private Tab configTab;
+
   private final AnchorPane limbWidget;
   private final AnchorPane movementWidget;
   private final ObjectProperty<Selection> selectionProperty;
@@ -112,18 +115,22 @@ public class CreatureLabController {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            device.getLegs(), device),
+            device.getLegs()),
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            device.getAppendages(), device),
+            device.getAppendages()),
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            device.getSteerable(), device),
+            device.getSteerable()),
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            device.getDrivable(), device));
+            device.getDrivable()));
 
     VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, movementWidget);
 
     FxUtil.runFX(() -> movementTab.setContent(content));
+  }
+
+  private void generateConfigTab(MobileBase device) {
+
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
@@ -169,7 +176,12 @@ public class CreatureLabController {
   }
 
   private HBox getMovementLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs, MobileBase device) {
+      List<DHParameterKinematics> limbs) {
+    return getGenericHBox(icon, limbs);
+  }
+
+  private HBox getGenericHBox(ImageView icon,
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -201,12 +213,14 @@ public class CreatureLabController {
       HBox hBoxInner = new HBox(5);
       List<DHLink> links = limb.getChain().getLinks();
       for (int i = 0; i < links.size(); i++) {
-        DHLink link = links.get(i);
-        Button linkButton = new Button(limb.getLinkConfiguration(i).getName());
+        final DHLink link = links.get(i);
+        final LinkConfiguration configuration = limb.getLinkConfiguration(i);
+        final int finalI = i; //For lambda
+
+        Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
-        int finalI = i;
         linkButton.setOnAction(event ->
-            selectionProperty.set(new MovementTabLinkSelection(finalI, link, limb)));
+            selectionProperty.set(new MovementTabLinkSelection(finalI, link, configuration, limb)));
         hBoxInner.getChildren().add(linkButton);
       }
       vBox.getChildren().add(hBoxInner);

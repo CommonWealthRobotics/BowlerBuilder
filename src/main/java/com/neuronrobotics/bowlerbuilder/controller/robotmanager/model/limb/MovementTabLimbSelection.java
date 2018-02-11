@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model;
+package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
 import com.neuronrobotics.bowlerbuilder.view.robotmanager.JogWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -9,15 +9,14 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-public class MovementTabLimbSelection implements Selection {
+public class MovementTabLimbSelection extends LimbSelection {
 
-  private final DHParameterKinematics limb;
   private final ObjectProperty<LinkConfiguration> selectionProperty;
   private final VBox view;
   private final JogWidget jogWidget;
 
   public MovementTabLimbSelection(DHParameterKinematics limb) {
-    this.limb = limb;
+    super(limb);
 
     view = new VBox(5);
     selectionProperty = new SimpleObjectProperty<>();

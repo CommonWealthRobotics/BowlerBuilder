@@ -1,5 +1,6 @@
-package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model;
+package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
@@ -16,15 +17,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class LimbTabLimbSelection implements Selection {
+public class LimbTabLimbSelection extends LimbSelection {
 
-  private final DHParameterKinematics limb;
   private final ObjectProperty<LinkConfiguration> selectionProperty;
   private final VBox view;
   private final AnchorPane widget;
 
   public LimbTabLimbSelection(DHParameterKinematics limb) {
-    this.limb = limb;
+    super(limb);
 
     view = new VBox(5);
     selectionProperty = new SimpleObjectProperty<>();
