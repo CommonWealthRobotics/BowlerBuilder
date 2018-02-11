@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LimbTabLimbSelection;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.LinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.MovementTabLimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -112,13 +112,13 @@ public class CreatureLabController {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            device.getLegs()),
+            device.getLegs(), device),
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            device.getAppendages()),
+            device.getAppendages(), device),
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            device.getSteerable()),
+            device.getSteerable(), device),
         getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            device.getDrivable()));
+            device.getDrivable(), device));
 
     VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, movementWidget);
@@ -169,7 +169,7 @@ public class CreatureLabController {
   }
 
   private HBox getMovementLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs, MobileBase device) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -199,12 +199,16 @@ public class CreatureLabController {
       vBox.getChildren().add(limbButton);
 
       HBox hBoxInner = new HBox(5);
-      limb.getFactory().getLinkConfigurations().forEach(link -> {
-        Button linkButton = new Button(link.getName());
+      List<DHLink> links = limb.getChain().getLinks();
+      for (int i = 0; i < links.size(); i++) {
+        DHLink link = links.get(i);
+        Button linkButton = new Button(limb.getLinkConfiguration(i).getName());
         //Set the selection to this link
-        linkButton.setOnAction(event -> selectionProperty.set(new LinkSelection(link)));
+        int finalI = i;
+        linkButton.setOnAction(event ->
+            selectionProperty.set(new MovementTabLinkSelection(finalI, link, limb)));
         hBoxInner.getChildren().add(linkButton);
-      });
+      }
       vBox.getChildren().add(hBoxInner);
 
       scrollPaneContent.getChildren().add(vBox);
