@@ -37,7 +37,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     content.setAlignment(Pos.CENTER_LEFT);
     content.setPadding(new Insets(5));
 
-    view.getChildren().addAll(getLabel(limb.getScriptingName()), content, widget);
+    view.getChildren().addAll(getTitleLabel(limb.getScriptingName()), content, widget);
 
     ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);

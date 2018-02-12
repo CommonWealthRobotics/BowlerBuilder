@@ -7,13 +7,15 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class DHSettingsWidget extends VBox implements EngineeringUnitsChangeListener {
+public class DHSettingsWidget implements EngineeringUnitsChangeListener {
 
+  private final VBox vBox;
   private final GridPane gridPane;
   private DHLink dhLink;
   private EngineeringUnitsSliderWidget delta;
@@ -32,7 +34,8 @@ public class DHSettingsWidget extends VBox implements EngineeringUnitsChangeList
     Label titleLabel = new Label(title);
     titleLabel.setFont(Font.font(16));
     titleLabel.setPadding(new Insets(5));
-    getChildren().add(titleLabel);
+    vBox = new VBox(5);
+    vBox.getChildren().add(titleLabel);
 
     delta = new EngineeringUnitsSliderWidget(this,
         0,
@@ -74,7 +77,7 @@ public class DHSettingsWidget extends VBox implements EngineeringUnitsChangeList
     gridPane.add(getSliderLabel("Alpha"), 0, 3);
     gridPane.add(alpha, 1, 3);
 
-    getChildren().add(gridPane);
+    vBox.getChildren().add(gridPane);
   }
 
   private Label getSliderLabel(String text) {
@@ -105,6 +108,10 @@ public class DHSettingsWidget extends VBox implements EngineeringUnitsChangeList
     if (externalListener != null) {
       externalListener.onSliderDoneMoving(source, newAngleDegrees);
     }
+  }
+
+  public Node getView() {
+    return vBox;
   }
 
 }

@@ -18,7 +18,7 @@ public class LimbTabLinkSelection extends LinkSelection {
 
     Button removeLink = new Button();
     removeLink.setGraphic(AssetFactory.loadIcon("Remove-Link.png"));
-    vBox = new VBox(5, getLabel(configuration.getName()), removeLink);
+    vBox = new VBox(5, getTitleLabel(configuration.getName()), removeLink);
   }
 
   @Override
