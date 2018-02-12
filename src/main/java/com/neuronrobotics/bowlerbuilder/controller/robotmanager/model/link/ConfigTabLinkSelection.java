@@ -4,24 +4,24 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUni
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.view.robotmanager.DHSettingsWidget;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
 
-public class ConfigTabLinkSelection extends LinkSelection implements EngineeringUnitsChangeListener {
+public class ConfigTabLinkSelection extends LinkSelection implements
+    EngineeringUnitsChangeListener {
 
   private final MobileBaseCadManager cadManager;
   private final DHSettingsWidget widget;
 
   public ConfigTabLinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
-                                DHParameterKinematics device, MobileBaseCadManager cadManager) {
+      DHParameterKinematics device, MobileBaseCadManager cadManager) {
     super(linkIndex, dhLink, configuration, device);
     this.cadManager = cadManager;
 
-    widget = new DHSettingsWidget(dhLink, device, this);
+    widget = new DHSettingsWidget("D-H Configuration for " + configuration.getName(), dhLink,
+        device, this);
   }
 
   @Override

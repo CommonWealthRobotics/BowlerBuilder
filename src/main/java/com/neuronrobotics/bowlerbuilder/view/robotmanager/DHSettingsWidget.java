@@ -23,13 +23,13 @@ public class DHSettingsWidget extends VBox implements EngineeringUnitsChangeList
   private DHParameterKinematics device2;
   private EngineeringUnitsChangeListener externalListener;
 
-  public DHSettingsWidget(DHLink dhLink, DHParameterKinematics device2,
+  public DHSettingsWidget(String title, DHLink dhLink, DHParameterKinematics device2,
       EngineeringUnitsChangeListener externalListener) {
     this.dhLink = dhLink;
     this.device2 = device2;
     this.externalListener = externalListener;
 
-    Label titleLabel = new Label("D-H Configuration");
+    Label titleLabel = new Label(title);
     titleLabel.setFont(Font.font(16));
     titleLabel.setPadding(new Insets(5));
     getChildren().add(titleLabel);

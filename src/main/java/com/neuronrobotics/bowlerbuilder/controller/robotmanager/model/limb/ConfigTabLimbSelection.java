@@ -17,7 +17,7 @@ public class ConfigTabLimbSelection extends LimbSelection {
       MobileBaseCadManager cadManager) {
     super(limb);
 
-    widget = new TransformWidget("Place Limb",
+    widget = new TransformWidget("Limb Configuration for " + limb.getScriptingName(),
         limb.getRobotToFiducialTransform(), new TransformChangeListener() {
 
       @Override
