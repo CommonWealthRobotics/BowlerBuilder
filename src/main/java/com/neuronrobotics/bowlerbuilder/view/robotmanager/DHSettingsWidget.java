@@ -5,9 +5,11 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUni
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 
 public class DHSettingsWidget extends Group implements EngineeringUnitsChangeListener {
 
@@ -20,10 +22,9 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
   private EngineeringUnitsChangeListener externalListener;
 
   public DHSettingsWidget(DHLink dhLink, DHParameterKinematics device2,
-                          EngineeringUnitsChangeListener externalListener) {
+      EngineeringUnitsChangeListener externalListener) {
     this.dhLink = dhLink;
     this.device2 = device2;
-
     this.externalListener = externalListener;
 
     delta = new EngineeringUnitsSliderWidget(this,
@@ -38,7 +39,6 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
         Math.toDegrees(dhLink.getTheta()),
         180, "degrees");
 
-
     radius = new EngineeringUnitsSliderWidget(this,
         0,
         200,
@@ -52,19 +52,28 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
         180, "degrees");
 
     GridPane gridPane = new GridPane();
-    gridPane.add(new Text("Delta (Height)"), 0, 0);
+    gridPane.setAlignment(Pos.CENTER_LEFT);
+    gridPane.setPadding(new Insets(5));
+
+    gridPane.add(getLabel("Delta (Height)"), 0, 0);
     gridPane.add(delta, 1, 0);
 
-    gridPane.add(new Text("Radius (Length)"), 0, 1);
+    gridPane.add(getLabel("Radius (Length)"), 0, 1);
     gridPane.add(radius, 1, 1);
 
-    gridPane.add(new Text("Theta"), 0, 2);
+    gridPane.add(getLabel("Theta"), 0, 2);
     gridPane.add(theta, 1, 2);
 
-    gridPane.add(new Text("Alpha"), 0, 3);
+    gridPane.add(getLabel("Alpha"), 0, 3);
     gridPane.add(alpha, 1, 3);
 
     getChildren().add(gridPane);
+  }
+
+  private Label getLabel(String text) {
+    Label out = new Label(text);
+    out.setPadding(new Insets(0, 5, 0, 0));
+    return out;
   }
 
   @Override
@@ -90,4 +99,5 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
       externalListener.onSliderDoneMoving(source, newAngleDegrees);
     }
   }
+
 }

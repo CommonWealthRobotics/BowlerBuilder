@@ -1,12 +1,16 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
 
-import javafx.application.Platform;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number> {
@@ -17,13 +21,8 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   private boolean intCast;
   private boolean allowResize = true;
 
-  public EngineeringUnitsSliderWidget(EngineeringUnitsChangeListener listener,
-                                      double min,
-                                      double max,
-                                      double current,
-                                      double width,
-                                      String units,
-                                      boolean intCast) {
+  public EngineeringUnitsSliderWidget(EngineeringUnitsChangeListener listener, double min,
+      double max, double current, double width, String units, boolean intCast) {
     this(listener, min, max, current, width, units);
     this.intCast = intCast;
   }
@@ -72,7 +71,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     setpoint.setMinorTickCount(5);
 
     setpointValue = new TextField(getFormatted(current));
-    setpointValue.setOnAction(event -> Platform.runLater(() -> {
+    setpointValue.setOnAction(event -> FxUtil.runFX(() -> {
       double val = Double.parseDouble(setpointValue.getText());
       setValue(val);
       getListener().onSliderMoving(this, val);
@@ -88,6 +87,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     });
     setpoint.valueProperty().addListener(this);
 
+    setAlignment(Pos.CENTER_LEFT);
     getColumnConstraints().add(new ColumnConstraints(width + 20));
     getColumnConstraints().add(new ColumnConstraints(100));
 
@@ -96,7 +96,12 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
     add(setpoint, 0, 0);
     add(setpointValue, 1, 0);
-    add(new Text(unitsString), 2, 0);
+    Text unitText = new Text(unitsString);
+    HBox unitTextWrapper = new HBox(unitText); //Wrapper so we get padding
+    unitTextWrapper.setPadding(new Insets(0, 0, 0, 5));
+    unitTextWrapper.setAlignment(Pos.CENTER_LEFT);
+    HBox.setHgrow(unitTextWrapper, Priority.NEVER);
+    add(unitTextWrapper, 2, 0);
   }
 
   public void setUpperBound(double newBound) {
@@ -108,13 +113,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   @Override
-  public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-                      Number newValue) {
+  public void changed(ObservableValue<? extends Number> observable,
+      Number oldValue,
+      Number newValue) {
     updateValue();
   }
 
   private void updateValue() {
-    Platform.runLater(() -> {
+    FxUtil.runFX(() -> {
       setpointValue.setText(getFormatted(setpoint.getValue()));
       getListener().onSliderMoving(this, setpoint.getValue());
     });
@@ -126,7 +132,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
    * @param value new value
    */
   public void setValue(double value) {
-    Platform.runLater(() -> {
+    FxUtil.runFX(() -> {
       setpoint.valueProperty().removeListener(this);
       double val = value;
       if (val > setpoint.getMax()) {
@@ -179,15 +185,13 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   public EngineeringUnitsChangeListener getListener() {
     if (listener == null) {
       return new EngineeringUnitsChangeListener() {
-
         @Override
         public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
           //Default is nothing
         }
 
         @Override
-        public void onSliderDoneMoving(
-            EngineeringUnitsSliderWidget source,
+        public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
             double newAngleDegrees) {
           //Default is nothing
         }
