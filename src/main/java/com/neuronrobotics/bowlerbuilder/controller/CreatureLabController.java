@@ -39,7 +39,11 @@ public class CreatureLabController {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(CreatureLabController.class.getSimpleName());
-
+  private final AnchorPane limbWidget;
+  private final AnchorPane movementWidget;
+  private final AnchorPane configWidget;
+  private final ObjectProperty<Selection> selectionProperty;
+  private final ObjectProperty<AnchorPane> selectedWidgetPane;
   @FXML
   private ProgressIndicator cadProgress;
   @FXML
@@ -52,12 +56,6 @@ public class CreatureLabController {
   private Tab movementTab;
   @FXML
   private Tab configTab;
-
-  private final AnchorPane limbWidget;
-  private final AnchorPane movementWidget;
-  private final AnchorPane configWidget;
-  private final ObjectProperty<Selection> selectionProperty;
-  private final ObjectProperty<AnchorPane> selectedWidgetPane;
   private MobileBase device;
   private MobileBaseCadManager cadManager;
 
@@ -104,6 +102,7 @@ public class CreatureLabController {
 
     autoRegenCAD.selectedProperty().addListener((observable, oldValue, newValue) ->
         cadManager.setAutoRegen(newValue));
+    cadManager.setAutoRegen(autoRegenCAD.isSelected());
 
     generateLimbTab();
     generateMovementTab();
@@ -165,7 +164,7 @@ public class CreatureLabController {
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
-      List<DHParameterKinematics> limbs) {
+                                  List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -207,7 +206,7 @@ public class CreatureLabController {
   }
 
   private HBox getMovementTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+                                      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -260,7 +259,7 @@ public class CreatureLabController {
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+                                    List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -299,7 +298,7 @@ public class CreatureLabController {
         Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
         linkButton.setOnAction(event ->
-            selectionProperty.set(new ConfigTabLinkSelection(finalI, link, configuration, limb)));
+            selectionProperty.set(new ConfigTabLinkSelection(finalI, link, configuration, limb, cadManager)));
         hBoxInner.getChildren().add(linkButton);
       }
       vBox.getChildren().add(hBoxInner);

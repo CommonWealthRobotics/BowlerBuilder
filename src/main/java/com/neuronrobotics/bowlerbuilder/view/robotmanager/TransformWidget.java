@@ -16,7 +16,7 @@ public class TransformWidget extends GridPane implements EngineeringUnitsChangeL
   private TransformChangeListener onChange;
   private EngineeringUnitsSliderWidget tilt;
   private EngineeringUnitsSliderWidget elevation;
-  private EngineeringUnitsSliderWidget azimeth;
+  private EngineeringUnitsSliderWidget azimuth;
   private EngineeringUnitsSliderWidget tx;
   private EngineeringUnitsSliderWidget ty;
   private EngineeringUnitsSliderWidget tz;
@@ -54,18 +54,18 @@ public class TransformWidget extends GridPane implements EngineeringUnitsChangeL
 
     tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100, "degrees");
     elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 100, "degrees");
-    azimeth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100, "degrees");
+    azimuth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100, "degrees");
 
     tilt.setAllowResize(false);
     elevation.setAllowResize(false);
-    azimeth.setAllowResize(false);
+    azimuth.setAllowResize(false);
 
     getColumnConstraints().add(new ColumnConstraints(30)); // translate text
     getColumnConstraints().add(new ColumnConstraints(200)); // translate values
-    getColumnConstraints().add(new ColumnConstraints(60)); // units
-    getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
+    getColumnConstraints().add(new ColumnConstraints(30)); // units
+    getColumnConstraints().add(new ColumnConstraints(30)); // rotate text
 
-    setHgap(20);
+    setHgap(10);
 
     add(new Text(title),
         1, 0);
@@ -104,7 +104,7 @@ public class TransformWidget extends GridPane implements EngineeringUnitsChangeL
 
     add(new Text("Azimuth"),
         3, 3);
-    add(azimeth,
+    add(azimuth,
         4, 3);
   }
 
@@ -115,7 +115,7 @@ public class TransformWidget extends GridPane implements EngineeringUnitsChangeL
         tz.getValue(),
         new RotationNR(
             tilt.getValue(),
-            azimeth.getValue(),
+            azimuth.getValue(),
             elevation.getValue()
         ));
   }
@@ -165,7 +165,7 @@ public class TransformWidget extends GridPane implements EngineeringUnitsChangeL
 
     tilt.setValue(t);
     elevation.setValue(e);
-    azimeth.setValue(a);
+    azimuth.setValue(a);
   }
 
 }

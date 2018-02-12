@@ -29,7 +29,7 @@ public class ConfigTabLimbSelection extends LimbSelection {
       public void onTransformChanging(TransformNR newTrans) {
         limb.setRobotToFiducialTransform(newTrans);
         limb.getCurrentTaskSpaceTransform();
-        //this calls the render update function attachec as the on jointspace update
+        //this calls the render update function attached as the on joint space update
         double[] joint = limb.getCurrentJointSpaceVector();
         limb.getChain().getChain(joint);
         Platform.runLater(() -> limb.onJointSpaceUpdate(limb, joint));
