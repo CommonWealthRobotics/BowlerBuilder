@@ -7,12 +7,14 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
-public class DHSettingsWidget extends Group implements EngineeringUnitsChangeListener {
+public class DHSettingsWidget extends VBox implements EngineeringUnitsChangeListener {
 
+  private final GridPane gridPane;
   private DHLink dhLink;
   private EngineeringUnitsSliderWidget delta;
   private EngineeringUnitsSliderWidget theta;
@@ -26,6 +28,11 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
     this.dhLink = dhLink;
     this.device2 = device2;
     this.externalListener = externalListener;
+
+    Label titleLabel = new Label("D-H Configuration");
+    titleLabel.setFont(Font.font(16));
+    titleLabel.setPadding(new Insets(5));
+    getChildren().add(titleLabel);
 
     delta = new EngineeringUnitsSliderWidget(this,
         0,
@@ -51,26 +58,26 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
         Math.toDegrees(dhLink.getAlpha()),
         180, "degrees");
 
-    GridPane gridPane = new GridPane();
+    gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER_LEFT);
     gridPane.setPadding(new Insets(5));
 
-    gridPane.add(getLabel("Delta (Height)"), 0, 0);
+    gridPane.add(getSliderLabel("Delta (Height)"), 0, 0);
     gridPane.add(delta, 1, 0);
 
-    gridPane.add(getLabel("Radius (Length)"), 0, 1);
+    gridPane.add(getSliderLabel("Radius (Length)"), 0, 1);
     gridPane.add(radius, 1, 1);
 
-    gridPane.add(getLabel("Theta"), 0, 2);
+    gridPane.add(getSliderLabel("Theta"), 0, 2);
     gridPane.add(theta, 1, 2);
 
-    gridPane.add(getLabel("Alpha"), 0, 3);
+    gridPane.add(getSliderLabel("Alpha"), 0, 3);
     gridPane.add(alpha, 1, 3);
 
     getChildren().add(gridPane);
   }
 
-  private Label getLabel(String text) {
+  private Label getSliderLabel(String text) {
     Label out = new Label(text);
     out.setPadding(new Insets(0, 5, 0, 0));
     return out;

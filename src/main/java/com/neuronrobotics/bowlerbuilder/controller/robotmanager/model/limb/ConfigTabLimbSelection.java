@@ -39,7 +39,7 @@ public class ConfigTabLimbSelection extends LimbSelection {
 
   @Override
   public Node getWidget() {
-    return widget;
+    return widget.getView();
   }
 
 }
