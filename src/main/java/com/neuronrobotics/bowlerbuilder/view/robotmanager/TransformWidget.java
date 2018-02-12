@@ -62,8 +62,8 @@ public class TransformWidget extends GridPane implements EngineeringUnitsChangeL
 
     getColumnConstraints().add(new ColumnConstraints(30)); // translate text
     getColumnConstraints().add(new ColumnConstraints(200)); // translate values
-    getColumnConstraints().add(new ColumnConstraints(30)); // units
-    getColumnConstraints().add(new ColumnConstraints(30)); // rotate text
+    getColumnConstraints().add(new ColumnConstraints(60)); // units
+    getColumnConstraints().add(new ColumnConstraints(60)); // rotate text
 
     setHgap(10);
 

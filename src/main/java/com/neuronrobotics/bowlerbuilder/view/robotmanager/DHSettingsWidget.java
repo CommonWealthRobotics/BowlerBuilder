@@ -6,11 +6,7 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUni
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.scene.Group;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.TitledPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.text.Text;
 
 public class DHSettingsWidget extends Group implements EngineeringUnitsChangeListener {
@@ -34,7 +30,7 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
         0,
         200,
         dhLink.getDelta(),
-        180, " mm ");
+        180, "mm");
 
     theta = new EngineeringUnitsSliderWidget(this,
         -180,
@@ -47,7 +43,7 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
         0,
         200,
         dhLink.getRadius(),
-        180, " mm ");
+        180, "mm");
 
     alpha = new EngineeringUnitsSliderWidget(this,
         -180,
@@ -55,36 +51,20 @@ public class DHSettingsWidget extends Group implements EngineeringUnitsChangeLis
         Math.toDegrees(dhLink.getAlpha()),
         180, "degrees");
 
-    GridPane gridpane = new GridPane();
-    gridpane.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
-    gridpane.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 300 wide
-    gridpane.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
-    gridpane.getRowConstraints().add(new RowConstraints(50)); //
-    gridpane.getRowConstraints().add(new RowConstraints(50)); //
-    gridpane.getRowConstraints().add(new RowConstraints(50)); //
-    gridpane.getRowConstraints().add(new RowConstraints(50)); //
-    gridpane.add(new Text("Delta (Height)"), 0, 0);
-    gridpane.add(delta, 1, 0);
-    gridpane.add(new Text("Radius (Length)"), 0, 1);
-    gridpane.add(radius, 1, 1);
-    Accordion advancedPanel = new Accordion();
     GridPane gridPane = new GridPane();
-    gridPane.getColumnConstraints().add(new ColumnConstraints(120)); // column 1 is 75 wide
-    gridPane.getColumnConstraints().add(new ColumnConstraints(320)); // column 2 is 300 wide
-    gridPane.getColumnConstraints().add(new ColumnConstraints(100)); // column 2 is 100 wide
-    gridPane.getRowConstraints().add(new RowConstraints(50)); //
-    gridPane.getRowConstraints().add(new RowConstraints(50)); //
-    gridPane.add(new Text("Theta"), 0, 0);
-    gridPane.add(theta, 1, 0);
-    gridPane.add(new Text("Alpha"), 0, 1);
-    gridPane.add(alpha, 1, 1);
+    gridPane.add(new Text("Delta (Height)"), 0, 0);
+    gridPane.add(delta, 1, 0);
 
-    TitledPane rp = new TitledPane("Advance D-H ", gridPane);
-    advancedPanel.getPanes().add(rp);
+    gridPane.add(new Text("Radius (Length)"), 0, 1);
+    gridPane.add(radius, 1, 1);
 
-    gridpane.add(advancedPanel, 1, 2);
+    gridPane.add(new Text("Theta"), 0, 2);
+    gridPane.add(theta, 1, 2);
 
-    getChildren().add(gridpane);
+    gridPane.add(new Text("Alpha"), 0, 3);
+    gridPane.add(alpha, 1, 3);
+
+    getChildren().add(gridPane);
   }
 
   @Override
