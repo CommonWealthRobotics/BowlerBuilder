@@ -123,13 +123,13 @@ public class CreatureLabController {
   private void generateMovementTab(MobileBase device) {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
-        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
+        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
             device.getLegs()),
-        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
+        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
             device.getAppendages()),
-        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
+        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
             device.getSteerable()),
-        getMovementLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
+        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
             device.getDrivable()));
 
     VBox content = new VBox(10);
@@ -198,7 +198,7 @@ public class CreatureLabController {
     return hBox;
   }
 
-  private HBox getMovementLimbHBox(ImageView icon,
+  private HBox getMovementTabLimbHBox(ImageView icon,
       List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
