@@ -13,11 +13,11 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
   private TextField setpointValue;
   private Slider setpoint;
-  private OnEngineeringUnitsChange listener;
+  private EngineeringUnitsChangeListener listener;
   private boolean intCast;
   private boolean allowResize = true;
 
-  public EngineeringUnitsSliderWidget(OnEngineeringUnitsChange listener,
+  public EngineeringUnitsSliderWidget(EngineeringUnitsChangeListener listener,
                                       double min,
                                       double max,
                                       double current,
@@ -29,7 +29,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   public EngineeringUnitsSliderWidget(
-      OnEngineeringUnitsChange listener,
+      EngineeringUnitsChangeListener listener,
       double current,
       double width,
       String units) {
@@ -37,7 +37,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   public EngineeringUnitsSliderWidget(
-      OnEngineeringUnitsChange listener,
+      EngineeringUnitsChangeListener listener,
       double min,
       double max,
       double current,
@@ -176,9 +176,9 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
    *
    * @return change listener
    */
-  public OnEngineeringUnitsChange getListener() {
+  public EngineeringUnitsChangeListener getListener() {
     if (listener == null) {
-      return new OnEngineeringUnitsChange() {
+      return new EngineeringUnitsChangeListener() {
 
         @Override
         public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
@@ -197,7 +197,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     return listener;
   }
 
-  public void setListener(OnEngineeringUnitsChange listener) {
+  public void setListener(EngineeringUnitsChangeListener listener) {
     this.listener = listener;
   }
 

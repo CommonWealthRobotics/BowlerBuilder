@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
 
-public interface OnEngineeringUnitsChange {
+public interface EngineeringUnitsChangeListener {
 
   void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees);
 

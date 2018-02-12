@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.view.robotmanager;
 
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.OnEngineeringUnitsChange;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerstudio.assets.ConfigurationDatabase;
 import com.neuronrobotics.sdk.addons.gamepad.BowlerJInputDevice;
 import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
@@ -25,7 +25,7 @@ import org.reactfx.util.FxTimer;
 
 @SuppressWarnings("restriction")
 public class LinkSliderWidget extends Group implements IJInputEventListener,
-    OnEngineeringUnitsChange, ILinkListener {
+    EngineeringUnitsChangeListener, ILinkListener {
 
   private AbstractKinematicsNR device;
   private DHParameterKinematics dhdevice;

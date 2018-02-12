@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.Movem
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
@@ -28,7 +29,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -58,6 +58,8 @@ public class CreatureLabController {
   private final AnchorPane configWidget;
   private final ObjectProperty<Selection> selectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
+  private MobileBase device;
+  private MobileBaseCadManager cadManager;
 
   @Inject
   public CreatureLabController() {
@@ -96,13 +98,19 @@ public class CreatureLabController {
     configTab.setStyle("-fx-padding: 5px;");
   }
 
-  public void generateMenus(MobileBase device) {
-    generateLimbTab(device);
-    generateMovementTab(device);
-    generateConfigTab(device);
+  public void generateMenus(MobileBase device, MobileBaseCadManager cadManager) {
+    this.device = device;
+    this.cadManager = cadManager;
+
+    autoRegenCAD.selectedProperty().addListener((observable, oldValue, newValue) ->
+        cadManager.setAutoRegen(newValue));
+
+    generateLimbTab();
+    generateMovementTab();
+    generateConfigTab();
   }
 
-  private void generateLimbTab(MobileBase device) {
+  private void generateLimbTab() {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
@@ -120,7 +128,7 @@ public class CreatureLabController {
     FxUtil.runFX(() -> limbTab.setContent(content));
   }
 
-  private void generateMovementTab(MobileBase device) {
+  private void generateMovementTab() {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
@@ -138,7 +146,7 @@ public class CreatureLabController {
     FxUtil.runFX(() -> movementTab.setContent(content));
   }
 
-  private void generateConfigTab(MobileBase device) {
+  private void generateConfigTab() {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
@@ -278,7 +286,7 @@ public class CreatureLabController {
       Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
       limbButton.setOnAction(
-          event -> selectionProperty.set(new ConfigTabLimbSelection(limb)));
+          event -> selectionProperty.set(new ConfigTabLimbSelection(limb, device, cadManager)));
       vBox.getChildren().add(limbButton);
 
       HBox hBoxInner = new HBox(5);
@@ -302,69 +310,6 @@ public class CreatureLabController {
     hBox.getChildren().add(scrollPane);
 
     return hBox;
-  }
-
-  private TreeItem<String> loadLimbs(TreeItem<String> root, List<DHParameterKinematics> drivable) {
-    drivable.forEach(limb -> root.getChildren().add(loadSingleLimb(limb)));
-    return root;
-  }
-
-  private TreeItem<String> loadSingleLimb(DHParameterKinematics dh) {
-    TreeItem<String> dhItem = new TreeItem<>(dh.getScriptingName(),
-        AssetFactory.loadIcon("Move-Limb.png"));
-
-    int i = 0;
-    for (LinkConfiguration conf : dh.getFactory().getLinkConfigurations()) {
-      dhItem.getChildren().add(loadSingleLink(conf, dh, i++));
-    }
-
-    TreeItem<String> placeLimb = new TreeItem<>("Move Root Of Limb",
-        AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
-    dhItem.getChildren().add(placeLimb);
-
-    TreeItem<String> addLink = new TreeItem<>("Add Link",
-        AssetFactory.loadIcon("Add-Link.png"));
-    dhItem.getChildren().add(addLink);
-
-    TreeItem<String> advanced = new TreeItem<>("Advanced Configuration",
-        AssetFactory.loadIcon("Advanced-Configuration.png"));
-    dhItem.getChildren().add(advanced);
-
-    TreeItem<String> remove = new TreeItem<>("Remove " + dh.getScriptingName(),
-        AssetFactory.loadIcon("Remove-Limb.png"));
-    dhItem.getChildren().add(remove);
-
-    return dhItem;
-  }
-
-  private TreeItem<String> loadSingleLink(LinkConfiguration conf,
-      DHParameterKinematics dh, Integer index) {
-    TreeItem<String> link = new TreeItem<>(conf.getName(),
-        AssetFactory.loadIcon("Move-Single-Motor.png"));
-
-    DHLink dhLink = dh.getChain().getLinks().get(index);
-    //    LinkSliderWidget linkSliderWidget = new LinkSliderWidget(index, dhLink, device);
-
-    TreeItem<String> design = new TreeItem<>("Design Parameters " + conf.getName(),
-        AssetFactory.loadIcon("Design-Parameter-Adjustment.png"));
-    link.getChildren().add(design);
-
-    TreeItem<String> hwConfig = new TreeItem<>("Hardware Config " + conf.getName(),
-        AssetFactory.loadIcon("Hardware-Config.png"));
-    link.getChildren().add(hwConfig);
-
-    TreeItem<String> slaves = new TreeItem<>("Slaves to " + conf.getName(),
-        AssetFactory.loadIcon("Slave-Links.png"));
-    TreeItem<String> addSlaves = new TreeItem<>("Add Slave to " + conf.getName(),
-        AssetFactory.loadIcon("Add-Slave-Links.png"));
-    slaves.getChildren().add(addSlaves);
-    link.getChildren().add(slaves);
-
-    TreeItem<String> remove = new TreeItem<>("Remove " + conf.getName(),
-        AssetFactory.loadIcon("Remove-Link.png"));
-    link.getChildren().add(remove);
-
-    return link;
   }
 
   public ProgressIndicator getCadProgress() {

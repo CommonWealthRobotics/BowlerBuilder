@@ -36,7 +36,7 @@ public class RobotManager {
           mobileBase, new BowlerMobileBaseUI(cadEngine));
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-      creatureLab.generateMenus(mobileBase);
+      creatureLab.generateMenus(mobileBase, mobileBaseCadManager);
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
       creatureLab.getCadProgress().progressProperty()

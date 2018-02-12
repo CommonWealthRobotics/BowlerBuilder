@@ -1,18 +1,45 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
+import com.neuronrobotics.bowlerbuilder.view.robotmanager.TransformChangeListener;
+import com.neuronrobotics.bowlerbuilder.view.robotmanager.TransformWidget;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
 
 public class ConfigTabLimbSelection extends LimbSelection {
 
-  public ConfigTabLimbSelection(DHParameterKinematics limb) {
+  private final TransformWidget widget;
+
+  public ConfigTabLimbSelection(DHParameterKinematics limb, MobileBase device,
+      MobileBaseCadManager cadManager) {
     super(limb);
+
+    widget = new TransformWidget("Place Limb",
+        limb.getRobotToFiducialTransform(), new TransformChangeListener() {
+
+      @Override
+      public void onTransformFinished(TransformNR newTrans) {
+        cadManager.generateCad();
+      }
+
+      @Override
+      public void onTransformChanging(TransformNR newTrans) {
+        limb.setRobotToFiducialTransform(newTrans);
+        limb.getCurrentTaskSpaceTransform();
+        //this calls the render update function attachec as the on jointspace update
+        double[] joint = limb.getCurrentJointSpaceVector();
+        limb.getChain().getChain(joint);
+        Platform.runLater(() -> limb.onJointSpaceUpdate(limb, joint));
+      }
+    });
   }
 
   @Override
   public Node getWidget() {
-    return new AnchorPane();
+    return widget;
   }
 
 }

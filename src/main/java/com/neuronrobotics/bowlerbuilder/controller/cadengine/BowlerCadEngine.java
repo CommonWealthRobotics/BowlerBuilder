@@ -6,7 +6,7 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.OnEngineeringUnitsChange;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraDevice;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera.XForm;
@@ -776,7 +776,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
               LengthParameter lp = (LengthParameter) param;
 
               EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
-                  new OnEngineeringUnitsChange() {
+                  new EngineeringUnitsChangeListener() {
                     @Override
                     public void onSliderMoving(
                         EngineeringUnitsSliderWidget sliderWidget,
