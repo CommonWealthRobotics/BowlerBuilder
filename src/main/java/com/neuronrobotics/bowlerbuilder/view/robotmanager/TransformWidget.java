@@ -132,38 +132,6 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
     onChange.onTransformFinished(getCurrent());
   }
 
-  public void updatePose(TransformNR p) {
-    tx.setValue(p.getX());
-    ty.setValue(p.getY());
-    tz.setValue(p.getZ());
-
-    RotationNR rot = p.getRotation();
-    double t = 0;
-    try {
-      t = Math.toDegrees(rot.getRotationTilt());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
-    double e = 0;
-    try {
-      e = Math.toDegrees(rot.getRotationElevation());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
-    double a = 0;
-    try {
-      a = Math.toDegrees(rot.getRotationAzimuth());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
-    tilt.setValue(t);
-    elevation.setValue(e);
-    azimuth.setValue(a);
-  }
-
   public Node getView() {
     return view;
   }

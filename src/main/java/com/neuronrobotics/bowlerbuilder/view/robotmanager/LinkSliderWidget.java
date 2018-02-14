@@ -94,6 +94,11 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
     }
   }
 
+  /**
+   * Use a controller instead of the buttons.
+   *
+   * @param controller {@link BowlerJInputDevice} controller
+   */
   public void setGameController(BowlerJInputDevice controller) {
     this.controller = controller;
 

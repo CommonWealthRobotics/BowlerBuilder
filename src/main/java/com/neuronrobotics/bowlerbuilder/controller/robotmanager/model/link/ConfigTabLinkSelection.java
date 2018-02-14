@@ -24,6 +24,7 @@ public class ConfigTabLinkSelection extends LinkSelection implements
       DHParameterKinematics device, MobileBaseCadManager cadManager) {
     super(linkIndex, dhLink, configuration, device);
     this.cadManager = cadManager;
+
     widget = new VBox(5);
     widget.setPadding(new Insets(5));
 
@@ -43,7 +44,6 @@ public class ConfigTabLinkSelection extends LinkSelection implements
 
   @Override
   public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-
   }
 
   @Override

@@ -34,11 +34,7 @@ public class JogWidget {
   private final TextField speed;
   private final TextField time;
 
-  private DHParameterKinematics limb;
-
   public JogWidget(DHParameterKinematics limb) {
-    this.limb = limb;
-
     view = new VBox(5);
     controlPane = new GridPane();
 

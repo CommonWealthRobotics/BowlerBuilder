@@ -22,6 +22,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
@@ -96,6 +97,12 @@ public class CreatureLabController {
     configTab.setStyle("-fx-padding: 5px;");
   }
 
+  /**
+   * Fill the CreatureLab tabs with menus for a {@link MobileBase}.
+   *
+   * @param device {@link MobileBase} to load menus from
+   * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
+   */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager) {
     this.device = device;
     this.cadManager = cadManager;
@@ -124,7 +131,7 @@ public class CreatureLabController {
     VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, limbWidget);
 
-    FxUtil.runFX(() -> limbTab.setContent(content));
+    FxUtil.runFX(() -> limbTab.setContent(getScrollPane(content)));
   }
 
   private void generateMovementTab() {
@@ -142,7 +149,7 @@ public class CreatureLabController {
     VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, movementWidget);
 
-    FxUtil.runFX(() -> movementTab.setContent(content));
+    FxUtil.runFX(() -> movementTab.setContent(getScrollPane(content)));
   }
 
   private void generateConfigTab() {
@@ -160,11 +167,18 @@ public class CreatureLabController {
     VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, configWidget);
 
-    FxUtil.runFX(() -> configTab.setContent(content));
+    FxUtil.runFX(() -> configTab.setContent(getScrollPane(content)));
+  }
+
+  private ScrollPane getScrollPane(Node node) {
+    ScrollPane pane = new ScrollPane(node);
+    pane.setFitToWidth(true);
+    pane.setPadding(new Insets(5));
+    return pane;
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
-                                  List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -206,7 +220,7 @@ public class CreatureLabController {
   }
 
   private HBox getMovementTabLimbHBox(ImageView icon,
-                                      List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -259,7 +273,7 @@ public class CreatureLabController {
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,
-                                    List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -298,7 +312,8 @@ public class CreatureLabController {
         Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
         linkButton.setOnAction(event ->
-            selectionProperty.set(new ConfigTabLinkSelection(finalI, link, configuration, limb, cadManager)));
+            selectionProperty
+                .set(new ConfigTabLinkSelection(finalI, link, configuration, limb, cadManager)));
         hBoxInner.getChildren().add(linkButton);
       }
       vBox.getChildren().add(hBoxInner);
