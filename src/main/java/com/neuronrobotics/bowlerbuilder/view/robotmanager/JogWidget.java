@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 public class JogWidget {
 
@@ -36,6 +37,10 @@ public class JogWidget {
     view.setPadding(new Insets(5));
     controlPane.setHgap(5);
     controlPane.setVgap(5);
+
+    Label title = new Label(limb.getScriptingName());
+    title.setFont(Font.font(16));
+    view.getChildren().add(title);
 
     Button plusX = addButton(AssetFactory.loadIcon("Plus-X.png"), "", 1, 0);
     Button minusX = addButton(AssetFactory.loadIcon("Minus-X.png"), "", 1, 2);
