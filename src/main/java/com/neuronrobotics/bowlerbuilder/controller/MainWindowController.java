@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -629,6 +631,23 @@ public class MainWindowController {
   private void quit() {
     root.getScene().getWindow().hide();
     Platform.exit();
+
+    //Need to make sure the VM exits; sometimes a rouge thread is running
+    Timer timer = new Timer(true);
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        logger.log(Level.SEVERE, "Still alive for some reason. Printing threads and " +
+            "killing VM...");
+
+        Set<Thread> threads = Thread.getAllStackTraces().keySet();
+        StringBuilder threadString = new StringBuilder();
+        threads.forEach(item -> threadString.append(item).append("\n"));
+        logger.log(Level.FINE, threadString.toString());
+
+        System.exit(1); //Abnormal exit
+      }
+    }, 10000); //Wait 10 seconds before killing the VM
   }
 
   /**

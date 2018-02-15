@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
+import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
@@ -15,10 +16,14 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -35,6 +40,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import org.controlsfx.control.Notifications;
 
 public class CreatureLabController {
 
@@ -49,6 +56,12 @@ public class CreatureLabController {
   private ProgressIndicator cadProgress;
   @FXML
   private CheckBox autoRegenCAD;
+  @FXML
+  private Button regenCADButton;
+  @FXML
+  private Button genPrintableCAD;
+  @FXML
+  private Button genKinSTL;
   @FXML
   private TabPane creatureTabPane;
   @FXML
@@ -95,6 +108,10 @@ public class CreatureLabController {
     movementTab.setStyle("-fx-padding: 5px;");
     configTab.setGraphic(AssetFactory.loadIcon("Advanced-Configuration.png"));
     configTab.setStyle("-fx-padding: 5px;");
+
+    regenCADButton.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
+    genPrintableCAD.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
+    genKinSTL.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
   }
 
   /**
@@ -328,6 +345,91 @@ public class CreatureLabController {
 
   public ProgressIndicator getCadProgress() {
     return cadProgress;
+  }
+
+  @FXML
+  private void onRegenCAD(ActionEvent actionEvent) {
+    if (cadManager != null) {
+      cadManager.generateCad(); //TODO: Always regen CAD regardless of auto regen flag
+    }
+  }
+
+  @FXML
+  private void onGenPrintableCAD(ActionEvent actionEvent) {
+    genSTLs(device, cadManager, false);
+  }
+
+  @FXML
+  private void onGenKinSTL(ActionEvent actionEvent) {
+    genSTLs(device, cadManager, true);
+  }
+
+  /**
+   * Show a {@link DirectoryChooser} to pick a save directory and then generate and save STL files
+   * for the given {@link MobileBase} and {@link MobileBaseCadManager}.
+   *
+   * @param device creature to gen STLs for
+   * @param cadManager CAD manager to gen STLs with
+   * @param isKinematic whether to gen kinematic STLs
+   */
+  public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
+      boolean isKinematic) {
+    File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+    if (!defaultStlDir.exists()) {
+      if (!defaultStlDir.mkdirs()) {
+        logger.log(Level.WARNING, "Could not create default directory to save STL files.");
+        return;
+      }
+    }
+
+    FxUtil.runFX(() -> {
+      DirectoryChooser chooser = new DirectoryChooser();
+      chooser.setTitle("Select Output Directory For STL files");
+
+      chooser.setInitialDirectory(defaultStlDir);
+      File baseDirForFiles = chooser.showDialog(creatureTabPane.getScene().getWindow());
+      if (baseDirForFiles == null) {
+        logger.log(Level.INFO, "No directory selected. Not saving STL files.");
+        return;
+      }
+
+      LoggerUtilities.newLoggingThread(logger, () -> {
+        try {
+          List<File> files = cadManager.generateStls(device, baseDirForFiles, isKinematic);
+
+          FxUtil.runFX(() ->
+              Notifications.create()
+                  .title("STL Export Success")
+                  .text("All STL files for the creature generated at:\n"
+                      + files.get(0).getAbsolutePath())
+                  .showInformation());
+        } catch (IOException e) {
+          logger.log(Level.WARNING, "Could not generate STL files to save in: "
+              + baseDirForFiles.getAbsolutePath()
+              + "\n" + Throwables.getStackTraceAsString(e));
+
+          FxUtil.runFX(() ->
+              Notifications.create()
+                  .title("STL Export Failure")
+                  .text("Could not generate STL files.")
+                  .showError());
+        } catch (RuntimeException e) {
+          if (e.getMessage().contains("IgenerateBed")) {
+            logger.log(Level.INFO, "Cannot generate STL files because the supplied CAD manager "
+                + "does not implement the IgenerateBed interface.\n"
+                + Throwables.getStackTraceAsString(e));
+          } else {
+            logger.log(Level.WARNING, Throwables.getStackTraceAsString(e));
+          }
+
+          FxUtil.runFX(() ->
+              Notifications.create()
+                  .title("STL Export Failure")
+                  .text("Could not generate STL files.")
+                  .showError());
+        }
+      }).start();
+    });
   }
 
 }
