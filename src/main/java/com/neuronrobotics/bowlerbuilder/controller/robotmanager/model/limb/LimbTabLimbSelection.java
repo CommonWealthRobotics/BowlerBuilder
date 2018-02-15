@@ -59,9 +59,11 @@ public class LimbTabLimbSelection extends LimbSelection {
     selectionProperty.addListener((observable, oldValue, newValue) ->
         widget.getChildren().setAll(new LimbTabLinkSelection(0, null, newValue, null).getWidget()));
 
-    Button addLink;
-    addLink = new Button();
+    Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
+    addLink.setOnAction(event -> {
+      //TODO: Add a new link to the limb
+    });
 
     HBox controlsBox = new HBox(5, addLink);
     controlsBox.setPadding(new Insets(5));
