@@ -7,10 +7,10 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 
 public abstract class LinkSelection implements Selection {
 
-  private int linkIndex;
-  private DHLink dhLink;
-  private LinkConfiguration configuration;
-  private AbstractKinematicsNR device;
+  protected int linkIndex;
+  protected DHLink dhLink;
+  protected LinkConfiguration configuration;
+  protected AbstractKinematicsNR device;
 
   public LinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
       AbstractKinematicsNR device) {

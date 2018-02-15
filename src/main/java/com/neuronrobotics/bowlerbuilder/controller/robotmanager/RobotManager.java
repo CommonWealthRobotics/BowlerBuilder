@@ -18,13 +18,8 @@ public class RobotManager {
 
   private static final Logger logger
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
-  private final CadEngine cadEngine;
-  private final CreatureLabController creatureLab;
 
   public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab) {
-    this.cadEngine = cadEngine;
-    this.creatureLab = creatureLab;
-
     try {
       String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
           "seaArm.xml"};

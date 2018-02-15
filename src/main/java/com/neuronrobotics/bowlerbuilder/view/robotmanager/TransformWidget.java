@@ -1,9 +1,13 @@
 package com.neuronrobotics.bowlerbuilder.view.robotmanager;
 
+import com.google.common.base.Throwables;
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -17,25 +21,24 @@ import javafx.scene.text.Font;
 public class TransformWidget implements EngineeringUnitsChangeListener,
     EventHandler<ActionEvent> {
 
+  private static final Logger logger =
+      LoggerUtilities.getLogger(TransformWidget.class.getSimpleName());
   private final VBox view;
-  private final GridPane gridPane;
-  private TransformChangeListener onChange;
-  private EngineeringUnitsSliderWidget tilt;
-  private EngineeringUnitsSliderWidget elevation;
-  private EngineeringUnitsSliderWidget azimuth;
-  private EngineeringUnitsSliderWidget tx;
-  private EngineeringUnitsSliderWidget ty;
-  private EngineeringUnitsSliderWidget tz;
-  private TransformNR initialState;
+  private final TransformChangeListener onChange;
+  private final EngineeringUnitsSliderWidget tilt;
+  private final EngineeringUnitsSliderWidget elevation;
+  private final EngineeringUnitsSliderWidget azimuth;
+  private final EngineeringUnitsSliderWidget tx;
+  private final EngineeringUnitsSliderWidget ty;
+  private final EngineeringUnitsSliderWidget tz;
 
-  public TransformWidget(String title, TransformNR is, TransformChangeListener onChange) {
-    this.initialState = is;
+  public TransformWidget(String title, TransformNR initialState, TransformChangeListener onChange) {
     this.onChange = onChange;
 
     view = new VBox(5);
     view.setPadding(new Insets(5));
 
-    gridPane = new GridPane();
+    GridPane gridPane = new GridPane();
     gridPane.setHgap(10);
 
     tx = new EngineeringUnitsSliderWidget(this, initialState.getX(), 100, "mm");
@@ -46,22 +49,25 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
     double t = 0;
     try {
       t = Math.toDegrees(rot.getRotationTilt());
-    } catch (Exception ex) {
-      ex.printStackTrace();
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "Could not convert tilt to degrees.\n"
+          + Throwables.getStackTraceAsString(e));
     }
 
     double e = 0;
     try {
       e = Math.toDegrees(rot.getRotationElevation());
     } catch (Exception ex) {
-      ex.printStackTrace();
+      logger.log(Level.WARNING, "Could not convert elevation to degrees.\n"
+          + Throwables.getStackTraceAsString(ex));
     }
 
     double a = 0;
     try {
       a = Math.toDegrees(rot.getRotationAzimuth());
     } catch (Exception ex) {
-      ex.printStackTrace();
+      logger.log(Level.WARNING, "Could not convert azimuth to degrees.\n"
+          + Throwables.getStackTraceAsString(ex));
     }
 
     tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100, "degrees");

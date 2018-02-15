@@ -637,8 +637,8 @@ public class MainWindowController {
     timer.schedule(new TimerTask() {
       @Override
       public void run() {
-        logger.log(Level.SEVERE, "Still alive for some reason. Printing threads and " +
-            "killing VM...");
+        logger.log(Level.SEVERE, "Still alive for some reason. Printing threads and "
+            + "killing VM...");
 
         Set<Thread> threads = Thread.getAllStackTraces().keySet();
         StringBuilder threadString = new StringBuilder();

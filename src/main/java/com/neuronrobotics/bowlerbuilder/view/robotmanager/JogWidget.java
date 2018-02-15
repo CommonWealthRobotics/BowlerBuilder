@@ -1,10 +1,14 @@
 package com.neuronrobotics.bowlerbuilder.view.robotmanager;
 
+import com.google.common.base.Throwables;
 import com.google.common.primitives.Floats;
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -20,19 +24,10 @@ import javafx.scene.layout.VBox;
 
 public class JogWidget {
 
+  private static final Logger logger =
+      LoggerUtilities.getLogger(JogWidget.class.getSimpleName());
   private final VBox view;
   private final GridPane controlPane;
-  private final Button plusX;
-  private final Button minusX;
-  private final Button plusY;
-  private final Button minusY;
-  private final Button plusZ;
-  private final Button minusZ;
-  private final Button home;
-  private final Button addJoystick;
-  private final Button configureJoystick;
-  private final TextField speed;
-  private final TextField time;
 
   public JogWidget(DHParameterKinematics limb) {
     view = new VBox(5);
@@ -42,33 +37,34 @@ public class JogWidget {
     controlPane.setHgap(5);
     controlPane.setVgap(5);
 
-    plusX = addButton(AssetFactory.loadIcon("Plus-X.png"), "", 1, 0);
-    minusX = addButton(AssetFactory.loadIcon("Minus-X.png"), "", 1, 2);
+    Button plusX = addButton(AssetFactory.loadIcon("Plus-X.png"), "", 1, 0);
+    Button minusX = addButton(AssetFactory.loadIcon("Minus-X.png"), "", 1, 2);
 
-    plusY = addButton(AssetFactory.loadIcon("Plus-Y.png"), "", 0, 1);
-    minusY = addButton(AssetFactory.loadIcon("Minus-Y.png"), "", 2, 1);
+    Button plusY = addButton(AssetFactory.loadIcon("Plus-Y.png"), "", 0, 1);
+    Button minusY = addButton(AssetFactory.loadIcon("Minus-Y.png"), "", 2, 1);
 
-    plusZ = addButton(AssetFactory.loadIcon("Plus-Z.png"), "", 0, 0);
+    Button plusZ = addButton(AssetFactory.loadIcon("Plus-Z.png"), "", 0, 0);
     plusZ.setOnAction(event -> {
       TransformNR current = limb.getCurrentPoseTarget();
       current.translateZ(25);
       try {
         limb.setDesiredTaskSpaceTransform(current, 2);
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.log(Level.WARNING, "Could not set task space transform.\n"
+            + Throwables.getStackTraceAsString(e));
       }
     });
-    minusZ = addButton(AssetFactory.loadIcon("Minus-Z.png"), "", 2, 0);
+    Button minusZ = addButton(AssetFactory.loadIcon("Minus-Z.png"), "", 2, 0);
 
-    home = addButton(AssetFactory.loadIcon("Home.png"), "", 1, 1);
+    Button home = addButton(AssetFactory.loadIcon("Home.png"), "", 1, 1);
 
-    addJoystick = addButton(AssetFactory.loadIcon("Add-Game-Controller.png"), "", 3, 0);
-    configureJoystick = addButton(AssetFactory.loadIcon("Configure-Game-Controller.png"),
+    Button addJoystick = addButton(AssetFactory.loadIcon("Add-Game-Controller.png"), "", 3, 0);
+    Button configureJoystick = addButton(AssetFactory.loadIcon("Configure-Game-Controller.png"),
         "", 3, 1);
 
     view.getChildren().add(controlPane);
 
-    speed = new TextField("0.4");
+    TextField speed = new TextField("0.4");
     speed.setMinWidth(Region.USE_COMPUTED_SIZE);
 
     /*ValidationSupport validator = new ValidationSupport();
@@ -93,7 +89,7 @@ public class JogWidget {
     speedBox.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(speedBox, Priority.NEVER);
 
-    time = new TextField("0.03");
+    TextField time = new TextField("0.03");
     time.setMinWidth(Region.USE_COMPUTED_SIZE);
     HBox timeBox = new HBox(2, time, new Label("sec"));
     timeBox.setAlignment(Pos.CENTER_LEFT);

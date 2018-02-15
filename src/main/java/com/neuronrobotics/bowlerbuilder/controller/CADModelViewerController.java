@@ -19,16 +19,12 @@ public class CADModelViewerController {
 
   @FXML
   private BorderPane root;
-  private CadEngine engine;
-  private final CsgParser parser;
-  private final BowlerCadEngineFactory factory;
+  private final CadEngine engine;
   private boolean axisShowing = true;
   private boolean handShowing = true;
 
   @Inject
   public CADModelViewerController(CsgParser parser, BowlerCadEngineFactory factory) {
-    this.parser = parser;
-    this.factory = factory;
     engine = factory.create(parser);
   }
 

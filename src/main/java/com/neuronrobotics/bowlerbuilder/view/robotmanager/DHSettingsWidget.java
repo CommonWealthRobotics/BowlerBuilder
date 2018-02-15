@@ -16,14 +16,13 @@ import javafx.scene.text.Font;
 public class DHSettingsWidget implements EngineeringUnitsChangeListener {
 
   private final VBox vBox;
-  private final GridPane gridPane;
-  private DHLink dhLink;
-  private EngineeringUnitsSliderWidget delta;
-  private EngineeringUnitsSliderWidget theta;
-  private EngineeringUnitsSliderWidget alpha;
-  private EngineeringUnitsSliderWidget radius;
-  private DHParameterKinematics device2;
-  private EngineeringUnitsChangeListener externalListener;
+  private final EngineeringUnitsChangeListener externalListener;
+  private final DHLink dhLink;
+  private final EngineeringUnitsSliderWidget delta;
+  private final EngineeringUnitsSliderWidget theta;
+  private final EngineeringUnitsSliderWidget alpha;
+  private final EngineeringUnitsSliderWidget radius;
+  private final DHParameterKinematics device2;
 
   public DHSettingsWidget(String title, DHLink dhLink, DHParameterKinematics device2,
       EngineeringUnitsChangeListener externalListener) {
@@ -61,7 +60,7 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
         Math.toDegrees(dhLink.getAlpha()),
         180, "degrees");
 
-    gridPane = new GridPane();
+    GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER_LEFT);
     gridPane.setPadding(new Insets(5));
 

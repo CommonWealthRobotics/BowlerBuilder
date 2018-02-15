@@ -375,11 +375,9 @@ public class CreatureLabController {
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
       boolean isKinematic) {
     File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
-    if (!defaultStlDir.exists()) {
-      if (!defaultStlDir.mkdirs()) {
-        logger.log(Level.WARNING, "Could not create default directory to save STL files.");
-        return;
-      }
+    if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
+      logger.log(Level.WARNING, "Could not create default directory to save STL files.");
+      return;
     }
 
     FxUtil.runFX(() -> {

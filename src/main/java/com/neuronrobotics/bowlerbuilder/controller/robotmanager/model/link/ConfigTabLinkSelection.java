@@ -17,8 +17,6 @@ public class ConfigTabLinkSelection extends LinkSelection implements
 
   private final MobileBaseCadManager cadManager;
   private final VBox widget;
-  private final DHSettingsWidget dhSettings;
-  private final LinkConfigurationWidget linkConfig;
 
   public ConfigTabLinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
       DHParameterKinematics device, MobileBaseCadManager cadManager) {
@@ -28,12 +26,14 @@ public class ConfigTabLinkSelection extends LinkSelection implements
     widget = new VBox(5);
     widget.setPadding(new Insets(5));
 
-    dhSettings = new DHSettingsWidget("D-H Configuration for " + configuration.getName(), dhLink,
+    DHSettingsWidget dhSettings = new DHSettingsWidget(
+        "D-H Configuration for " + configuration.getName(), dhLink,
         device, this);
     widget.getChildren().add(dhSettings.getView());
 
     widget.getChildren().add(getTitleLabel("Link Configuration for " + configuration.getName()));
-    linkConfig = new LinkConfigurationWidget(configuration, device.getFactory(), null);
+    LinkConfigurationWidget linkConfig = new LinkConfigurationWidget(configuration,
+        device.getFactory(), null);
     widget.getChildren().add(linkConfig);
   }
 
@@ -44,6 +44,7 @@ public class ConfigTabLinkSelection extends LinkSelection implements
 
   @Override
   public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+    //Don't need to implement
   }
 
   @Override

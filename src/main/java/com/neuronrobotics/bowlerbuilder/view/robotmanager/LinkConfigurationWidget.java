@@ -40,10 +40,7 @@ public class LinkConfigurationWidget extends GridPane {
   private static final Logger logger =
       LoggerUtilities.getLogger(LinkConfigurationWidget.class.getSimpleName());
   private final LinkConfiguration conf;
-  private final EngineeringUnitsSliderWidget zero;
-  private final EngineeringUnitsSliderWidget lowerBound;
-  private final EngineeringUnitsSliderWidget upperBound;
-  private AbstractLink activeLink;
+  private AbstractLink activeLink; //NOPMD
 
   public LinkConfigurationWidget(LinkConfiguration configuration, LinkFactory factory,
       EngineeringUnitsSliderWidget setpointSlider) {
@@ -244,70 +241,77 @@ public class LinkConfigurationWidget extends GridPane {
     add(scale, 1, 0);
     add(new Text("(unitless)"), 2, 0);
 
-    lowerBound = new EngineeringUnitsSliderWidget(new EngineeringUnitsChangeListener() {
+    EngineeringUnitsSliderWidget lowerBound = new EngineeringUnitsSliderWidget(
+        new EngineeringUnitsChangeListener() {
 
-      @Override
-      public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-        conf.setLowerLimit(newAngleDegrees);
-        double eng;
-        if (conf.getScale() > 0) {
-          eng = (activeLink.getMinEngineeringUnits());
-        } else {
-          eng = (activeLink.getMaxEngineeringUnits());
-        }
+          @Override
+          public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+            conf.setLowerLimit(newAngleDegrees);
+            double eng;
+            if (conf.getScale() > 0) {
+              eng = activeLink.getMinEngineeringUnits();
+            } else {
+              eng = activeLink.getMaxEngineeringUnits();
+            }
 
-        activeLink.setTargetEngineeringUnits(eng);
-        activeLink.flush(0);
+            activeLink.setTargetEngineeringUnits(eng);
+            activeLink.flush(0);
 
-        if (setpointSlider != null) {
-          setpointSlider.setLowerBound(eng);
-        }
-      }
+            if (setpointSlider != null) {
+              setpointSlider.setLowerBound(eng);
+            }
+          }
 
-      @Override
-      public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-        activeLink.setTargetEngineeringUnits(0);
-        activeLink.flush(0);
-      }
-    }, 0, 255, conf.getLowerLimit(), 150, "device units", true);
+          @Override
+          public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+              double newAngleDegrees) {
+            activeLink.setTargetEngineeringUnits(0);
+            activeLink.flush(0);
+          }
+        }, 0, 255, conf.getLowerLimit(), 150, "device units", true);
 
-    upperBound = new EngineeringUnitsSliderWidget(new EngineeringUnitsChangeListener() {
-      @Override
-      public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-        conf.setUpperLimit(newAngleDegrees);
-        double eng;
-        if (conf.getScale() < 0) {
-          eng = (activeLink.getMinEngineeringUnits());
-        } else {
-          eng = (activeLink.getMaxEngineeringUnits());
-        }
+    EngineeringUnitsSliderWidget upperBound = new EngineeringUnitsSliderWidget(
+        new EngineeringUnitsChangeListener() {
+          @Override
+          public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+            conf.setUpperLimit(newAngleDegrees);
+            double eng;
+            if (conf.getScale() < 0) {
+              eng = activeLink.getMinEngineeringUnits();
+            } else {
+              eng = activeLink.getMaxEngineeringUnits();
+            }
 
-        activeLink.setTargetEngineeringUnits(eng);
-        activeLink.flush(0);
-        if (setpointSlider != null) {
-          setpointSlider.setLowerBound(eng);
-        }
-      }
+            activeLink.setTargetEngineeringUnits(eng);
+            activeLink.flush(0);
+            if (setpointSlider != null) {
+              setpointSlider.setLowerBound(eng);
+            }
+          }
 
-      @Override
-      public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-        activeLink.setTargetEngineeringUnits(0);
-        activeLink.flush(0);
-      }
-    }, 0, 255, conf.getUpperLimit(), 150, "device units", true);
+          @Override
+          public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+              double newAngleDegrees) {
+            activeLink.setTargetEngineeringUnits(0);
+            activeLink.flush(0);
+          }
+        }, 0, 255, conf.getUpperLimit(), 150, "device units", true);
 
-    zero = new EngineeringUnitsSliderWidget(new EngineeringUnitsChangeListener() {
-      @Override
-      public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-        conf.setStaticOffset(newAngleDegrees);
-        activeLink.setTargetEngineeringUnits(0);
-        activeLink.flush(0);
-      }
+    EngineeringUnitsSliderWidget zero = new EngineeringUnitsSliderWidget(
+        new EngineeringUnitsChangeListener() {
+          @Override
+          public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+            conf.setStaticOffset(newAngleDegrees);
+            activeLink.setTargetEngineeringUnits(0);
+            activeLink.flush(0);
+          }
 
-      @Override
-      public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-      }
-    }, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(),
+          @Override
+          public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
+              double newAngleDegrees) {
+            //Don't need ot implement
+          }
+        }, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(),
         150, "device units", true);
 
     final ComboBox<String> channel = new ComboBox<>();
@@ -319,7 +323,7 @@ public class LinkConfigurationWidget extends GridPane {
       conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
       factory.refreshHardwareLayer(conf);
       activeLink = factory.getLink(conf);
-      System.out.println("Link channel to " + conf.getTypeString());
+      logger.log(Level.INFO, "Link channel changed to " + conf.getTypeString());
     });
 
     channel.getSelectionModel().select(conf.getHardwareIndex());
@@ -331,7 +335,7 @@ public class LinkConfigurationWidget extends GridPane {
 
     comboBox.setOnAction(event -> {
       conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
-      System.out.println("Link type changed to " + conf.getTypeString());
+      logger.log(Level.INFO, "Link type changed to " + conf.getTypeString());
     });
 
     comboBox.getSelectionModel().select(conf.getTypeString());
@@ -420,9 +424,9 @@ public class LinkConfigurationWidget extends GridPane {
 
       int row = 0;
       for (Map.Entry<String, Object> entry : startingConf.entrySet()) {
-        TextField username = new TextField();
+        TextField username = new TextField(); //NOPMD
         username.setText(entry.getValue().toString());
-        grid.add(new Label(entry.getKey()), 0, row);
+        grid.add(new Label(entry.getKey()), 0, row); //NOPMD
         grid.add(username, 1, row);
         valueFields.put(entry.getKey(), username);
         row++;

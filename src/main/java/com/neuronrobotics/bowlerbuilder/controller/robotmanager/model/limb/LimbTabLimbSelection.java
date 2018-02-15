@@ -57,7 +57,8 @@ public class LimbTabLimbSelection extends LimbSelection {
     content.getChildren().add(scrollPane);
 
     selectionProperty.addListener((observable, oldValue, newValue) ->
-        widget.getChildren().setAll(new LimbTabLinkSelection(0, null, newValue, null).getWidget()));
+        widget.getChildren().setAll(
+            new LimbTabLinkSelection(0, null, newValue, null).getWidget())); //NOPMD
 
     Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
