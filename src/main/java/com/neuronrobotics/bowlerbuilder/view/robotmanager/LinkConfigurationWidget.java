@@ -241,7 +241,7 @@ public class LinkConfigurationWidget extends GridPane {
     add(scale, 1, 0);
     add(new Text("(unitless)"), 2, 0);
 
-    EngineeringUnitsSliderWidget lowerBound = new EngineeringUnitsSliderWidget(
+    final EngineeringUnitsSliderWidget lowerBound = new EngineeringUnitsSliderWidget(
         new EngineeringUnitsChangeListener() {
 
           @Override
@@ -270,7 +270,7 @@ public class LinkConfigurationWidget extends GridPane {
           }
         }, 0, 255, conf.getLowerLimit(), 150, "device units", true);
 
-    EngineeringUnitsSliderWidget upperBound = new EngineeringUnitsSliderWidget(
+    final EngineeringUnitsSliderWidget upperBound = new EngineeringUnitsSliderWidget(
         new EngineeringUnitsChangeListener() {
           @Override
           public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
@@ -297,7 +297,7 @@ public class LinkConfigurationWidget extends GridPane {
           }
         }, 0, 255, conf.getUpperLimit(), 150, "device units", true);
 
-    EngineeringUnitsSliderWidget zero = new EngineeringUnitsSliderWidget(
+    final EngineeringUnitsSliderWidget zero = new EngineeringUnitsSliderWidget(
         new EngineeringUnitsChangeListener() {
           @Override
           public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
