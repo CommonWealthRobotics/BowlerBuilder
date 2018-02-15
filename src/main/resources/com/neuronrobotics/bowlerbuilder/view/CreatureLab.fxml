@@ -44,7 +44,8 @@
         <tabs>
           <Tab fx:id="limbTab" text="" />
           <Tab fx:id="movementTab" text="" />
-           <Tab fx:id="configTab" text="" />
+          <Tab fx:id="configTab" text="" />
+          <Tab fx:id="scriptTab" text="" />
         </tabs>
       </TabPane>
    </children>

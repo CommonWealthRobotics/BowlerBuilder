@@ -12,15 +12,22 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.Confi
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -35,13 +42,18 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistBuilder;
+import org.kohsuke.github.GitHub;
 
 public class CreatureLabController {
 
@@ -68,6 +80,8 @@ public class CreatureLabController {
   private Tab limbTab;
   @FXML
   private Tab movementTab;
+  @FXML
+  private Tab scriptTab;
   @FXML
   private Tab configTab;
   private MobileBase device;
@@ -108,6 +122,8 @@ public class CreatureLabController {
     movementTab.setStyle("-fx-padding: 5px;");
     configTab.setGraphic(AssetFactory.loadIcon("Advanced-Configuration.png"));
     configTab.setStyle("-fx-padding: 5px;");
+    scriptTab.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
+    scriptTab.setStyle("-fx-padding: 5px;");
 
     regenCADButton.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
     genPrintableCAD.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
@@ -185,6 +201,105 @@ public class CreatureLabController {
     content.getChildren().addAll(limbSelector, configWidget);
 
     FxUtil.runFX(() -> configTab.setContent(getScrollPane(content)));
+  }
+
+  private void generateScriptTab() {
+    Button makeCopy = new Button();
+    makeCopy.setGraphic(AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
+    makeCopy.setOnAction(event -> FxUtil.runFX(() -> {
+      String oldName = device.getScriptingName();
+      TextInputDialog dialog = new TextInputDialog(oldName + "_copy");
+      dialog.setTitle("Make a copy of " + oldName);
+      dialog.setHeaderText("Set the scripting name for this creature");
+      dialog.setContentText("Please the name of the new creature:");
+
+      // Traditional way to get the response value.
+      Optional<String> result = dialog.showAndWait();
+      result.ifPresent(name -> new Thread(() -> {
+        logger.log(Level.INFO, "Your new creature: " + name);
+        device.setScriptingName(name);
+
+        GitHub github = ScriptingEngine.getGithub();
+        GHGistBuilder builder = github.createGist();
+        builder.description(name + " copy of " + oldName);
+        String filename = name + ".xml";
+        builder.file(filename, "<none>");
+        builder.public_(true);
+        GHGist gist;
+        try {
+          gist = builder.create();
+          String gitURL = "https://gist.github.com/"
+              + ScriptingEngine.urlToGist(gist.getHtmlUrl()) + ".git";
+
+          logger.log(Level.INFO, "Creating new Robot repo.");
+          while (true) {
+            try {
+              ScriptingEngine.fileFromGit(gitURL, filename);
+              break;
+            } catch (Exception ignored) {
+            }
+            ThreadUtil.wait(500);
+            logger.log(Level.INFO, "Waiting. " + gist + " not built yet.");
+          }
+          logger.log(Level.INFO, "Creating Gist at: " + gitURL);
+
+          logger.log(Level.INFO, "Copying CAD engine.");
+          device.setGitCadEngine(
+              copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
+
+          logger.log(Level.INFO, "Copying walking engine. Was: "
+              + Arrays.toString(device.getGitWalkingEngine()));
+          device.setGitWalkingEngine(
+              copyGitFile(device.getGitWalkingEngine()[0], gitURL,
+                  device.getGitWalkingEngine()[1]));
+
+          logger.log(Level.INFO, "Walking engine is now: "
+              + Arrays.toString(device.getGitWalkingEngine()));
+          for (DHParameterKinematics dh : device.getAllDHChains()) {
+            logger.log(Level.INFO, "Copying leg CAD engine: "
+                + Arrays.toString(dh.getGitCadEngine()));
+            dh.setGitCadEngine(
+                copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
+
+            logger.log(Level.INFO, "Copying leg DH engine.");
+            dh.setGitDhEngine(
+                copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
+          }
+
+          String xml = device.getXml();
+
+          ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL),
+              filename, xml, "new Robot content");
+
+          MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
+          mobileBase.setGitSelfSource(new String[]{gitURL, name + ".xml"});
+          device.disconnect();
+
+//          ConnectionManager.addConnection(mobileBase, mobileBase.getScriptingName());
+          //TODO: Make DeviceManager
+        } catch (MalformedURLException e) {
+          e.printStackTrace();
+          logger.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
+              + Throwables.getStackTraceAsString(e));
+          Notifications.create()
+              .title("Error")
+              .text("Could not make copy of creature.")
+              .showError();
+        } catch (Exception e) {
+          logger.log(Level.SEVERE, "Could not make copy of creature."
+              + Throwables.getStackTraceAsString(e));
+          Notifications.create()
+              .title("Error")
+              .text("Could not make copy of creature.")
+              .showError();
+        }
+
+        // DeviceManager.addConnection(newDevice,
+        // newDevice.getScriptingName());
+      }).start());
+    }));
+
+    //TODO: Check ScriptingEngine.checkOwner()
   }
 
   private ScrollPane getScrollPane(Node node) {
@@ -343,10 +458,6 @@ public class CreatureLabController {
     return hBox;
   }
 
-  public ProgressIndicator getCadProgress() {
-    return cadProgress;
-  }
-
   @FXML
   private void onRegenCAD(ActionEvent actionEvent) {
     if (cadManager != null) {
@@ -428,6 +539,10 @@ public class CreatureLabController {
         }
       }).start();
     });
+  }
+
+  public ProgressIndicator getCadProgress() {
+    return cadProgress;
   }
 
 }
