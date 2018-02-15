@@ -22,6 +22,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.util.ThreadUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -636,6 +637,7 @@ public class MainWindowController {
     Timer timer = new Timer(true);
     timer.schedule(new TimerTask() {
       @Override
+      @SuppressFBWarnings(value = "DM_RUN_FINALIZERS_ON_EXIT")
       public void run() {
         logger.log(Level.SEVERE, "Still alive for some reason. Printing threads and "
             + "killing VM...");
