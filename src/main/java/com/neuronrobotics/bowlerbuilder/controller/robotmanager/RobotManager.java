@@ -21,8 +21,8 @@ public class RobotManager {
 
   public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab) {
     try {
-      String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
-          "seaArm.xml"};
+      String[] file = {"https://github.com/NeuronRobotics/NASACurisoity.git",
+          "NASA_Curiosity.xml"};
       String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
       MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
       mobileBase.setGitSelfSource(file);
