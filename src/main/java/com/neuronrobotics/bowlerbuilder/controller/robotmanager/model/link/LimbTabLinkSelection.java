@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
@@ -13,9 +12,8 @@ public class LimbTabLinkSelection extends LinkSelection {
 
   private final VBox vBox;
 
-  public LimbTabLinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
-      AbstractKinematicsNR device) {
-    super(linkIndex, dhLink, configuration, device);
+  public LimbTabLinkSelection(DHLink dhLink, LinkConfiguration configuration) {
+    super(dhLink, configuration);
     vBox = new VBox(5);
 
     Button removeLink = new Button();

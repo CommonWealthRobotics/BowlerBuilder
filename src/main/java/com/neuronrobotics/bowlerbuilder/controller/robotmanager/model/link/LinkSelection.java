@@ -1,23 +1,31 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 
 public abstract class LinkSelection implements Selection {
 
-  protected int linkIndex;
-  protected DHLink dhLink;
-  protected LinkConfiguration configuration;
-  protected AbstractKinematicsNR device;
+  protected final DHLink dhLink;
+  protected final LinkConfiguration configuration;
 
-  public LinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
-      AbstractKinematicsNR device) {
-    this.linkIndex = linkIndex;
+  /**
+   * Any link selection should use a {@link DHLink} and a {@link LinkConfiguration}.
+   *
+   * @param dhLink link
+   * @param configuration configuration
+   */
+  public LinkSelection(DHLink dhLink, LinkConfiguration configuration) {
     this.dhLink = dhLink;
     this.configuration = configuration;
-    this.device = device;
+  }
+
+  public DHLink getDhLink() {
+    return dhLink;
+  }
+
+  public LinkConfiguration getConfiguration() {
+    return configuration;
   }
 
 }

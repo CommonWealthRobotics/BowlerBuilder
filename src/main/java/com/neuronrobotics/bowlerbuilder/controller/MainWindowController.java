@@ -647,7 +647,7 @@ public class MainWindowController {
         threads.forEach(item -> threadString.append(item).append("\n"));
         logger.log(Level.FINE, threadString.toString());
 
-        System.exit(1); //Abnormal exit
+        Runtime.getRuntime().exit(1); //Abnormal exit
       }
     }, 10000); //Wait 10 seconds before killing the VM
   }

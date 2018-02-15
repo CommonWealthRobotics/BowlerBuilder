@@ -324,15 +324,15 @@ public class CreatureLabController {
       for (int i = 0; i < links.size(); i++) {
         final DHLink link = links.get(i);
         final LinkConfiguration configuration = limb.getLinkConfiguration(i);
-        final int finalI = i; //For lambda
 
         Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
         linkButton.setOnAction(event ->
-            selectionProperty
-                .set(new ConfigTabLinkSelection(finalI, link, configuration, limb, cadManager)));
+            selectionProperty.set(
+                new ConfigTabLinkSelection(link, configuration, limb, cadManager)));
         hBoxInner.getChildren().add(linkButton);
       }
+
       vBox.getChildren().add(hBoxInner);
 
       scrollPaneContent.getChildren().add(vBox);

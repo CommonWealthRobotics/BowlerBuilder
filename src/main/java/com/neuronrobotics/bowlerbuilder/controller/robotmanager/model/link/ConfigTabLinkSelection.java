@@ -18,9 +18,9 @@ public class ConfigTabLinkSelection extends LinkSelection implements
   private final MobileBaseCadManager cadManager;
   private final VBox widget;
 
-  public ConfigTabLinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
+  public ConfigTabLinkSelection(DHLink dhLink, LinkConfiguration configuration,
       DHParameterKinematics device, MobileBaseCadManager cadManager) {
-    super(linkIndex, dhLink, configuration, device);
+    super(dhLink, configuration);
     this.cadManager = cadManager;
 
     widget = new VBox(5);
