@@ -91,8 +91,8 @@ dependencies {
 //    compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
 //    compile "com.neuronrobotics:JavaCad:0.11.0"
 //    compile(project(":lib/src/jbullet"))
-    compile(files("jars/BowlerScriptingKernel-0.31.0.jar"))
-//    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version="0.29.0")
+//    compile(files("jars/BowlerScriptingKernel-0.31.0.jar"))
+    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version="0.31.3")
 
     fun junitJupiter(name: String, version: String = "5.0.0") =
             create(group = "org.junit.jupiter", name = name, version = version)

@@ -21,13 +21,11 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -244,26 +242,25 @@ public class CreatureLabController {
           logger.log(Level.INFO, "Creating Gist at: " + gitURL);
 
           logger.log(Level.INFO, "Copying CAD engine.");
-          device.setGitCadEngine(
-              copyGitFile(device.getGitCadEngine()[0], gitURL, device.getGitCadEngine()[1]));
+          device.setGitCadEngine(ScriptingEngine.copyGitFile(device.getGitCadEngine()[0], gitURL,
+              device.getGitCadEngine()[1]));
 
           logger.log(Level.INFO, "Copying walking engine. Was: "
               + Arrays.toString(device.getGitWalkingEngine()));
-          device.setGitWalkingEngine(
-              copyGitFile(device.getGitWalkingEngine()[0], gitURL,
-                  device.getGitWalkingEngine()[1]));
+          device.setGitWalkingEngine(ScriptingEngine.copyGitFile(device.getGitWalkingEngine()[0],
+              gitURL, device.getGitWalkingEngine()[1]));
 
           logger.log(Level.INFO, "Walking engine is now: "
               + Arrays.toString(device.getGitWalkingEngine()));
           for (DHParameterKinematics dh : device.getAllDHChains()) {
             logger.log(Level.INFO, "Copying leg CAD engine: "
                 + Arrays.toString(dh.getGitCadEngine()));
-            dh.setGitCadEngine(
-                copyGitFile(dh.getGitCadEngine()[0], gitURL, dh.getGitCadEngine()[1]));
+            dh.setGitCadEngine(ScriptingEngine.copyGitFile(dh.getGitCadEngine()[0], gitURL,
+                dh.getGitCadEngine()[1]));
 
             logger.log(Level.INFO, "Copying leg DH engine.");
-            dh.setGitDhEngine(
-                copyGitFile(dh.getGitDhEngine()[0], gitURL, dh.getGitDhEngine()[1]));
+            dh.setGitDhEngine(ScriptingEngine.copyGitFile(dh.getGitDhEngine()[0], gitURL,
+                dh.getGitDhEngine()[1]));
           }
 
           String xml = device.getXml();
