@@ -304,13 +304,22 @@ public class CreatureLabController {
     HBox controls = new HBox(5, makeCopy);
     controls.setPadding(new Insets(5));
 
-    String[] selfSource = device.getGitSelfSource();
+    final String[] gitSelfSource = device.getGitSelfSource();
+    final String[] gitWalkingEngine = device.getGitWalkingEngine();
+    final String[] gitCADEngine = device.getGitCadEngine();
     File deviceXMLFile;
+    File deviceWalkingEngineFile;
+    File deviceCADEngineFile;
     try {
-      deviceXMLFile = ScriptingEngine.fileFromGit(selfSource[0], selfSource[1]);
+      deviceXMLFile = ScriptingEngine.fileFromGit(gitSelfSource[0], gitSelfSource[1]);
+      deviceWalkingEngineFile = ScriptingEngine.fileFromGit(gitWalkingEngine[0],
+          gitWalkingEngine[1]);
+      deviceCADEngineFile = ScriptingEngine.fileFromGit(gitCADEngine[0], gitCADEngine[1]);
     } catch (GitAPIException | IOException e) {
-      logger.severe("Could not check owner of creature with self source: " +
-          Arrays.toString(selfSource) + ".\n" + Throwables.getStackTraceAsString(e));
+      logger.severe("Could not parse creature file from source: " +
+          Arrays.toString(gitSelfSource) + "\n"
+          + Arrays.toString(gitWalkingEngine) + "\n"
+          + Throwables.getStackTraceAsString(e));
 
       FxUtil.runFX(() -> Notifications.create()
           .title("Error")
@@ -345,31 +354,31 @@ public class CreatureLabController {
       Button editRobotXML = new Button();
       editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
       editRobotXML.setOnAction(event -> {
-
+        //TODO: Open the file deviceXMLFile
       });
 
       Button editWalkingEngine = new Button();
       editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
       editWalkingEngine.setOnAction(event -> {
-
+        //TODO: Open the file deviceWalkingEngineFile
       });
 
       Button editCADEngine = new Button();
       editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
       editCADEngine.setOnAction(event -> {
-
+        //TODO: Open the file deviceCADEngineFile
       });
 
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
       setWalkingEngine.setOnAction(event -> {
-
+        //TODO: Open a Dialog to get a gist and set device.setGitWalkingEngine()
       });
 
       Button setCADEngine = new Button();
       setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
       setCADEngine.setOnAction(event -> {
-
+        //TODO: Open a Dialog to get a gist and set device.setGitCadEngine()
       });
 
       controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
