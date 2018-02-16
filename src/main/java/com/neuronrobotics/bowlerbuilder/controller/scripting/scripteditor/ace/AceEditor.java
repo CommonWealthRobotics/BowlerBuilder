@@ -31,16 +31,39 @@ public final class AceEditor implements ScriptEditor {
    */
   public void insertAtCursor(String text) {
     runAfterEngine(() -> {
-      String escaped = text;
-      escaped = escaped.replace("\"", "\\\"");
-      escaped = escaped.replace("'", "\\'");
-      escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
-      escaped = escaped.replace("\n", "\\n");
-      escaped = escaped.replace("\r", "\\n");
-      logger.log(Level.FINE,
-          "Inserting: " + escaped);
+      String escaped = escape(text);
+      logger.fine("Inserting: " + escaped);
       engine.executeScript("editor.insert(\"" + escaped + "\");");
     });
+  }
+
+  /**
+   * Set the text in the editor, overwriting current content.
+   *
+   * @param text Text to insert
+   */
+  public void setText(String text) {
+    runAfterEngine(() -> {
+      String escaped = escape(text);
+      logger.fine("Setting: " + escaped);
+      engine.executeScript("editor.setValue(\"" + escaped + "\");");
+    });
+  }
+
+  /**
+   * Escape text so it gets inserted properly.
+   *
+   * @param text Text to escape
+   * @return Escaped version
+   */
+  private String escape(String text) {
+    String escaped = text;
+    escaped = escaped.replace("\"", "\\\"");
+    escaped = escaped.replace("'", "\\'");
+    escaped = escaped.replace(System.getProperty("line.separator"), "\\n");
+    escaped = escaped.replace("\n", "\\n");
+    escaped = escaped.replace("\r", "\\n");
+    return escaped;
   }
 
   /**

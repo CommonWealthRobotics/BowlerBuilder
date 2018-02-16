@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.CreatureLabController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
@@ -19,10 +20,11 @@ public class RobotManager {
   private static final Logger logger
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
 
-  public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab) {
+  public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab,
+      AceCadEditorController editor) {
     try {
-      String[] file = {"https://github.com/NeuronRobotics/NASACurisoity.git",
-          "NASA_Curiosity.xml"};
+      String[] file = {"https://gist.github.com/edf8b3648e637d8041264e451c4e3321.git",
+          "NASA_Curiosity_copy.xml"};
       String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
       MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
       mobileBase.setGitSelfSource(file);
@@ -31,7 +33,7 @@ public class RobotManager {
           mobileBase, new BowlerMobileBaseUI(cadEngine));
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-      creatureLab.generateMenus(mobileBase, mobileBaseCadManager);
+      creatureLab.generateMenus(mobileBase, mobileBaseCadManager, editor);
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
       creatureLab.getCadProgress().progressProperty()

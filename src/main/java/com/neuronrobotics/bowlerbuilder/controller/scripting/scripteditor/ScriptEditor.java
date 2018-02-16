@@ -13,6 +13,13 @@ public interface ScriptEditor {
   void insertAtCursor(String text);
 
   /**
+   * Set the text in the editor, overwriting current content.
+   *
+   * @param text Text to insert
+   */
+  void setText(String text);
+
+  /**
    * Set the font size for the editor.
    *
    * @param fontSize Font size

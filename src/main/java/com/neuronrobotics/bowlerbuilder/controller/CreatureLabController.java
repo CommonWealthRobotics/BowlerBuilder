@@ -87,6 +87,7 @@ public class CreatureLabController {
   private Tab configTab;
   private MobileBase device;
   private MobileBaseCadManager cadManager;
+  private AceCadEditorController editor;
 
   @Inject
   public CreatureLabController() {
@@ -137,9 +138,11 @@ public class CreatureLabController {
    * @param device {@link MobileBase} to load menus from
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
-  public void generateMenus(MobileBase device, MobileBaseCadManager cadManager) {
+  public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
+      AceCadEditorController editor) {
     this.device = device;
     this.cadManager = cadManager;
+    this.editor = editor;
 
     autoRegenCAD.selectedProperty().addListener((observable, oldValue, newValue) ->
         cadManager.setAutoRegen(newValue));
@@ -272,6 +275,12 @@ public class CreatureLabController {
           ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL),
               filename, xml, "new Robot content");
 
+          logger.info("Clone finished.");
+          FxUtil.runFX(() -> Notifications.create()
+              .title("Clone Finished")
+              .text("The creature cloning operation finished successfully.")
+              .show());
+
           MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
           mobileBase.setGitSelfSource(new String[]{gitURL, name + ".xml"});
           device.disconnect();
@@ -353,21 +362,15 @@ public class CreatureLabController {
 
       Button editRobotXML = new Button();
       editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
-      editRobotXML.setOnAction(event -> {
-        //TODO: Open the file deviceXMLFile
-      });
+      editRobotXML.setOnAction(event -> editor.loadFile(deviceXMLFile));
 
       Button editWalkingEngine = new Button();
       editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
-      editWalkingEngine.setOnAction(event -> {
-        //TODO: Open the file deviceWalkingEngineFile
-      });
+      editWalkingEngine.setOnAction(event -> editor.loadFile(deviceWalkingEngineFile));
 
       Button editCADEngine = new Button();
       editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-      editCADEngine.setOnAction(event -> {
-        //TODO: Open the file deviceCADEngineFile
-      });
+      editCADEngine.setOnAction(event -> editor.loadFile(deviceCADEngineFile));
 
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));

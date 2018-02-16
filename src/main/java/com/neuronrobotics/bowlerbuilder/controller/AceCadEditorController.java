@@ -122,7 +122,7 @@ public class AceCadEditorController {
 
     Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
       RobotManager robotManager = new RobotManager(getCADViewerController().getEngine(),
-          getCreatureLabController());
+          getCreatureLabController(), this);
     });
     thread.setDaemon(true);
     thread.start();
@@ -251,7 +251,7 @@ public class AceCadEditorController {
   public void loadFile(File file) {
     if (file != null) {
       try {
-        scriptEditor.insertAtCursor(Files.toString(file, Charset.forName("UTF-8")));
+        scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
       } catch (IOException e) {
         logger.log(Level.SEVERE,
             "Could not load file: " + file.getAbsolutePath() + ".\n"
@@ -268,19 +268,22 @@ public class AceCadEditorController {
    */
   public void loadGist(GHGist gist, GHGistFile gistFile) {
     isScratchpad = false;
-    File file = null;
+    File file;
+
     try {
       file = ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
+
       this.gist = gist;
       this.gistFile = gistFile;
+
       gistURLField.setText(gist.getGitPushUrl());
       fileNameField.setText(gistFile.getFileName());
+
+      loadFile(file);
     } catch (GitAPIException | IOException e) {
       logger.log(Level.SEVERE,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
     }
-
-    loadFile(file);
   }
 
   /**
