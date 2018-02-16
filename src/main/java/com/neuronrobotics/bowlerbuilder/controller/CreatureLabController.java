@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbT
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.MovementTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
+import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -49,6 +50,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
@@ -145,6 +148,7 @@ public class CreatureLabController {
     generateLimbTab();
     generateMovementTab();
     generateConfigTab();
+    generateScriptTab();
   }
 
   private void generateLimbTab() {
@@ -272,31 +276,107 @@ public class CreatureLabController {
           mobileBase.setGitSelfSource(new String[]{gitURL, name + ".xml"});
           device.disconnect();
 
-//          ConnectionManager.addConnection(mobileBase, mobileBase.getScriptingName());
+          //ConnectionManager.addConnection(mobileBase, mobileBase.getScriptingName());
           //TODO: Make DeviceManager
         } catch (MalformedURLException e) {
-          e.printStackTrace();
           logger.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
               + Throwables.getStackTraceAsString(e));
-          Notifications.create()
+
+          FxUtil.runFX(() -> Notifications.create()
               .title("Error")
               .text("Could not make copy of creature.")
-              .showError();
+              .showError());
         } catch (Exception e) {
           logger.log(Level.SEVERE, "Could not make copy of creature."
               + Throwables.getStackTraceAsString(e));
-          Notifications.create()
+
+          FxUtil.runFX(() -> Notifications.create()
               .title("Error")
               .text("Could not make copy of creature.")
-              .showError();
+              .showError());
         }
 
-        // DeviceManager.addConnection(newDevice,
-        // newDevice.getScriptingName());
+        // DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
+        //TODO: Make DeviceManager
       }).start());
     }));
 
-    //TODO: Check ScriptingEngine.checkOwner()
+    HBox controls = new HBox(5, makeCopy);
+    controls.setPadding(new Insets(5));
+
+    String[] selfSource = device.getGitSelfSource();
+    File deviceXMLFile;
+    try {
+      deviceXMLFile = ScriptingEngine.fileFromGit(selfSource[0], selfSource[1]);
+    } catch (GitAPIException | IOException e) {
+      logger.severe("Could not check owner of creature with self source: " +
+          Arrays.toString(selfSource) + ".\n" + Throwables.getStackTraceAsString(e));
+
+      FxUtil.runFX(() -> Notifications.create()
+          .title("Error")
+          .text("Could not check owner of creature.")
+          .showError());
+
+      return;
+    }
+
+    if (ScriptingEngine.checkOwner(deviceXMLFile)) {
+      Button publish = new Button();
+      publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+      publish.setOnAction(event -> new PublishDialog().showAndWait().ifPresent(commitMessage -> {
+        try {
+          Git git = ScriptingEngine.locateGit(deviceXMLFile);
+          String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+          String relativePath = ScriptingEngine.findLocalPath(deviceXMLFile, git);
+
+          //Push to existing gist
+          ScriptingEngine.pushCodeToGit(remote, ScriptingEngine.getFullBranch(remote),
+              relativePath, device.getXml(), commitMessage);
+        } catch (Exception e) {
+          logger.severe("Could not commit.\n" + Throwables.getStackTraceAsString(e));
+
+          FxUtil.runFX(() -> Notifications.create()
+              .title("Commit error")
+              .text("Could not make commit.")
+              .showError());
+        }
+      }));
+
+      Button editRobotXML = new Button();
+      editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
+      editRobotXML.setOnAction(event -> {
+
+      });
+
+      Button editWalkingEngine = new Button();
+      editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
+      editWalkingEngine.setOnAction(event -> {
+
+      });
+
+      Button editCADEngine = new Button();
+      editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+      editCADEngine.setOnAction(event -> {
+
+      });
+
+      Button setWalkingEngine = new Button();
+      setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
+      setWalkingEngine.setOnAction(event -> {
+
+      });
+
+      Button setCADEngine = new Button();
+      setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
+      setCADEngine.setOnAction(event -> {
+
+      });
+
+      controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
+          setWalkingEngine, setCADEngine);
+    }
+
+    FxUtil.runFX(() -> scriptTab.setContent(getScrollPane(controls)));
   }
 
   private ScrollPane getScrollPane(Node node) {
