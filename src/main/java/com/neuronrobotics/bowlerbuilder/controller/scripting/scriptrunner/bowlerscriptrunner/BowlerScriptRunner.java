@@ -4,7 +4,10 @@ import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.util.ArrayList;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * {@link ScriptRunner} passthrough to {@link ScriptingEngine}.
@@ -12,17 +15,20 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 public class BowlerScriptRunner implements ScriptRunner {
 
   private final BowlerGroovy language;
+  private final ObjectProperty<Object> result;
 
   @Inject
   public BowlerScriptRunner(BowlerGroovy language) {
     this.language = language;
+    result = new SimpleObjectProperty<>();
     ScriptingEngine.addScriptingLanguage(language);
   }
 
   @Override
   public Object runScript(String script, ArrayList<Object> arguments, String languageName)
       throws Exception {
-    return ScriptingEngine.inlineScriptStringRun(script, arguments, languageName);
+    result.set(ScriptingEngine.inlineScriptStringRun(script, arguments, languageName));
+    return result.get();
   }
 
   @Override
@@ -43,6 +49,11 @@ public class BowlerScriptRunner implements ScriptRunner {
   @Override
   public ReadOnlyBooleanProperty scriptRunningProperty() {
     return language.runningProperty();
+  }
+
+  @Override
+  public ReadOnlyObjectProperty<Object> resultProperty() {
+    return result;
   }
 
 }

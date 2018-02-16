@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController;
+import com.neuronrobotics.bowlerbuilder.controller.AceScriptEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.CreatureLabController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
@@ -21,7 +21,7 @@ public class RobotManager {
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
 
   public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab,
-      AceCadEditorController editor) {
+      AceScriptEditorController editor) {
     try {
       String[] file = {"https://gist.github.com/edf8b3648e637d8041264e451c4e3321.git",
           "NASA_Curiosity_copy.xml"};

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane id="fileEditorRoot" fx:id="fileEditorRoot" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.AceCadEditorController">
+<SplitPane id="fileEditorRoot" fx:id="fileEditorRoot" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.AceScriptEditorController">
    <items>
       <BorderPane fx:id="editorBorderPane">
          <bottom>
@@ -38,11 +38,5 @@
          <top>
          </top>
       </BorderPane>
-     <SplitPane>
-       <items>
-         <fx:include fx:id="creatureLab" source="CreatureLab.fxml" />
-         <fx:include fx:id="cadviewer" source="CADModelViewer.fxml" />
-       </items>
-     </SplitPane>
    </items>
 </SplitPane>

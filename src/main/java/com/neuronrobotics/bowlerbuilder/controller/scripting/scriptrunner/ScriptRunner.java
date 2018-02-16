@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner;
 
 import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  * Interface for compiling and running a script.
@@ -46,5 +47,12 @@ public interface ScriptRunner {
    * @return whether the script is currently running
    */
   ReadOnlyBooleanProperty scriptRunningProperty();
+
+  /**
+   * Return value of the script.
+   *
+   * @return return value from the script
+   */
+  ReadOnlyObjectProperty<Object> resultProperty();
 
 }

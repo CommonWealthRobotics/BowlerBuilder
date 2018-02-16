@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -25,8 +27,8 @@ public class PreferencesService {
       = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
   private final String prefsSaveDirPath;
   private final String prefsSaveFilePath;
+  private final Map<String, List<PreferenceListener>> listeners;
   private Map<String, Serializable> data;
-  private final Map<String, PreferenceListener> listeners;
 
   /**
    * The folder name is used to contain preferences within its own folder on disk, separate from
@@ -72,8 +74,22 @@ public class PreferencesService {
     }
   }
 
+  /**
+   * Attach a listener to the entry. The listener will be notified when a value is set to the
+   * entry.
+   *
+   * @param name entry key
+   * @param listener listener to notify
+   * @param <T> type of entry
+   */
   public <T extends Serializable> void addListener(String name, PreferenceListener<T> listener) {
-    listeners.put(name, listener);
+    if (listeners.containsKey(name)) {
+      listeners.get(name).add(listener);
+    } else {
+      List<PreferenceListener> newList = new ArrayList<>();
+      newList.add(listener);
+      listeners.put(name, newList);
+    }
   }
 
   /**
@@ -84,9 +100,10 @@ public class PreferencesService {
    * @param <T> type of entry
    */
   public <T extends Serializable> void set(String name, T value) {
+    logger.fine("Set " + name + " to " + value);
     Serializable prev = data.put(name, value);
     if (listeners.containsKey(name)) {
-      listeners.get(name).changed(prev, value);
+      listeners.get(name).forEach(listener -> listener.changed(prev, value));
     }
   }
 
@@ -94,10 +111,11 @@ public class PreferencesService {
    * Load in preferences from the save file.
    */
   public void load() {
+    logger.fine("Trying to load preferences from: " + prefsSaveFilePath);
     File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
       try (ObjectInputStream stream
-               = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
+          = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (IOException e) {
         logger.log(Level.SEVERE,
@@ -116,10 +134,11 @@ public class PreferencesService {
    * Overwrite the preferences file with the current preferences.
    */
   public void save() {
+    logger.fine("Trying to save preferences to: " + prefsSaveDirPath);
     File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
       try (ObjectOutputStream stream
-               = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
+          = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
         stream.writeObject(data);
       } catch (FileNotFoundException e) {
         logger.log(Level.SEVERE,

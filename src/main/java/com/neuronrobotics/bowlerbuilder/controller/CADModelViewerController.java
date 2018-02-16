@@ -2,9 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngineFactory;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.Collection;
 import java.util.Map;
@@ -24,8 +22,8 @@ public class CADModelViewerController {
   private boolean handShowing = true;
 
   @Inject
-  public CADModelViewerController(CsgParser parser, BowlerCadEngineFactory factory) {
-    engine = factory.create(parser);
+  public CADModelViewerController(CadEngine engine) {
+    this.engine = engine;
   }
 
   @FXML

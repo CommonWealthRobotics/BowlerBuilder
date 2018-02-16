@@ -503,10 +503,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   private void focusInterpolate(TransformNR start,
-                                TransformNR target,
-                                int depth,
-                                int targetDepth,
-                                Affine interpolator) {
+      TransformNR target,
+      int depth,
+      int targetDepth,
+      Affine interpolator) {
 
     double depthScale = 1 - (double) depth / (double) targetDepth;
     double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
@@ -858,7 +858,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
-    meshViewGroup.getChildren().add(mesh);
+    FxUtil.runFX(() -> meshViewGroup.getChildren().add(mesh));
     csgMap.put(csg, mesh);
     csgNameMap.put(csg.getName(), mesh);
     logger.log(Level.FINE, "Added CSG with name: " + csg.getName());

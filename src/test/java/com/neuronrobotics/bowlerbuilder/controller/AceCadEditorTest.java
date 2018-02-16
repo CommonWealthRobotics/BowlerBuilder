@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 public class AceCadEditorTest extends AutoClosingApplicationTest {
 
-  private AceCadEditorController controller;
+  private AceScriptEditorController controller;
 
   @Override
   public void start(Stage stage) throws Exception {

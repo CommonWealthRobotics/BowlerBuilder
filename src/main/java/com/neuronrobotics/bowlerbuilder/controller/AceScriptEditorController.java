@@ -7,7 +7,6 @@ import com.google.inject.name.Named;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.ScriptRunner;
@@ -18,13 +17,11 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFact
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import eu.mihosoft.vrl.v3d.CSG;
 import groovy.lang.GroovyRuntimeException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,10 +44,10 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
-public class AceCadEditorController {
+public class AceScriptEditorController {
 
   private static final Logger logger =
-      LoggerUtilities.getLogger(AceCadEditorController.class.getSimpleName());
+      LoggerUtilities.getLogger(AceScriptEditorController.class.getSimpleName());
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
@@ -70,10 +67,6 @@ public class AceCadEditorController {
   private TextField fileNameField;
   @FXML
   private TextField gistURLField;
-  @FXML
-  private CreatureLabController creatureLabController;
-  @FXML
-  private CADModelViewerController cadviewerController;
   private GHGist gist;
   private GHGistFile gistFile;
   private boolean isScratchpad = true;
@@ -81,7 +74,7 @@ public class AceCadEditorController {
   private Runnable reloadMenus;
 
   @Inject
-  public AceCadEditorController(PreferencesServiceFactory preferencesServiceFactory,
+  public AceScriptEditorController(PreferencesServiceFactory preferencesServiceFactory,
       ScriptEditorView scriptEditorView,
       ScriptRunner scriptRunner,
       @Named("scriptLangName") String scriptLangName,
@@ -95,7 +88,7 @@ public class AceCadEditorController {
     logger.log(Level.FINE, "factory: " + preferencesServiceFactory);
 
     PreferencesService preferencesService
-        = preferencesServiceFactory.create("AceCadEditorController");
+        = preferencesServiceFactory.create("AceScriptEditorController");
     fontSize = new SimpleIntegerProperty(preferencesService.get("Font Size", 14));
     preferencesService.addListener("Font Size",
         (PreferenceListener<Integer>) (oldVal, newVal) -> {
@@ -120,12 +113,7 @@ public class AceCadEditorController {
     publishButton.setGraphic(
         new FontAwesome().create(String.valueOf(FontAwesome.Glyph.CLOUD_UPLOAD)));
 
-    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-      RobotManager robotManager = new RobotManager(getCADViewerController().getEngine(),
-          getCreatureLabController(), this);
-    });
-    thread.setDaemon(true);
-    thread.start();
+    scriptEditor.setFontSize(fontSize.get());
   }
 
   @FXML
@@ -227,23 +215,6 @@ public class AceCadEditorController {
   }
 
   /**
-   * Parse CSGs out of an Object. All CSGs will get added to the supplied controller.
-   *
-   * @param controller CAD viewer controller
-   * @param item object with CSGs
-   */
-  private void parseCSG(CADModelViewerController controller, Object item) {
-    if (item instanceof CSG) {
-      controller.addCSG((CSG) item);
-    } else if (item instanceof List) {
-      List itemList = (List) item;
-      for (Object elem : itemList) {
-        parseCSG(controller, elem);
-      }
-    }
-  }
-
-  /**
    * Load a file from disk and insert its content into the editor.
    *
    * @param file File to load
@@ -322,17 +293,7 @@ public class AceCadEditorController {
       //Run the code
       logger.log(Level.FINE, "Running script.");
       Object result = scriptRunner.runScript(script, arguments, languageName);
-
       logger.log(Level.FINER, "Result is: " + result);
-
-      //Add CSGs
-      logger.log(Level.FINE, "Parsing result.");
-      FxUtil.runFXAndWait(() -> {
-        cadviewerController.clearMeshes();
-        parseCSG(cadviewerController, result);
-      });
-      logger.log(Level.FINE, "Parsing done.");
-
       return result;
     } catch (IOException e) {
       logger.log(Level.SEVERE,
@@ -371,14 +332,6 @@ public class AceCadEditorController {
    */
   public void insertAtCursor(String text) {
     scriptEditor.insertAtCursor(text);
-  }
-
-  public CADModelViewerController getCADViewerController() {
-    return cadviewerController;
-  }
-
-  public CreatureLabController getCreatureLabController() {
-    return creatureLabController;
   }
 
   public ScriptEditorView getScriptEditorView() {

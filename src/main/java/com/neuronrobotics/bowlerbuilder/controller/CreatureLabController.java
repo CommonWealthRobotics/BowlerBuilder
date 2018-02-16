@@ -87,7 +87,7 @@ public class CreatureLabController {
   private Tab configTab;
   private MobileBase device;
   private MobileBaseCadManager cadManager;
-  private AceCadEditorController editor;
+  private AceScriptEditorController editor;
 
   @Inject
   public CreatureLabController() {
@@ -139,7 +139,7 @@ public class CreatureLabController {
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-      AceCadEditorController editor) {
+      AceScriptEditorController editor) {
     this.device = device;
     this.cadManager = cadManager;
     this.editor = editor;

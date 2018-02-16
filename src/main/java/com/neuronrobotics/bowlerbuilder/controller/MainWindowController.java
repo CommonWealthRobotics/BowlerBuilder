@@ -76,8 +76,6 @@ public class MainWindowController {
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   private final PreferencesServiceFactory preferencesServiceFactory;
   private final PreferencesService preferencesService;
-  //Open file editors
-  private final List<AceCadEditorController> fileEditors;
 
   @FXML
   private BorderPane root;
@@ -105,7 +103,6 @@ public class MainWindowController {
   @Inject
   protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
-    this.fileEditors = new ArrayList<>();
 
     preferencesService = preferencesServiceFactory.create("MainWindowController");
     preferencesService.load();
@@ -221,12 +218,9 @@ public class MainWindowController {
   private void onOpenScratchpad(ActionEvent actionEvent) {
     try {
       AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-      AceCadEditorController controller = tab.getController();
+      AceCadEditorTabController controller = tab.getController();
 
-      controller.initScratchpad(tab, this::reloadGitMenus);
-      fileEditors.add(controller);
-
-      tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
       tabPane.getTabs().add(tab);
       tabPane.getSelectionModel().select(tab);
@@ -299,12 +293,9 @@ public class MainWindowController {
     FxUtil.runFX(() -> {
       try {
         AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
-        AceCadEditorController controller = tab.getController();
+        AceCadEditorTabController controller = tab.getController();
 
-        controller.loadGist(gist, gistFile);
-        fileEditors.add(tab.getController());
-
-        tab.setOnCloseRequest(event -> fileEditors.remove(controller));
+        controller.getAceScriptEditorController().loadGist(gist, gistFile);
 
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
@@ -432,7 +423,8 @@ public class MainWindowController {
                   AceCadEditorTab editorTab = (AceCadEditorTab) selection;
                   String insertion =
                       "CSG foo = Vitamins.get(\"" + vitamin + "\", \"" + size + "\");";
-                  editorTab.getController().insertAtCursor(insertion);
+                  editorTab.getController().getAceScriptEditorController()
+                      .insertAtCursor(insertion);
                 }
               });
 
