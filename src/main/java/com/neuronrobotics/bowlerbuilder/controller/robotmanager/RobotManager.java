@@ -20,8 +20,8 @@ public class RobotManager {
 
   public RobotManager(AceCreatureEditorController controller) {
     try {
-      String[] file = {"https://gist.github.com/edf8b3648e637d8041264e451c4e3321.git",
-          "NASA_Curiosity_copy.xml"};
+      String[] file = {"https://github.com/madhephaestus/SeriesElasticActuator.git",
+          "seaArm.xml"};
       String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
       MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
       mobileBase.setGitSelfSource(file);

@@ -18,6 +18,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.io.File;
 import java.io.IOException;
@@ -284,8 +285,7 @@ public class CreatureEditorController {
           mobileBase.setGitSelfSource(new String[]{gitURL, name + ".xml"});
           device.disconnect();
 
-          //ConnectionManager.addConnection(mobileBase, mobileBase.getScriptingName());
-          //TODO: Make DeviceManager
+          DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
         } catch (MalformedURLException e) {
           logger.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
               + Throwables.getStackTraceAsString(e));
@@ -304,8 +304,6 @@ public class CreatureEditorController {
               .showError());
         }
 
-        // DeviceManager.addConnection(newDevice, newDevice.getScriptingName());
-        //TODO: Make DeviceManager
       }).start());
     }));
 

@@ -10,6 +10,8 @@ import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManager;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
@@ -50,6 +52,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
@@ -59,6 +62,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -78,6 +82,8 @@ public class MainWindowController {
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   private final PreferencesServiceFactory preferencesServiceFactory;
   private final PreferencesService preferencesService;
+  private final ConnectionManagerFactory connectionManagerFactory;
+  private ConnectionManager connectionManager;
 
   @FXML
   private BorderPane root;
@@ -100,11 +106,21 @@ public class MainWindowController {
   @FXML
   private WebBrowserController webBrowserController;
   @FXML
+  private Tab consoleTab;
+  @FXML
   private TextArea console;
+  @FXML
+  private Tab connectionTab;
+  @FXML
+  private HBox connectionsHeader;
+  @FXML
+  private Accordion connections;
 
   @Inject
-  protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory) {
+  protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory,
+      ConnectionManagerFactory connectionManagerFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
+    this.connectionManagerFactory = connectionManagerFactory;
 
     preferencesService = preferencesServiceFactory.create("MainWindowController");
     preferencesService.load();
@@ -113,12 +129,11 @@ public class MainWindowController {
   @FXML
   protected void initialize() {
     //Add date to console
-    console.setText(
-        console.getText()
-            + new SimpleDateFormat(
-            "HH:mm:ss, MM dd, yyyy",
-            new Locale("en", "US")).format(new Date())
-            + "\n");
+    console.setText(console.getText()
+        + new SimpleDateFormat(
+        "HH:mm:ss, MM dd, yyyy",
+        new Locale("en", "US")).format(new Date())
+        + "\n");
 
     //Redirect output to console
     PrintStream stream = null;
@@ -134,6 +149,8 @@ public class MainWindowController {
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
 
     SplitPane.setResizableWithParent(console, false);
+
+    connectionManager = connectionManagerFactory.get(connectionsHeader, connections);
 
     try {
       ScriptingEngine.runLogin();

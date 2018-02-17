@@ -10,7 +10,10 @@
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -41,14 +44,14 @@
           <Menu mnemonicParsing="false" text="3D CAD">
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
-                <Menu mnemonicParsing="false" fx:id="cadVitamins" text="Vitamins" />
+                <Menu fx:id="cadVitamins" mnemonicParsing="false" text="Vitamins" />
                 <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Widgets">
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#onManageWidgets" text="Manage Plugins" />
-                <Menu mnemonicParsing="false" fx:id="installedPlugins" text="Installed Plugins" />
+                <Menu fx:id="installedPlugins" mnemonicParsing="false" text="Installed Plugins" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -75,7 +78,23 @@
                   </Tab>
                </tabs>
             </TabPane>
-            <TextArea fx:id="console" editable="false" prefHeight="100.0" />
+            <TabPane>
+               <tabs>
+                  <Tab fx:id="consoleTab" text="Terminal">
+                     <content>
+                        <TextArea fx:id="console" editable="false" prefHeight="100.0" />
+                     </content>
+                  </Tab>
+               </tabs>
+              <Tab fx:id="connectionTab" text="Connections">
+                <content>
+                  <VBox>
+                    <HBox fx:id="connectionsHeader" />
+                    <Accordion fx:id="connections" prefHeight="100.0" />
+                  </VBox>
+                </content>
+              </Tab>
+            </TabPane>
          </items>
       </SplitPane>
    </center>
