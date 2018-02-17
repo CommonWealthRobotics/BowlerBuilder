@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerbuilder.controller.AceCreatureEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule;
+import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditorView;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -58,7 +59,8 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
             null,
             null,
             BowlerBuilder.getInjector().createChildInjector(
-                new AceCadEditorControllerModule(getScriptEditorView()))::getInstance),
+                new AceCadEditorControllerModule(BowlerBuilder.getInjector()
+                    .getInstance(AceEditorView.class)))::getInstance),
         cadViewerLoader.getController(), creatureEditorLoader.getController());
     this.setContent(pane);
   }
@@ -66,6 +68,12 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
   @Override
   public Node getView() {
     return pane;
+  }
+
+  @Override
+  public ScriptEditorView getScriptEditorView() {
+    throw new UnsupportedOperationException("CreatureLabTab does not have just one script editor" +
+        " and therefore does not support getting the ScriptEditorView.");
   }
 
   @Override
