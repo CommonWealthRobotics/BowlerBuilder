@@ -19,8 +19,10 @@ public class ValidatedTextField extends TextField {
     invalidProperty = new SimpleBooleanProperty(false);
 
     ValidationSupport validator = new ValidationSupport();
-    validator.setValidationDecorator(new StyleClassValidationDecoration(
-        "text-field-error",
+    getStylesheets().add(
+        ValidatedTextField.class.getResource("/com/neuronrobotics/bowlerbuilder/styles.css")
+            .toExternalForm());
+    validator.setValidationDecorator(new StyleClassValidationDecoration("text-field-error",
         "text-field-warning"));
     validator.registerValidator(this, false, (control, value) -> {
       if (value instanceof String) {
