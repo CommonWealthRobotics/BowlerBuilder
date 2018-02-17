@@ -2,8 +2,14 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import com.neuronrobotics.sdk.addons.kinematics.LinkType;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -12,6 +18,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -23,7 +30,7 @@ public class LimbTabLimbSelection extends LimbSelection {
   private final VBox view;
   private final AnchorPane widget;
 
-  public LimbTabLimbSelection(DHParameterKinematics limb) {
+  public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb) {
     super(limb);
 
     view = new VBox(5);
@@ -63,13 +70,67 @@ public class LimbTabLimbSelection extends LimbSelection {
     Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
     addLink.setOnAction(event -> {
-      //TODO: Add a new link to the limb
+      TextInputDialog dialog = new TextInputDialog();
+      dialog.setTitle("Add a new link");
+      dialog.setHeaderText("Set the name for the link");
+      dialog.setContentText("Name: ");
+      dialog.showAndWait().ifPresent(result -> {
+        LinkConfiguration newLink = new LinkConfiguration();
+        List<LinkConfiguration> linkConfigurations = limb.getFactory().getLinkConfigurations();
+
+        int numOfLinks = linkConfigurations.size();
+
+        LinkType typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeEnum();
+
+        if (typeOfLink == null) {
+          typeOfLink = LinkType.VIRTUAL;
+        }
+
+        newLink.setType(typeOfLink);
+        newLink.setTypeString(typeOfLink.toString());
+        newLink.setName(result);
+
+        getNextChannel(device, newLink);
+        limb.addNewLink(newLink, new DHLink(0, 0, 100, 0));
+      });
     });
 
     HBox controlsBox = new HBox(5, addLink);
     controlsBox.setPadding(new Insets(5));
     HBox.setHgrow(controlsBox, Priority.NEVER);
     content.getChildren().add(controlsBox);
+  }
+
+  private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
+    Map<String, HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
+
+    for (DHParameterKinematics dh : base.getAllDHChains()) {
+      for (LinkConfiguration conf : dh.getLinkConfigurations()) {
+        Map<Integer, Boolean> channelMap;
+        deviceMap.computeIfAbsent(conf.getDeviceScriptingName(), k -> new HashMap<>());
+        channelMap = deviceMap.get(conf.getDeviceScriptingName());
+        channelMap.put(conf.getHardwareIndex(), true);
+
+        conf.getSlaveLinks().forEach(sl -> {
+          Map<Integer, Boolean> slaveChannelMap;
+          deviceMap.computeIfAbsent(sl.getDeviceScriptingName(), k -> new HashMap<>());
+          slaveChannelMap = deviceMap.get(sl.getDeviceScriptingName());
+          slaveChannelMap.put(sl.getHardwareIndex(), true);
+        });
+      }
+    }
+
+    deviceMap.forEach((key, value) -> {
+      for (int i = 0; i < 24; i++) { //TODO: Why 24? From the DyIO?
+        if (value.get(i) == null) {
+          confOfChannel.setDeviceScriptingName(key);
+          confOfChannel.setHardwareIndex(i);
+          return;
+        }
+      }
+    });
+
+    throw new RuntimeException("No channels are available on given devices");
   }
 
   @Override

@@ -426,7 +426,7 @@ public class CreatureEditorController {
       Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
       limbButton
-          .setOnAction(event -> selectionProperty.set(new LimbTabLimbSelection(limb)));
+          .setOnAction(event -> selectionProperty.set(new LimbTabLimbSelection(device, limb)));
       scrollPaneContent.getChildren().add(limbButton);
     });
 
