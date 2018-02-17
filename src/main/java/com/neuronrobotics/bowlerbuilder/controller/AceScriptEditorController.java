@@ -68,7 +68,9 @@ public class AceScriptEditorController {
   @FXML
   private TextField gistURLField;
   private GHGist gist;
+  private String manualRemote;
   private GHGistFile gistFile;
+  private String manualFile;
   private boolean isScratchpad = true;
   private Tab tab;
   private Runnable reloadMenus;
@@ -138,13 +140,22 @@ public class AceScriptEditorController {
   private void publishNormal() {
     new PublishDialog().showAndWait().ifPresent(commitMessage -> {
       try {
-        File currentFile = ScriptingEngine.fileFromGit(
-            gist.getGitPushUrl(),
-            gistFile.getFileName()
-        );
-        Git git = ScriptingEngine.locateGit(currentFile);
-        String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-        String relativePath = ScriptingEngine.findLocalPath(currentFile, git);
+        String remote;
+        String relativePath;
+
+        if (gist == null) {
+          remote = manualRemote;
+          relativePath = manualFile;
+        } else {
+          File currentFile = ScriptingEngine.fileFromGit(
+              gist.getGitPushUrl(),
+              gistFile.getFileName()
+          );
+
+          Git git = ScriptingEngine.locateGit(currentFile);
+          remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+          relativePath = ScriptingEngine.findLocalPath(currentFile, git);
+        }
 
         //Push to existing gist
         ScriptingEngine.pushCodeToGit(
@@ -157,6 +168,10 @@ public class AceScriptEditorController {
       } catch (Exception e) {
         logger.log(Level.SEVERE,
             "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+        FxUtil.runFX(() -> Notifications.create()
+            .title("Commit failed")
+            .text("Could not perform commit. Changes not saved.")
+            .showError());
       }
     });
   }
@@ -254,6 +269,25 @@ public class AceScriptEditorController {
     } catch (GitAPIException | IOException e) {
       logger.log(Level.SEVERE,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  public void loadManualGist(String pushURL, String fileName, File file) {
+    isScratchpad = false;
+    manualRemote = pushURL;
+    manualFile = fileName;
+
+    gistURLField.setText(pushURL);
+    fileNameField.setText(fileName);
+
+    if (file != null) {
+      try {
+        scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not load file: " + file.getAbsolutePath() + ".\n"
+                + Throwables.getStackTraceAsString(e));
+      }
     }
   }
 

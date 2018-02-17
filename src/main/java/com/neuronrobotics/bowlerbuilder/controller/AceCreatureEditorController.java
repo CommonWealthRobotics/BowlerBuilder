@@ -26,9 +26,9 @@ public class AceCreatureEditorController {
   private final CreatureLabController creatureLabController;
 
   public AceCreatureEditorController(TabPane scriptEditorPane,
-                                     Supplier<FXMLLoader> scriptEditorSupplier,
-                                     CADModelViewerController cadModelViewerController,
-                                     CreatureLabController creatureLabController) {
+      Supplier<FXMLLoader> scriptEditorSupplier,
+      CADModelViewerController cadModelViewerController,
+      CreatureLabController creatureLabController) {
     this.scriptEditorPane = scriptEditorPane;
     this.scriptEditorSupplier = scriptEditorSupplier;
     this.tabNameMap = new HashMap<>();
@@ -37,18 +37,20 @@ public class AceCreatureEditorController {
     this.creatureLabController = creatureLabController;
   }
 
-  public void loadFileIntoNewTab(String title, File file) {
-    loadFileIntoNewTab(title, Optional.empty(), file);
+  public void loadFileIntoNewTab(String title, String pushURL, String fileName, File file) {
+    loadFileIntoNewTab(title, Optional.empty(), pushURL, fileName, file);
   }
 
-  public void loadFileIntoNewTab(String title, Node graphic, File file) {
-    loadFileIntoNewTab(title, Optional.of(graphic), file);
+  public void loadFileIntoNewTab(String title, Node graphic, String pushURL, String fileName,
+      File file) {
+    loadFileIntoNewTab(title, Optional.of(graphic), pushURL, fileName, file);
   }
 
-  private void loadFileIntoNewTab(String title, Optional<Node> graphic, File file) {
+  private void loadFileIntoNewTab(String title, Optional<Node> graphic, String pushURL,
+      String fileName, File file) {
     if (tabNameMap.containsKey(title)) {
       Tab tab = tabNameMap.get(title);
-      tabControllerMap.get(tab).loadFile(file);
+      tabControllerMap.get(tab).loadManualGist(pushURL, fileName, file);
       scriptEditorPane.getSelectionModel().select(tab);
     } else {
       Tab tab = new Tab();
@@ -68,7 +70,7 @@ public class AceCreatureEditorController {
 
       AceScriptEditorController controller = loader.getController();
       tabControllerMap.put(tab, controller);
-      controller.loadFile(file);
+      controller.loadManualGist(pushURL, fileName, file);
     }
   }
 
