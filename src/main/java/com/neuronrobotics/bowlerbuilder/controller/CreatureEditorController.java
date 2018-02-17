@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbT
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.MovementTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
+import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
@@ -380,15 +381,15 @@ public class CreatureEditorController {
 
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
-      setWalkingEngine.setOnAction(event -> {
-        //TODO: Open a Dialog to get a gist and set device.setGitWalkingEngine()
-      });
+      setWalkingEngine.setOnAction(event ->
+          new GistFileSelectionDialog("Select Walking Engine").showAndWait()
+              .ifPresent(result -> device.setGitWalkingEngine(result)));
 
       Button setCADEngine = new Button();
       setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
-      setCADEngine.setOnAction(event -> {
-        //TODO: Open a Dialog to get a gist and set device.setGitCadEngine()
-      });
+      setCADEngine.setOnAction(event ->
+          new GistFileSelectionDialog("Select CAD Engine").showAndWait()
+              .ifPresent(result -> device.setGitCadEngine(result)));
 
       controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
           setWalkingEngine, setCADEngine);
