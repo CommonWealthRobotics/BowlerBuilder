@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
-import com.neuronrobotics.bowlerbuilder.view.robotmanager.LinkSliderWidget;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.LinkSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;

@@ -2,8 +2,8 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
-import com.neuronrobotics.bowlerbuilder.view.robotmanager.DHSettingsWidget;
-import com.neuronrobotics.bowlerbuilder.view.robotmanager.LinkConfigurationWidget;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.DHSettingsWidget;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.LinkConfigurationWidget;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;

@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.view.robotmanager;
+package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;

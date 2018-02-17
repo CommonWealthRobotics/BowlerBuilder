@@ -23,18 +23,18 @@ public class AceCreatureEditorController {
   private final Map<String, Tab> tabNameMap;
   private final Map<Tab, AceScriptEditorController> tabControllerMap;
   private final CADModelViewerController cadModelViewerController;
-  private final CreatureLabController creatureLabController;
+  private final CreatureEditorController creatureEditorController;
 
   public AceCreatureEditorController(TabPane scriptEditorPane,
       Supplier<FXMLLoader> scriptEditorSupplier,
       CADModelViewerController cadModelViewerController,
-      CreatureLabController creatureLabController) {
+      CreatureEditorController creatureEditorController) {
     this.scriptEditorPane = scriptEditorPane;
     this.scriptEditorSupplier = scriptEditorSupplier;
     this.tabNameMap = new HashMap<>();
     this.tabControllerMap = new HashMap<>();
     this.cadModelViewerController = cadModelViewerController;
-    this.creatureLabController = creatureLabController;
+    this.creatureEditorController = creatureEditorController;
   }
 
   public void loadFileIntoNewTab(String title, String pushURL, String fileName, File file) {
@@ -78,8 +78,8 @@ public class AceCreatureEditorController {
     return cadModelViewerController;
   }
 
-  public CreatureLabController getCreatureLabController() {
-    return creatureLabController;
+  public CreatureEditorController getCreatureEditorController() {
+    return creatureEditorController;
   }
 
 }

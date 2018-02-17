@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
-import com.neuronrobotics.bowlerbuilder.view.robotmanager.TransformChangeListener;
-import com.neuronrobotics.bowlerbuilder.view.robotmanager.TransformWidget;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.TransformChangeListener;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.TransformWidget;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;

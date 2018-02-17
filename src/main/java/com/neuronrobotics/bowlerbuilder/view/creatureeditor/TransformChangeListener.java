@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.view.robotmanager;
+package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;

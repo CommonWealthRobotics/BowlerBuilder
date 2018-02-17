@@ -44,7 +44,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
     Node cadViewer = cadViewerLoader.load();
 
     FXMLLoader creatureEditorLoader = new FXMLLoader(CreatureLabTab.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/CreatureLab.fxml"),
+        "/com/neuronrobotics/bowlerbuilder/view/CreatureEditor.fxml"),
         null,
         null,
         BowlerBuilder.getInjector()::getInstance);

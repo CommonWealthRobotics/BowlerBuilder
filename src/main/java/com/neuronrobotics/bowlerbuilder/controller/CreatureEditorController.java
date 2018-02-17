@@ -55,10 +55,10 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
 
-public class CreatureLabController {
+public class CreatureEditorController {
 
   private static final Logger logger =
-      LoggerUtilities.getLogger(CreatureLabController.class.getSimpleName());
+      LoggerUtilities.getLogger(CreatureEditorController.class.getSimpleName());
   private final AnchorPane limbWidget;
   private final AnchorPane movementWidget;
   private final AnchorPane configWidget;
@@ -88,7 +88,7 @@ public class CreatureLabController {
   private MobileBaseCadManager cadManager;
   private AceCreatureEditorController controller;
 
-  public CreatureLabController() {
+  public CreatureEditorController() {
     limbWidget = new AnchorPane();
     movementWidget = new AnchorPane();
     configWidget = new AnchorPane();

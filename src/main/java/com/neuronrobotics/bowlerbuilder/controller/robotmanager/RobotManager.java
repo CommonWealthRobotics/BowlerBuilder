@@ -30,11 +30,11 @@ public class RobotManager {
           mobileBase, new BowlerMobileBaseUI(controller.getCadModelViewerController().getEngine()));
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-      controller.getCreatureLabController().generateMenus(mobileBase, mobileBaseCadManager,
+      controller.getCreatureEditorController().generateMenus(mobileBase, mobileBaseCadManager,
           controller);
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
-      controller.getCreatureLabController().getCadProgress().progressProperty()
+      controller.getCreatureEditorController().getCadProgress().progressProperty()
           .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
       ThreadUtil.wait(1000);
       while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {

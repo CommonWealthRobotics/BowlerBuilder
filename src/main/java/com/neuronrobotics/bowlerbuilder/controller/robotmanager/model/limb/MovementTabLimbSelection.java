@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
-import com.neuronrobotics.bowlerbuilder.view.robotmanager.JogWidget;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.JogWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
