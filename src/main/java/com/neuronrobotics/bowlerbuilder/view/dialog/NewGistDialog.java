@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -93,7 +93,7 @@ public class NewGistDialog extends Dialog<List<String>> {
     return nameField.invalidProperty().get();
   }
 
-  public BooleanProperty invalidNameProperty() {
+  public ReadOnlyBooleanProperty invalidNameProperty() {
     return nameField.invalidProperty();
   }
 

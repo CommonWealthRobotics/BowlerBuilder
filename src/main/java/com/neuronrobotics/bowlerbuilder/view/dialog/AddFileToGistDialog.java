@@ -3,7 +3,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -59,7 +59,7 @@ public class AddFileToGistDialog extends Dialog<String> {
     return nameField.invalidProperty().get();
   }
 
-  public BooleanProperty invalidNameProperty() {
+  public ReadOnlyBooleanProperty invalidNameProperty() {
     return nameField.invalidProperty();
   }
 

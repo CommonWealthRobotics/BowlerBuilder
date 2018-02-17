@@ -1,8 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog.util;
 
 import java.util.function.Function;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.TextField;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationResult;
@@ -11,14 +10,12 @@ import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
 public class ValidatedTextField extends TextField {
 
-  private final BooleanProperty invalidProperty;
+  private final ValidationSupport validator;
 
   public ValidatedTextField(String invalidMessage, Function<String, Boolean> isValid) {
     super();
 
-    invalidProperty = new SimpleBooleanProperty(false);
-
-    ValidationSupport validator = new ValidationSupport();
+    validator = new ValidationSupport();
     getStylesheets().add(
         ValidatedTextField.class.getResource("/com/neuronrobotics/bowlerbuilder/styles.css")
             .toExternalForm());
@@ -39,16 +36,14 @@ public class ValidatedTextField extends TextField {
           Severity.ERROR,
           false);
     });
-
-    invalidProperty.bind(validator.invalidProperty());
   }
 
-  public boolean isInvalid() {
-    return invalidProperty.get();
+  public Boolean isInvalid() {
+    return validator.isInvalid();
   }
 
-  public BooleanProperty invalidProperty() {
-    return invalidProperty;
+  public ReadOnlyBooleanProperty invalidProperty() {
+    return validator.invalidProperty();
   }
 
 }

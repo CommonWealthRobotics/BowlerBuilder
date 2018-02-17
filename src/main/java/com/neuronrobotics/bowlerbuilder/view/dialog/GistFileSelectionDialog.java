@@ -1,8 +1,15 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
+import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -13,6 +20,8 @@ import javafx.scene.layout.GridPane;
 
 public class GistFileSelectionDialog extends Dialog<String[]> {
 
+  private static final Logger logger =
+      LoggerUtilities.getLogger(GistFileSelectionDialog.class.getSimpleName());
   private final ValidatedTextField gistField;
   private final ComboBox<String> fileChooser;
 
@@ -25,12 +34,17 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
 
     fileChooser = new ComboBox<>();
     fileChooser.setId("gistFileChooser");
-    fileChooser.setDisable(true);
 
-    gistField.invalidProperty().bind(fileChooser.disableProperty());
+    fileChooser.disableProperty().bind(gistField.invalidProperty());
     gistField.invalidProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) {
-        System.out.println("event");
+        try {
+          List<String> files = ScriptingEngine.filesInGit(gistField.getText());
+          fileChooser.setItems(FXCollections.observableArrayList(files));
+        } catch (Exception e) {
+          logger.warning("Could not fetch files in the gist: " + gistField.getText() + "\n"
+              + Throwables.getStackTraceAsString(e));
+        }
       }
     });
 
@@ -52,9 +66,14 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
 
     FxUtil.runFX(gistField::requestFocus);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    addButton.disableProperty().bind(gistField.invalidProperty());
-    addButton.setDefaultButton(true);
+    Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    okButton.disableProperty().bind(gistField.invalidProperty());
+    okButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
+            fileChooser.getSelectionModel().getSelectedItem() == null
+                || gistField.getText().isEmpty(),
+        gistField.textProperty(),
+        fileChooser.getSelectionModel().selectedItemProperty()));
+    okButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
       if (buttonType.equals(ButtonType.OK)) {
@@ -74,7 +93,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
    */
   private Optional<String> validateURL(String url) {
     //Any git URL is ((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
-    if (url.matches("(http(s)?)(:(//)?)([\\w\\.@\\:/\\-~]+)(\\.git)(/)?")) {
+    if (url.matches("(http(s)?)(:(//)?)([\\w.@:/\\-~]+)(\\.git)(/)?")) {
       return Optional.of(url);
     }
 
