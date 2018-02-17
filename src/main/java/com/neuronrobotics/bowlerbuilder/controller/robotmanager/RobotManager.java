@@ -31,7 +31,7 @@ public class RobotManager {
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
       controller.getCreatureLabController().generateMenus(mobileBase, mobileBaseCadManager,
-          controller.getAceScriptEditorController());
+          controller);
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
       controller.getCreatureLabController().getCadProgress().progressProperty()

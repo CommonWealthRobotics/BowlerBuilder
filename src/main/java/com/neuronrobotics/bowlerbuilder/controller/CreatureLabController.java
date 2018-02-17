@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
-import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
@@ -87,9 +86,8 @@ public class CreatureLabController {
   private Tab configTab;
   private MobileBase device;
   private MobileBaseCadManager cadManager;
-  private AceScriptEditorController editor;
+  private AceCreatureEditorController controller;
 
-  @Inject
   public CreatureLabController() {
     limbWidget = new AnchorPane();
     movementWidget = new AnchorPane();
@@ -139,10 +137,10 @@ public class CreatureLabController {
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-      AceScriptEditorController editor) {
+                            AceCreatureEditorController controller) {
     this.device = device;
     this.cadManager = cadManager;
-    this.editor = editor;
+    this.controller = controller;
 
     autoRegenCAD.selectedProperty().addListener((observable, oldValue, newValue) ->
         cadManager.setAutoRegen(newValue));
@@ -362,15 +360,20 @@ public class CreatureLabController {
 
       Button editRobotXML = new Button();
       editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
-      editRobotXML.setOnAction(event -> editor.loadFile(deviceXMLFile));
+      editRobotXML.setOnAction(event -> controller.loadFileIntoNewTab("XML",
+          AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"), deviceXMLFile));
 
       Button editWalkingEngine = new Button();
       editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
-      editWalkingEngine.setOnAction(event -> editor.loadFile(deviceWalkingEngineFile));
+      editWalkingEngine.setOnAction(event ->
+          controller.loadFileIntoNewTab("Walking Engine",
+              AssetFactory.loadIcon("Edit-Walking-Engine.png"), deviceWalkingEngineFile));
 
       Button editCADEngine = new Button();
       editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-      editCADEngine.setOnAction(event -> editor.loadFile(deviceCADEngineFile));
+      editCADEngine.setOnAction(event ->
+          controller.loadFileIntoNewTab("CAD Engine",
+              AssetFactory.loadIcon("Edit-CAD-Engine.png"), deviceCADEngineFile));
 
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
@@ -399,7 +402,7 @@ public class CreatureLabController {
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
-      List<DHParameterKinematics> limbs) {
+                                  List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -441,7 +444,7 @@ public class CreatureLabController {
   }
 
   private HBox getMovementTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+                                      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -494,7 +497,7 @@ public class CreatureLabController {
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+                                    List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -573,7 +576,7 @@ public class CreatureLabController {
    * @param isKinematic whether to gen kinematic STLs
    */
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-      boolean isKinematic) {
+                      boolean isKinematic) {
     File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
     if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
       logger.log(Level.WARNING, "Could not create default directory to save STL files.");
