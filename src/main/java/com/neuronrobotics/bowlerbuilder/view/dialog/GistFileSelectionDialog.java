@@ -62,6 +62,8 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
     pane.add(fileChooser, 1, 1);
 
     getDialogPane().setContent(pane);
+    getDialogPane().setMinWidth(300);
+    setResizable(true);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     FxUtil.runFX(gistField::requestFocus);
