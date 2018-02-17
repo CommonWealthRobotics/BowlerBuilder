@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.geometry.Insets;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -39,11 +40,13 @@ public class ConnectionManager implements IDeviceAddedListener {
     }));
 
     FxUtil.runFX(() -> {
+      connectionsHeader.setPadding(new Insets(5));
+      connectionsHeader.setSpacing(5);
       connectionsHeader.getChildren().addAll(AssetFactory.loadIcon("Connected-Devices.png"),
-          new Label("Connected Devices"));
-
-      connectionsHeader.getChildren().add(disconnectAll);
+          new Label("Connected Devices"), disconnectAll);
     });
+
+    DeviceManager.addDeviceAddedListener(this);
   }
 
   @Override
@@ -58,7 +61,7 @@ public class ConnectionManager implements IDeviceAddedListener {
     Button disconnect = new Button("Disconnect " + device.getScriptingName());
     disconnect.setGraphic(AssetFactory.loadIcon("Disconnect-Device.png"));
 
-    content.getChildren().add(content);
+    content.getChildren().add(disconnect);
     pane.setContent(content);
 
     paneMap.put(device, pane);

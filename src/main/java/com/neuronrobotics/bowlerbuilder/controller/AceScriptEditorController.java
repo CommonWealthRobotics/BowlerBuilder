@@ -51,7 +51,7 @@ public class AceScriptEditorController {
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
-  private final String scriptLangName;
+  private String scriptLangName;
   private final StringClipper stringClipper;
   private final IntegerProperty fontSize;
   private final IntegerProperty maxToastLength;
@@ -385,6 +385,10 @@ public class AceScriptEditorController {
 
   public ScriptRunner getScriptRunner() {
     return scriptRunner;
+  }
+
+  public void setScriptLangName(String scriptLangName) {
+    this.scriptLangName = scriptLangName;
   }
 
 }
