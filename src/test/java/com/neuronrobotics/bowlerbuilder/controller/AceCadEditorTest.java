@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Guice;
@@ -15,7 +17,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ public class AceCadEditorTest extends AutoClosingApplicationTest {
   @Override
   public void start(Stage stage) throws Exception {
     FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("../view/AceCadEditor.fxml"),
+        getClass().getResource("../view/AceScriptEditor.fxml"),
         null,
         null,
         Guice.createInjector(
@@ -41,17 +42,17 @@ public class AceCadEditorTest extends AutoClosingApplicationTest {
 
   @Test
   void runEmptyFileTest() {
-    FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());
+    FxHelper.runAndWait(() -> controller.runEditorContent());
 
-    assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
+    assertNull(controller.getScriptRunner().resultProperty().get());
   }
 
   @Test
   void basicRunButtonTest() {
     FxHelper.runAndWait(() -> controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()"));
-    FxHelper.runAndWait(() -> ((Button) lookup("#runButton").query()).fire());
+    FxHelper.runAndWait(() -> controller.runEditorContent());
 
-    assertTrue(lookup("#cadViewerBorderPane").tryQuery().isPresent());
+    assertTrue(controller.getScriptRunner().resultProperty().get() instanceof CSG);
   }
 
   @Test
@@ -59,21 +60,21 @@ public class AceCadEditorTest extends AutoClosingApplicationTest {
     FxHelper.runAndWait(() -> controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()"));
     controller.runEditorContent();
 
-    assertEquals(1, controller.getCADViewerController().getCsgMap().size());
+    assertNotNull(controller.getScriptRunner().resultProperty().get());
   }
 
   @Test
   void runStringScriptTest() {
-    assertTrue(
-        controller.runStringScript("CSG foo = new Sphere(10).toCSG();",
-            new ArrayList<>(),
-            "BowlerGroovy")
-            instanceof CSG);
+    controller.runStringScript("CSG foo = new Sphere(10).toCSG();", new ArrayList<>(),
+        "BowlerGroovy");
+
+    assertTrue(controller.getScriptRunner().resultProperty().get() instanceof CSG);
   }
 
   @Test
   void getTextTest() throws ExecutionException, InterruptedException {
     FxHelper.runAndWait(() -> controller.getScriptEditor().insertAtCursor("foo\nbar"));
+
     assertEquals("foo\nbar", FxUtil.returnFX(() -> controller.getScriptEditor().getText()));
   }
 
