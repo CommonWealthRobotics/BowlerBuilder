@@ -23,7 +23,6 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
   private static final Logger logger =
       LoggerUtilities.getLogger(CreatureLabTab.class.getSimpleName());
   private final AceCreatureEditorController controller;
-  private final TabPane tabPane;
   private final SplitPane pane;
 
   public CreatureLabTab(String title) throws IOException {
@@ -32,7 +31,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),
         BowlerBuilder.getInjector().getInstance(BowlerCadEngine.class));
 
-    tabPane = new TabPane();
+    final TabPane tabPane = new TabPane();
 
     FXMLLoader cadViewerLoader = new FXMLLoader(CreatureLabTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
@@ -72,8 +71,8 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
 
   @Override
   public ScriptEditorView getScriptEditorView() {
-    throw new UnsupportedOperationException("CreatureLabTab does not have just one script editor" +
-        " and therefore does not support getting the ScriptEditorView.");
+    throw new UnsupportedOperationException("CreatureLabTab does not have just one script editor"
+        + " and therefore does not support getting the ScriptEditorView.");
   }
 
   @Override

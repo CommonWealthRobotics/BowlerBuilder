@@ -240,9 +240,9 @@ public class CreatureEditorController {
               ScriptingEngine.fileFromGit(gitURL, filename);
               break;
             } catch (Exception ignored) {
+              logger.log(Level.INFO, "Waiting. " + gist + " not built yet.");
             }
             ThreadUtil.wait(500);
-            logger.log(Level.INFO, "Waiting. " + gist + " not built yet.");
           }
           logger.log(Level.INFO, "Creating Gist at: " + gitURL);
 
@@ -323,8 +323,8 @@ public class CreatureEditorController {
           gitWalkingEngine[1]);
       deviceCADEngineFile = ScriptingEngine.fileFromGit(gitCADEngine[0], gitCADEngine[1]);
     } catch (GitAPIException | IOException e) {
-      logger.severe("Could not parse creature file from source: " +
-          Arrays.toString(gitSelfSource) + "\n"
+      logger.severe("Could not parse creature file from source: "
+          + Arrays.toString(gitSelfSource) + "\n"
           + Arrays.toString(gitWalkingEngine) + "\n"
           + Throwables.getStackTraceAsString(e));
 

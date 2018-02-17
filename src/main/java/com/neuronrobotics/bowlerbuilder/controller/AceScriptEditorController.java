@@ -272,6 +272,13 @@ public class AceScriptEditorController {
     }
   }
 
+  /**
+   * Load in a gist manually if a {@link GHGist} is not available.
+   *
+   * @param pushURL gist push URL
+   * @param fileName filename in gist
+   * @param file file on disk
+   */
   public void loadManualGist(String pushURL, String fileName, File file) {
     isScratchpad = false;
     manualRemote = pushURL;
