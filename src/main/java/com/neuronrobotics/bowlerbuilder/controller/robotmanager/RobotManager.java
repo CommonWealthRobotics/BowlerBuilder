@@ -2,9 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.AceScriptEditorController;
-import com.neuronrobotics.bowlerbuilder.controller.CreatureLabController;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
+import com.neuronrobotics.bowlerbuilder.controller.AceCreatureEditorController;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -20,8 +18,7 @@ public class RobotManager {
   private static final Logger logger
       = LoggerUtilities.getLogger(RobotManager.class.getSimpleName());
 
-  public RobotManager(CadEngine cadEngine, CreatureLabController creatureLab,
-      AceScriptEditorController editor) {
+  public RobotManager(AceCreatureEditorController controller) {
     try {
       String[] file = {"https://gist.github.com/edf8b3648e637d8041264e451c4e3321.git",
           "NASA_Curiosity_copy.xml"};
@@ -30,13 +27,14 @@ public class RobotManager {
       mobileBase.setGitSelfSource(file);
       mobileBase.connect();
       MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(
-          mobileBase, new BowlerMobileBaseUI(cadEngine));
+          mobileBase, new BowlerMobileBaseUI(controller.getCadModelViewerController().getEngine()));
       mobileBase.updatePositions();
       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-      creatureLab.generateMenus(mobileBase, mobileBaseCadManager, editor);
+      controller.getCreatureLabController().generateMenus(mobileBase, mobileBaseCadManager,
+          controller.getAceScriptEditorController());
       mobileBaseCadManager.generateCad();
       logger.log(Level.INFO, "Waiting for cad to generate.");
-      creatureLab.getCadProgress().progressProperty()
+      controller.getCreatureLabController().getCadProgress().progressProperty()
           .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
       ThreadUtil.wait(1000);
       while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {

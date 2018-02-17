@@ -10,6 +10,7 @@ import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
@@ -18,6 +19,7 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
@@ -217,10 +219,17 @@ public class MainWindowController {
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
     try {
-      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-      AceCadEditorTabController controller = tab.getController();
+//      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
+//      AceCadEditorTabController controller = tab.getController();
+//
+//      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
-      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
+      CreatureLabTab tab = new CreatureLabTab("Hello, World!");
+      Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+        RobotManager manager = new RobotManager(tab.getController());
+      });
+      thread.setDaemon(true);
+      thread.start();
 
       tabPane.getTabs().add(tab);
       tabPane.getSelectionModel().select(tab);
