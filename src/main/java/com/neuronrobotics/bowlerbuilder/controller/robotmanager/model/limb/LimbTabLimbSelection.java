@@ -70,6 +70,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
     addLink.setOnAction(event -> {
+      //TODO: Make adding a link work
       TextInputDialog dialog = new TextInputDialog();
       dialog.setTitle("Add a new link");
       dialog.setHeaderText("Set the name for the link");
