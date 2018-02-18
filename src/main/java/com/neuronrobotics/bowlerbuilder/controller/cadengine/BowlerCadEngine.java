@@ -858,7 +858,14 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
-    FxUtil.runFX(() -> meshViewGroup.getChildren().add(mesh));
+    FxUtil.runFX(() -> {
+      try {
+        meshViewGroup.getChildren().add(mesh);
+      } catch (IllegalArgumentException e) {
+        logger.warning("Possible duplicate child added to CAD engine.");
+        logger.fine(Throwables.getStackTraceAsString(e));
+      }
+    });
     csgMap.put(csg, mesh);
     csgNameMap.put(csg.getName(), mesh);
     logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
