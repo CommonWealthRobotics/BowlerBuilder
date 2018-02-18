@@ -51,24 +51,6 @@ public class JogWidget {
     TextField increment = new TextField("0.4");
     increment.setMinWidth(Region.USE_COMPUTED_SIZE);
 
-    /*ValidationSupport validator = new ValidationSupport();
-    validator.setValidationDecorator(
-        new StyleClassValidationDecoration("text-field-error",
-            "text-field-warning"));
-    validator.registerValidator(speed, false, (control, value) -> {
-      if (value instanceof String) {
-        return ValidationResult.fromMessageIf(control,
-            "Invalid number",
-            Severity.ERROR,
-            !validateAsFloatingPoint((String) value).isPresent());
-      }
-
-      return ValidationResult.fromMessageIf(control,
-          "Invalid number",
-          Severity.ERROR,
-          false);
-    });*/ //TODO: This shrinks the application on bad input for some reason
-
     HBox speedBox = new HBox(2, increment, new Label("m/s"));
     speedBox.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(speedBox, Priority.NEVER);
