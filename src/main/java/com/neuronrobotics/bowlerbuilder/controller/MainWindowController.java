@@ -65,6 +65,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
+import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -347,6 +348,10 @@ public class MainWindowController {
     try {
       ScriptingEngine.waitForLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
+        FxUtil.runFX(() -> Notifications.create()
+            .title("Login Success")
+            .text("Successfully logged in to GitHub as " + ScriptingEngine.getLoginID())
+            .show());
         setupMenusOnLogin();
       }
     } catch (IOException e) {
