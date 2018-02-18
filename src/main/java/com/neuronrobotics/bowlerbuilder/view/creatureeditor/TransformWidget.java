@@ -2,8 +2,8 @@ package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
+import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
+import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import java.util.logging.Level;

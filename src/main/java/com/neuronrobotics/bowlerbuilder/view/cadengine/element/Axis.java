@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine.view.element;
+package com.neuronrobotics.bowlerbuilder.view.cadengine.element;
 
 import javafx.application.Platform;
 import javafx.scene.Group;

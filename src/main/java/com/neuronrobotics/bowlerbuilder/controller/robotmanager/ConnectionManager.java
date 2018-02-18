@@ -23,6 +23,7 @@ public class ConnectionManager implements IDeviceAddedListener {
   private final List<BowlerAbstractDevice> devices;
   private final Accordion accordion;
   private final Map<BowlerAbstractDevice, TitledPane> paneMap;
+  private boolean removingAll = false;
 
   public ConnectionManager(HBox connectionsHeader, Accordion accordion) {
     devices = new ArrayList<>();
@@ -31,13 +32,22 @@ public class ConnectionManager implements IDeviceAddedListener {
 
     Button disconnectAll = new Button("Disconnect All");
     disconnectAll.setGraphic(AssetFactory.loadIcon("Disconnect-All.png"));
-    disconnectAll.setOnAction(event -> devices.forEach(device -> {
-      if (device.isAvailable()) {
-        device.disconnect();
-      }
+    disconnectAll.setOnAction(event -> {
+      removingAll = true;
 
-      DeviceManager.remove(device);
-    }));
+      devices.forEach(device -> {
+        if (device.isAvailable()) {
+          device.disconnect();
+        }
+
+        DeviceManager.remove(device);
+        FxUtil.runFX(() -> accordion.getPanes().remove(paneMap.get(device)));
+      });
+
+      devices.clear();
+      paneMap.clear();
+      removingAll = false;
+    });
 
     FxUtil.runFX(() -> {
       connectionsHeader.setPadding(new Insets(5));
@@ -70,8 +80,10 @@ public class ConnectionManager implements IDeviceAddedListener {
 
   @Override
   public void onDeviceRemoved(BowlerAbstractDevice device) {
-    devices.remove(device);
-    FxUtil.runFX(() -> accordion.getPanes().remove(paneMap.get(device)));
+    if (!removingAll) {
+      devices.remove(device);
+      FxUtil.runFX(() -> accordion.getPanes().remove(paneMap.get(device)));
+    }
   }
 
 }

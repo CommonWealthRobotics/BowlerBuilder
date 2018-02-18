@@ -1,8 +1,8 @@
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.neuronrobotics.bowlerbuilder.FxUtil;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsChangeListener;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.view.EngineeringUnitsSliderWidget;
+import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
+import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import javafx.geometry.Insets;

@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine.view.camera;
+package com.neuronrobotics.bowlerbuilder.view.cadengine.camera;
 
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.AbstractImageProvider;

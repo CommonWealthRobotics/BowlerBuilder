@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
+package com.neuronrobotics.bowlerbuilder.view.cadengine;
 
 public interface EngineeringUnitsChangeListener {
 

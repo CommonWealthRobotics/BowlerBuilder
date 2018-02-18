@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.cadengine.view;
+package com.neuronrobotics.bowlerbuilder.view.cadengine;
 
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import javafx.beans.value.ChangeListener;
