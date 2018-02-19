@@ -23,7 +23,7 @@ public class ConnectionManager implements IDeviceAddedListener {
   private final List<BowlerAbstractDevice> devices;
   private final Accordion accordion;
   private final Map<BowlerAbstractDevice, TitledPane> paneMap;
-  private boolean removingAll = false;
+  private boolean removingAll; //NOPMD
 
   public ConnectionManager(HBox connectionsHeader, Accordion accordion) {
     devices = new ArrayList<>();

@@ -10,7 +10,6 @@ import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManager;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
@@ -84,7 +83,6 @@ public class MainWindowController {
   private final PreferencesServiceFactory preferencesServiceFactory;
   private final PreferencesService preferencesService;
   private final ConnectionManagerFactory connectionManagerFactory;
-  private ConnectionManager connectionManager;
 
   @FXML
   private BorderPane root;
@@ -119,7 +117,7 @@ public class MainWindowController {
 
   @Inject
   protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory,
-      ConnectionManagerFactory connectionManagerFactory) {
+                                 ConnectionManagerFactory connectionManagerFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.connectionManagerFactory = connectionManagerFactory;
 
@@ -151,7 +149,8 @@ public class MainWindowController {
 
     SplitPane.setResizableWithParent(console, false);
 
-    connectionManager = connectionManagerFactory.get(connectionsHeader, connections);
+    //Just need to initialize here (ConnectionManager marked @singleton)
+    connectionManagerFactory.get(connectionsHeader, connections);
 
     try {
       ScriptingEngine.runLogin();
@@ -237,10 +236,10 @@ public class MainWindowController {
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
     try {
-//      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-//      AceCadEditorTabController controller = tab.getController();
-//
-//      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
+      //      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
+      //      AceCadEditorTabController controller = tab.getController();
+      //
+      //      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
       CreatureLabTab tab = new CreatureLabTab("Hello, World!");
       Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {

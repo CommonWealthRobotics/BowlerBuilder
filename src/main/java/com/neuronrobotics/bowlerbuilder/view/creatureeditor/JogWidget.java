@@ -104,7 +104,7 @@ public class JogWidget {
 
   private class JogThread extends Thread {
 
-    private double dx = 0, dy = 0, dz = 0, dt = 0.4;
+    private double dx, dy, dz, dt = 0.4;
     private boolean home = true;
 
     public JogThread() {
