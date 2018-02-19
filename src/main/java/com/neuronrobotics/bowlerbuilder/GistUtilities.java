@@ -81,4 +81,19 @@ public final class GistUtilities {
     return Optional.empty();
   }
 
+  /**
+   * Will accept http:// or https:// with .git or .git/.
+   *
+   * @param url gist URL
+   * @return optional containing a valid gist URL, empty otherwise
+   */
+  public static Optional<String> isValidGitURL(String url) {
+    //Any git URL is ((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
+    if (url.matches("(http(s)?)(:(//)?)([\\w.@:/\\-~]+)(\\.git)(/)?")) {
+      return Optional.of(url);
+    }
+
+    return Optional.empty();
+  }
+
 }

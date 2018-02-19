@@ -2,11 +2,11 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
+import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -29,7 +29,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
     super();
 
     gistField = new ValidatedTextField("Invalid Gist URL", url ->
-        validateURL(url).isPresent());
+        GistUtilities.isValidGitURL(url).isPresent());
     gistField.setId("gistField");
 
     fileChooser = new ComboBox<>();
@@ -85,21 +85,6 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
 
       return null;
     });
-  }
-
-  /**
-   * Will accept http:// or https:// with .git or .git/.
-   *
-   * @param url gist URL
-   * @return optional containing a valid gist URL, empty otherwise
-   */
-  private Optional<String> validateURL(String url) {
-    //Any git URL is ((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
-    if (url.matches("(http(s)?)(:(//)?)([\\w.@:/\\-~]+)(\\.git)(/)?")) {
-      return Optional.of(url);
-    }
-
-    return Optional.empty();
   }
 
 }
