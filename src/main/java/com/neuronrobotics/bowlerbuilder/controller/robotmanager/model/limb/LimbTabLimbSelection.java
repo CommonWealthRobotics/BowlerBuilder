@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
+import com.neuronrobotics.bowlerbuilder.view.dialog.AddLinkDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -71,10 +72,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
     addLink.setOnAction(event -> {
       //TODO: Make adding a link work
-      TextInputDialog dialog = new TextInputDialog();
-      dialog.setTitle("Add a new link");
-      dialog.setHeaderText("Set the name for the link");
-      dialog.setContentText("Name: ");
+      AddLinkDialog dialog = new AddLinkDialog();
       dialog.showAndWait().ifPresent(result -> {
         LinkConfiguration newLink = new LinkConfiguration();
         List<LinkConfiguration> linkConfigurations = limb.getFactory().getLinkConfigurations();
@@ -89,7 +87,8 @@ public class LimbTabLimbSelection extends LimbSelection {
 
         newLink.setType(typeOfLink);
         newLink.setTypeString(typeOfLink.toString());
-        newLink.setName(result);
+        newLink.setName(result[0]);
+        newLink.setHardwareIndex(Integer.parseInt(result[1]));
 
         getNextChannel(device, newLink);
         limb.addNewLink(newLink, new DHLink(0, 0, 100, 0));
@@ -122,7 +121,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     }
 
     deviceMap.forEach((key, value) -> {
-      for (int i = 0; i < 24; i++) { //TODO: Why 24? From the DyIO?
+      for (int i = 0; i < 24; i++) {
         if (value.get(i) == null) {
           confOfChannel.setDeviceScriptingName(key);
           confOfChannel.setHardwareIndex(i);
