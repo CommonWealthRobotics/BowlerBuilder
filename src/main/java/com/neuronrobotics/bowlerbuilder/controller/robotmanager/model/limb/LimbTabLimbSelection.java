@@ -64,9 +64,12 @@ public class LimbTabLimbSelection extends LimbSelection {
     scrollPane.setContent(scrollPaneContent);
     content.getChildren().add(scrollPane);
 
-    selectionProperty.addListener((observable, oldValue, newValue) ->
+    selectionProperty.addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
         widget.getChildren().setAll(
-            new LimbTabLinkSelection(null, newValue).getWidget())); //NOPMD
+            new LimbTabLinkSelection(null, newValue, limb, this).getWidget()); //NOPMD
+      }
+    });
 
     Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
@@ -118,6 +121,11 @@ public class LimbTabLimbSelection extends LimbSelection {
       linkButton.setOnAction(event -> selectionProperty.set(config));
       return linkButton;
     }).collect(Collectors.toList());
+  }
+
+  public void clearSelectedWidget() {
+    widget.getChildren().clear();
+    selectionProperty.set(null);
   }
 
   @Override
