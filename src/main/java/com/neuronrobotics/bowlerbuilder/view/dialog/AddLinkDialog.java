@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.google.common.primitives.Ints;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
+import java.util.Set;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -13,7 +14,7 @@ import javafx.scene.layout.VBox;
 
 public class AddLinkDialog extends Dialog<String[]> {
 
-  public AddLinkDialog() { //TODO: Take in a list of device indices which are taken
+  public AddLinkDialog(Set<Integer> takenChannels) {
     super();
 
     setTitle("Add Link");
@@ -25,7 +26,10 @@ public class AddLinkDialog extends Dialog<String[]> {
 
     Label hwIndexLabel = new Label("Hardware index");
     ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
-        text -> Ints.tryParse(text) != null);
+        text -> {
+          Integer result = Ints.tryParse(text);
+          return result != null && !takenChannels.contains(result);
+        });
     HBox indexHBox = new HBox(5, hwIndexLabel, hwIndexField);
     indexHBox.setAlignment(Pos.CENTER_LEFT);
 

@@ -3,14 +3,16 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLinkDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -19,7 +21,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -30,6 +31,7 @@ public class LimbTabLimbSelection extends LimbSelection {
   private final ObjectProperty<LinkConfiguration> selectionProperty;
   private final VBox view;
   private final AnchorPane widget;
+  private final HBox scrollPaneContent;
 
   public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb) {
     super(limb);
@@ -50,18 +52,14 @@ public class LimbTabLimbSelection extends LimbSelection {
     ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-    HBox scrollPaneContent = new HBox(5);
+    scrollPaneContent = new HBox(5);
     HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
+
     scrollPaneContent.setPadding(new Insets(5));
+    scrollPaneContent.getChildren().addAll(
+        getLinkButtons(limb.getLinkConfigurations()));
+
     scrollPane.setContent(scrollPaneContent);
-
-    limb.getFactory().getLinkConfigurations().forEach(link -> {
-      Button linkButton = new Button(link.getName());
-      //Set the selection to this link
-      linkButton.setOnAction(event -> selectionProperty.set(link));
-      scrollPaneContent.getChildren().add(linkButton);
-    });
-
     content.getChildren().add(scrollPane);
 
     selectionProperty.addListener((observable, oldValue, newValue) ->
@@ -71,8 +69,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
     addLink.setOnAction(event -> {
-      //TODO: Make adding a link work
-      AddLinkDialog dialog = new AddLinkDialog();
+      AddLinkDialog dialog = new AddLinkDialog(getTakenChannels(device));
       dialog.showAndWait().ifPresent(result -> {
         LinkConfiguration newLink = new LinkConfiguration();
         List<LinkConfiguration> linkConfigurations = limb.getFactory().getLinkConfigurations();
@@ -90,8 +87,9 @@ public class LimbTabLimbSelection extends LimbSelection {
         newLink.setName(result[0]);
         newLink.setHardwareIndex(Integer.parseInt(result[1]));
 
-        getNextChannel(device, newLink);
         limb.addNewLink(newLink, new DHLink(0, 0, 100, 0));
+
+        scrollPaneContent.getChildren().setAll(getLinkButtons(limb.getLinkConfigurations()));
       });
     });
 
@@ -101,36 +99,20 @@ public class LimbTabLimbSelection extends LimbSelection {
     content.getChildren().add(controlsBox);
   }
 
-  private static void getNextChannel(MobileBase base, LinkConfiguration confOfChannel) {
-    Map<String, HashMap<Integer, Boolean>> deviceMap = new HashMap<>();
+  private Set<Integer> getTakenChannels(MobileBase device) {
+    return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
+        .flatMap(Collection::stream)
+        .map(LinkConfiguration::getHardwareIndex)
+        .collect(Collectors.toSet());
+  }
 
-    for (DHParameterKinematics dh : base.getAllDHChains()) {
-      for (LinkConfiguration conf : dh.getLinkConfigurations()) {
-        Map<Integer, Boolean> channelMap;
-        deviceMap.computeIfAbsent(conf.getDeviceScriptingName(), k -> new HashMap<>());
-        channelMap = deviceMap.get(conf.getDeviceScriptingName());
-        channelMap.put(conf.getHardwareIndex(), true);
-
-        conf.getSlaveLinks().forEach(sl -> {
-          Map<Integer, Boolean> slaveChannelMap;
-          deviceMap.computeIfAbsent(sl.getDeviceScriptingName(), k -> new HashMap<>());
-          slaveChannelMap = deviceMap.get(sl.getDeviceScriptingName());
-          slaveChannelMap.put(sl.getHardwareIndex(), true);
-        });
-      }
-    }
-
-    deviceMap.forEach((key, value) -> {
-      for (int i = 0; i < 24; i++) {
-        if (value.get(i) == null) {
-          confOfChannel.setDeviceScriptingName(key);
-          confOfChannel.setHardwareIndex(i);
-          return;
-        }
-      }
-    });
-
-    throw new RuntimeException("No channels are available on given devices");
+  private List<Button> getLinkButtons(List<LinkConfiguration> configs) {
+    return configs.stream().map(config -> {
+      Button linkButton = new Button(config.getName());
+      //Set the selection to this link
+      linkButton.setOnAction(event -> selectionProperty.set(config));
+      return linkButton;
+    }).collect(Collectors.toList());
   }
 
   @Override
