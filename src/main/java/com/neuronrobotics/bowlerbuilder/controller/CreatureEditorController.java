@@ -364,25 +364,17 @@ public class CreatureEditorController {
         }
       }));
 
-      Button editRobotXML = new Button();
-      editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
-      editRobotXML.setOnAction(event -> controller.loadFileIntoNewTab("XML",
-          AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"),
-          gitSelfSource[0], gitSelfSource[1], deviceXMLFile));
-
-      Button editWalkingEngine = new Button();
-      editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
-      editWalkingEngine.setOnAction(event ->
-          controller.loadFileIntoNewTab("Walking Engine",
-              AssetFactory.loadIcon("Edit-Walking-Engine.png"),
-              gitWalkingEngine[0], gitWalkingEngine[1], deviceWalkingEngineFile));
-
-      Button editCADEngine = new Button();
-      editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-      editCADEngine.setOnAction(event ->
-          controller.loadFileIntoNewTab("CAD Engine",
-              AssetFactory.loadIcon("Edit-CAD-Engine.png"),
-              gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile));
+      FxUtil.runFX(() -> {
+        controller.loadFileIntoNewTab("XML",
+            AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"),
+            gitSelfSource[0], gitSelfSource[1], deviceXMLFile);
+        controller.loadFileIntoNewTab("Walking Engine",
+            AssetFactory.loadIcon("Edit-Walking-Engine.png"),
+            gitWalkingEngine[0], gitWalkingEngine[1], deviceWalkingEngineFile);
+        controller.loadFileIntoNewTab("CAD Engine",
+            AssetFactory.loadIcon("Edit-CAD-Engine.png"),
+            gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile);
+      });
 
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
@@ -396,8 +388,7 @@ public class CreatureEditorController {
           new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
               .showAndWait().ifPresent(result -> device.setGitCadEngine(result)));
 
-      controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
-          setWalkingEngine, setCADEngine);
+      controls.getChildren().addAll(publish, setWalkingEngine, setCADEngine);
     }
 
     FxUtil.runFX(() -> scriptTab.setContent(getScrollPane(controls)));
