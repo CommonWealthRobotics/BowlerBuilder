@@ -15,6 +15,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManage
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
@@ -254,6 +255,13 @@ public class MainWindowController {
   }
 
   @FXML
+  private void onLoadCreature(ActionEvent actionEvent) {
+    GistFileSelectionDialog dialog = new GistFileSelectionDialog("Select Creature File", file ->
+        file.endsWith(".xml"));
+    dialog.showAndWait().ifPresent(result -> loadCreatureLab(result[0], result[1]));
+  }
+
+  @FXML
   private void onReloadVitamins(ActionEvent actionEvent) {
     reloadCadMenus();
   }
@@ -333,9 +341,18 @@ public class MainWindowController {
    * Load a MobileBase from the supplied file and open it in a new {@link CreatureLabTab}.
    *
    * @param gist gist clone URL
-   * @param fileName file name (with extension)
+   * @param fileName file name (with .xml extension)
    */
   public void loadCreatureLab(String gist, String fileName) {
+    loadCreatureLab(new String[]{gist, fileName});
+  }
+
+  /**
+   * Load a MobileBase from the supplied file and open it in a new {@link CreatureLabTab}.
+   *
+   * @param file xml file in gist
+   */
+  public void loadCreatureLab(String[] file) {
     FxUtil.runFX(() -> {
       try {
         CreatureLabTab tab = new CreatureLabTab("Creature Lab");
@@ -343,7 +360,6 @@ public class MainWindowController {
           AceCreatureEditorController controller = tab.getController();
 
           try {
-            String[] file = {gist, fileName};
             String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
 
             MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));

@@ -387,14 +387,14 @@ public class CreatureEditorController {
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
       setWalkingEngine.setOnAction(event ->
-          new GistFileSelectionDialog("Select Walking Engine").showAndWait()
-              .ifPresent(result -> device.setGitWalkingEngine(result)));
+          new GistFileSelectionDialog("Select Walking Engine", file -> !file.endsWith(".xml"))
+              .showAndWait().ifPresent(result -> device.setGitWalkingEngine(result)));
 
       Button setCADEngine = new Button();
       setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
       setCADEngine.setOnAction(event ->
-          new GistFileSelectionDialog("Select CAD Engine").showAndWait()
-              .ifPresent(result -> device.setGitCadEngine(result)));
+          new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
+              .showAndWait().ifPresent(result -> device.setGitCadEngine(result)));
 
       controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
           setWalkingEngine, setCADEngine);

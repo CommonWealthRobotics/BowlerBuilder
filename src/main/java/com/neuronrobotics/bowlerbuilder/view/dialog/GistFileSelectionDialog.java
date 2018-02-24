@@ -7,7 +7,9 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
@@ -25,7 +27,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
   private final ValidatedTextField gistField;
   private final ComboBox<String> fileChooser;
 
-  public GistFileSelectionDialog(String title) {
+  public GistFileSelectionDialog(String title, Predicate<String> extensionFilter) {
     super();
 
     gistField = new ValidatedTextField("Invalid Gist URL", url ->
@@ -40,6 +42,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
       if (!newValue) {
         try {
           List<String> files = ScriptingEngine.filesInGit(gistField.getText());
+          files = files.stream().filter(extensionFilter).collect(Collectors.toList());
           fileChooser.setItems(FXCollections.observableArrayList(files));
         } catch (Exception e) {
           logger.warning("Could not fetch files in the gist: " + gistField.getText() + "\n"

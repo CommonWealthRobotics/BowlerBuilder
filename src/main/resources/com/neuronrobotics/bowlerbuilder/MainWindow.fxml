@@ -44,6 +44,7 @@
           <Menu mnemonicParsing="false" text="3D CAD">
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
+              <MenuItem mnemonicParsing="false" onAction="#onLoadCreature" text="Load Creature" />
                 <Menu fx:id="cadVitamins" mnemonicParsing="false" text="Vitamins" />
                 <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
             </items>
