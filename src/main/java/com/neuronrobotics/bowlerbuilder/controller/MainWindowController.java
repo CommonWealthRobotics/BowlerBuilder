@@ -338,11 +338,6 @@ public class MainWindowController {
   public void loadCreatureLab(String gist, String fileName) {
     FxUtil.runFX(() -> {
       try {
-        //      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-        //      AceCadEditorTabController controller = tab.getController();
-        //
-        //      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
-
         CreatureLabTab tab = new CreatureLabTab("Creature Lab");
         Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
           AceCreatureEditorController controller = tab.getController();
@@ -387,7 +382,7 @@ public class MainWindowController {
         tabPane.getSelectionModel().select(tab);
       } catch (IOException e) {
         logger.log(Level.SEVERE,
-            "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+            "Could not load AceCreatureEditor.\n" + Throwables.getStackTraceAsString(e));
       }
     });
   }
