@@ -154,6 +154,13 @@ public class CreatureEditorController {
     generateScriptTab();
   }
 
+  /**
+   * Regenerate menus using the parameters from the last time generateMenus() was called.
+   */
+  public void regenerateMenus() {
+    generateMenus(device, cadManager, controller);
+  }
+
   private void generateLimbTab() {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
@@ -423,8 +430,8 @@ public class CreatureEditorController {
     limbs.forEach(limb -> {
       Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
-      limbButton
-          .setOnAction(event -> selectionProperty.set(new LimbTabLimbSelection(device, limb)));
+      limbButton.setOnAction(event ->
+          selectionProperty.set(new LimbTabLimbSelection(device, limb, this)));
       scrollPaneContent.getChildren().add(limbButton);
     });
 

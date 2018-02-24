@@ -1,5 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
+import com.neuronrobotics.bowlerbuilder.controller.CreatureEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLinkDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -33,7 +34,8 @@ public class LimbTabLimbSelection extends LimbSelection {
   private final AnchorPane widget;
   private final HBox scrollPaneContent;
 
-  public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb) {
+  public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb,
+      CreatureEditorController creatureEditorController) {
     super(limb);
 
     view = new VBox(5);
@@ -89,7 +91,10 @@ public class LimbTabLimbSelection extends LimbSelection {
 
         limb.addNewLink(newLink, new DHLink(0, 0, 100, 0));
 
+        //Add the new link to the ScrollPane for continuity, the rest of the updating is done by
+        //regenerating the menus
         scrollPaneContent.getChildren().setAll(getLinkButtons(limb.getLinkConfigurations()));
+        creatureEditorController.regenerateMenus();
       });
     });
 
