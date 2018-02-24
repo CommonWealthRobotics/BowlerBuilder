@@ -48,4 +48,8 @@ public class BowlerBuilder extends Application {
     return injector;
   }
 
+  public static MainWindowController getMainController() {
+    return injector.getInstance(MainWindowController.class);
+  }
+
 }

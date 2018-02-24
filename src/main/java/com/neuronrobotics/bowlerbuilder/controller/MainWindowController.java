@@ -10,8 +10,8 @@ import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.BowlerMobileBaseUI;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
-import com.neuronrobotics.bowlerbuilder.controller.robotmanager.RobotManager;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
@@ -22,8 +22,11 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
+import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import com.neuronrobotics.sdk.common.DeviceManager;
 import com.neuronrobotics.sdk.util.ThreadUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
@@ -64,6 +67,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
@@ -117,7 +121,7 @@ public class MainWindowController {
 
   @Inject
   protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory,
-                                 ConnectionManagerFactory connectionManagerFactory) {
+      ConnectionManagerFactory connectionManagerFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.connectionManagerFactory = connectionManagerFactory;
 
@@ -236,17 +240,10 @@ public class MainWindowController {
   @FXML
   private void onOpenScratchpad(ActionEvent actionEvent) {
     try {
-      //      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-      //      AceCadEditorTabController controller = tab.getController();
-      //
-      //      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
+      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
+      AceCadEditorTabController controller = tab.getController();
 
-      CreatureLabTab tab = new CreatureLabTab("Hello, World!");
-      Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-        RobotManager manager = new RobotManager(tab.getController());
-      });
-      thread.setDaemon(true);
-      thread.start();
+      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
       tabPane.getTabs().add(tab);
       tabPane.getSelectionModel().select(tab);
@@ -322,6 +319,69 @@ public class MainWindowController {
         AceCadEditorTabController controller = tab.getController();
 
         controller.getAceScriptEditorController().loadGist(gist, gistFile);
+
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+      } catch (IOException e) {
+        logger.log(Level.SEVERE,
+            "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
+      }
+    });
+  }
+
+  /**
+   * Load a MobileBase from the supplied file and open it in a new {@link CreatureLabTab}.
+   *
+   * @param gist gist clone URL
+   * @param fileName file name (with extension)
+   */
+  public void loadCreatureLab(String gist, String fileName) {
+    FxUtil.runFX(() -> {
+      try {
+        //      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
+        //      AceCadEditorTabController controller = tab.getController();
+        //
+        //      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
+
+        CreatureLabTab tab = new CreatureLabTab("Creature Lab");
+        Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+          AceCreatureEditorController controller = tab.getController();
+
+          try {
+            String[] file = {gist, fileName};
+            String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
+
+            MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+            mobileBase.setGitSelfSource(file);
+            mobileBase.connect();
+
+            MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
+                new BowlerMobileBaseUI(controller.getCadModelViewerController().getEngine()));
+            mobileBase.updatePositions();
+
+            DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+            controller.getCreatureEditorController().generateMenus(mobileBase, mobileBaseCadManager,
+                controller);
+
+            mobileBaseCadManager.generateCad();
+            logger.log(Level.INFO, "Waiting for cad to generate.");
+
+            controller.getCreatureEditorController().getCadProgress().progressProperty()
+                .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
+            ThreadUtil.wait(1000);
+            while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
+              ThreadUtil.wait(1000);
+            }
+          } catch (IOException e) {
+            logger.log(Level.SEVERE,
+                "Could not load assets for robot.\n" + Throwables.getStackTraceAsString(e));
+          } catch (Exception e) {
+            logger.log(Level.SEVERE,
+                "Could not start building robot.\n" + Throwables.getStackTraceAsString(e));
+          }
+        });
+        thread.setDaemon(true);
+        thread.start();
 
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
