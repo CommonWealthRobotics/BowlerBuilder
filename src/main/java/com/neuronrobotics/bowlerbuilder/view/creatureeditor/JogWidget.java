@@ -71,12 +71,52 @@ public class JogWidget {
       jogThread.setDt(Double.parseDouble(time.getText()));
     });
     Button minusX = addButton(AssetFactory.loadIcon("Minus-X.png"), "", 1, 2);
+    minusX.setOnMousePressed(event -> {
+      jogThread.setDx(-Double.parseDouble(increment.getText()));
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
+    minusX.setOnMouseReleased(event -> {
+      jogThread.setDx(0);
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
 
     Button plusY = addButton(AssetFactory.loadIcon("Plus-Y.png"), "", 0, 1);
+    plusY.setOnMousePressed(event -> {
+      jogThread.setDy(Double.parseDouble(increment.getText()));
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
+    plusY.setOnMouseReleased(event -> {
+      jogThread.setDy(0);
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
     Button minusY = addButton(AssetFactory.loadIcon("Minus-Y.png"), "", 2, 1);
+    minusY.setOnMousePressed(event -> {
+      jogThread.setDy(-Double.parseDouble(increment.getText()));
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
+    minusY.setOnMouseReleased(event -> {
+      jogThread.setDy(0);
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
 
     Button plusZ = addButton(AssetFactory.loadIcon("Plus-Z.png"), "", 0, 0);
+    plusZ.setOnMousePressed(event -> {
+      jogThread.setDz(Double.parseDouble(increment.getText()));
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
+    plusZ.setOnMouseReleased(event -> {
+      jogThread.setDz(0);
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
     Button minusZ = addButton(AssetFactory.loadIcon("Minus-Z.png"), "", 2, 0);
+    minusZ.setOnMousePressed(event -> {
+      jogThread.setDz(-Double.parseDouble(increment.getText()));
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
+    minusZ.setOnMouseReleased(event -> {
+      jogThread.setDz(0);
+      jogThread.setDt(Double.parseDouble(time.getText()));
+    });
 
     Button home = addButton(AssetFactory.loadIcon("Home.png"), "", 1, 1);
     home.setOnAction(event -> {
@@ -100,6 +140,30 @@ public class JogWidget {
 
     //Home so the limb is in the position it appears to be in when it first generates
     jogThread.setHome(true);
+  }
+
+  /**
+   * Add a button to the GridPane and return it.
+   *
+   * @param icon Graphic
+   * @param text Text
+   * @param x GridPane x coordinate
+   * @param y GridPane y coordinate
+   * @return Button
+   */
+  private Button addButton(ImageView icon, String text, int x, int y) {
+    Button out = new Button(text);
+    out.setGraphic(icon);
+    controlPane.add(out, x, y);
+    return out;
+  }
+
+  private Optional<Float> validateAsFloatingPoint(String rawNumber) {
+    return Optional.ofNullable(Floats.tryParse(rawNumber));
+  }
+
+  public Node getView() {
+    return view;
   }
 
   private class JogThread extends Thread {
@@ -164,30 +228,6 @@ public class JogWidget {
       this.home = home;
     }
 
-  }
-
-  /**
-   * Add a button to the GridPane and return it.
-   *
-   * @param icon Graphic
-   * @param text Text
-   * @param x GridPane x coordinate
-   * @param y GridPane y coordinate
-   * @return Button
-   */
-  private Button addButton(ImageView icon, String text, int x, int y) {
-    Button out = new Button(text);
-    out.setGraphic(icon);
-    controlPane.add(out, x, y);
-    return out;
-  }
-
-  private Optional<Float> validateAsFloatingPoint(String rawNumber) {
-    return Optional.ofNullable(Floats.tryParse(rawNumber));
-  }
-
-  public Node getView() {
-    return view;
   }
 
 }
