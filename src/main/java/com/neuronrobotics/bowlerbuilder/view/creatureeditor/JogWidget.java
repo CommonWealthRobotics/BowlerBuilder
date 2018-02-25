@@ -133,7 +133,7 @@ public class JogWidget {
           current.translateZ(dz);
 
           try {
-            limb.setDesiredTaskSpaceTransform(current, dt * 1000);
+            limb.setDesiredTaskSpaceTransform(current, dt);
           } catch (Exception e) {
             logger.log(Level.WARNING, "Could not set task space transform.\n"
                 + Throwables.getStackTraceAsString(e));
