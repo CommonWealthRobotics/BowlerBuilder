@@ -51,10 +51,10 @@ public class AceScriptEditorController {
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
-  private String scriptLangName;
   private final StringClipper stringClipper;
   private final IntegerProperty fontSize;
   private final IntegerProperty maxToastLength;
+  private String scriptLangName;
   @FXML
   private SplitPane fileEditorRoot;
   @FXML
@@ -77,10 +77,10 @@ public class AceScriptEditorController {
 
   @Inject
   public AceScriptEditorController(PreferencesServiceFactory preferencesServiceFactory,
-      ScriptEditorView scriptEditorView,
-      ScriptRunner scriptRunner,
-      @Named("scriptLangName") String scriptLangName,
-      StringClipper stringClipper) {
+                                   ScriptEditorView scriptEditorView,
+                                   ScriptRunner scriptRunner,
+                                   @Named("scriptLangName") String scriptLangName,
+                                   StringClipper stringClipper) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
@@ -238,6 +238,11 @@ public class AceScriptEditorController {
     if (file != null) {
       try {
         scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
+        if (file.getName().endsWith(".xml")) {
+          scriptLangName = "MobilBaseXML";
+        } else if (file.getName().endsWith(".groovy")) {
+          scriptLangName = "BowlerGroovy";
+        }
       } catch (IOException e) {
         logger.log(Level.SEVERE,
             "Could not load file: " + file.getAbsolutePath() + ".\n"

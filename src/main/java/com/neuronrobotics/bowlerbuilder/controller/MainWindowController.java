@@ -122,7 +122,7 @@ public class MainWindowController {
 
   @Inject
   protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory,
-      ConnectionManagerFactory connectionManagerFactory) {
+                                 ConnectionManagerFactory connectionManagerFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.connectionManagerFactory = connectionManagerFactory;
 
@@ -612,9 +612,21 @@ public class MainWindowController {
       gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
 
       gist.getFiles().forEach((name, gistFile) -> {
-        MenuItem gistFileItem = new MenuItem(name);
-        gistFileItem.setOnAction(event -> openGistFileInEditor(gist, gistFile));
-        gistMenu.getItems().add(gistFileItem);
+        if (name.endsWith(".xml")) {
+          MenuItem openGist = new MenuItem("Open File");
+          openGist.setOnAction(event -> openGistFileInEditor(gist, gistFile));
+          MenuItem loadCreature = new MenuItem("Open as Creature");
+          loadCreature.setOnAction(event ->
+              loadCreatureLab(gist.getGitPushUrl(), gistFile.getFileName()));
+
+          Menu gistFileItem = new Menu(name);
+          gistFileItem.getItems().addAll(openGist, loadCreature);
+          gistMenu.getItems().add(gistFileItem);
+        } else {
+          MenuItem gistFileItem = new MenuItem(name);
+          gistFileItem.setOnAction(event -> openGistFileInEditor(gist, gistFile));
+          gistMenu.getItems().add(gistFileItem);
+        }
       });
 
       menu.getItems().add(gistMenu);
