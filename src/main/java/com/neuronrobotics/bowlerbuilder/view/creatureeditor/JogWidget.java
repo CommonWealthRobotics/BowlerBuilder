@@ -24,7 +24,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class JogWidget {
+public final class JogWidget {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(JogWidget.class.getSimpleName());
@@ -128,9 +128,9 @@ public class JogWidget {
       }
     });
 
-    Button addJoystick = addButton(AssetFactory.loadIcon("Add-Game-Controller.png"), "", 3, 0);
+    /*Button addJoystick = addButton(AssetFactory.loadIcon("Add-Game-Controller.png"), "", 3, 0);
     Button configureJoystick = addButton(AssetFactory.loadIcon("Configure-Game-Controller.png"),
-        "", 3, 1);
+        "", 3, 1);*/
 
     view.getChildren().add(controlPane);
 
@@ -168,7 +168,10 @@ public class JogWidget {
 
   private class JogThread extends Thread {
 
-    private double dx, dy, dz, dt = 0.4;
+    private double dx;
+    private double dy;
+    private double dz;
+    private double dt = 0.4;
     private boolean home = true;
 
     public JogThread() {

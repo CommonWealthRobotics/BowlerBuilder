@@ -69,7 +69,7 @@ public class AceCreatureEditorController {
       }
 
       AceScriptEditorController controller = loader.getController();
-      if (title.equals("XML")) { //TODO: Automatically infer language type from file
+      if ("XML".equals(title)) { //TODO: Automatically infer language type from file
         controller.setScriptLangName("XML");
       }
       tabControllerMap.put(tab, controller);

@@ -352,7 +352,7 @@ public class MainWindowController {
    *
    * @param file xml file in gist
    */
-  public void loadCreatureLab(String[] file) {
+  public void loadCreatureLab(String[] file) { //NOPMD
     FxUtil.runFX(() -> {
       try {
         CreatureLabTab tab = new CreatureLabTab("Creature Lab");
