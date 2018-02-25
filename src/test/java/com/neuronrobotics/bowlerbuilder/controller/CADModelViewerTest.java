@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 import static org.junit.Assert.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
+import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
 import java.util.Arrays;
@@ -11,7 +12,8 @@ import org.junit.jupiter.api.Test;
 
 public class CADModelViewerTest {
   private final CADModelViewerController controller =
-      BowlerBuilder.getInjector().getInstance(CADModelViewerController.class);
+      BowlerBuilder.getInjector().createChildInjector(new CADModelViewerControllerModule())
+          .getInstance(CADModelViewerController.class);
 
   @AfterEach
   void afterEach() {

@@ -83,7 +83,7 @@ dependencies {
     compile(group = "commons-io", name = "commons-io", version = "2.6")
     compile(group = "commons-validator", name = "commons-validator", version = "1.6")
     compile(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
-    compile(group = "io.reactivex.rxjava2", name = "rxjava",  version = "2.1.9")
+    compile(group = "io.reactivex.rxjava2", name = "rxjava", version = "2.1.9")
 //    compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")
 //    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.28.0")
 //    compile(group = "org.kohsuke", name = "github-api", version = "1.90")
