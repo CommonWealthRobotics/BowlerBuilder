@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
+import org.testfx.util.WaitForAsyncUtils;
 
 public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
 
@@ -35,14 +36,11 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
 
   @Test
   void validFileNameTest2() {
-    logger.info("1");
     ((TextField) lookup("#nameField").query()).setText("a.");
-    logger.info("2");
+    WaitForAsyncUtils.waitForFxEvents();
 
     assertTrue(dialog.isInvalidName());
-    logger.info("3");
     assertTrue(lookup("OK").query().isDisabled());
-    logger.info("4");
   }
 
   @Test
