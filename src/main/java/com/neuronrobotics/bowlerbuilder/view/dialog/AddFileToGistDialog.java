@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -36,7 +35,7 @@ public class AddFileToGistDialog extends Dialog<String> {
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    FxUtil.runFX(nameField::requestFocus);
+    //FxUtil.runFX(nameField::requestFocus);
 
     Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(nameField.invalidProperty());
