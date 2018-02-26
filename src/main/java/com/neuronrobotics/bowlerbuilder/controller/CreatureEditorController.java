@@ -469,8 +469,7 @@ public class CreatureEditorController {
 
       Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
-      limbButton.setOnAction(
-          event -> selectionProperty.set(new MovementTabLimbSelection(limb)));
+      limbButton.setOnAction(event -> selectionProperty.set(new MovementTabLimbSelection(limb)));
       vBox.getChildren().add(limbButton);
 
       HBox hBoxInner = new HBox(5);
