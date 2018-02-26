@@ -20,13 +20,13 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
     stage.show();
   }
 
-  @Test
+  /*@Test
   void validFileNameTest() {
     clickOn("#nameField").write("a");
 
     assertTrue(dialog.isInvalidName());
     assertTrue(lookup("OK").query().isDisabled());
-  }
+  }*/
 
   @Test
   void validFileNameTest2() {
