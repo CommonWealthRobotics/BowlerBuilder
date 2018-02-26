@@ -67,7 +67,8 @@ public class LimbTabLimbSelection extends LimbSelection {
     selectionProperty.addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
         widget.getChildren().setAll(
-            new LimbTabLinkSelection(null, newValue, limb, this).getWidget()); //NOPMD
+            new LimbTabLinkSelection(null, newValue, limb, this,
+                creatureEditorController).getWidget()); //NOPMD
       }
     });
 
@@ -91,6 +92,7 @@ public class LimbTabLimbSelection extends LimbSelection {
         newLink.setTypeString(typeOfLink.toString());
         newLink.setName(result[0]);
         newLink.setHardwareIndex(Integer.parseInt(result[1]));
+        newLink.setLinkIndex(limb.getNumberOfLinks());
 
         limb.addNewLink(newLink, new DHLink(0, 0, 100, 0));
 
@@ -126,6 +128,10 @@ public class LimbTabLimbSelection extends LimbSelection {
   public void clearSelectedWidget() {
     widget.getChildren().clear();
     selectionProperty.set(null);
+  }
+
+  public void regenerateLinkButtons() {
+    scrollPaneContent.getChildren().setAll(getLinkButtons(limb.getLinkConfigurations()));
   }
 
   @Override
