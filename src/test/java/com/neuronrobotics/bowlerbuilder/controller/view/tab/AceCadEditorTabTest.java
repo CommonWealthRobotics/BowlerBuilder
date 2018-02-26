@@ -6,11 +6,9 @@ import javafx.stage.Stage;
 
 public class AceCadEditorTabTest extends AutoClosingApplicationTest {
 
-  private AceCadEditorTab tab;
-
   @Override
   public void start(Stage stage) throws Exception {
-    tab = new AceCadEditorTab("");
+    AceCadEditorTab tab = new AceCadEditorTab("");
     stage.setScene(tab.getView().getScene());
     stage.show();
   }
