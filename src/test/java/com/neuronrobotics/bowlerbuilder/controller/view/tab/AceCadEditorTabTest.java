@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller.view;
+package com.neuronrobotics.bowlerbuilder.controller.view.tab;
 
 import static org.junit.Assert.assertTrue;
 
