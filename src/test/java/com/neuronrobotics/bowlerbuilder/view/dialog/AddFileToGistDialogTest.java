@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +31,7 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
 
   @Test
   void validFileNameTest2() {
-    clickOn("#nameField").write("a.");
+    ((TextField) lookup("#nameField").query()).setText("a.");
 
     assertTrue(dialog.isInvalidName());
     assertTrue(lookup("OK").query().isDisabled());
