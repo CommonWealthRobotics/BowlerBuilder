@@ -24,7 +24,7 @@ matrix:
 #    fi
 
 script:
-  - ./gradlew check jacocoJunit5TestReport --stacktrace -PlogTests -Pheadless
+  - ./gradlew check jacocoJunit5TestReport --stacktrace -PlogTests -Pheadless --debug
 
 after_success:
    - bash <(curl -s https://codecov.io/bash)
