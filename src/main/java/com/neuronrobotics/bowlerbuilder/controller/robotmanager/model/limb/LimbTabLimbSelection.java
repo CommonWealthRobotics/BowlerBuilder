@@ -67,8 +67,8 @@ public class LimbTabLimbSelection extends LimbSelection {
     selectionProperty.addListener((observable, oldValue, newValue) -> {
       if (newValue != null) {
         widget.getChildren().setAll(
-            new LimbTabLinkSelection(null, newValue, limb, this,
-                creatureEditorController).getWidget()); //NOPMD
+            new LimbTabLinkSelection(null, newValue, limb, this, //NOPMD
+                creatureEditorController).getWidget());
       }
     });
 
