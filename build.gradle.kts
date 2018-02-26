@@ -4,6 +4,7 @@ import org.gradle.api.tasks.wrapper.Wrapper
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.junit.platform.console.options.Details
 
 buildscript {
     repositories {
@@ -139,6 +140,10 @@ pmd {
 findbugs {
     sourceSets = setOf(java.sourceSets["main"], java.sourceSets["test"])
     effort = "max"
+}
+
+junitPlatform {
+    details = Details.VERBOSE
 }
 
 tasks.withType<FindBugs> {
