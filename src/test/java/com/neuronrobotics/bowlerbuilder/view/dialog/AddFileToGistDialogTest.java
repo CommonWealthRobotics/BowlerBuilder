@@ -25,10 +25,13 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
 
   @Override
   public void start(Stage stage) {
-    REPORTER.publishEntry("Method call", "Start being called!");
+    REPORTER.publishEntry("Method call", "Start 1");
     dialog = new AddFileToGistDialog();
+    REPORTER.publishEntry("Method call", "Start 2");
     stage.setScene(dialog.getDialogPane().getScene());
+    REPORTER.publishEntry("Method call", "Start 3");
     stage.show();
+    REPORTER.publishEntry("Method call", "Start 4");
   }
 
   /*@Test
@@ -41,11 +44,16 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
 
   @Test
   void validFileNameTest2() {
+    REPORTER.publishEntry("Method call", "test 1");
     ((TextField) lookup("#nameField").query()).setText("a.");
+    REPORTER.publishEntry("Method call", "test 2");
     WaitForAsyncUtils.waitForFxEvents();
+    REPORTER.publishEntry("Method call", "test 3");
 
     assertTrue(dialog.isInvalidName());
+    REPORTER.publishEntry("Method call", "test 4");
     assertTrue(lookup("OK").query().isDisabled());
+    REPORTER.publishEntry("Method call", "test 5");
   }
 
   @Test
