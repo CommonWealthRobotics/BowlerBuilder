@@ -1,21 +1,17 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
-import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
-import java.util.concurrent.TimeoutException;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
-import org.testfx.api.FxToolkit;
 import org.testfx.util.WaitForAsyncUtils;
 
 public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
@@ -29,17 +25,8 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
   }
 
   @BeforeEach
-  void before() throws Exception {
-    FxToolkit.registerPrimaryStage();
-    Thread fxThread = new Thread(() -> {
-      try {
-        FxToolkit.setupApplication(BowlerBuilder::new);
-      } catch (TimeoutException e) {
-        fail();
-      }
-    });
-    fxThread.start();
-    WaitForAsyncUtils.waitForFxEvents();
+  void beforeEach() {
+    REPORTER.publishEntry("Method call", "before each");
   }
 
   @Override
