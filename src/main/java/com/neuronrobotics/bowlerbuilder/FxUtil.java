@@ -58,7 +58,13 @@ public final class FxUtil {
   public static <T> T returnFX(Callable<T> callable)
       throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
-    runFX(query);
+
+    if (Platform.isFxApplicationThread()) {
+      query.run();
+    } else {
+      Platform.runLater(query);
+    }
+
     return query.get();
   }
 

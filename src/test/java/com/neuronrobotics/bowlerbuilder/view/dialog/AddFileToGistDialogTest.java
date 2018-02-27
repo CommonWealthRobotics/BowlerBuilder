@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
@@ -24,12 +25,20 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
     REPORTER = reporter;
   }
 
+  @BeforeEach
+  void beforeEach() {
+    REPORTER.publishEntry("Method call", "before each");
+  }
+
   @Override
   public void start(Stage stage) {
-    REPORTER.publishEntry("Method call", "Start being called!");
+    REPORTER.publishEntry("Method call", "Start 1");
     dialog = new AddFileToGistDialog();
+    REPORTER.publishEntry("Method call", "Start 2");
     stage.setScene(dialog.getDialogPane().getScene());
+    REPORTER.publishEntry("Method call", "Start 3");
     stage.show();
+    REPORTER.publishEntry("Method call", "Start 4");
   }
 
   /*@Test
@@ -43,11 +52,16 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
   @Test
   @Tag("RunMe")
   void validFileNameTest2() {
+    REPORTER.publishEntry("Method call", "test 1");
     ((TextField) lookup("#nameField").query()).setText("a.");
+    REPORTER.publishEntry("Method call", "test 2");
     WaitForAsyncUtils.waitForFxEvents();
+    REPORTER.publishEntry("Method call", "test 3");
 
     assertTrue(dialog.isInvalidName());
+    REPORTER.publishEntry("Method call", "test 4");
     assertTrue(lookup("OK").query().isDisabled());
+    REPORTER.publishEntry("Method call", "test 5");
   }
 
   @Test
