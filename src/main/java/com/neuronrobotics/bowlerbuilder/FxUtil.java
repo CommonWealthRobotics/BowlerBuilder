@@ -20,11 +20,11 @@ public final class FxUtil {
    * @param runnable runnable to run
    */
   public static void runFX(Runnable runnable) {
-    if (Platform.isFxApplicationThread()) {
-      runnable.run();
-    } else {
-      Platform.runLater(runnable);
-    }
+    //    if (Platform.isFxApplicationThread()) {
+    //      runnable.run();
+    //    } else {
+    Platform.runLater(runnable);
+    //    }
   }
 
   /**

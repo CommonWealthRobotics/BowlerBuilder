@@ -6,21 +6,26 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import java.util.logging.Logger;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestReporter;
 import org.testfx.util.WaitForAsyncUtils;
 
 public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
 
-  private static final Logger logger =
-      LoggerUtilities.getLogger(AddFileToGistDialogTest.class.getSimpleName());
+  private static TestReporter REPORTER;
   private AddFileToGistDialog dialog;
+
+  @BeforeAll
+  static void injectReporter(final TestReporter reporter) {
+    REPORTER = reporter;
+  }
 
   @Override
   public void start(Stage stage) {
+    REPORTER.publishEntry("Method call", "Start being called!");
     dialog = new AddFileToGistDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();
