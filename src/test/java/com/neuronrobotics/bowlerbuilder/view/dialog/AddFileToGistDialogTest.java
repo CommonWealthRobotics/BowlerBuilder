@@ -41,13 +41,13 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
     REPORTER.publishEntry("Method call", "Start 4");
   }
 
-  /*@Test
+  @Test
   void validFileNameTest() {
     clickOn("#nameField").write("a");
 
     assertTrue(dialog.isInvalidName());
     assertTrue(lookup("OK").query().isDisabled());
-  }*/
+  }
 
   @Test
   @Tag("RunMe")
