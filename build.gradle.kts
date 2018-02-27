@@ -144,6 +144,12 @@ findbugs {
 
 junitPlatform {
     details = Details.VERBOSE
+
+    filters {
+        tags {
+            include("RunMe")
+        }
+    }
 }
 
 tasks.withType<FindBugs> {

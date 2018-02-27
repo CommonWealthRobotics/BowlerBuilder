@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
 import org.testfx.util.WaitForAsyncUtils;
@@ -40,6 +41,7 @@ public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
   }*/
 
   @Test
+  @Tag("RunMe")
   void validFileNameTest2() {
     ((TextField) lookup("#nameField").query()).setText("a.");
     WaitForAsyncUtils.waitForFxEvents();
