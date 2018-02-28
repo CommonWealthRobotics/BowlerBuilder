@@ -13,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 
@@ -29,19 +28,23 @@ public class AddLimbDialog extends Dialog<LimbData> {
 
     setTitle("Add Link");
 
-    Label linkNameLabel = new Label("Link name");
+    final Label linkNameLabel = new Label("Link name");
     GridPane.setHalignment(linkNameLabel, HPos.RIGHT);
-    TextField linkNameField = new TextField(name);
+
+    final ValidatedTextField linkNameField = new ValidatedTextField("Link name cannot be empty",
+        text -> !text.isEmpty());
+    linkNameField.setText(name);
+    linkNameField.setId("linkNameField");
     GridPane.setHalignment(linkNameField, HPos.LEFT);
 
-    GridPane content = new GridPane();
+    final GridPane content = new GridPane();
     content.setHgap(5);
     content.setVgap(5);
 
     content.add(linkNameLabel, 0, 0);
     content.add(linkNameField, 1, 0);
     for (int i = 1; i <= numberOfHWIndices; i++) {
-      Pair<Label, ValidatedTextField> pair = getField();
+      final Pair<Label, ValidatedTextField> pair = getField("hwIndexField" + i);
       hwIndexFields.add(pair.getValue());
 
       content.add(pair.getKey(), 0, i);
@@ -51,9 +54,11 @@ public class AddLimbDialog extends Dialog<LimbData> {
     getDialogPane().setContent(content);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    okButton.disableProperty().bind(Bindings.createBooleanBinding(() -> hwIndexFields.stream()
-        .anyMatch(ValidatedTextField::isInvalid), hwIndexFields));
+    final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    okButton.disableProperty().bind(Bindings.or(
+        Bindings.createBooleanBinding(() -> hwIndexFields.stream()
+            .anyMatch(ValidatedTextField::isInvalid), hwIndexFields),
+        linkNameField.invalidProperty()));
     okButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
@@ -69,10 +74,11 @@ public class AddLimbDialog extends Dialog<LimbData> {
     });
   }
 
-  private Pair<Label, ValidatedTextField> getField() {
-    Label hwIndexLabel = new Label("Hardware index");
+  private Pair<Label, ValidatedTextField> getField(String id) {
+    final Label hwIndexLabel = new Label("Hardware index");
     GridPane.setHalignment(hwIndexLabel, HPos.RIGHT);
-    ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
+
+    final ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
         text -> {
           Integer result = Ints.tryParse(text);
           return result != null && !takenChannels.contains(result) && hwIndexFields.stream()
@@ -82,6 +88,8 @@ public class AddLimbDialog extends Dialog<LimbData> {
               .collect(Collectors.toList())
               .contains(result);
         });
+
+    hwIndexField.setId(id);
     GridPane.setHalignment(hwIndexField, HPos.LEFT);
     return new Pair<>(hwIndexLabel, hwIndexField);
   }

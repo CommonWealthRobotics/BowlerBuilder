@@ -36,6 +36,7 @@ public class ValidatedTextField extends TextField {
           Severity.ERROR,
           false);
     });
+    validator.redecorate();
   }
 
   public Boolean isInvalid() {
