@@ -380,22 +380,14 @@ public class CreatureEditorController {
       }));
 
       Platform.runLater(() -> {
-        controller.loadFileIntoNewTab("XML",
-            AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"),
-            gitSelfSource[0], gitSelfSource[1], deviceXMLFile);
         controller.loadFileIntoNewTab("Walking Engine",
             AssetFactory.loadIcon("Edit-Walking-Engine.png"),
             gitWalkingEngine[0], gitWalkingEngine[1], deviceWalkingEngineFile);
+
         controller.loadFileIntoNewTab("CAD Engine",
             AssetFactory.loadIcon("Edit-CAD-Engine.png"),
             gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile);
       });
-
-      Button editRobotXML = new Button();
-      editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
-      editRobotXML.setOnAction(event -> controller.loadFileIntoNewTab("XML",
-          AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"),
-          gitSelfSource[0], gitSelfSource[1], deviceXMLFile));
 
       Button editWalkingEngine = new Button();
       editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
@@ -423,8 +415,8 @@ public class CreatureEditorController {
           new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
               .showAndWait().ifPresent(result -> device.setGitCadEngine(result)));
 
-      controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
-          setWalkingEngine, setCADEngine);
+      controls.getChildren().addAll(publish, editWalkingEngine, editCADEngine, setWalkingEngine,
+          setCADEngine);
     }
 
     Platform.runLater(() -> scriptTab.setContent(getScrollPane(controls)));
