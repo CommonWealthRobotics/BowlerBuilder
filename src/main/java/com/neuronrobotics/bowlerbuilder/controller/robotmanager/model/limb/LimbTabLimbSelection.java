@@ -35,7 +35,7 @@ public class LimbTabLimbSelection extends LimbSelection {
   private final HBox scrollPaneContent;
 
   public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb,
-      CreatureEditorController creatureEditorController) {
+                              CreatureEditorController creatureEditorController) {
     super(limb);
 
     view = new VBox(5);
@@ -103,7 +103,21 @@ public class LimbTabLimbSelection extends LimbSelection {
       });
     });
 
-    HBox controlsBox = new HBox(5, addLink);
+
+    Button removeLimbButton = new Button();
+    removeLimbButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
+    removeLimbButton.setOnAction(event -> {
+      device.getLegs().remove(limb);
+      device.getAppendages().remove(limb);
+      device.getSteerable().remove(limb);
+      device.getDrivable().remove(limb);
+
+      creatureEditorController.clearWidget();
+      creatureEditorController.regenerateMenus();
+      creatureEditorController.regenCAD();
+    });
+
+    HBox controlsBox = new HBox(5, addLink, removeLimbButton);
     controlsBox.setPadding(new Insets(5));
     HBox.setHgrow(controlsBox, Priority.NEVER);
     content.getChildren().add(controlsBox);

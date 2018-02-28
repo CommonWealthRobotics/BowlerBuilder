@@ -26,9 +26,9 @@ public class AceCreatureEditorController {
   private final CreatureEditorController creatureEditorController;
 
   public AceCreatureEditorController(TabPane scriptEditorPane,
-      Supplier<FXMLLoader> scriptEditorSupplier,
-      CADModelViewerController cadModelViewerController,
-      CreatureEditorController creatureEditorController) {
+                                     Supplier<FXMLLoader> scriptEditorSupplier,
+                                     CADModelViewerController cadModelViewerController,
+                                     CreatureEditorController creatureEditorController) {
     this.scriptEditorPane = scriptEditorPane;
     this.scriptEditorSupplier = scriptEditorSupplier;
     this.tabNameMap = new HashMap<>();
@@ -42,20 +42,27 @@ public class AceCreatureEditorController {
   }
 
   public void loadFileIntoNewTab(String title, Node graphic, String pushURL, String fileName,
-      File file) {
+                                 File file) {
     loadFileIntoNewTab(title, Optional.of(graphic), pushURL, fileName, file);
   }
 
   private void loadFileIntoNewTab(String title, Optional<Node> graphic, String pushURL,
-      String fileName, File file) {
+                                  String fileName, File file) {
     if (tabNameMap.containsKey(title)) {
       Tab tab = tabNameMap.get(title);
-      tabControllerMap.get(tab).loadManualGist(pushURL, fileName, file);
-      scriptEditorPane.getSelectionModel().select(tab);
+      if (tabControllerMap.containsKey(tab)) {
+        tabControllerMap.get(tab).loadManualGist(pushURL, fileName, file);
+        scriptEditorPane.getSelectionModel().select(tab);
+      }
     } else {
       Tab tab = new Tab();
       tab.setText(title);
       graphic.ifPresent(tab::setGraphic);
+      tab.setOnClosed(event -> {
+        tabNameMap.remove(title);
+        tabControllerMap.remove(tab);
+      });
+
       scriptEditorPane.getTabs().add(tab);
       scriptEditorPane.getSelectionModel().select(tab);
       tabNameMap.put(title, tab);

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -115,8 +116,14 @@ public class CreatureEditorController {
         });
 
     //Fill the widget pane with the widget for the selection
-    selectionProperty.addListener((observable, oldValue, newValue) ->
-        selectedWidgetPane.get().getChildren().setAll(newValue.getWidget()));
+    selectionProperty.addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        final AnchorPane widgetPane = selectedWidgetPane.get();
+        if (widgetPane != null) {
+          widgetPane.getChildren().setAll(newValue.getWidget());
+        }
+      }
+    });
 
     limbTab.setGraphic(AssetFactory.loadIcon("creature.png"));
     limbTab.setStyle("-fx-padding: 5px;");
@@ -139,7 +146,7 @@ public class CreatureEditorController {
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-      AceCreatureEditorController controller) {
+                            AceCreatureEditorController controller) {
     this.device = device;
     this.cadManager = cadManager;
     this.controller = controller;
@@ -159,6 +166,14 @@ public class CreatureEditorController {
    */
   public void regenerateMenus() {
     generateMenus(device, cadManager, controller);
+  }
+
+  /**
+   * Clear the selected widget.
+   */
+  public void clearWidget() {
+    selectionProperty.setValue(null);
+    selectedWidgetPane.get().getChildren().clear();
   }
 
   private void generateLimbTab() {
@@ -364,7 +379,7 @@ public class CreatureEditorController {
         }
       }));
 
-      FxUtil.runFX(() -> {
+      Platform.runLater(() -> {
         controller.loadFileIntoNewTab("XML",
             AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"),
             gitSelfSource[0], gitSelfSource[1], deviceXMLFile);
@@ -375,6 +390,26 @@ public class CreatureEditorController {
             AssetFactory.loadIcon("Edit-CAD-Engine.png"),
             gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile);
       });
+
+      Button editRobotXML = new Button();
+      editRobotXML.setGraphic(AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"));
+      editRobotXML.setOnAction(event -> controller.loadFileIntoNewTab("XML",
+          AssetFactory.loadIcon("Script-Tab-MobilBaseXML.png"),
+          gitSelfSource[0], gitSelfSource[1], deviceXMLFile));
+
+      Button editWalkingEngine = new Button();
+      editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
+      editWalkingEngine.setOnAction(event ->
+          controller.loadFileIntoNewTab("Walking Engine",
+              AssetFactory.loadIcon("Edit-Walking-Engine.png"),
+              gitWalkingEngine[0], gitWalkingEngine[1], deviceWalkingEngineFile));
+
+      Button editCADEngine = new Button();
+      editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
+      editCADEngine.setOnAction(event ->
+          controller.loadFileIntoNewTab("CAD Engine",
+              AssetFactory.loadIcon("Edit-CAD-Engine.png"),
+              gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile));
 
       Button setWalkingEngine = new Button();
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
@@ -388,10 +423,11 @@ public class CreatureEditorController {
           new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
               .showAndWait().ifPresent(result -> device.setGitCadEngine(result)));
 
-      controls.getChildren().addAll(publish, setWalkingEngine, setCADEngine);
+      controls.getChildren().addAll(publish, editRobotXML, editWalkingEngine, editCADEngine,
+          setWalkingEngine, setCADEngine);
     }
 
-    FxUtil.runFX(() -> scriptTab.setContent(getScrollPane(controls)));
+    Platform.runLater(() -> scriptTab.setContent(getScrollPane(controls)));
   }
 
   private ScrollPane getScrollPane(Node node) {
@@ -402,7 +438,7 @@ public class CreatureEditorController {
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
-      List<DHParameterKinematics> limbs) {
+                                  List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -428,23 +464,19 @@ public class CreatureEditorController {
 
     hBox.getChildren().add(scrollPane);
 
-    HBox addRemoveLinkHBox = new HBox(5);
-    HBox.setHgrow(addRemoveLinkHBox, Priority.NEVER);
-    addRemoveLinkHBox.setAlignment(Pos.CENTER_RIGHT);
+    Button addLimbButton = new Button();
+    addLimbButton.setGraphic(addIcon);
+    addLimbButton.setOnAction(event -> {
+      //TODO: Implement add limb
+    });
 
-    Button addLinkButton = new Button();
-    addLinkButton.setGraphic(addIcon);
-    Button removeLinkButton = new Button();
-    removeLinkButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
-    addRemoveLinkHBox.getChildren().addAll(addLinkButton, removeLinkButton);
-
-    hBox.getChildren().add(addRemoveLinkHBox);
+    hBox.getChildren().add(addLimbButton);
 
     return hBox;
   }
 
   private HBox getMovementTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+                                      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -496,7 +528,7 @@ public class CreatureEditorController {
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
+                                    List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -551,9 +583,7 @@ public class CreatureEditorController {
 
   @FXML
   private void onRegenCAD(ActionEvent actionEvent) {
-    if (cadManager != null) {
-      cadManager.generateCad(); //TODO: Always regen CAD regardless of auto regen flag
-    }
+    regenCAD();
   }
 
   @FXML
@@ -566,6 +596,12 @@ public class CreatureEditorController {
     genSTLs(device, cadManager, true);
   }
 
+  public void regenCAD() {
+    if (cadManager != null) {
+      cadManager.generateCad(); //TODO: Always regen CAD regardless of auto regen flag
+    }
+  }
+
   /**
    * Show a {@link DirectoryChooser} to pick a save directory and then generate and save STL files
    * for the given {@link MobileBase} and {@link MobileBaseCadManager}.
@@ -575,7 +611,7 @@ public class CreatureEditorController {
    * @param isKinematic whether to gen kinematic STLs
    */
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-      boolean isKinematic) {
+                      boolean isKinematic) {
     File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
     if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
       logger.log(Level.WARNING, "Could not create default directory to save STL files.");
