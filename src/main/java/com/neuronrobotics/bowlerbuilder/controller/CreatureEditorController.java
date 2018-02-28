@@ -164,7 +164,7 @@ public class CreatureEditorController {
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-                            AceCreatureEditorController controller) {
+      AceCreatureEditorController controller) {
     this.device = device;
     this.cadManager = cadManager;
     this.controller = controller;
@@ -454,7 +454,7 @@ public class CreatureEditorController {
   }
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon, LimbType limbType,
-                                  List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -489,7 +489,8 @@ public class CreatureEditorController {
           try {
             //TODO: Fork this script and change cad engine to sea's cad engine
             final String xmlContent = ScriptingEngine.codeFromGit(
-                "https://gist.github.com/b5b9450f869dd0d2ea30.git", "defaultleg.xml")[0];
+                "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git",
+                "defaultleg.xml")[0];
             final DHParameterKinematics newLeg = new DHParameterKinematics(null,
                 IOUtils.toInputStream(xmlContent, "UTF-8"));
 
@@ -527,7 +528,7 @@ public class CreatureEditorController {
   }
 
   private HBox getMovementTabLimbHBox(ImageView icon,
-                                      List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -579,7 +580,7 @@ public class CreatureEditorController {
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,
-                                    List<DHParameterKinematics> limbs) {
+      List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
@@ -662,7 +663,7 @@ public class CreatureEditorController {
    * @param isKinematic whether to gen kinematic STLs
    */
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-                      boolean isKinematic) {
+      boolean isKinematic) {
     File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
     if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
       logger.log(Level.WARNING, "Could not create default directory to save STL files.");
