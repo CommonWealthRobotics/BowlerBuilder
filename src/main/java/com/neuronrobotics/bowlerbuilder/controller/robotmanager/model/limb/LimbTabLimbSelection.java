@@ -75,7 +75,7 @@ public class LimbTabLimbSelection extends LimbSelection {
     Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
     addLink.setOnAction(event -> {
-      AddLinkDialog dialog = new AddLinkDialog(getTakenChannels(device));
+      AddLinkDialog dialog = new AddLinkDialog(CreatureEditorController.getTakenChannels(device));
       dialog.showAndWait().ifPresent(result -> {
         LinkConfiguration newLink = new LinkConfiguration();
         List<LinkConfiguration> linkConfigurations = limb.getFactory().getLinkConfigurations();
@@ -121,13 +121,6 @@ public class LimbTabLimbSelection extends LimbSelection {
     controlsBox.setPadding(new Insets(5));
     HBox.setHgrow(controlsBox, Priority.NEVER);
     content.getChildren().add(controlsBox);
-  }
-
-  private Set<Integer> getTakenChannels(MobileBase device) {
-    return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
-        .flatMap(Collection::stream)
-        .map(LinkConfiguration::getHardwareIndex)
-        .collect(Collectors.toSet());
   }
 
   private List<Button> getLinkButtons(List<LinkConfiguration> configs) {

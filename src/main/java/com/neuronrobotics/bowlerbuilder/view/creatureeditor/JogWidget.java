@@ -180,6 +180,7 @@ public final class JogWidget {
 
     @Override
     public void run() {
+      //TODO: Don't run jog loop when jog widget is not visible
       while (true) {
         if (home) {
           try {

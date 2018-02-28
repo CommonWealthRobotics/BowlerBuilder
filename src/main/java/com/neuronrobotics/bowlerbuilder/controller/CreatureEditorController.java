@@ -10,11 +10,14 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbT
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.MovementTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
+import com.neuronrobotics.bowlerbuilder.model.LimbType;
+import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
@@ -25,10 +28,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -102,6 +108,13 @@ public class CreatureEditorController {
     configWidget = new AnchorPane();
     selectionProperty = new SimpleObjectProperty<>();
     selectedWidgetPane = new SimpleObjectProperty<>();
+  }
+
+  public static Set<Integer> getTakenChannels(MobileBase device) {
+    return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
+        .flatMap(Collection::stream)
+        .map(LinkConfiguration::getHardwareIndex)
+        .collect(Collectors.toSet());
   }
 
   @FXML
@@ -185,13 +198,18 @@ public class CreatureEditorController {
     VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            AssetFactory.loadIcon("Add-Leg.png"), device.getLegs()),
+            AssetFactory.loadIcon("Add-Leg.png"), LimbType.LEG, device.getLegs()),
+
         getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            AssetFactory.loadIcon("Add-Arm.png"), device.getAppendages()),
+            AssetFactory.loadIcon("Add-Arm.png"), LimbType.ARM, device.getAppendages()),
+
         getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), device.getSteerable()),
+            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), LimbType.STEERABLE_WHEEL,
+            device.getSteerable()),
+
         getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), device.getDrivable()));
+            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL,
+            device.getDrivable()));
 
     VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, limbWidget);
@@ -435,7 +453,7 @@ public class CreatureEditorController {
     return pane;
   }
 
-  private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon,
+  private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon, LimbType limbType,
                                   List<DHParameterKinematics> limbs) {
     HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
@@ -466,6 +484,41 @@ public class CreatureEditorController {
     addLimbButton.setGraphic(addIcon);
     addLimbButton.setOnAction(event -> {
       //TODO: Implement add limb
+      switch (limbType) {
+        case LEG:
+          try {
+            //TODO: Fork this script and change cad engine to sea's cad engine
+            final String xmlContent = ScriptingEngine.codeFromGit(
+                "https://gist.github.com/b5b9450f869dd0d2ea30.git", "defaultleg.xml")[0];
+            final DHParameterKinematics newLeg = new DHParameterKinematics(null,
+                IOUtils.toInputStream(xmlContent, "UTF-8"));
+
+            final AddLimbDialog dialog = new AddLimbDialog(newLeg.getScriptingName(),
+                getTakenChannels(device));
+            dialog.showAndWait().ifPresent(result -> {
+              newLeg.setScriptingName(result.name);
+
+              final List<LinkConfiguration> linkConfigurations = newLeg.getLinkConfigurations();
+              for (int i = 0; i < linkConfigurations.size(); i++) {
+                final LinkConfiguration conf = linkConfigurations.get(i);
+                conf.setHardwareIndex(result.indices.get(i));
+                newLeg.getFactory().refreshHardwareLayer(conf);
+              }
+
+              device.getLegs().add(newLeg);
+              regenerateMenus();
+            });
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          break;
+        case ARM:
+          break;
+        case FIXED_WHEEL:
+          break;
+        case STEERABLE_WHEEL:
+          break;
+      }
     });
 
     hBox.getChildren().add(addLimbButton);
