@@ -35,12 +35,22 @@ public class MovementTabLimbSelection extends LimbSelection {
     return view;
   }
 
+  /**
+   * Stop the jog thread if there is a jog widget for the limb.
+   *
+   * @param dh limb
+   */
   public void stopJogThread(DHParameterKinematics dh) {
     if (jogWidgetMap.containsKey(dh)) {
       jogWidgetMap.get(dh).jogThreadRunningProperty().set(false);
     }
   }
 
+  /**
+   * Start the jog thread if there is a jog widget for the limb.
+   *
+   * @param dh limb
+   */
   public void startJogThread(DHParameterKinematics dh) {
     if (jogWidgetMap.containsKey(dh)) {
       jogWidgetMap.get(dh).jogThreadRunningProperty().set(true);

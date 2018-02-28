@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.controller;
+package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
@@ -110,6 +110,13 @@ public class CreatureEditorController {
     selectedWidgetPane = new SimpleObjectProperty<>();
   }
 
+  /**
+   * Calculate the taken ("occupied") hardware channels on the device based on the config saved to
+   * the device.
+   *
+   * @param device device to check
+   * @return all taken channels
+   */
   public static Set<Integer> getTakenChannels(MobileBase device) {
     return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
         .flatMap(Collection::stream)
@@ -498,6 +505,8 @@ public class CreatureEditorController {
           promptAndAddLimb(LimbType.STEERABLE_WHEEL.getDefaultFileName(), device,
               device.getSteerable());
           break;
+        default: //Nothing to do for default, only 4 kinds of limbs
+          break;
       }
     });
 
@@ -537,7 +546,7 @@ public class CreatureEditorController {
         regenerateMenus();
       });
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.warning("Could not add limb.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -672,6 +681,9 @@ public class CreatureEditorController {
     genSTLs(device, cadManager, true);
   }
 
+  /**
+   * Regenerate {@link MobileBase} CAD if there is a non-null {@link MobileBaseCadManager}.
+   */
   public void regenCAD() {
     if (cadManager != null) {
       cadManager.generateCad(); //TODO: Always regen CAD regardless of auto regen flag

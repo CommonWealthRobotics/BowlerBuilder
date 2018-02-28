@@ -4,15 +4,12 @@ import com.neuronrobotics.bowlerbuilder.controller.CreatureEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLinkDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkType;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,7 +32,7 @@ public class LimbTabLimbSelection extends LimbSelection {
   private final HBox scrollPaneContent;
 
   public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb,
-                              CreatureEditorController creatureEditorController) {
+      CreatureEditorController creatureEditorController) {
     super(limb);
 
     view = new VBox(5);
@@ -102,7 +99,6 @@ public class LimbTabLimbSelection extends LimbSelection {
         creatureEditorController.regenerateMenus();
       });
     });
-
 
     Button removeLimbButton = new Button();
     removeLimbButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));

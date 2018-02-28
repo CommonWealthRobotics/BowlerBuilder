@@ -1,10 +1,8 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.google.common.primitives.Ints;
+import com.neuronrobotics.bowlerbuilder.model.LimbData;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
@@ -19,7 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 
-public class AddLimbDialog extends Dialog<AddLimbDialog.LimbData> {
+public class AddLimbDialog extends Dialog<LimbData> {
 
   private final Set<Integer> takenChannels;
   private final ObservableList<ValidatedTextField> hwIndexFields;
@@ -86,24 +84,6 @@ public class AddLimbDialog extends Dialog<AddLimbDialog.LimbData> {
         });
     GridPane.setHalignment(hwIndexField, HPos.LEFT);
     return new Pair<>(hwIndexLabel, hwIndexField);
-  }
-
-  public class LimbData {
-
-    public String name;
-    public List<Integer> indices;
-
-    public LimbData(String name, Integer... indices) {
-      this.name = name;
-      this.indices = new ArrayList<>();
-      Collections.addAll(this.indices, indices);
-    }
-
-    public LimbData(String name, List<Integer> indices) {
-      this.name = name;
-      this.indices = indices;
-    }
-
   }
 
 }
