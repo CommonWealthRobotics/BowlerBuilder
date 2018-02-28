@@ -24,7 +24,7 @@ public class AddLimbDialog extends Dialog<AddLimbDialog.LimbData> {
   private final Set<Integer> takenChannels;
   private final ObservableList<ValidatedTextField> hwIndexFields;
 
-  public AddLimbDialog(String name, Set<Integer> takenChannels) {
+  public AddLimbDialog(String name, Integer numberOfHWIndices, Set<Integer> takenChannels) {
     super();
     this.takenChannels = takenChannels;
     hwIndexFields = FXCollections.observableArrayList();
@@ -42,7 +42,7 @@ public class AddLimbDialog extends Dialog<AddLimbDialog.LimbData> {
 
     content.add(linkNameLabel, 0, 0);
     content.add(linkNameField, 1, 0);
-    for (int i = 1; i <= 3; i++) {
+    for (int i = 1; i <= numberOfHWIndices; i++) {
       Pair<Label, ValidatedTextField> pair = getField();
       hwIndexFields.add(pair.getValue());
 

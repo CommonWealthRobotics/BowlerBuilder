@@ -483,48 +483,62 @@ public class CreatureEditorController {
     Button addLimbButton = new Button();
     addLimbButton.setGraphic(addIcon);
     addLimbButton.setOnAction(event -> {
-      //TODO: Implement add limb
       switch (limbType) {
         case LEG:
-          try {
-            //TODO: Fork this script and change cad engine to sea's cad engine
-            final String xmlContent = ScriptingEngine.codeFromGit(
-                "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git",
-                "defaultleg.xml")[0];
-            final DHParameterKinematics newLeg = new DHParameterKinematics(null,
-                IOUtils.toInputStream(xmlContent, "UTF-8"));
-
-            final AddLimbDialog dialog = new AddLimbDialog(newLeg.getScriptingName(),
-                getTakenChannels(device));
-            dialog.showAndWait().ifPresent(result -> {
-              newLeg.setScriptingName(result.name);
-
-              final List<LinkConfiguration> linkConfigurations = newLeg.getLinkConfigurations();
-              for (int i = 0; i < linkConfigurations.size(); i++) {
-                final LinkConfiguration conf = linkConfigurations.get(i);
-                conf.setHardwareIndex(result.indices.get(i));
-                newLeg.getFactory().refreshHardwareLayer(conf);
-              }
-
-              device.getLegs().add(newLeg);
-              regenerateMenus();
-            });
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
+          promptAndAddLimb(LimbType.LEG.getDefaultFileName(), device, device.getLegs());
           break;
         case ARM:
+          promptAndAddLimb(LimbType.ARM.getDefaultFileName(), device, device.getAppendages());
           break;
         case FIXED_WHEEL:
+          promptAndAddLimb(LimbType.FIXED_WHEEL.getDefaultFileName(), device,
+              device.getDrivable());
           break;
         case STEERABLE_WHEEL:
+          promptAndAddLimb(LimbType.STEERABLE_WHEEL.getDefaultFileName(), device,
+              device.getSteerable());
           break;
       }
     });
 
     hBox.getChildren().add(addLimbButton);
-
     return hBox;
+  }
+
+  /**
+   * Prompt with a dialog for limb name and hardware indices, then add the limb.
+   *
+   * @param defaultFileName filename in gist for default configuration (use {@link LimbType}
+   * @param device {@link MobileBase} to query used hardware channels from
+   * @param toAdd list to add the new limb to
+   */
+  private void promptAndAddLimb(String defaultFileName, MobileBase device,
+      List<DHParameterKinematics> toAdd) {
+    try {
+      final String xmlContent = ScriptingEngine.codeFromGit(
+          "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git", defaultFileName)[0];
+      final DHParameterKinematics newLeg = new DHParameterKinematics(null,
+          IOUtils.toInputStream(xmlContent, "UTF-8"));
+
+      final List<LinkConfiguration> linkConfigurations = newLeg.getLinkConfigurations();
+      final AddLimbDialog dialog = new AddLimbDialog(newLeg.getScriptingName(),
+          linkConfigurations.size(), getTakenChannels(device));
+
+      dialog.showAndWait().ifPresent(result -> {
+        newLeg.setScriptingName(result.name);
+
+        for (int i = 0; i < linkConfigurations.size(); i++) {
+          final LinkConfiguration conf = linkConfigurations.get(i);
+          conf.setHardwareIndex(result.indices.get(i));
+          newLeg.getFactory().refreshHardwareLayer(conf);
+        }
+
+        toAdd.add(newLeg);
+        regenerateMenus();
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   private HBox getMovementTabLimbHBox(ImageView icon,
