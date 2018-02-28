@@ -567,7 +567,11 @@ public class CreatureEditorController {
 
       Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
-      limbButton.setOnAction(event -> selectionProperty.set(new MovementTabLimbSelection(limb)));
+      limbButton.setOnAction(event -> {
+        MovementTabLimbSelection selection = new MovementTabLimbSelection(limb);
+        selection.startJogThread(limb); //Start jog thread because the widget is going to show
+        selectionProperty.set(selection);
+      });
       vBox.getChildren().add(limbButton);
 
       HBox hBoxInner = new HBox(5);
@@ -579,8 +583,14 @@ public class CreatureEditorController {
 
         Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
-        linkButton.setOnAction(event ->
-            selectionProperty.set(new MovementTabLinkSelection(finalI, link, configuration, limb)));
+        linkButton.setOnAction(event -> {
+          Selection selection = selectionProperty.get();
+          //Stop jog thread if the widget is going to hide when we select a link
+          if (selection instanceof MovementTabLimbSelection) {
+            ((MovementTabLimbSelection) selection).stopJogThread(limb);
+          }
+          selectionProperty.set(new MovementTabLinkSelection(finalI, link, configuration, limb));
+        });
         hBoxInner.getChildren().add(linkButton);
       }
       vBox.getChildren().add(hBoxInner);

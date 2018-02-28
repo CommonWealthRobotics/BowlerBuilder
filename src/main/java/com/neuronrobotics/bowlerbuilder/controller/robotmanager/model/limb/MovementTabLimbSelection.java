@@ -35,4 +35,16 @@ public class MovementTabLimbSelection extends LimbSelection {
     return view;
   }
 
+  public void stopJogThread(DHParameterKinematics dh) {
+    if (jogWidgetMap.containsKey(dh)) {
+      jogWidgetMap.get(dh).jogThreadRunningProperty().set(false);
+    }
+  }
+
+  public void startJogThread(DHParameterKinematics dh) {
+    if (jogWidgetMap.containsKey(dh)) {
+      jogWidgetMap.get(dh).jogThreadRunningProperty().set(true);
+    }
+  }
+
 }

@@ -10,6 +10,8 @@ import com.neuronrobotics.sdk.util.ThreadUtil;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -32,11 +34,13 @@ public final class JogWidget {
   private final GridPane controlPane;
   private final DHParameterKinematics limb;
   private final JogThread jogThread;
+  private final BooleanProperty jogThreadRunning;
 
   public JogWidget(DHParameterKinematics limb) {
     view = new VBox(5);
     controlPane = new GridPane();
     this.limb = limb;
+    jogThreadRunning = new SimpleBooleanProperty(true);
     jogThread = new JogThread();
     jogThread.start();
 
@@ -166,6 +170,14 @@ public final class JogWidget {
     return view;
   }
 
+  public Boolean isJogThreadRunning() {
+    return jogThreadRunning.get();
+  }
+
+  public BooleanProperty jogThreadRunningProperty() {
+    return jogThreadRunning;
+  }
+
   private class JogThread extends Thread {
 
     private double dx;
@@ -180,35 +192,38 @@ public final class JogWidget {
 
     @Override
     public void run() {
-      //TODO: Don't run jog loop when jog widget is not visible
       while (true) {
-        if (home) {
-          try {
-            dx = 0;
-            dy = 0;
-            dz = 0;
-            home = false;
-            limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
-          } catch (Exception e) {
-            logger.log(Level.WARNING, "Could not set task space transform.\n"
-                + Throwables.getStackTraceAsString(e));
+        if (jogThreadRunning.get()) {
+          if (home) {
+            try {
+              dx = 0;
+              dy = 0;
+              dz = 0;
+              home = false;
+              limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
+            } catch (Exception e) {
+              logger.log(Level.WARNING, "Could not set task space transform.\n"
+                  + Throwables.getStackTraceAsString(e));
+            }
+          } else {
+            TransformNR current = limb.getCurrentPoseTarget().copy();
+
+            current.translateX(dx);
+            current.translateY(dy);
+            current.translateZ(dz);
+
+            try {
+              limb.setDesiredTaskSpaceTransform(current, dt);
+            } catch (Exception e) {
+              logger.log(Level.WARNING, "Could not set task space transform.\n"
+                  + Throwables.getStackTraceAsString(e));
+            }
           }
+
+          ThreadUtil.wait((int) (dt * 1000));
         } else {
-          TransformNR current = limb.getCurrentPoseTarget().copy();
-
-          current.translateX(dx);
-          current.translateY(dy);
-          current.translateZ(dz);
-
-          try {
-            limb.setDesiredTaskSpaceTransform(current, dt);
-          } catch (Exception e) {
-            logger.log(Level.WARNING, "Could not set task space transform.\n"
-                + Throwables.getStackTraceAsString(e));
-          }
+          ThreadUtil.wait(100);
         }
-
-        ThreadUtil.wait((int) (dt * 1000));
       }
     }
 
