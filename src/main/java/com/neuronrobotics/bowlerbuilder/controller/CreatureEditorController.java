@@ -2,7 +2,6 @@ package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.ConfigTabLimbSelection;
@@ -202,7 +201,7 @@ public class CreatureEditorController {
   }
 
   private void generateLimbTab() {
-    VBox limbSelector = new VBox(10);
+    final VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
             AssetFactory.loadIcon("Add-Leg.png"), LimbType.LEG, device.getLegs()),
@@ -218,46 +217,52 @@ public class CreatureEditorController {
             AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL,
             device.getDrivable()));
 
-    VBox content = new VBox(10);
+    final VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, limbWidget);
 
-    FxUtil.runFX(() -> limbTab.setContent(getScrollPane(content)));
+    Platform.runLater(() -> limbTab.setContent(getScrollPane(content)));
   }
 
   private void generateMovementTab() {
-    VBox limbSelector = new VBox(10);
+    final VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
             device.getLegs()),
+
         getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
             device.getAppendages()),
+
         getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
             device.getSteerable()),
+
         getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
             device.getDrivable()));
 
-    VBox content = new VBox(10);
+    final VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, movementWidget);
 
-    FxUtil.runFX(() -> movementTab.setContent(getScrollPane(content)));
+    Platform.runLater(() -> movementTab.setContent(getScrollPane(content)));
   }
 
   private void generateConfigTab() {
-    VBox limbSelector = new VBox(10);
+    final VBox limbSelector = new VBox(10);
     limbSelector.getChildren().addAll(
         getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
             device.getLegs()),
+
         getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
             device.getAppendages()),
+
         getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
             device.getSteerable()),
+
         getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
             device.getDrivable()));
 
-    VBox content = new VBox(10);
+    final VBox content = new VBox(10);
     content.getChildren().addAll(limbSelector, configWidget);
 
-    FxUtil.runFX(() -> configTab.setContent(getScrollPane(content)));
+    Platform.runLater(() -> configTab.setContent(getScrollPane(content)));
   }
 
   private void generateScriptTab() {
@@ -326,7 +331,7 @@ public class CreatureEditorController {
               filename, xml, "new Robot content");
 
           logger.info("Clone finished.");
-          FxUtil.runFX(() -> Notifications.create()
+          Platform.runLater(() -> Notifications.create()
               .title("Clone Finished")
               .text("The creature cloning operation finished successfully.")
               .show());
@@ -343,7 +348,7 @@ public class CreatureEditorController {
           logger.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
               + Throwables.getStackTraceAsString(e));
 
-          FxUtil.runFX(() -> Notifications.create()
+          Platform.runLater(() -> Notifications.create()
               .title("Error")
               .text("Could not make copy of creature.")
               .showError());
@@ -351,7 +356,7 @@ public class CreatureEditorController {
           logger.log(Level.SEVERE, "Could not make copy of creature."
               + Throwables.getStackTraceAsString(e));
 
-          FxUtil.runFX(() -> Notifications.create()
+          Platform.runLater(() -> Notifications.create()
               .title("Error")
               .text("Could not make copy of creature.")
               .showError());
@@ -380,7 +385,7 @@ public class CreatureEditorController {
           + Arrays.toString(gitWalkingEngine) + "\n"
           + Throwables.getStackTraceAsString(e));
 
-      FxUtil.runFX(() -> Notifications.create()
+      Platform.runLater(() -> Notifications.create()
           .title("Error")
           .text("Could not check owner of creature.")
           .showError());
@@ -403,13 +408,14 @@ public class CreatureEditorController {
         } catch (Exception e) {
           logger.severe("Could not commit.\n" + Throwables.getStackTraceAsString(e));
 
-          FxUtil.runFX(() -> Notifications.create()
+          Platform.runLater(() -> Notifications.create()
               .title("Commit error")
               .text("Could not make commit.")
               .showError());
         }
       }));
 
+      //Load walking and cad engine code into two tabs
       Platform.runLater(() -> {
         controller.loadFileIntoNewTab("Walking Engine",
             AssetFactory.loadIcon("Edit-Walking-Engine.png"),
@@ -462,32 +468,29 @@ public class CreatureEditorController {
 
   private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon, LimbType limbType,
       List<DHParameterKinematics> limbs) {
-    HBox hBox = new HBox(5);
+    final HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
     hBox.setPadding(new Insets(5));
 
-    hBox.getChildren().add(icon);
-
-    ScrollPane scrollPane = new ScrollPane();
+    final ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-    HBox scrollPaneContent = new HBox(5);
+
+    final HBox scrollPaneContent = new HBox(5);
     HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
     scrollPaneContent.setPadding(new Insets(5));
     scrollPane.setContent(scrollPaneContent);
 
     limbs.forEach(limb -> {
-      Button limbButton = new Button(limb.getScriptingName());
+      final Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
       limbButton.setOnAction(event ->
           selectionProperty.set(new LimbTabLimbSelection(device, limb, this)));
       scrollPaneContent.getChildren().add(limbButton);
     });
 
-    hBox.getChildren().add(scrollPane);
-
-    Button addLimbButton = new Button();
+    final Button addLimbButton = new Button();
     addLimbButton.setGraphic(addIcon);
     addLimbButton.setOnAction(event -> {
       switch (limbType) {
@@ -510,7 +513,7 @@ public class CreatureEditorController {
       }
     });
 
-    hBox.getChildren().add(addLimbButton);
+    hBox.getChildren().addAll(icon, scrollPane, addLimbButton);
     return hBox;
   }
 
@@ -552,29 +555,28 @@ public class CreatureEditorController {
 
   private HBox getMovementTabLimbHBox(ImageView icon,
       List<DHParameterKinematics> limbs) {
-    HBox hBox = new HBox(5);
+    final HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
     hBox.setPadding(new Insets(5));
 
-    hBox.getChildren().add(icon);
-
-    ScrollPane scrollPane = new ScrollPane();
+    final ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-    HBox scrollPaneContent = new HBox(5);
+
+    final HBox scrollPaneContent = new HBox(5);
     HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
     scrollPaneContent.setPadding(new Insets(5));
     scrollPane.setContent(scrollPaneContent);
 
     limbs.forEach(limb -> {
-      VBox vBox = new VBox(5);
+      final VBox vBox = new VBox(5);
       vBox.setPadding(new Insets(5));
       //Shaded background to denote ownership of links to limb
       vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
       vBox.setAlignment(Pos.CENTER);
 
-      Button limbButton = new Button(limb.getScriptingName());
+      final Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
       limbButton.setOnAction(event -> {
         MovementTabLimbSelection selection = new MovementTabLimbSelection(limb);
@@ -590,7 +592,7 @@ public class CreatureEditorController {
         final LinkConfiguration configuration = limb.getLinkConfiguration(i);
         final int finalI = i; //For lambda
 
-        Button linkButton = new Button(configuration.getName());
+        final Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
         linkButton.setOnAction(event -> {
           Selection selection = selectionProperty.get();
@@ -607,48 +609,46 @@ public class CreatureEditorController {
       scrollPaneContent.getChildren().add(vBox);
     });
 
-    hBox.getChildren().add(scrollPane);
-
+    hBox.getChildren().addAll(icon, scrollPane);
     return hBox;
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,
       List<DHParameterKinematics> limbs) {
-    HBox hBox = new HBox(5);
+    final HBox hBox = new HBox(5);
     HBox.setHgrow(hBox, Priority.NEVER);
     hBox.setAlignment(Pos.CENTER_LEFT);
     hBox.setPadding(new Insets(5));
 
-    hBox.getChildren().add(icon);
-
-    ScrollPane scrollPane = new ScrollPane();
+    final ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-    HBox scrollPaneContent = new HBox(5);
+
+    final HBox scrollPaneContent = new HBox(5);
     HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
     scrollPaneContent.setPadding(new Insets(5));
     scrollPane.setContent(scrollPaneContent);
 
     limbs.forEach(limb -> {
-      VBox vBox = new VBox(5);
+      final VBox vBox = new VBox(5);
       vBox.setPadding(new Insets(5));
       //Shaded background to denote ownership of links to limb
       vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
       vBox.setAlignment(Pos.CENTER);
 
-      Button limbButton = new Button(limb.getScriptingName());
+      final Button limbButton = new Button(limb.getScriptingName());
       //Set the selection to this limb
       limbButton.setOnAction(
           event -> selectionProperty.set(new ConfigTabLimbSelection(limb, device, cadManager)));
       vBox.getChildren().add(limbButton);
 
-      HBox hBoxInner = new HBox(5);
-      List<DHLink> links = limb.getChain().getLinks();
+      final HBox hBoxInner = new HBox(5);
+      final List<DHLink> links = limb.getChain().getLinks();
       for (int i = 0; i < links.size(); i++) {
         final DHLink link = links.get(i);
         final LinkConfiguration configuration = limb.getLinkConfiguration(i);
 
-        Button linkButton = new Button(configuration.getName());
+        final Button linkButton = new Button(configuration.getName());
         //Set the selection to this link
         linkButton.setOnAction(event ->
             selectionProperty.set(
@@ -661,8 +661,7 @@ public class CreatureEditorController {
       scrollPaneContent.getChildren().add(vBox);
     });
 
-    hBox.getChildren().add(scrollPane);
-
+    hBox.getChildren().addAll(icon, scrollPane);
     return hBox;
   }
 
@@ -699,19 +698,21 @@ public class CreatureEditorController {
    * @param isKinematic whether to gen kinematic STLs
    */
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-      boolean isKinematic) {
-    File defaultStlDir = new File(System.getProperty("user.home") + "/bowler-workspace/STL/");
+      Boolean isKinematic) {
+    final File defaultStlDir = new File(System.getProperty("user.home")
+        + "/bowler-workspace/STL/");
+
     if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
       logger.log(Level.WARNING, "Could not create default directory to save STL files.");
       return;
     }
 
-    FxUtil.runFX(() -> {
-      DirectoryChooser chooser = new DirectoryChooser();
+    Platform.runLater(() -> {
+      final DirectoryChooser chooser = new DirectoryChooser();
       chooser.setTitle("Select Output Directory For STL files");
 
       chooser.setInitialDirectory(defaultStlDir);
-      File baseDirForFiles = chooser.showDialog(creatureTabPane.getScene().getWindow());
+      final File baseDirForFiles = chooser.showDialog(creatureTabPane.getScene().getWindow());
       if (baseDirForFiles == null) {
         logger.log(Level.INFO, "No directory selected. Not saving STL files.");
         return;
@@ -719,9 +720,9 @@ public class CreatureEditorController {
 
       LoggerUtilities.newLoggingThread(logger, () -> {
         try {
-          List<File> files = cadManager.generateStls(device, baseDirForFiles, isKinematic);
+          final List<File> files = cadManager.generateStls(device, baseDirForFiles, isKinematic);
 
-          FxUtil.runFX(() ->
+          Platform.runLater(() ->
               Notifications.create()
                   .title("STL Export Success")
                   .text("All STL files for the creature generated at:\n"
@@ -732,7 +733,7 @@ public class CreatureEditorController {
               + baseDirForFiles.getAbsolutePath()
               + "\n" + Throwables.getStackTraceAsString(e));
 
-          FxUtil.runFX(() ->
+          Platform.runLater(() ->
               Notifications.create()
                   .title("STL Export Failure")
                   .text("Could not generate STL files.")
@@ -746,7 +747,7 @@ public class CreatureEditorController {
             logger.log(Level.WARNING, Throwables.getStackTraceAsString(e));
           }
 
-          FxUtil.runFX(() ->
+          Platform.runLater(() ->
               Notifications.create()
                   .title("STL Export Failure")
                   .text("Could not generate STL files.")
