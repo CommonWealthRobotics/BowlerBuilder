@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
+import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
@@ -67,6 +68,7 @@ public class CreatureEditorController {
   private final AnchorPane configWidget;
   private final ObjectProperty<Selection> selectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
+  private final MainWindowController mainWindowController;
   @FXML
   private ProgressIndicator cadProgress;
   @FXML
@@ -91,7 +93,10 @@ public class CreatureEditorController {
   private MobileBaseCadManager cadManager;
   private AceCreatureEditorController controller;
 
-  public CreatureEditorController() {
+  @Inject
+  public CreatureEditorController(MainWindowController mainWindowController) {
+    this.mainWindowController = mainWindowController;
+
     limbWidget = new AnchorPane();
     movementWidget = new AnchorPane();
     configWidget = new AnchorPane();
@@ -231,31 +236,30 @@ public class CreatureEditorController {
   }
 
   private void generateScriptTab() {
-    Button makeCopy = new Button();
+    final Button makeCopy = new Button();
     makeCopy.setGraphic(AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
-    makeCopy.setOnAction(event -> FxUtil.runFX(() -> {
-      String oldName = device.getScriptingName();
-      TextInputDialog dialog = new TextInputDialog(oldName + "_copy");
+    makeCopy.setOnAction(event -> Platform.runLater(() -> {
+      final String oldName = device.getScriptingName();
+      final TextInputDialog dialog = new TextInputDialog(oldName + "_copy");
       dialog.setTitle("Make a copy of " + oldName);
       dialog.setHeaderText("Set the scripting name for this creature");
       dialog.setContentText("Please the name of the new creature:");
 
-      // Traditional way to get the response value.
-      Optional<String> result = dialog.showAndWait();
+      final Optional<String> result = dialog.showAndWait();
       result.ifPresent(name -> new Thread(() -> {
         logger.log(Level.INFO, "Your new creature: " + name);
         device.setScriptingName(name);
 
-        GitHub github = ScriptingEngine.getGithub();
-        GHGistBuilder builder = github.createGist();
+        final GitHub github = ScriptingEngine.getGithub();
+        final GHGistBuilder builder = github.createGist();
         builder.description(name + " copy of " + oldName);
-        String filename = name + ".xml";
+        final String filename = name + ".xml";
         builder.file(filename, "<none>");
         builder.public_(true);
-        GHGist gist;
+        final GHGist gist;
         try {
           gist = builder.create();
-          String gitURL = "https://gist.github.com/"
+          final String gitURL = "https://gist.github.com/"
               + ScriptingEngine.urlToGist(gist.getHtmlUrl()) + ".git";
 
           logger.log(Level.INFO, "Creating new Robot repo.");
@@ -292,8 +296,7 @@ public class CreatureEditorController {
                 dh.getGitDhEngine()[1]));
           }
 
-          String xml = device.getXml();
-
+          final String xml = device.getXml();
           ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL),
               filename, xml, "new Robot content");
 
@@ -308,6 +311,9 @@ public class CreatureEditorController {
           device.disconnect();
 
           DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+          final String[] selfSource = mobileBase.getGitSelfSource();
+          mainWindowController.loadCreatureLab(selfSource);
+          mainWindowController.reloadGitMenus();
         } catch (MalformedURLException e) {
           logger.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
               + Throwables.getStackTraceAsString(e));
