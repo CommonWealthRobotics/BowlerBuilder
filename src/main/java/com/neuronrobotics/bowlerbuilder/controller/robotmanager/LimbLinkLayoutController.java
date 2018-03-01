@@ -1,12 +1,13 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.inject.Inject;
-import com.neuronrobotics.bowlerbuilder.model.LinkDataPair;
+import com.neuronrobotics.bowlerbuilder.model.LinkData;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -17,7 +18,7 @@ import javafx.scene.layout.VBox;
 
 public class LimbLinkLayoutController extends LimbLayoutController {
 
-  protected final ObjectProperty<LinkDataPair> linkSelection;
+  protected final ObjectProperty<Optional<LinkData>> linkSelection;
 
   @Inject
   public LimbLinkLayoutController(MobileBase device) {
@@ -30,7 +31,7 @@ public class LimbLinkLayoutController extends LimbLayoutController {
     hBox.getChildren().addAll(limbs.stream()
         .map(limb -> {
           final Button limbButton = new Button(limb.getScriptingName());
-          limbButton.setOnAction(event -> limbSelection.set(limb));
+          limbButton.setOnAction(event -> limbSelection.set(Optional.of(limb)));
 
           final VBox content = new VBox(5, limbButton);
           content.setAlignment(Pos.CENTER);
@@ -43,8 +44,11 @@ public class LimbLinkLayoutController extends LimbLayoutController {
             final Integer finalI = i; //Needed for lambda
 
             final Button linkButton = new Button(configuration.getName());
-            linkButton.setOnAction(event ->
-                linkSelection.set(new LinkDataPair(finalI, link, configuration, limb)));
+            linkButton.setOnAction(event -> {
+              linkSelection.set(Optional.of(
+                  new LinkData(limb, finalI, link, configuration, limb)));
+              limbSelection.set(null);
+            });
             hBoxInner.getChildren().add(linkButton);
           }
 
@@ -54,15 +58,11 @@ public class LimbLinkLayoutController extends LimbLayoutController {
         .collect(Collectors.toList()));
   }
 
-  public void clearLimbSelection() {
-    limbSelection.set(null);
-  }
-
-  public LinkDataPair getLinkSelection() {
+  public Optional<LinkData> getLinkSelection() {
     return linkSelection.get();
   }
 
-  public ObjectProperty<LinkDataPair> linkSelectionProperty() {
+  public ObjectProperty<Optional<LinkData>> linkSelectionProperty() {
     return linkSelection;
   }
 

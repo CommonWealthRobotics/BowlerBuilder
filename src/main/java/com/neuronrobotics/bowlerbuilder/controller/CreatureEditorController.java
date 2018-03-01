@@ -21,7 +21,6 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
-import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -46,21 +45,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import org.apache.commons.io.IOUtils;
@@ -220,14 +215,17 @@ public class CreatureEditorController {
         null,
         BowlerBuilder.getInjector().createChildInjector(
             new LimbLayoutControllerModule(device))::getInstance);
+
     try {
       final Node content = loader.load();
       Platform.runLater(() -> limbTab.setContent(getScrollPane(
           new VBox(10, content, limbWidget))));
 
       final LimbLayoutController controller = loader.getController();
+
       controller.limbSelectionProperty().addListener((observable, oldValue, newValue) ->
-          selectionProperty.set(new LimbTabLimbSelection(device, newValue, this)));
+          newValue.ifPresent(limb ->
+              selectionProperty.set(new LimbTabLimbSelection(device, limb, this))));
 
       Platform.runLater(() -> {
         controller.addToLegHBox(getAddLinkButton(AssetFactory.loadIcon("Add-Leg.png"),
@@ -277,6 +275,7 @@ public class CreatureEditorController {
         null,
         BowlerBuilder.getInjector().createChildInjector(
             new LimbLayoutControllerModule(device))::getInstance);
+
     try {
       final Node content = loader.load();
       VBox container = new VBox(10, content, movementWidget);
@@ -285,39 +284,48 @@ public class CreatureEditorController {
       Platform.runLater(() -> movementTab.setContent(getScrollPane(container)));
 
       final LimbLinkLayoutController controller = loader.getController();
-      controller.limbSelectionProperty().addListener((observable, oldValue, newValue) -> {
-        if (newValue != null) {
-          selectionProperty.set(new MovementTabLimbSelection(newValue));
-        }
-      });
-      controller.linkSelectionProperty().addListener((observable, oldValue, newValue) -> {
-        selectionProperty.set(new MovementTabLinkSelection(newValue));
-        controller.clearLimbSelection();
-      });
+
+      controller.limbSelectionProperty().addListener((observable, oldValue, newValue) ->
+          newValue.ifPresent(limb ->
+              selectionProperty.set(new MovementTabLimbSelection(limb))));
+
+      controller.linkSelectionProperty().addListener((observable, oldValue, newValue) ->
+          newValue.ifPresent(linkData ->
+              selectionProperty.set(new MovementTabLinkSelection(linkData))));
     } catch (IOException e) {
       logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
   private void generateConfigTab() {
-    final VBox limbSelector = new VBox(10);
-    limbSelector.getChildren().addAll(
-        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            device.getLegs()),
+    final FXMLLoader loader = new FXMLLoader(CreatureEditorController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"),
+        null,
+        null,
+        BowlerBuilder.getInjector().createChildInjector(
+            new LimbLayoutControllerModule(device))::getInstance);
 
-        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            device.getAppendages()),
+    try {
+      final Node content = loader.load();
+      VBox container = new VBox(10, content, configWidget);
+      container.maxWidth(Double.MAX_VALUE);
+      content.maxWidth(Double.MAX_VALUE);
+      Platform.runLater(() -> configTab.setContent(getScrollPane(container)));
 
-        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            device.getSteerable()),
+      final LimbLinkLayoutController controller = loader.getController();
 
-        getConfigTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            device.getDrivable()));
+      controller.limbSelectionProperty().addListener((observable, oldValue, newValue) ->
+          newValue.ifPresent(limb -> {
+            selectionProperty.set(new ConfigTabLimbSelection(limb, device, cadManager));
+          }));
 
-    final VBox content = new VBox(10);
-    content.getChildren().addAll(limbSelector, configWidget);
-
-    Platform.runLater(() -> configTab.setContent(getScrollPane(content)));
+      controller.linkSelectionProperty().addListener((observable, oldValue, newValue) ->
+          newValue.ifPresent(linkData ->
+              selectionProperty.set(new ConfigTabLinkSelection(linkData.dhLink,
+                  linkData.linkConfiguration, linkData.parentLimb, cadManager))));
+    } catch (IOException e) {
+      logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   private void generateScriptTab() {
@@ -574,58 +582,6 @@ public class CreatureEditorController {
     } catch (Exception e) {
       logger.warning("Could not add limb.\n" + Throwables.getStackTraceAsString(e));
     }
-  }
-
-  private HBox getConfigTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
-    final HBox hBox = new HBox(5);
-    HBox.setHgrow(hBox, Priority.NEVER);
-    hBox.setAlignment(Pos.CENTER_LEFT);
-    hBox.setPadding(new Insets(5));
-
-    final ScrollPane scrollPane = new ScrollPane();
-    HBox.setHgrow(scrollPane, Priority.ALWAYS);
-    scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-
-    final HBox scrollPaneContent = new HBox(5);
-    HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
-    scrollPaneContent.setPadding(new Insets(5));
-    scrollPane.setContent(scrollPaneContent);
-
-    limbs.forEach(limb -> {
-      final VBox vBox = new VBox(5);
-      vBox.setPadding(new Insets(5));
-      //Shaded background to denote ownership of links to limb
-      vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
-      vBox.setAlignment(Pos.CENTER);
-
-      final Button limbButton = new Button(limb.getScriptingName());
-      //Set the selection to this limb
-      limbButton.setOnAction(
-          event -> selectionProperty.set(new ConfigTabLimbSelection(limb, device, cadManager)));
-      vBox.getChildren().add(limbButton);
-
-      final HBox hBoxInner = new HBox(5);
-      final List<DHLink> links = limb.getChain().getLinks();
-      for (int i = 0; i < links.size(); i++) {
-        final DHLink link = links.get(i);
-        final LinkConfiguration configuration = limb.getLinkConfiguration(i);
-
-        final Button linkButton = new Button(configuration.getName());
-        //Set the selection to this link
-        linkButton.setOnAction(event ->
-            selectionProperty.set(
-                new ConfigTabLinkSelection(link, configuration, limb, cadManager)));
-        hBoxInner.getChildren().add(linkButton);
-      }
-
-      vBox.getChildren().add(hBoxInner);
-
-      scrollPaneContent.getChildren().add(vBox);
-    });
-
-    hBox.getChildren().addAll(icon, scrollPane);
-    return hBox;
   }
 
   @FXML

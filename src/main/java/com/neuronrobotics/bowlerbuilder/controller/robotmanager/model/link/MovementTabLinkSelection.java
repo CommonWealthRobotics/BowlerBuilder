@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
-import com.neuronrobotics.bowlerbuilder.model.LinkDataPair;
+import com.neuronrobotics.bowlerbuilder.model.LinkData;
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.LinkSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
@@ -18,7 +18,7 @@ public class MovementTabLinkSelection extends LinkSelection {
     slider = new LinkSliderWidget(linkIndex, dhLink, device);
   }
 
-  public MovementTabLinkSelection(LinkDataPair newValue) {
+  public MovementTabLinkSelection(LinkData newValue) {
     this(newValue.index, newValue.dhLink, newValue.linkConfiguration, newValue.device);
   }
 

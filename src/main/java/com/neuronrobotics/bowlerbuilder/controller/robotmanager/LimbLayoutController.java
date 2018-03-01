@@ -7,6 +7,7 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
@@ -23,7 +24,7 @@ public class LimbLayoutController {
   private static final Logger logger =
       LoggerUtilities.getLogger(LimbLayoutController.class.getSimpleName());
   protected final MobileBase device;
-  protected final ObjectProperty<DHParameterKinematics> limbSelection;
+  protected final ObjectProperty<Optional<DHParameterKinematics>> limbSelection;
   @FXML
   private HBox legHBox;
   @FXML
@@ -82,7 +83,7 @@ public class LimbLayoutController {
     hBox.getChildren().addAll(limbs.stream()
         .map(limb -> {
           final Button button = new Button(limb.getScriptingName());
-          button.setOnAction(event -> limbSelection.set(limb));
+          button.setOnAction(event -> limbSelection.set(Optional.of(limb)));
           return button;
         })
         .collect(Collectors.toList()));
@@ -104,11 +105,11 @@ public class LimbLayoutController {
     fixedHBox.getChildren().add(node);
   }
 
-  public DHParameterKinematics getLimbSelection() {
+  public Optional<DHParameterKinematics> getLimbSelection() {
     return limbSelection.get();
   }
 
-  public ReadOnlyObjectProperty<DHParameterKinematics> limbSelectionProperty() {
+  public ReadOnlyObjectProperty<Optional<DHParameterKinematics>> limbSelectionProperty() {
     return limbSelection;
   }
 
