@@ -39,6 +39,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -52,6 +53,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -159,8 +161,13 @@ public class CreatureEditorController {
     scriptTab.setStyle("-fx-padding: 5px;");
 
     regenCADButton.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
+    regenCADButton.setText("Regenerate CAD");
+
     genPrintableCAD.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
+    genPrintableCAD.setText("Printable CAD");
+
     genKinSTL.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
+    genKinSTL.setText("Kinematic STL");
   }
 
   /**
@@ -266,14 +273,14 @@ public class CreatureEditorController {
   }
 
   private void generateScriptTab() {
-    final Button makeCopy = new Button();
+    final Button makeCopy = new Button("Clone Creature");
     makeCopy.setGraphic(AssetFactory.loadIcon("Make-Copy-of-Creature.png"));
     makeCopy.setOnAction(event -> Platform.runLater(() -> {
       final String oldName = device.getScriptingName();
       final TextInputDialog dialog = new TextInputDialog(oldName + "_copy");
       dialog.setTitle("Make a copy of " + oldName);
       dialog.setHeaderText("Set the scripting name for this creature");
-      dialog.setContentText("Please the name of the new creature:");
+      dialog.setContentText("Name of the new creature:");
 
       final Optional<String> result = dialog.showAndWait();
       result.ifPresent(name -> new Thread(() -> {
@@ -365,8 +372,11 @@ public class CreatureEditorController {
       }).start());
     }));
 
-    HBox controls = new HBox(5, makeCopy);
-    controls.setPadding(new Insets(5));
+    //Have to declare these here because the following block is deeper scope
+    final GridPane topLevelControls = new GridPane();
+    topLevelControls.setPadding(new Insets(5));
+    topLevelControls.add(makeCopy, 0, 0);
+    final VBox content = new VBox(5, topLevelControls);
 
     final String[] gitSelfSource = device.getGitSelfSource();
     final String[] gitWalkingEngine = device.getGitWalkingEngine();
@@ -394,7 +404,7 @@ public class CreatureEditorController {
     }
 
     if (ScriptingEngine.checkOwner(deviceXMLFile)) {
-      Button publish = new Button();
+      Button publish = new Button("Publish");
       publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
       publish.setOnAction(event -> new PublishDialog().showAndWait().ifPresent(commitMessage -> {
         try {
@@ -426,37 +436,53 @@ public class CreatureEditorController {
             gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile);
       });
 
-      Button editWalkingEngine = new Button();
+      Button editWalkingEngine = new Button("Edit Walking Engine");
       editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
       editWalkingEngine.setOnAction(event ->
           controller.loadFileIntoNewTab("Walking Engine",
               AssetFactory.loadIcon("Edit-Walking-Engine.png"),
               gitWalkingEngine[0], gitWalkingEngine[1], deviceWalkingEngineFile));
 
-      Button editCADEngine = new Button();
+      Button editCADEngine = new Button("Edit CAD Engine");
       editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
       editCADEngine.setOnAction(event ->
           controller.loadFileIntoNewTab("CAD Engine",
               AssetFactory.loadIcon("Edit-CAD-Engine.png"),
               gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile));
 
-      Button setWalkingEngine = new Button();
+      Button setWalkingEngine = new Button("Set Walking Engine");
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
       setWalkingEngine.setOnAction(event ->
           new GistFileSelectionDialog("Select Walking Engine", file -> !file.endsWith(".xml"))
               .showAndWait().ifPresent(result -> device.setGitWalkingEngine(result)));
 
-      Button setCADEngine = new Button();
+      Button setCADEngine = new Button("Set CAD Engine");
       setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
       setCADEngine.setOnAction(event ->
           new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
               .showAndWait().ifPresent(result -> device.setGitCadEngine(result)));
 
-      controls.getChildren().addAll(publish, editWalkingEngine, editCADEngine, setWalkingEngine,
-          setCADEngine);
+      GridPane.setHalignment(makeCopy, HPos.RIGHT);
+
+      topLevelControls.add(publish, 1, 0);
+
+      topLevelControls.add(editWalkingEngine, 0, 1);
+      GridPane.setHalignment(editWalkingEngine, HPos.RIGHT);
+
+      topLevelControls.add(editCADEngine, 1, 1);
+
+      topLevelControls.add(setWalkingEngine, 0, 2);
+      GridPane.setHalignment(setWalkingEngine, HPos.RIGHT);
+
+      topLevelControls.add(setCADEngine, 1, 2);
+
+      topLevelControls.setVgap(5);
+      topLevelControls.setHgap(5);
+
+      //TODO: Add limb selector to edit cad engine for limbs
     }
 
-    Platform.runLater(() -> scriptTab.setContent(getScrollPane(controls)));
+    Platform.runLater(() -> scriptTab.setContent(getScrollPane(content)));
   }
 
   private ScrollPane getScrollPane(Node node) {

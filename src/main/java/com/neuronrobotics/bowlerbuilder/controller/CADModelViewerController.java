@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.inject.Inject;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.Collection;
@@ -28,16 +27,14 @@ public class CADModelViewerController {
 
   @FXML
   protected void initialize() {
-    FxUtil.runFX(() -> {
-      SubScene subScene = engine.getSubScene();
-      subScene.setFocusTraversable(false);
-      subScene.widthProperty().bind(root.widthProperty());
-      subScene.heightProperty().bind(root.heightProperty());
-      AnchorPane.setTopAnchor(subScene, 0.0);
-      AnchorPane.setRightAnchor(subScene, 0.0);
-      AnchorPane.setLeftAnchor(subScene, 0.0);
-      AnchorPane.setBottomAnchor(subScene, 0.0);
-    });
+    final SubScene subScene = engine.getSubScene();
+    subScene.setFocusTraversable(false);
+    subScene.widthProperty().bind(root.widthProperty());
+    subScene.heightProperty().bind(root.heightProperty());
+    AnchorPane.setTopAnchor(subScene, 0.0);
+    AnchorPane.setRightAnchor(subScene, 0.0);
+    AnchorPane.setLeftAnchor(subScene, 0.0);
+    AnchorPane.setBottomAnchor(subScene, 0.0);
 
     root.setCenter(engine.getView());
     root.setId("cadViewerBorderPane");
