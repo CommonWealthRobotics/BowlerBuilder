@@ -11,6 +11,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.ConfigTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.MovementTabLimbSelection;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.ScriptTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.model.LimbType;
@@ -73,6 +74,7 @@ public class CreatureEditorController {
   private final AnchorPane limbWidget;
   private final AnchorPane movementWidget;
   private final AnchorPane configWidget;
+  private final AnchorPane scriptWidget;
   private final ObjectProperty<Selection> selectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
   private final MainWindowController mainWindowController;
@@ -107,6 +109,7 @@ public class CreatureEditorController {
     limbWidget = new AnchorPane();
     movementWidget = new AnchorPane();
     configWidget = new AnchorPane();
+    scriptWidget = new AnchorPane();
     selectionProperty = new SimpleObjectProperty<>();
     selectedWidgetPane = new SimpleObjectProperty<>();
   }
@@ -138,6 +141,8 @@ public class CreatureEditorController {
             selectedWidgetPane.set(movementWidget);
           } else if (newValue == configTab) {
             selectedWidgetPane.set(configWidget);
+          } else if (newValue == scriptTab) {
+            selectedWidgetPane.set(scriptWidget);
           }
         });
 
@@ -177,7 +182,7 @@ public class CreatureEditorController {
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-      AceCreatureEditorController controller) {
+                            AceCreatureEditorController controller) {
     this.device = device;
     this.cadManager = cadManager;
     this.controller = controller;
@@ -452,7 +457,7 @@ public class CreatureEditorController {
 
       Platform.runLater(() -> Notifications.create()
           .title("Error")
-          .text("Could not check owner of creature.")
+          .text("Could not parse file from git source. Creature loading stopped.")
           .showError());
 
       return;
@@ -534,10 +539,33 @@ public class CreatureEditorController {
       topLevelControls.setVgap(5);
       topLevelControls.setHgap(5);
 
-      //TODO: Add limb selector to edit cad engine for limbs
-    }
+      final FXMLLoader loader = new FXMLLoader(CreatureEditorController.class.getResource(
+          "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
+          null,
+          null,
+          BowlerBuilder.getInjector().createChildInjector(
+              new LimbLayoutControllerModule(device))::getInstance);
 
-    Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
+      try {
+        final Node content = loader.load();
+        final LimbLayoutController controller = loader.getController();
+
+        controller.limbSelectionProperty().addListener((observable, oldValue, newValue) ->
+            newValue.ifPresent(limb -> {
+              selectionProperty.set(new ScriptTabLimbSelection(limb, this.controller));
+            }));
+
+        Platform.runLater(() -> scriptTab.setContent(getScrollPane(
+            new VBox(5, topLevelControls, content, scriptWidget))));
+      } catch (IOException e) {
+        logger.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
+
+        Platform.runLater(() -> scriptTab.setContent(getScrollPane(
+            new VBox(5, topLevelControls))));
+      }
+    } else {
+      Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
+    }
   }
 
   private ScrollPane getScrollPane(Node node) {
@@ -555,7 +583,7 @@ public class CreatureEditorController {
    * @param toAdd list to add the new limb to
    */
   private void promptAndAddLimb(String defaultFileName, MobileBase device,
-      List<DHParameterKinematics> toAdd) {
+                                List<DHParameterKinematics> toAdd) {
     try {
       final String xmlContent = ScriptingEngine.codeFromGit(
           "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git", defaultFileName)[0];
@@ -616,7 +644,7 @@ public class CreatureEditorController {
    * @param isKinematic whether to gen kinematic STLs
    */
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-      Boolean isKinematic) {
+                      Boolean isKinematic) {
     final File defaultStlDir = new File(System.getProperty("user.home")
         + "/bowler-workspace/STL/");
 
