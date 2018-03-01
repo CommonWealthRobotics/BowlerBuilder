@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.module.LimbLayoutControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.LimbLayoutController;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.LimbLinkLayoutController;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.ConfigTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbTabLimbSelection;
@@ -190,6 +191,7 @@ public class CreatureEditorController {
         cadManager.setAutoRegen(newValue));
     cadManager.setAutoRegen(autoRegenCAD.isSelected());
 
+    //TODO: Make the content fit width
     generateLimbTab();
     generateMovementTab();
     generateConfigTab();
@@ -269,24 +271,32 @@ public class CreatureEditorController {
   }
 
   private void generateMovementTab() {
-    final VBox limbSelector = new VBox(10);
-    limbSelector.getChildren().addAll(
-        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            device.getLegs()),
+    final FXMLLoader loader = new FXMLLoader(CreatureEditorController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"),
+        null,
+        null,
+        BowlerBuilder.getInjector().createChildInjector(
+            new LimbLayoutControllerModule(device))::getInstance);
+    try {
+      final Node content = loader.load();
+      VBox container = new VBox(10, content, movementWidget);
+      container.maxWidth(Double.MAX_VALUE);
+      content.maxWidth(Double.MAX_VALUE);
+      Platform.runLater(() -> movementTab.setContent(getScrollPane(container)));
 
-        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            device.getAppendages()),
-
-        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            device.getSteerable()),
-
-        getMovementTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            device.getDrivable()));
-
-    final VBox content = new VBox(10);
-    content.getChildren().addAll(limbSelector, movementWidget);
-
-    Platform.runLater(() -> movementTab.setContent(getScrollPane(content)));
+      final LimbLinkLayoutController controller = loader.getController();
+      controller.limbSelectionProperty().addListener((observable, oldValue, newValue) -> {
+        if (newValue != null) {
+          selectionProperty.set(new MovementTabLimbSelection(newValue));
+        }
+      });
+      controller.linkSelectionProperty().addListener((observable, oldValue, newValue) -> {
+        selectionProperty.set(new MovementTabLinkSelection(newValue));
+        controller.clearLimbSelection();
+      });
+    } catch (IOException e) {
+      logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   private void generateConfigTab() {
@@ -564,66 +574,6 @@ public class CreatureEditorController {
     } catch (Exception e) {
       logger.warning("Could not add limb.\n" + Throwables.getStackTraceAsString(e));
     }
-  }
-
-  private HBox getMovementTabLimbHBox(ImageView icon,
-      List<DHParameterKinematics> limbs) {
-    final HBox hBox = new HBox(5);
-    HBox.setHgrow(hBox, Priority.NEVER);
-    hBox.setAlignment(Pos.CENTER_LEFT);
-    hBox.setPadding(new Insets(5));
-
-    final ScrollPane scrollPane = new ScrollPane();
-    HBox.setHgrow(scrollPane, Priority.ALWAYS);
-    scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-
-    final HBox scrollPaneContent = new HBox(5);
-    HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
-    scrollPaneContent.setPadding(new Insets(5));
-    scrollPane.setContent(scrollPaneContent);
-
-    limbs.forEach(limb -> {
-      final VBox vBox = new VBox(5);
-      vBox.setPadding(new Insets(5));
-      //Shaded background to denote ownership of links to limb
-      vBox.setStyle("-fx-background-color: rgba(185, 185, 185, 0.51);");
-      vBox.setAlignment(Pos.CENTER);
-
-      final Button limbButton = new Button(limb.getScriptingName());
-      //Set the selection to this limb
-      limbButton.setOnAction(event -> {
-        MovementTabLimbSelection selection = new MovementTabLimbSelection(limb);
-        selection.startJogThread(limb); //Start jog thread because the widget is going to show
-        selectionProperty.set(selection);
-      });
-      vBox.getChildren().add(limbButton);
-
-      HBox hBoxInner = new HBox(5);
-      List<DHLink> links = limb.getChain().getLinks();
-      for (int i = 0; i < links.size(); i++) {
-        final DHLink link = links.get(i);
-        final LinkConfiguration configuration = limb.getLinkConfiguration(i);
-        final int finalI = i; //For lambda
-
-        final Button linkButton = new Button(configuration.getName());
-        //Set the selection to this link
-        linkButton.setOnAction(event -> {
-          Selection selection = selectionProperty.get();
-          //Stop jog thread if the widget is going to hide when we select a link
-          if (selection instanceof MovementTabLimbSelection) {
-            ((MovementTabLimbSelection) selection).stopJogThread(limb);
-          }
-          selectionProperty.set(new MovementTabLinkSelection(finalI, link, configuration, limb));
-        });
-        hBoxInner.getChildren().add(linkButton);
-      }
-      vBox.getChildren().add(hBoxInner);
-
-      scrollPaneContent.getChildren().add(vBox);
-    });
-
-    hBox.getChildren().addAll(icon, scrollPane);
-    return hBox;
   }
 
   private HBox getConfigTabLimbHBox(ImageView icon,

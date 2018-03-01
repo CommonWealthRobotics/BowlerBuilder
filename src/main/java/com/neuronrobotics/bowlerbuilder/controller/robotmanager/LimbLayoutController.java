@@ -22,8 +22,8 @@ public class LimbLayoutController {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(LimbLayoutController.class.getSimpleName());
-  private final MobileBase device;
-  private final ObjectProperty<DHParameterKinematics> limbSelection;
+  protected final MobileBase device;
+  protected final ObjectProperty<DHParameterKinematics> limbSelection;
   @FXML
   private HBox legHBox;
   @FXML
@@ -78,7 +78,7 @@ public class LimbLayoutController {
    * @param hBox HBox to add buttons to
    * @param limbs limbs to generate buttons from
    */
-  private void addButtons(HBox hBox, List<DHParameterKinematics> limbs) {
+  protected void addButtons(HBox hBox, List<DHParameterKinematics> limbs) {
     hBox.getChildren().addAll(limbs.stream()
         .map(limb -> {
           final Button button = new Button(limb.getScriptingName());
