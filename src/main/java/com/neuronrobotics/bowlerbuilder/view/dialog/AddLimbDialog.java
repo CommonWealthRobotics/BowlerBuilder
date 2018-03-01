@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -54,11 +55,20 @@ public class AddLimbDialog extends Dialog<LimbData> {
     getDialogPane().setContent(content);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
+    //Have to OR each binding together because binding updating is lazy
+    //Creating a binding on the list will not be updated by updating a list element's property
+    //So OR each one together in a loop
+    BooleanBinding binding = null;
+    for (ValidatedTextField field : hwIndexFields) {
+      if (binding == null) {
+        binding = Bindings.createBooleanBinding(field::isInvalid, field.invalidProperty());
+      } else {
+        binding = Bindings.or(binding, field.invalidProperty());
+      }
+    }
+
     final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    okButton.disableProperty().bind(Bindings.or(
-        Bindings.createBooleanBinding(() -> hwIndexFields.stream()
-            .anyMatch(ValidatedTextField::isInvalid), hwIndexFields),
-        linkNameField.invalidProperty()));
+    okButton.disableProperty().bind(Bindings.or(binding, linkNameField.invalidProperty()));
     okButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
@@ -82,11 +92,11 @@ public class AddLimbDialog extends Dialog<LimbData> {
         text -> {
           Integer result = Ints.tryParse(text);
           return result != null && !takenChannels.contains(result) && hwIndexFields.stream()
-              .map(ValidatedTextField::getText)
-              .filter(index -> !index.isEmpty())
+              .filter(item -> !id.equals(item.getId())) //Filter out ourselves
+              .map(ValidatedTextField::getText) //Map to text content
+              .filter(index -> !index.isEmpty()) //Integer.parseInt can't handle an empty string
               .map(Integer::parseInt)
-              .collect(Collectors.toList())
-              .contains(result);
+              .noneMatch(item -> item.equals(Integer.parseInt(text)));
         });
 
     hwIndexField.setId(id);
