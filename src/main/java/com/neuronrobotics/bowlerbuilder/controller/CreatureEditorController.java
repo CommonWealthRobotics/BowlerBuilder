@@ -432,7 +432,6 @@ public class CreatureEditorController {
     final GridPane topLevelControls = new GridPane();
     topLevelControls.setPadding(new Insets(5));
     topLevelControls.add(makeCopy, 0, 0);
-    final VBox content = new VBox(5, topLevelControls);
 
     final String[] gitSelfSource = device.getGitSelfSource();
     final String[] gitWalkingEngine = device.getGitWalkingEngine();
@@ -538,7 +537,7 @@ public class CreatureEditorController {
       //TODO: Add limb selector to edit cad engine for limbs
     }
 
-    Platform.runLater(() -> scriptTab.setContent(getScrollPane(content)));
+    Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
   }
 
   private ScrollPane getScrollPane(Node node) {
