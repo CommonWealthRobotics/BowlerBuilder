@@ -2,7 +2,10 @@ package com.neuronrobotics.bowlerbuilder.controller; //NOPMD
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.controller.module.LimbLayoutControllerModule;
+import com.neuronrobotics.bowlerbuilder.controller.robotmanager.LimbLayoutController;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.ConfigTabLimbSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.LimbTabLimbSelection;
@@ -39,6 +42,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -208,26 +212,60 @@ public class CreatureEditorController {
   }
 
   private void generateLimbTab() {
-    final VBox limbSelector = new VBox(10);
-    limbSelector.getChildren().addAll(
-        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Legs.png"),
-            AssetFactory.loadIcon("Add-Leg.png"), LimbType.LEG, device.getLegs()),
+    final FXMLLoader loader = new FXMLLoader(CreatureEditorController.class.getResource(
+        "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
+        null,
+        null,
+        BowlerBuilder.getInjector().createChildInjector(
+            new LimbLayoutControllerModule(device))::getInstance);
+    try {
+      final Node content = loader.load();
+      Platform.runLater(() -> limbTab.setContent(getScrollPane(
+          new VBox(10, content, limbWidget))));
 
-        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Arms.png"),
-            AssetFactory.loadIcon("Add-Arm.png"), LimbType.ARM, device.getAppendages()),
+      final LimbLayoutController controller = loader.getController();
+      controller.limbSelectionProperty().addListener((observable, oldValue, newValue) ->
+          selectionProperty.set(new LimbTabLimbSelection(device, newValue, this)));
 
-        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Steerable-Wheels.png"),
-            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), LimbType.STEERABLE_WHEEL,
-            device.getSteerable()),
+      Platform.runLater(() -> {
+        controller.addToLegHBox(getAddLinkButton(AssetFactory.loadIcon("Add-Leg.png"),
+            LimbType.LEG));
+        controller.addToArmHBox(getAddLinkButton(AssetFactory.loadIcon("Add-Arm.png"),
+            LimbType.ARM));
+        controller.addToSteerableHBox(getAddLinkButton(
+            AssetFactory.loadIcon("Add-Steerable-Wheel.png"), LimbType.STEERABLE_WHEEL));
+        controller.addToFixedHBox(getAddLinkButton(
+            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL));
+      });
+    } catch (IOException e) {
+      logger.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
 
-        getLimbTabLimbHBox(AssetFactory.loadIcon("Load-Limb-Fixed-Wheels.png"),
-            AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL,
-            device.getDrivable()));
-
-    final VBox content = new VBox(10);
-    content.getChildren().addAll(limbSelector, limbWidget);
-
-    Platform.runLater(() -> limbTab.setContent(getScrollPane(content)));
+  private Button getAddLinkButton(ImageView icon, LimbType limbType) {
+    final Button button = new Button();
+    button.setGraphic(icon);
+    button.setOnAction(event -> {
+      switch (limbType) {
+        case LEG:
+          promptAndAddLimb(LimbType.LEG.getDefaultFileName(), device, device.getLegs());
+          break;
+        case ARM:
+          promptAndAddLimb(LimbType.ARM.getDefaultFileName(), device, device.getAppendages());
+          break;
+        case FIXED_WHEEL:
+          promptAndAddLimb(LimbType.FIXED_WHEEL.getDefaultFileName(), device,
+              device.getDrivable());
+          break;
+        case STEERABLE_WHEEL:
+          promptAndAddLimb(LimbType.STEERABLE_WHEEL.getDefaultFileName(), device,
+              device.getSteerable());
+          break;
+        default: //Nothing to do for default, only 4 kinds of limbs
+          break;
+      }
+    });
+    return button;
   }
 
   private void generateMovementTab() {
@@ -490,57 +528,6 @@ public class CreatureEditorController {
     pane.setFitToWidth(true);
     pane.setPadding(new Insets(5));
     return pane;
-  }
-
-  private HBox getLimbTabLimbHBox(ImageView icon, ImageView addIcon, LimbType limbType,
-      List<DHParameterKinematics> limbs) {
-    final HBox hBox = new HBox(5);
-    HBox.setHgrow(hBox, Priority.NEVER);
-    hBox.setAlignment(Pos.CENTER_LEFT);
-    hBox.setPadding(new Insets(5));
-
-    final ScrollPane scrollPane = new ScrollPane();
-    HBox.setHgrow(scrollPane, Priority.ALWAYS);
-    scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
-
-    final HBox scrollPaneContent = new HBox(5);
-    HBox.setHgrow(scrollPaneContent, Priority.ALWAYS);
-    scrollPaneContent.setPadding(new Insets(5));
-    scrollPane.setContent(scrollPaneContent);
-
-    limbs.forEach(limb -> {
-      final Button limbButton = new Button(limb.getScriptingName());
-      //Set the selection to this limb
-      limbButton.setOnAction(event ->
-          selectionProperty.set(new LimbTabLimbSelection(device, limb, this)));
-      scrollPaneContent.getChildren().add(limbButton);
-    });
-
-    final Button addLimbButton = new Button();
-    addLimbButton.setGraphic(addIcon);
-    addLimbButton.setOnAction(event -> {
-      switch (limbType) {
-        case LEG:
-          promptAndAddLimb(LimbType.LEG.getDefaultFileName(), device, device.getLegs());
-          break;
-        case ARM:
-          promptAndAddLimb(LimbType.ARM.getDefaultFileName(), device, device.getAppendages());
-          break;
-        case FIXED_WHEEL:
-          promptAndAddLimb(LimbType.FIXED_WHEEL.getDefaultFileName(), device,
-              device.getDrivable());
-          break;
-        case STEERABLE_WHEEL:
-          promptAndAddLimb(LimbType.STEERABLE_WHEEL.getDefaultFileName(), device,
-              device.getSteerable());
-          break;
-        default: //Nothing to do for default, only 4 kinds of limbs
-          break;
-      }
-    });
-
-    hBox.getChildren().addAll(icon, scrollPane, addLimbButton);
-    return hBox;
   }
 
   /**

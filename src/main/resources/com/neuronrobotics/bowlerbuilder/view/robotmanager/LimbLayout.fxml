@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.robotmanager.LimbLayoutController">
+   <children>
+      <HBox fx:id="legHBox" spacing="5.0">
+         <children>
+            <ImageView fx:id="legIcon" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
+            <ScrollPane fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+               <content>
+                  <HBox fx:id="legPaneHBox" spacing="5.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></HBox>
+               </content></ScrollPane>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox fx:id="armHBox" spacing="5.0">
+         <children>
+            <ImageView fx:id="armIcon" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
+            <ScrollPane HBox.hgrow="ALWAYS">
+               <content>
+                  <HBox fx:id="armPaneHBox" spacing="5.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></HBox>
+               </content></ScrollPane>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox fx:id="steerableHBox" spacing="5.0">
+         <children>
+            <ImageView fx:id="steerableIcon" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
+            <ScrollPane HBox.hgrow="ALWAYS">
+               <content>
+                  <HBox fx:id="steerablePaneHBox" spacing="5.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></HBox>
+               </content></ScrollPane>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox fx:id="fixedHBox" spacing="5.0">
+         <children>
+            <ImageView fx:id="fixedIcon" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
+            <ScrollPane HBox.hgrow="ALWAYS">
+               <content>
+                  <HBox fx:id="fixedPaneHBox" spacing="5.0">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></HBox>
+               </content></ScrollPane>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>
