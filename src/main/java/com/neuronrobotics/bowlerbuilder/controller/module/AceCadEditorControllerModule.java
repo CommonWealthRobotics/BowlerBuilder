@@ -10,7 +10,7 @@ public class AceCadEditorControllerModule extends AbstractModule {
 
   private final ScriptEditorView scriptEditorView;
 
-  public AceCadEditorControllerModule(ScriptEditorView scriptEditorView) {
+  public AceCadEditorControllerModule(final ScriptEditorView scriptEditorView) {
     this.scriptEditorView = scriptEditorView;
   }
 

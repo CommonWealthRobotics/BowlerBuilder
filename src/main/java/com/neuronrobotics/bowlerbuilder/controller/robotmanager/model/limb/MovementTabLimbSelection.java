@@ -14,7 +14,7 @@ public class MovementTabLimbSelection extends LimbSelection {
   private static final Map<DHParameterKinematics, JogWidget> jogWidgetMap = new HashMap<>();
   private final VBox view;
 
-  public MovementTabLimbSelection(DHParameterKinematics limb) {
+  public MovementTabLimbSelection(final DHParameterKinematics limb) {
     super(limb);
 
     view = new VBox(5);
@@ -24,7 +24,7 @@ public class MovementTabLimbSelection extends LimbSelection {
     if (jogWidgetMap.containsKey(limb)) {
       view.getChildren().add(jogWidgetMap.get(limb).getView());
     } else {
-      JogWidget jogWidget = new JogWidget(limb);
+      final JogWidget jogWidget = new JogWidget(limb);
       jogWidgetMap.put(limb, jogWidget);
       view.getChildren().add(jogWidget.getView());
     }
@@ -40,7 +40,7 @@ public class MovementTabLimbSelection extends LimbSelection {
    *
    * @param dh limb
    */
-  public void stopJogThread(DHParameterKinematics dh) {
+  public void stopJogThread(final DHParameterKinematics dh) {
     if (jogWidgetMap.containsKey(dh)) {
       jogWidgetMap.get(dh).jogThreadRunningProperty().set(false);
     }
@@ -51,7 +51,7 @@ public class MovementTabLimbSelection extends LimbSelection {
    *
    * @param dh limb
    */
-  public void startJogThread(DHParameterKinematics dh) {
+  public void startJogThread(final DHParameterKinematics dh) {
     if (jogWidgetMap.containsKey(dh)) {
       jogWidgetMap.get(dh).jogThreadRunningProperty().set(true);
     }

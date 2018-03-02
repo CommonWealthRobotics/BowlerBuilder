@@ -40,12 +40,12 @@ public class BowlerGroovy implements IScriptingLanguage {
   }
 
   @Override
-  public Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(final File code, final ArrayList<Object> args) throws Exception {
     return this.inline(code, args);
   }
 
   @Override
-  public Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(final String code, final ArrayList<Object> args) throws Exception {
     return this.inline(code, args);
   }
 
@@ -59,10 +59,10 @@ public class BowlerGroovy implements IScriptingLanguage {
     return new ArrayList<>(Arrays.asList("java", "groovy"));
   }
 
-  private Object inline(Object code, ArrayList<Object> args) throws Exception {
+  private Object inline(final Object code, final ArrayList<Object> args) throws Exception {
     compilingProperty.setValue(true);
 
-    CompilerConfiguration cc = new CompilerConfiguration();
+    final CompilerConfiguration cc = new CompilerConfiguration();
     cc.addCompilationCustomizers(new ImportCustomizer()
         .addStarImports(ScriptingEngine.getImports())
         .addStarImports(
@@ -74,10 +74,10 @@ public class BowlerGroovy implements IScriptingLanguage {
             "eu.mihosoft.vrl.v3d.Transform",
             "com.neuronrobotics.bowlerstudio.vitamins.Vitamins"));
 
-    Binding binding = new Binding();
+    final Binding binding = new Binding();
 
-    for (String pm : DeviceManager.listConnectedDevice()) {
-      BowlerAbstractDevice device = DeviceManager.getSpecificDevice(null, pm);
+    for (final String pm : DeviceManager.listConnectedDevice()) {
+      final BowlerAbstractDevice device = DeviceManager.getSpecificDevice(null, pm);
 
       binding.setVariable(
           device.getScriptingName(),
@@ -86,8 +86,8 @@ public class BowlerGroovy implements IScriptingLanguage {
 
     binding.setVariable("args", args);
 
-    GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding, cc);
-    Script script;
+    final GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding, cc);
+    final Script script;
 
     if (String.class.isInstance(code)) {
       script = shell.parse((String) code);
@@ -102,7 +102,7 @@ public class BowlerGroovy implements IScriptingLanguage {
     compilingProperty.setValue(false);
 
     runningProperty.setValue(true);
-    Object result = script.run();
+    final Object result = script.run();
     runningProperty.setValue(false);
 
     return result;

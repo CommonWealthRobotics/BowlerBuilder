@@ -121,8 +121,8 @@ public class MainWindowController {
   private Accordion connections;
 
   @Inject
-  protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory,
-      ConnectionManagerFactory connectionManagerFactory) {
+  protected MainWindowController(final PreferencesServiceFactory preferencesServiceFactory,
+      final ConnectionManagerFactory connectionManagerFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.connectionManagerFactory = connectionManagerFactory;
 
@@ -143,7 +143,7 @@ public class MainWindowController {
     PrintStream stream = null;
     try {
       stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       logger.log(Level.SEVERE, "UTF-8 encoding not supported.");
     }
 
@@ -164,12 +164,12 @@ public class MainWindowController {
 
         try {
           ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
           logger.log(Level.WARNING,
               "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
         }
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.log(Level.WARNING,
           "Could not automatically log in.\n");
       logOut.setDisable(true); //Can't log out when not logged in
@@ -179,27 +179,27 @@ public class MainWindowController {
   }
 
   @FXML
-  private void openPreferences(ActionEvent actionEvent) {
+  private void openPreferences(final ActionEvent actionEvent) {
     new PreferencesDialog(preferencesServiceFactory.getAllPreferencesServices()).showAndWait();
   }
 
   @FXML
-  private void onLogOutFromGitHub(ActionEvent actionEvent) {
+  private void onLogOutFromGitHub(final ActionEvent actionEvent) {
     try {
       ScriptingEngine.logout();
       logOut.setDisable(true);
       myGists.getItems().clear();
       myOrgs.getItems().clear();
       myRepos.getItems().clear();
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.log(Level.SEVERE,
           "Could not log out from GitHub.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
   @FXML
-  private void onDeleteLocalCache(ActionEvent actionEvent) {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+  private void onDeleteLocalCache(final ActionEvent actionEvent) {
+    final Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
     alert.setTitle("Confirm Deletion");
     alert.setHeaderText("Delete All Local Files and Quit?");
@@ -224,51 +224,52 @@ public class MainWindowController {
   }
 
   @FXML
-  private void onExitProgram(ActionEvent actionEvent) {
+  private void onExitProgram(final ActionEvent actionEvent) {
     saveAndQuit();
   }
 
   @FXML
-  private void onLogInToGitHub(ActionEvent actionEvent) {
+  private void onLogInToGitHub(final ActionEvent actionEvent) {
     tryLogin();
   }
 
   @FXML
-  private void onReloadMenus(ActionEvent actionEvent) {
+  private void onReloadMenus(final ActionEvent actionEvent) {
     reloadGitMenus();
   }
 
   @FXML
-  private void onOpenScratchpad(ActionEvent actionEvent) {
+  private void onOpenScratchpad(final ActionEvent actionEvent) {
     try {
-      AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-      AceCadEditorTabController controller = tab.getController();
+      final AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
+      final AceCadEditorTabController controller = tab.getController();
 
       controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
       tabPane.getTabs().add(tab);
       tabPane.getSelectionModel().select(tab);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.log(Level.SEVERE,
           "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
   @FXML
-  private void onLoadCreature(ActionEvent actionEvent) {
-    GistFileSelectionDialog dialog = new GistFileSelectionDialog("Select Creature File", file ->
-        file.endsWith(".xml"));
+  private void onLoadCreature(final ActionEvent actionEvent) {
+    final GistFileSelectionDialog dialog = new GistFileSelectionDialog("Select Creature File",
+        file ->
+            file.endsWith(".xml"));
     dialog.showAndWait().ifPresent(result -> loadCreatureLab(result[0], result[1]));
   }
 
   @FXML
-  private void onReloadVitamins(ActionEvent actionEvent) {
+  private void onReloadVitamins(final ActionEvent actionEvent) {
     reloadCadMenus();
   }
 
   @FXML
-  private void onManageWidgets(ActionEvent actionEvent) {
-    ManagePluginsDialog dialog = new ManagePluginsDialog(FXCollections.observableArrayList(
+  private void onManageWidgets(final ActionEvent actionEvent) {
+    final ManagePluginsDialog dialog = new ManagePluginsDialog(FXCollections.observableArrayList(
         preferencesService.get("Widgets", new ArrayList<>())));
     dialog.showAndWait().ifPresent(widgets -> {
       preferencesService.set("Widgets", new ArrayList<>(widgets));
@@ -277,7 +278,7 @@ public class MainWindowController {
   }
 
   @FXML
-  private void openEditorHelp(ActionEvent actionEvent) {
+  private void openEditorHelp(final ActionEvent actionEvent) {
     new HelpDialog().showAndWait();
   }
 
@@ -286,7 +287,7 @@ public class MainWindowController {
    *
    * @param url URL to load
    */
-  public void loadPage(String url) {
+  public void loadPage(final String url) {
     Platform.runLater(() -> webBrowserController.loadPage(url));
   }
 
@@ -296,18 +297,18 @@ public class MainWindowController {
    * @param tabName name for new tab
    * @param url URL to load
    */
-  public void loadPageIntoNewTab(String tabName, String url) {
+  public void loadPageIntoNewTab(final String tabName, final String url) {
     Platform.runLater(() -> {
-      FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+      final FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
           "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
 
       try {
-        Tab tab = new Tab(tabName, loader.load());
-        WebBrowserController controller = loader.getController();
+        final Tab tab = new Tab(tabName, loader.load());
+        final WebBrowserController controller = loader.getController();
         controller.loadPage(url);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Could not load WebBrowser.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -320,17 +321,17 @@ public class MainWindowController {
    * @param gist Gist containing file
    * @param gistFile File
    */
-  public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
+  public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(() -> {
       try {
-        AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
-        AceCadEditorTabController controller = tab.getController();
+        final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
+        final AceCadEditorTabController controller = tab.getController();
 
         controller.getAceScriptEditorController().loadGist(gist, gistFile);
 
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -343,7 +344,7 @@ public class MainWindowController {
    * @param gist gist clone URL
    * @param fileName file name (with .xml extension)
    */
-  public void loadCreatureLab(String gist, String fileName) {
+  public void loadCreatureLab(final String gist, final String fileName) {
     loadCreatureLab(new String[]{gist, fileName});
   }
 
@@ -352,21 +353,22 @@ public class MainWindowController {
    *
    * @param file xml file in gist
    */
-  public void loadCreatureLab(String[] file) { //NOPMD
+  public void loadCreatureLab(final String[] file) { //NOPMD
     Platform.runLater(() -> {
       try {
-        CreatureLabTab tab = new CreatureLabTab("Creature Lab");
-        Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-          AceCreatureLabController controller = tab.getController();
+        final CreatureLabTab tab = new CreatureLabTab("Creature Lab");
+        final Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+          final AceCreatureLabController controller = tab.getController();
 
           try {
-            String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
+            final String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
 
-            MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+            final MobileBase mobileBase = new MobileBase(
+                IOUtils.toInputStream(xmlContent, "UTF-8"));
             mobileBase.setGitSelfSource(file);
             mobileBase.connect();
 
-            MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
+            final MobileBaseCadManager mobileBaseCadManager = new MobileBaseCadManager(mobileBase,
                 new BowlerMobileBaseUI(controller.getCadModelViewerController().getEngine()));
             mobileBase.updatePositions();
 
@@ -383,10 +385,10 @@ public class MainWindowController {
             while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
               ThreadUtil.wait(1000);
             }
-          } catch (IOException e) {
+          } catch (final IOException e) {
             logger.log(Level.SEVERE,
                 "Could not load assets for robot.\n" + Throwables.getStackTraceAsString(e));
-          } catch (Exception e) {
+          } catch (final Exception e) {
             logger.log(Level.SEVERE,
                 "Could not start building robot.\n" + Throwables.getStackTraceAsString(e));
           }
@@ -396,7 +398,7 @@ public class MainWindowController {
 
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Could not load AceCreatureEditor.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -405,7 +407,7 @@ public class MainWindowController {
 
   private void tryLogin() {
     ScriptingEngine.setLoginManager(s -> {
-      LoginDialog dialog = new LoginDialog();
+      final LoginDialog dialog = new LoginDialog();
 
       final Optional<Boolean> result = dialog.showAndWait();
       if (result.isPresent() && result.get()) {
@@ -424,16 +426,16 @@ public class MainWindowController {
             .show());
         setupMenusOnLogin();
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.log(Level.SEVERE,
           "Could not launch GitHub as non-anonymous.\n" + Throwables.getStackTraceAsString(e));
       try {
         ScriptingEngine.setupAnyonmous();
-      } catch (IOException e1) {
+      } catch (final IOException e1) {
         logger.log(Level.SEVERE,
             "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
       }
-    } catch (GitAPIException e) {
+    } catch (final GitAPIException e) {
       logger.log(Level.SEVERE,
           "Could not log in.\n" + Throwables.getStackTraceAsString(e));
     }
@@ -445,7 +447,7 @@ public class MainWindowController {
   private void setupMenusOnLogin() {
     try {
       ScriptingEngine.setAutoupdate(true);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.log(Level.SEVERE,
           "Could not set auto update.\n" + Throwables.getStackTraceAsString(e));
     }
@@ -472,7 +474,7 @@ public class MainWindowController {
       myOrgs.getItems().clear();
       myRepos.getItems().clear();
 
-      GHMyself myself;
+      final GHMyself myself;
       try {
         myself = gitHub.getMyself();
 
@@ -496,7 +498,7 @@ public class MainWindowController {
 
         LoggerUtilities.newLoggingThread(logger, () ->
             loadReposIntoMenus(myRepos, myself.listRepositories())).start();
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -513,16 +515,16 @@ public class MainWindowController {
       LoggerUtilities.newLoggingThread(logger, () ->
           Vitamins.listVitaminTypes().stream().sorted().forEach(vitamin -> {
 
-            Menu vitaminMenu = new Menu(vitamin);
+            final Menu vitaminMenu = new Menu(vitamin);
 
             Vitamins.listVitaminSizes(vitamin).stream().sorted().forEach(size -> {
-              MenuItem sizeMenu = new MenuItem(size);
+              final MenuItem sizeMenu = new MenuItem(size);
 
               sizeMenu.setOnAction(event1 -> {
-                Tab selection = tabPane.getSelectionModel().getSelectedItem();
+                final Tab selection = tabPane.getSelectionModel().getSelectedItem();
                 if (selection instanceof AceCadEditorTab) {
-                  AceCadEditorTab editorTab = (AceCadEditorTab) selection;
-                  String insertion =
+                  final AceCadEditorTab editorTab = (AceCadEditorTab) selection;
+                  final String insertion =
                       "CSG foo = Vitamins.get(\"" + vitamin + "\", \"" + size + "\");";
                   editorTab.getController().getAceScriptEditorController()
                       .insertAtCursor(insertion);
@@ -543,15 +545,15 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param gists list of gists
    */
-  private void loadGistsIntoMenus(Menu menu, PagedIterable<GHGist> gists) {
+  private void loadGistsIntoMenus(final Menu menu, final PagedIterable<GHGist> gists) {
     gists.forEach(gist -> {
-      MenuItem showWebGist = new MenuItem("Show Gist on Web");
+      final MenuItem showWebGist = new MenuItem("Show Gist on Web");
       showWebGist.setOnAction(event ->
           loadPageIntoNewTab(gist.getDescription(), gist.getHtmlUrl()));
 
-      MenuItem addFileToGist = new MenuItem("Add File");
+      final MenuItem addFileToGist = new MenuItem("Add File");
       addFileToGist.setOnAction(event -> Platform.runLater(() -> {
-        AddFileToGistDialog dialog = new AddFileToGistDialog();
+        final AddFileToGistDialog dialog = new AddFileToGistDialog();
         dialog.showAndWait().ifPresent(name -> {
           try {
             ScriptingEngine.pushCodeToGit(
@@ -566,18 +568,18 @@ public class MainWindowController {
                 .filter(item -> item.equals(gist))
                 .findFirst()
                 .ifPresent(newGist -> openGistFileInEditor(newGist, newGist.getFile(name)));
-          } catch (Exception e) {
+          } catch (final Exception e) {
             logger.log(Level.SEVERE,
                 "Could not add file to gist.\n" + Throwables.getStackTraceAsString(e));
           }
         });
       }));
 
-      MenuItem addFileFromDisk = new MenuItem("Add File from Disk");
+      final MenuItem addFileFromDisk = new MenuItem("Add File from Disk");
       addFileFromDisk.setOnAction(event -> Platform.runLater(() -> {
-        FileChooser fileChooser = new FileChooser();
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File to Add");
-        File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
+        final File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
         if (selection != null && selection.isFile()) {
           try {
             ScriptingEngine.pushCodeToGit(
@@ -588,7 +590,7 @@ public class MainWindowController {
                     .collect(Collectors.joining("\n")),
                 "Add file: " + selection.getName());
             reloadGitMenus();
-          } catch (Exception e) {
+          } catch (final Exception e) {
             logger.log(Level.SEVERE,
                 "Could not add file from disk to gist.\n" + Throwables.getStackTraceAsString(e));
           }
@@ -597,7 +599,7 @@ public class MainWindowController {
 
       String gistMenuText = gist.getDescription();
       if (gistMenuText == null || gistMenuText.length() == 0) {
-        Set<String> filenames = gist.getFiles().keySet();
+        final Set<String> filenames = gist.getFiles().keySet();
         if (filenames.size() >= 1) {
           gistMenuText = filenames.iterator().next();
         } else {
@@ -608,22 +610,22 @@ public class MainWindowController {
       //Cap length
       gistMenuText = gistMenuText.substring(0, Math.min(25, gistMenuText.length()));
 
-      Menu gistMenu = new Menu(gistMenuText);
+      final Menu gistMenu = new Menu(gistMenuText);
       gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
 
       gist.getFiles().forEach((name, gistFile) -> {
         if (name.endsWith(".xml")) {
-          MenuItem openGist = new MenuItem("Open File");
+          final MenuItem openGist = new MenuItem("Open File");
           openGist.setOnAction(event -> openGistFileInEditor(gist, gistFile));
-          MenuItem loadCreature = new MenuItem("Open as Creature");
+          final MenuItem loadCreature = new MenuItem("Open as Creature");
           loadCreature.setOnAction(event ->
               loadCreatureLab(gist.getGitPushUrl(), gistFile.getFileName()));
 
-          Menu gistFileItem = new Menu(name);
+          final Menu gistFileItem = new Menu(name);
           gistFileItem.getItems().addAll(openGist, loadCreature);
           gistMenu.getItems().add(gistFileItem);
         } else {
-          MenuItem gistFileItem = new MenuItem(name);
+          final MenuItem gistFileItem = new MenuItem(name);
           gistFileItem.setOnAction(event -> openGistFileInEditor(gist, gistFile));
           gistMenu.getItems().add(gistFileItem);
         }
@@ -639,15 +641,15 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param orgs organizations
    */
-  private void loadOrgsIntoMenus(Menu menu, GHPersonSet<GHOrganization> orgs) {
-    Function<GHOrganization, String> getName = org -> {
+  private void loadOrgsIntoMenus(final Menu menu, final GHPersonSet<GHOrganization> orgs) {
+    final Function<GHOrganization, String> getName = org -> {
       try {
         String name = org.getName();
         if (name == null || name.length() == 0) {
           name = org.getLogin();
         }
         return name;
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Error while sanitizing organization name.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -657,9 +659,9 @@ public class MainWindowController {
 
     orgs.stream().sorted(Comparator.comparing(getName)).forEach(org -> {
       try {
-        Menu orgMenu = new Menu(getName.apply(org));
+        final Menu orgMenu = new Menu(getName.apply(org));
         org.getRepositories().forEach((key, value) -> {
-          MenuItem repoMenu = new MenuItem(key);
+          final MenuItem repoMenu = new MenuItem(key);
           repoMenu.setOnAction(event -> {
                 loadPageIntoNewTab(
                     value.getDescription()
@@ -674,7 +676,7 @@ public class MainWindowController {
         orgMenu.setOnAction(event -> {
           try {
             loadPageIntoNewTab(org.getName(), org.getHtmlUrl());
-          } catch (IOException e) {
+          } catch (final IOException e) {
             logger.log(Level.SEVERE,
                 "Could not get organization name when loading new tab.\n"
                     + Throwables.getStackTraceAsString(e));
@@ -682,7 +684,7 @@ public class MainWindowController {
         });
 
         menu.getItems().add(orgMenu);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -695,9 +697,9 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param repos repositories
    */
-  private void loadReposIntoMenus(Menu menu, PagedIterable<GHRepository> repos) {
+  private void loadReposIntoMenus(final Menu menu, final PagedIterable<GHRepository> repos) {
     repos.asList().stream().sorted(Comparator.comparing(GHRepository::getName)).forEach(repo -> {
-      MenuItem menuItem = new MenuItem(repo.getName());
+      final MenuItem menuItem = new MenuItem(repo.getName());
       menuItem.setOnAction(event ->
           loadPageIntoNewTab(
               repo.getName().substring(0, Math.min(15, repo.getName().length())),
@@ -706,10 +708,10 @@ public class MainWindowController {
     });
   }
 
-  private void reloadPlugins(List<Plugin> plugins) {
+  private void reloadPlugins(final List<Plugin> plugins) {
     installedPlugins.getItems().clear();
     installedPlugins.getItems().addAll(plugins.stream().map(plugin -> {
-      MenuItem item = new MenuItem(plugin.getDisplayName());
+      final MenuItem item = new MenuItem(plugin.getDisplayName());
       item.setOnAction(event -> {
         try {
           plugin.run();
@@ -739,7 +741,7 @@ public class MainWindowController {
     Platform.exit();
 
     //Need to make sure the VM exits; sometimes a rouge thread is running
-    Timer timer = new Timer(true);
+    final Timer timer = new Timer(true);
     timer.schedule(new TimerTask() {
       @Override
       @SuppressFBWarnings(value = "DM_RUN_FINALIZERS_ON_EXIT")
@@ -747,8 +749,8 @@ public class MainWindowController {
         logger.log(Level.SEVERE, "Still alive for some reason. Printing threads and "
             + "killing VM...");
 
-        Set<Thread> threads = Thread.getAllStackTraces().keySet();
-        StringBuilder threadString = new StringBuilder();
+        final Set<Thread> threads = Thread.getAllStackTraces().keySet();
+        final StringBuilder threadString = new StringBuilder();
         threads.forEach(item -> threadString.append(item).append("\n"));
         logger.log(Level.FINE, threadString.toString());
 
@@ -762,7 +764,7 @@ public class MainWindowController {
    *
    * @param tab tab to add
    */
-  public void addTab(Tab tab) {
+  public void addTab(final Tab tab) {
     Platform.runLater(() -> tabPane.getTabs().add(tab));
   }
 
@@ -787,12 +789,12 @@ public class MainWindowController {
 
     private final TextArea textArea;
 
-    public TextAreaPrintStream(TextArea textArea) {
+    public TextAreaPrintStream(final TextArea textArea) {
       this.textArea = textArea;
     }
 
     @Override
-    public void write(int character) {
+    public void write(final int character) {
       Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
     }
   }

@@ -9,7 +9,7 @@ public enum LimbType {
 
   private final String defaultFileName;
 
-  LimbType(String defaultFileName) {
+  LimbType(final String defaultFileName) {
     this.defaultFileName = defaultFileName;
   }
 

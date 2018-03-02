@@ -21,13 +21,13 @@ public class LimbLinkLayoutController extends LimbLayoutController {
   protected final ObjectProperty<Optional<LinkData>> linkSelection;
 
   @Inject
-  public LimbLinkLayoutController(MobileBase device) {
+  public LimbLinkLayoutController(final MobileBase device) {
     super(device);
     linkSelection = new SimpleObjectProperty<>();
   }
 
   @Override
-  protected void addButtons(HBox hBox, List<DHParameterKinematics> limbs) {
+  protected void addButtons(final HBox hBox, final List<DHParameterKinematics> limbs) {
     hBox.getChildren().addAll(limbs.stream()
         .map(limb -> {
           final Button limbButton = new Button(limb.getScriptingName());

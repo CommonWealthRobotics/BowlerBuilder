@@ -14,14 +14,14 @@ public class LimbTabLinkSelection extends LinkSelection {
 
   private final VBox vBox;
 
-  public LimbTabLinkSelection(DHLink dhLink, LinkConfiguration configuration,
-      DHParameterKinematics limb,
-      LimbTabLimbSelection limbTabLimbSelection,
-      CreatureEditorController creatureEditorController) {
+  public LimbTabLinkSelection(final DHLink dhLink, final LinkConfiguration configuration,
+      final DHParameterKinematics limb,
+      final LimbTabLimbSelection limbTabLimbSelection,
+      final CreatureEditorController creatureEditorController) {
     super(dhLink, configuration);
     vBox = new VBox(5);
 
-    Button removeLink = new Button();
+    final Button removeLink = new Button();
     removeLink.setGraphic(AssetFactory.loadIcon("Remove-Link.png"));
     removeLink.setOnAction(event -> {
       limb.removeLink(configuration.getLinkIndex());

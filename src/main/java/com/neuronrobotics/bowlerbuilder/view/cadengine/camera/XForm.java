@@ -39,15 +39,15 @@ import javafx.scene.transform.Translate;
 
 public class XForm extends Group {
 
-  public Translate t = new Translate();
-  public Translate p = new Translate();
-  public Translate ip = new Translate();
+  public final Translate t = new Translate();
+  public final Translate p = new Translate();
+  public final Translate ip = new Translate();
 
-  public Rotate rx = new Rotate();
-  public Rotate ry = new Rotate();
-  public Rotate rz = new Rotate();
+  public final Rotate rx = new Rotate();
+  public final Rotate ry = new Rotate();
+  public final Rotate rz = new Rotate();
 
-  public Scale s = new Scale();
+  public final Scale s = new Scale();
 
   { //NOPMD
     rx.setAxis(Rotate.X_AXIS);
@@ -68,7 +68,7 @@ public class XForm extends Group {
    *
    * @param rotateOrder the rotate order
    */
-  public XForm(RotateOrder rotateOrder) {
+  public XForm(final RotateOrder rotateOrder) {
     super();
     // choose the order of rotations based on the rotateOrder
     switch (rotateOrder) {
@@ -102,7 +102,7 @@ public class XForm extends Group {
    * @param y the y
    * @param z the z
    */
-  public void setTranslate(double x, double y, double z) {
+  public void setTranslate(final double x, final double y, final double z) {
     t.setX(x);
     t.setY(y);
     t.setZ(z);
@@ -114,7 +114,7 @@ public class XForm extends Group {
    * @param x the x
    * @param y the y
    */
-  public void setTranslate(double x, double y) {
+  public void setTranslate(final double x, final double y) {
     t.setX(x);
     t.setY(y);
   }
@@ -125,7 +125,7 @@ public class XForm extends Group {
    * @param x the new tx
    */
   // Use these methods instead:
-  public void setTx(double x) {
+  public void setTx(final double x) {
     t.setX(x);
   }
 
@@ -139,7 +139,7 @@ public class XForm extends Group {
    *
    * @param y the new ty
    */
-  public void setTy(double y) {
+  public void setTy(final double y) {
     t.setY(y);
   }
 
@@ -148,7 +148,7 @@ public class XForm extends Group {
    *
    * @param z the new tz
    */
-  public void setTz(double z) {
+  public void setTz(final double z) {
     t.setZ(z);
   }
 
@@ -159,7 +159,7 @@ public class XForm extends Group {
    * @param y the y
    * @param z the z
    */
-  public void setRotate(double x, double y, double z) {
+  public void setRotate(final double x, final double y, final double z) {
     rx.setAngle(x);
     ry.setAngle(y);
     rz.setAngle(z);
@@ -170,7 +170,7 @@ public class XForm extends Group {
    *
    * @param x the new rotate x
    */
-  public void setRotateX(double x) {
+  public void setRotateX(final double x) {
     rx.setAngle(x);
   }
 
@@ -179,7 +179,7 @@ public class XForm extends Group {
    *
    * @param y the new rotate y
    */
-  public void setRotateY(double y) {
+  public void setRotateY(final double y) {
     ry.setAngle(y);
   }
 
@@ -188,7 +188,7 @@ public class XForm extends Group {
    *
    * @param z the new rotate z
    */
-  public void setRotateZ(double z) {
+  public void setRotateZ(final double z) {
     rz.setAngle(z);
   }
 
@@ -197,7 +197,7 @@ public class XForm extends Group {
    *
    * @param x the new rx
    */
-  public void setRx(double x) {
+  public void setRx(final double x) {
     rx.setAngle(x);
   }
 
@@ -206,7 +206,7 @@ public class XForm extends Group {
    *
    * @param y the new ry
    */
-  public void setRy(double y) {
+  public void setRy(final double y) {
     ry.setAngle(y);
   }
 
@@ -215,7 +215,7 @@ public class XForm extends Group {
    *
    * @param z the new rz
    */
-  public void setRz(double z) {
+  public void setRz(final double z) {
     rz.setAngle(z);
   }
 
@@ -224,7 +224,7 @@ public class XForm extends Group {
    *
    * @param scaleFactor the new scale
    */
-  public void setScale(double scaleFactor) {
+  public void setScale(final double scaleFactor) {
     s.setX(scaleFactor);
     s.setY(scaleFactor);
     s.setZ(scaleFactor);
@@ -237,7 +237,7 @@ public class XForm extends Group {
    * @param y the y
    * @param z the z
    */
-  public void setScale(double x, double y, double z) {
+  public void setScale(final double x, final double y, final double z) {
     s.setX(x);
     s.setY(y);
     s.setZ(z);
@@ -249,7 +249,7 @@ public class XForm extends Group {
    * @param x the new sx
    */
   // Use these methods instead:
-  public void setSx(double x) {
+  public void setSx(final double x) {
     s.setX(x);
   }
 
@@ -263,7 +263,7 @@ public class XForm extends Group {
    *
    * @param y the new sy
    */
-  public void setSy(double y) {
+  public void setSy(final double y) {
     s.setY(y);
   }
 
@@ -272,7 +272,7 @@ public class XForm extends Group {
    *
    * @param z the new sz
    */
-  public void setSz(double z) {
+  public void setSz(final double z) {
     s.setZ(z);
   }
 
@@ -283,7 +283,7 @@ public class XForm extends Group {
    * @param y the y
    * @param z the z
    */
-  public void setPivot(double x, double y, double z) {
+  public void setPivot(final double x, final double y, final double z) {
     p.setX(x);
     p.setY(y);
     p.setZ(z);

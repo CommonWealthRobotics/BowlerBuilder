@@ -16,11 +16,11 @@ public class PreferencesServiceFactory {
    * @param folderName preferences service folder name
    * @return service
    */
-  public PreferencesService create(String folderName) {
+  public PreferencesService create(final String folderName) {
     if (preferencesMap.containsKey(folderName)) {
       return preferencesMap.get(folderName);
     } else {
-      PreferencesService service = new PreferencesService(folderName);
+      final PreferencesService service = new PreferencesService(folderName);
       preferencesMap.put(folderName, service);
       return service;
     }

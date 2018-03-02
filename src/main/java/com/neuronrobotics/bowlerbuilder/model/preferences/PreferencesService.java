@@ -36,7 +36,7 @@ public class PreferencesService {
    *
    * @param folderName unique folder name
    */
-  public PreferencesService(String folderName) {
+  public PreferencesService(final String folderName) {
     data = new ConcurrentHashMap<>();
     listeners = new ConcurrentHashMap<>();
 
@@ -59,9 +59,9 @@ public class PreferencesService {
    * @param <T> type of entry
    * @return entry if present, else default value
    */
-  public <T extends Serializable> T get(String name, T defaultValue) {
+  public <T extends Serializable> T get(final String name, final T defaultValue) {
     if (data.containsKey(name)) {
-      Serializable value = data.get(name);
+      final Serializable value = data.get(name);
       if (value.getClass().isInstance(defaultValue)) {
         return (T) value;
       } else {
@@ -82,11 +82,12 @@ public class PreferencesService {
    * @param listener listener to notify
    * @param <T> type of entry
    */
-  public <T extends Serializable> void addListener(String name, PreferenceListener<T> listener) {
+  public <T extends Serializable> void addListener(final String name,
+      final PreferenceListener<T> listener) {
     if (listeners.containsKey(name)) {
       listeners.get(name).add(listener);
     } else {
-      List<PreferenceListener> newList = new ArrayList<>();
+      final List<PreferenceListener> newList = new ArrayList<>();
       newList.add(listener);
       listeners.put(name, newList);
     }
@@ -99,9 +100,9 @@ public class PreferencesService {
    * @param value value of entry
    * @param <T> type of entry
    */
-  public <T extends Serializable> void set(String name, T value) {
+  public <T extends Serializable> void set(final String name, final T value) {
     logger.fine("Set " + name + " to " + value);
-    Serializable prev = data.put(name, value);
+    final Serializable prev = data.put(name, value);
     if (listeners.containsKey(name)) {
       listeners.get(name).forEach(listener -> listener.changed(prev, value));
     }
@@ -112,15 +113,15 @@ public class PreferencesService {
    */
   public void load() {
     logger.fine("Trying to load preferences from: " + prefsSaveFilePath);
-    File saveFile = new File(prefsSaveFilePath);
+    final File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
       try (ObjectInputStream stream
           = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
         data = (Map<String, Serializable>) stream.readObject();
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Could not open preferences save file.\n" + Throwables.getStackTraceAsString(e));
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         logger.log(Level.SEVERE,
             "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
@@ -135,15 +136,15 @@ public class PreferencesService {
    */
   public void save() {
     logger.fine("Trying to save preferences to: " + prefsSaveDirPath);
-    File saveDirectory = new File(prefsSaveDirPath);
+    final File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
       try (ObjectOutputStream stream
           = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
         stream.writeObject(data);
-      } catch (FileNotFoundException e) {
+      } catch (final FileNotFoundException e) {
         logger.log(Level.SEVERE,
             "Could not find preferences save file.\n" + Throwables.getStackTraceAsString(e));
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.log(Level.SEVERE,
             "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }

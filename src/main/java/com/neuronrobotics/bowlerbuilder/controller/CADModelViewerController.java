@@ -21,7 +21,7 @@ public class CADModelViewerController {
   private boolean handShowing = true;
 
   @Inject
-  public CADModelViewerController(CadEngine engine) {
+  public CADModelViewerController(final CadEngine engine) {
     this.engine = engine;
   }
 
@@ -45,7 +45,7 @@ public class CADModelViewerController {
    *
    * @param csg CSG to add
    */
-  public void addCSG(CSG csg) {
+  public void addCSG(final CSG csg) {
     engine.addCSG(csg);
   }
 
@@ -54,7 +54,7 @@ public class CADModelViewerController {
    *
    * @param csgs CSGs to add
    */
-  public void addAllCSGs(CSG... csgs) {
+  public void addAllCSGs(final CSG... csgs) {
     engine.addAllCSGs(csgs);
   }
 
@@ -63,7 +63,7 @@ public class CADModelViewerController {
    *
    * @param csgs List of CSGs to add
    */
-  public void addAllCSGs(Collection<CSG> csgs) {
+  public void addAllCSGs(final Collection<CSG> csgs) {
     engine.addAllCSGs(csgs);
   }
 
@@ -75,24 +75,24 @@ public class CADModelViewerController {
   }
 
   @FXML
-  private void onHomeCamera(ActionEvent actionEvent) {
+  private void onHomeCamera(final ActionEvent actionEvent) {
     engine.homeCamera();
   }
 
   @FXML
-  private void onAxis(ActionEvent actionEvent) {
+  private void onAxis(final ActionEvent actionEvent) {
     axisShowing = !axisShowing;
     engine.axisShowingProperty().setValue(axisShowing);
   }
 
   @FXML
-  private void onHand(ActionEvent actionEvent) {
+  private void onHand(final ActionEvent actionEvent) {
     handShowing = !handShowing;
     engine.handShowingProperty().setValue(handShowing);
   }
 
   @FXML
-  private void onClearObjects(ActionEvent actionEvent) {
+  private void onClearObjects(final ActionEvent actionEvent) {
     clearMeshes();
   }
 

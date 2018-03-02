@@ -11,14 +11,15 @@ public class MovementTabLinkSelection extends LinkSelection {
 
   private final LinkSliderWidget slider;
 
-  public MovementTabLinkSelection(int linkIndex, DHLink dhLink, LinkConfiguration configuration,
-      AbstractKinematicsNR device) {
+  public MovementTabLinkSelection(final int linkIndex, final DHLink dhLink,
+      final LinkConfiguration configuration,
+      final AbstractKinematicsNR device) {
     super(dhLink, configuration);
 
     slider = new LinkSliderWidget(linkIndex, dhLink, device);
   }
 
-  public MovementTabLinkSelection(LinkData newValue) {
+  public MovementTabLinkSelection(final LinkData newValue) {
     this(newValue.index, newValue.dhLink, newValue.linkConfiguration, newValue.device);
   }
 

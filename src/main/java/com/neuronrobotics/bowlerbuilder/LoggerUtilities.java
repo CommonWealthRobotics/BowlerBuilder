@@ -18,10 +18,10 @@ import org.apache.commons.io.FileUtils;
 public final class LoggerUtilities {
 
   //Log file parent directory path
-  private static String logFileDirPath;
+  private static final String logFileDirPath;
 
   //Log file path
-  private static String logFilePath;
+  private static final String logFilePath;
 
   //FileHandler that saves to the log file
   private static FileHandler fileHandler;
@@ -39,7 +39,7 @@ public final class LoggerUtilities {
         + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
         .format(new Date());
 
-    File testFile = new File(logFileDirPath);
+    final File testFile = new File(logFileDirPath);
     try {
       if (testFile.exists() || testFile.mkdirs()) {
         fileHandler = new FileHandler(logFilePath, true);
@@ -47,7 +47,7 @@ public final class LoggerUtilities {
       } else {
         throw new IOException("LoggerUtilities could not create the logging file: " + logFilePath);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       //We can't call a logger here instead because we are the logger!
       e.printStackTrace(); //NOPMD
     }
@@ -88,8 +88,8 @@ public final class LoggerUtilities {
    * @param runnable thread runnable
    * @return logging thread
    */
-  public static Thread newLoggingThread(Logger logger, Runnable runnable) {
-    Thread thread = new Thread(runnable);
+  public static Thread newLoggingThread(final Logger logger, final Runnable runnable) {
+    final Thread thread = new Thread(runnable);
     thread.setUncaughtExceptionHandler((t, e) ->
         logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
     return thread;
@@ -101,13 +101,13 @@ public final class LoggerUtilities {
    * @param name logger name
    * @return new logger
    */
-  public static Logger getLogger(String name) {
+  public static Logger getLogger(final String name) {
     if (loggerNames.contains(name)) {
       throw new UnsupportedOperationException(
           "Cannot add logger of name: " + name + ". A logger with the same name already exists.");
     }
 
-    Logger logger = Logger.getLogger(name);
+    final Logger logger = Logger.getLogger(name);
     logger.addHandler(new ConsoleHandler());
     logger.addHandler(LoggerUtilities.getFileHandler());
     logger.setLevel(Level.ALL);

@@ -4,7 +4,7 @@ import javafx.scene.web.WebEngine;
 
 public class AceWebEngineFactory {
 
-  public AceWebEngine create(WebEngine webEngine) {
+  public AceWebEngine create(final WebEngine webEngine) {
     return new AceWebEngine(webEngine);
   }
 

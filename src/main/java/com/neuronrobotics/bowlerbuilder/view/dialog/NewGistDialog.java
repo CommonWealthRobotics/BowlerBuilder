@@ -39,7 +39,7 @@ public class NewGistDialog extends Dialog<List<String>> {
 
     setTitle("New Gist");
 
-    GridPane pane = new GridPane();
+    final GridPane pane = new GridPane();
     pane.setId("newGistRoot");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);
@@ -57,7 +57,7 @@ public class NewGistDialog extends Dialog<List<String>> {
 
     Platform.runLater(nameField::requestFocus);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
             !(!nameField.invalidProperty().getValue()
                 && !descField.getText().isEmpty()),
@@ -67,7 +67,7 @@ public class NewGistDialog extends Dialog<List<String>> {
 
     setResultConverter(buttonType -> {
       if (buttonType.equals(ButtonType.OK)) {
-        List<String> data = new ArrayList<>();
+        final List<String> data = new ArrayList<>();
         Collections.addAll(data,
             nameField.getText(),
             descField.getText());

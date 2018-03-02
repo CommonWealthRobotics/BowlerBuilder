@@ -23,7 +23,7 @@ public class AddPluginDialog extends Dialog<Boolean> {
     displayNameField.setId("displayNameField");
     displayNameField.setPromptText("Display Name");
 
-    VBox vBox = new VBox();
+    final VBox vBox = new VBox();
     vBox.setSpacing(5);
     vBox.getChildren().addAll(sourceField, displayNameField);
     sourceField.requestFocus();
@@ -32,7 +32,7 @@ public class AddPluginDialog extends Dialog<Boolean> {
     getDialogPane().setContent(vBox);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
             !(!sourceField.getText().isEmpty()
                 && !displayNameField.getText().isEmpty()),

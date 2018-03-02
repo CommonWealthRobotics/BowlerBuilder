@@ -31,8 +31,8 @@ public class LimbTabLimbSelection extends LimbSelection {
   private final AnchorPane widget;
   private final HBox scrollPaneContent;
 
-  public LimbTabLimbSelection(MobileBase device, DHParameterKinematics limb,
-      CreatureEditorController creatureEditorController) {
+  public LimbTabLimbSelection(final MobileBase device, final DHParameterKinematics limb,
+      final CreatureEditorController creatureEditorController) {
     super(limb);
 
     view = new VBox(5);
@@ -41,14 +41,14 @@ public class LimbTabLimbSelection extends LimbSelection {
 
     view.setPadding(new Insets(5));
 
-    HBox content = new HBox(5);
+    final HBox content = new HBox(5);
     HBox.setHgrow(content, Priority.NEVER);
     content.setAlignment(Pos.CENTER_LEFT);
     content.setPadding(new Insets(5));
 
     view.getChildren().addAll(getTitleLabel(limb.getScriptingName()), content, widget);
 
-    ScrollPane scrollPane = new ScrollPane();
+    final ScrollPane scrollPane = new ScrollPane();
     HBox.setHgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setVbarPolicy(ScrollBarPolicy.NEVER);
     scrollPaneContent = new HBox(5);
@@ -69,15 +69,17 @@ public class LimbTabLimbSelection extends LimbSelection {
       }
     });
 
-    Button addLink = new Button();
+    final Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
     addLink.setOnAction(event -> {
-      AddLinkDialog dialog = new AddLinkDialog(CreatureEditorController.getTakenChannels(device));
+      final AddLinkDialog dialog = new AddLinkDialog(
+          CreatureEditorController.getTakenChannels(device));
       dialog.showAndWait().ifPresent(result -> {
-        LinkConfiguration newLink = new LinkConfiguration();
-        List<LinkConfiguration> linkConfigurations = limb.getFactory().getLinkConfigurations();
+        final LinkConfiguration newLink = new LinkConfiguration();
+        final List<LinkConfiguration> linkConfigurations = limb.getFactory()
+            .getLinkConfigurations();
 
-        int numOfLinks = linkConfigurations.size();
+        final int numOfLinks = linkConfigurations.size();
 
         LinkType typeOfLink = linkConfigurations.get(numOfLinks - 1).getTypeEnum();
 
@@ -100,7 +102,7 @@ public class LimbTabLimbSelection extends LimbSelection {
       });
     });
 
-    Button removeLimbButton = new Button();
+    final Button removeLimbButton = new Button();
     removeLimbButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
     removeLimbButton.setOnAction(event -> {
       device.getLegs().remove(limb);
@@ -113,15 +115,15 @@ public class LimbTabLimbSelection extends LimbSelection {
       creatureEditorController.regenCAD();
     });
 
-    HBox controlsBox = new HBox(5, addLink, removeLimbButton);
+    final HBox controlsBox = new HBox(5, addLink, removeLimbButton);
     controlsBox.setPadding(new Insets(5));
     HBox.setHgrow(controlsBox, Priority.NEVER);
     content.getChildren().add(controlsBox);
   }
 
-  private List<Button> getLinkButtons(List<LinkConfiguration> configs) {
+  private List<Button> getLinkButtons(final List<LinkConfiguration> configs) {
     return configs.stream().map(config -> {
-      Button linkButton = new Button(config.getName());
+      final Button linkButton = new Button(config.getName());
       //Set the selection to this link
       linkButton.setOnAction(event -> selectionProperty.set(config));
       return linkButton;

@@ -21,12 +21,12 @@ import org.controlsfx.control.PropertySheet;
  */
 public class PreferencesDialog extends Dialog {
 
-  public PreferencesDialog(Collection<PreferencesService> preferencesServices) {
+  public PreferencesDialog(final Collection<PreferencesService> preferencesServices) {
     super();
 
-    List<PropertySheet> propertySheets = new ArrayList<>();
+    final List<PropertySheet> propertySheets = new ArrayList<>();
     preferencesServices.forEach(service -> {
-      List<Property> props = service.getAll().entrySet().stream().map(entry -> {
+      final List<Property> props = service.getAll().entrySet().stream().map(entry -> {
         ObjectProperty<Serializable> property = new SimpleObjectProperty<>(
             null, entry.getKey(), entry.getValue());
         property.addListener((observableValue, o, t1) -> service.set(entry.getKey(), t1));
@@ -38,7 +38,7 @@ public class PreferencesDialog extends Dialog {
       )));
     });
 
-    VBox vBox = new VBox(5);
+    final VBox vBox = new VBox(5);
     propertySheets.forEach(vBox.getChildren()::add);
     getDialogPane().setContent(vBox);
     getDialogPane().getButtonTypes().add(ButtonType.OK);

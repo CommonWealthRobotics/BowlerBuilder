@@ -13,7 +13,7 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
   private IDriveEngine de = new IDriveEngineImplementation();
   private final ArrayList<VirtualCameraMobileBase> bases = new ArrayList<>();
 
-  public VirtualCameraMobileBase(String text) throws Exception {
+  public VirtualCameraMobileBase(final String text) throws Exception {
     //super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
     super(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name())));
 
@@ -26,9 +26,9 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
    *
    * @param de drive engine
    */
-  public void setDriveEngine(IDriveEngine de) {
+  public void setDriveEngine(final IDriveEngine de) {
     this.de = de;
-    for (VirtualCameraMobileBase base : bases) {
+    for (final VirtualCameraMobileBase base : bases) {
       base.setWalkingDriveEngine(getDriveEngine());
     }
   }
@@ -43,13 +43,13 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
     double elOffset;
     double tlOffset;
 
-    TransformNR pureTrans = new TransformNR();
+    final TransformNR pureTrans = new TransformNR();
 
     /**
      * Not used.
      */
     @Override
-    public void DriveVelocityStraight(MobileBase source, double cmPerSecond) {
+    public void DriveVelocityStraight(final MobileBase source, final double cmPerSecond) {
       //Not used
     }
 
@@ -57,7 +57,8 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
      * Not used.
      */
     @Override
-    public void DriveVelocityArc(MobileBase source, double degreesPerSecond, double cmRadius) {
+    public void DriveVelocityArc(
+        final MobileBase source, final double degreesPerSecond, final double cmRadius) {
       //Not used
     }
 
@@ -69,12 +70,12 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
      * @param seconds time to move over
      */
     @Override
-    public void DriveArc(MobileBase source, TransformNR newPose, double seconds) {
+    public void DriveArc(final MobileBase source, final TransformNR newPose, final double seconds) {
       pureTrans.setX(newPose.getX());
       pureTrans.setY(newPose.getY());
       pureTrans.setZ(newPose.getZ());
 
-      TransformNR global = source.getFiducialToGlobalTransform().times(pureTrans);
+      final TransformNR global = source.getFiducialToGlobalTransform().times(pureTrans);
       global.setRotation(new RotationNR(
           tlOffset + (Math.toDegrees(
               newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())

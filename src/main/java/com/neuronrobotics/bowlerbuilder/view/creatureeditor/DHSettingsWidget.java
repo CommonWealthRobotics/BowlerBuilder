@@ -24,13 +24,14 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
   private final EngineeringUnitsSliderWidget radius;
   private final DHParameterKinematics device2;
 
-  public DHSettingsWidget(String title, DHLink dhLink, DHParameterKinematics device2,
-      EngineeringUnitsChangeListener externalListener) {
+  public DHSettingsWidget(final String title, final DHLink dhLink,
+      final DHParameterKinematics device2,
+      final EngineeringUnitsChangeListener externalListener) {
     this.dhLink = dhLink;
     this.device2 = device2;
     this.externalListener = externalListener;
 
-    Label titleLabel = new Label(title);
+    final Label titleLabel = new Label(title);
     titleLabel.setFont(Font.font(16));
     titleLabel.setPadding(new Insets(5));
     vBox = new VBox(5);
@@ -60,7 +61,7 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
         Math.toDegrees(dhLink.getAlpha()),
         180, "degrees");
 
-    GridPane gridPane = new GridPane();
+    final GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER_LEFT);
     gridPane.setPadding(new Insets(5));
 
@@ -79,14 +80,15 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
     vBox.getChildren().add(gridPane);
   }
 
-  private Label getSliderLabel(String text) {
-    Label out = new Label(text);
+  private Label getSliderLabel(final String text) {
+    final Label out = new Label(text);
     out.setPadding(new Insets(0, 5, 0, 0));
     return out;
   }
 
   @Override
-  public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+  public void onSliderMoving(final EngineeringUnitsSliderWidget source,
+      final double newAngleDegrees) {
     dhLink.setTheta(Math.toRadians(theta.getValue()));
     dhLink.setAlpha(Math.toRadians(alpha.getValue()));
     dhLink.setRadius(radius.getValue());
@@ -97,13 +99,14 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
     }
 
     //this calls the render update function attached as the on joint space update
-    double[] joint = device2.getCurrentJointSpaceVector();
+    final double[] joint = device2.getCurrentJointSpaceVector();
     device2.getChain().getChain(joint);
     Platform.runLater(() -> device2.onJointSpaceUpdate(device2, joint));
   }
 
   @Override
-  public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+  public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
+      final double newAngleDegrees) {
     if (externalListener != null) {
       externalListener.onSliderDoneMoving(source, newAngleDegrees);
     }

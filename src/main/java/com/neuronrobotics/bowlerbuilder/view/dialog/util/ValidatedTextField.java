@@ -12,7 +12,7 @@ public class ValidatedTextField extends TextField {
 
   private final ValidationSupport validator;
 
-  public ValidatedTextField(String invalidMessage, Function<String, Boolean> isValid) {
+  public ValidatedTextField(final String invalidMessage, final Function<String, Boolean> isValid) {
     super();
 
     validator = new ValidationSupport();

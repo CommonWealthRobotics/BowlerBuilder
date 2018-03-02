@@ -22,7 +22,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   private final Affine zoomAffine = new Affine();
   private final Group manipulationFrame;
 
-  public VirtualCameraDevice(Camera camera, Group hand) {
+  public VirtualCameraDevice(final Camera camera, final Group hand) {
     setCamera(camera);
     setScriptingName("virtualCameraDevice");
 
@@ -45,14 +45,14 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   }
 
   @Override
-  public void setGlobalPositionListener(Affine affine) {
+  public void setGlobalPositionListener(final Affine affine) {
     super.setGlobalPositionListener(affine);
     manipulationFrame.getTransforms().clear();
     manipulationFrame.getTransforms().add(affine);
   }
 
   @Override
-  protected boolean captureNewImage(BufferedImage imageData) {
+  protected boolean captureNewImage(final BufferedImage imageData) {
     return false;
   }
 
@@ -87,7 +87,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     return camera;
   }
 
-  private void setCamera(Camera camera) {
+  private void setCamera(final Camera camera) {
     this.camera = camera;
   }
 
@@ -108,7 +108,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
    *
    * @param zoomDepth new zoom depth
    */
-  public void setZoomDepth(double zoomDepth) {
+  public void setZoomDepth(final double zoomDepth) {
     this.zoomDepth = zoomDepth;
 
     if (this.zoomDepth > -2) {

@@ -17,7 +17,7 @@ public class HelpDialog extends Dialog {
   public HelpDialog() {
     super();
 
-    FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
+    final FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/dialog/EditorHelp.fxml"));
 
     setTitle("BowlerBuilder Help");
@@ -25,7 +25,7 @@ public class HelpDialog extends Dialog {
 
     try {
       getDialogPane().setContent(loader.load());
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.log(Level.SEVERE,
           "Could not load Editor Help Dialog.\n" + Throwables.getStackTraceAsString(e));
     }

@@ -38,30 +38,30 @@ import javafx.scene.transform.Affine;
 
 public class Axis extends Group {
 
-  private Line3D xAxis;
-  private Line3D yAxis;
-  private Line3D zAxis;
-  private Label xText;
-  private Label yText;
-  private Label zText;
+  private final Line3D xAxis;
+  private final Line3D yAxis;
+  private final Line3D zAxis;
+  private final Label xText;
+  private final Label yText;
+  private final Label zText;
 
 
   public Axis() {
     this(50);
   }
 
-  public Axis(int i) {
-    Affine xp = new Affine();
+  public Axis(final int i) {
+    final Affine xp = new Affine();
     xp.setTx(i / 2.0);
     xText = new Label("+X");
     xText.getTransforms().add(xp);
 
-    Affine yp = new Affine();
+    final Affine yp = new Affine();
     yp.setTy(i / 2.0);
     yText = new Label("+Y");
     yText.getTransforms().add(yp);
 
-    Affine zTextAffine = new Affine();
+    final Affine zTextAffine = new Affine();
     zTextAffine.setTz(i / 2.0);
     zTextAffine.setTx(i / 2.0);
     zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
@@ -69,12 +69,12 @@ public class Axis extends Group {
     zText = new Label("+Z");
     zText.getTransforms().add(zTextAffine);
 
-    double inset = 0;
+    final double inset = 0;
     xAxis = new Line3D(0, inset, 0, i, inset, 0);
     yAxis = new Line3D(inset, 0, 0, inset, i, 0);
     zAxis = new Line3D(inset, 0, 0, inset, 0, i);
 
-    double strokeWidth = 0.1;
+    final double strokeWidth = 0.1;
     xAxis.setStrokeWidth(strokeWidth);
     xAxis.setStroke(Color.RED);
 

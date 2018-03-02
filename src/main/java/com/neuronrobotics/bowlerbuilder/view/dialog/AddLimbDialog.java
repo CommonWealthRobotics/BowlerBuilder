@@ -22,7 +22,8 @@ public class AddLimbDialog extends Dialog<LimbData> {
   private final Set<Integer> takenChannels;
   private final ObservableList<ValidatedTextField> hwIndexFields;
 
-  public AddLimbDialog(String name, Integer numberOfHWIndices, Set<Integer> takenChannels) {
+  public AddLimbDialog(final String name, final Integer numberOfHWIndices,
+      final Set<Integer> takenChannels) {
     super();
     this.takenChannels = takenChannels;
     hwIndexFields = FXCollections.observableArrayList();
@@ -59,7 +60,7 @@ public class AddLimbDialog extends Dialog<LimbData> {
     //Creating a binding on the list will not be updated by updating a list element's property
     //So OR each one together in a loop
     BooleanBinding binding = null;
-    for (ValidatedTextField field : hwIndexFields) {
+    for (final ValidatedTextField field : hwIndexFields) {
       if (binding == null) {
         binding = Bindings.createBooleanBinding(field::isInvalid, field.invalidProperty());
       } else {
@@ -84,13 +85,13 @@ public class AddLimbDialog extends Dialog<LimbData> {
     });
   }
 
-  private Pair<Label, ValidatedTextField> getField(String id) {
+  private Pair<Label, ValidatedTextField> getField(final String id) {
     final Label hwIndexLabel = new Label("Hardware index");
     GridPane.setHalignment(hwIndexLabel, HPos.RIGHT);
 
     final ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
         text -> {
-          Integer result = Ints.tryParse(text);
+          final Integer result = Ints.tryParse(text);
           return result != null && !takenChannels.contains(result) && hwIndexFields.stream()
               .filter(item -> !id.equals(item.getId())) //Filter out ourselves
               .map(ValidatedTextField::getText) //Map to text content

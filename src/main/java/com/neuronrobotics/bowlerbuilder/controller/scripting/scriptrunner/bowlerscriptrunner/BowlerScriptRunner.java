@@ -18,14 +18,15 @@ public class BowlerScriptRunner implements ScriptRunner {
   private final ObjectProperty<Object> result;
 
   @Inject
-  public BowlerScriptRunner(BowlerGroovy language) {
+  public BowlerScriptRunner(final BowlerGroovy language) {
     this.language = language;
     result = new SimpleObjectProperty<>();
     ScriptingEngine.addScriptingLanguage(language);
   }
 
   @Override
-  public Object runScript(String script, ArrayList<Object> arguments, String languageName)
+  public Object runScript(final String script, final ArrayList<Object> arguments,
+      final String languageName)
       throws Exception {
     result.set(ScriptingEngine.inlineScriptStringRun(script, arguments, languageName));
     return result.get();

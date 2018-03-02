@@ -19,7 +19,7 @@ public final class AceEditor implements ScriptEditor {
 
   private final WebEngineAdapter engine;
 
-  public AceEditor(WebEngineAdapter webEngine) {
+  public AceEditor(final WebEngineAdapter webEngine) {
     this.engine = webEngine;
     logger.log(Level.FINEST, "engine: " + webEngine);
   }
@@ -29,9 +29,9 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param text Text to insert
    */
-  public void insertAtCursor(String text) {
+  public void insertAtCursor(final String text) {
     runAfterEngine(() -> {
-      String escaped = escape(text);
+      final String escaped = escape(text);
       logger.fine("Inserting: " + escaped);
       engine.executeScript("editor.insert(\"" + escaped + "\");");
     });
@@ -42,9 +42,9 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param text Text to insert
    */
-  public void setText(String text) {
+  public void setText(final String text) {
     runAfterEngine(() -> {
-      String escaped = escape(text);
+      final String escaped = escape(text);
       logger.fine("Setting: " + escaped);
       engine.executeScript("editor.setValue(\"" + escaped + "\");");
     });
@@ -56,7 +56,7 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to escape
    * @return Escaped version
    */
-  private String escape(String text) {
+  private String escape(final String text) {
     String escaped = text;
     escaped = escaped.replace("\"", "\\\"");
     escaped = escaped.replace("'", "\\'");
@@ -71,7 +71,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param fontSize Font size
    */
-  public void setFontSize(int fontSize) {
+  public void setFontSize(final int fontSize) {
     runAfterEngine(() ->
         engine.executeScript(
             "document.getElementById('editor').style.fontSize='"
@@ -87,7 +87,7 @@ public final class AceEditor implements ScriptEditor {
   public String getText() {
     try {
       return returnAfterEngine(() -> (String) engine.executeScript("editor.getValue();"));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.log(Level.SEVERE,
           "Could not get editor text.\n" + Throwables.getStackTraceAsString(e));
       return "";
@@ -103,7 +103,7 @@ public final class AceEditor implements ScriptEditor {
     try {
       return returnAfterEngine(() -> (String)
           engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());"));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.log(Level.SEVERE,
           "Could not get selected text.\n" + Throwables.getStackTraceAsString(e));
       return "";
@@ -115,7 +115,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param lineNumber Line number
    */
-  public void gotoLine(int lineNumber) {
+  public void gotoLine(final int lineNumber) {
     runAfterEngine(() -> engine.executeScript("editor.gotoLine(" + lineNumber + ");"));
   }
 
@@ -129,7 +129,7 @@ public final class AceEditor implements ScriptEditor {
     try {
       return returnAfterEngine(() -> (int) engine.executeScript(
           "editor.session.doc.positionToIndex(editor.selection.getCursor());"));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.log(Level.SEVERE,
           "Could not get editor cursor position.\n" + Throwables.getStackTraceAsString(e));
       return 1;
@@ -150,7 +150,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param runnable runnable to run
    */
-  private void runAfterEngine(Runnable runnable) {
+  private void runAfterEngine(final Runnable runnable) {
     if (checkEngine()) {
       runnable.run();
     } else {
@@ -171,7 +171,7 @@ public final class AceEditor implements ScriptEditor {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  private <T> T returnAfterEngine(Callable<T> callable)
+  private <T> T returnAfterEngine(final Callable<T> callable)
       throws Exception {
     final FutureTask<T> query = new FutureTask<>(callable);
     runAfterEngine(query);

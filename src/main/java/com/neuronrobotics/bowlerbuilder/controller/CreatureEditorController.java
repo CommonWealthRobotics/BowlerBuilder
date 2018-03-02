@@ -104,7 +104,7 @@ public class CreatureEditorController {
   private AceCreatureLabController controller;
 
   @Inject
-  public CreatureEditorController(@Nonnull MainWindowController mainWindowController) {
+  public CreatureEditorController(@Nonnull final MainWindowController mainWindowController) {
     this.mainWindowController = mainWindowController;
 
     limbWidget = new AnchorPane();
@@ -122,7 +122,7 @@ public class CreatureEditorController {
    * @param device device to check
    * @return all taken channels
    */
-  public static Set<Integer> getTakenChannels(@Nonnull MobileBase device) {
+  public static Set<Integer> getTakenChannels(@Nonnull final MobileBase device) {
     return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
         .flatMap(Collection::stream)
         .map(LinkConfiguration::getHardwareIndex)
@@ -182,8 +182,9 @@ public class CreatureEditorController {
    * @param device {@link MobileBase} to load menus from
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
-  public void generateMenus(@Nonnull MobileBase device, @Nonnull MobileBaseCadManager cadManager,
-      @Nonnull AceCreatureLabController controller) {
+  public void generateMenus(@Nonnull final MobileBase device,
+      @Nonnull final MobileBaseCadManager cadManager,
+      @Nonnull final AceCreatureLabController controller) {
     this.device = device;
     this.cadManager = cadManager;
     this.controller = controller;
@@ -243,12 +244,12 @@ public class CreatureEditorController {
         controller.addToFixedHBox(getAddLinkButton(
             AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL));
       });
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
-  private Button getAddLinkButton(@Nonnull ImageView icon, @Nonnull LimbType limbType) {
+  private Button getAddLinkButton(@Nonnull final ImageView icon, @Nonnull final LimbType limbType) {
     final Button button = new Button();
     button.setGraphic(icon);
     button.setOnAction(event -> {
@@ -298,7 +299,7 @@ public class CreatureEditorController {
       controller.linkSelectionProperty().addListener((observable, oldValue, newValue) ->
           newValue.ifPresent(linkData ->
               selectionProperty.set(new MovementTabLinkSelection(linkData))));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -329,7 +330,7 @@ public class CreatureEditorController {
           newValue.ifPresent(linkData ->
               selectionProperty.set(new ConfigTabLinkSelection(linkData.dhLink,
                   linkData.linkConfiguration, linkData.parentLimb, cadManager))));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -384,7 +385,7 @@ public class CreatureEditorController {
 
           logger.log(Level.INFO, "Walking engine is now: "
               + Arrays.toString(device.getGitWalkingEngine()));
-          for (DHParameterKinematics dh : device.getAllDHChains()) {
+          for (final DHParameterKinematics dh : device.getAllDHChains()) {
             logger.log(Level.INFO, "Copying leg CAD engine: "
                 + Arrays.toString(dh.getGitCadEngine()));
             dh.setGitCadEngine(ScriptingEngine.copyGitFile(dh.getGitCadEngine()[0], gitURL,
@@ -442,9 +443,9 @@ public class CreatureEditorController {
     final String[] gitSelfSource = device.getGitSelfSource();
     final String[] gitWalkingEngine = device.getGitWalkingEngine();
     final String[] gitCADEngine = device.getGitCadEngine();
-    File deviceXMLFile;
-    File deviceWalkingEngineFile;
-    File deviceCADEngineFile;
+    final File deviceXMLFile;
+    final File deviceWalkingEngineFile;
+    final File deviceCADEngineFile;
     try {
       deviceXMLFile = ScriptingEngine.fileFromGit(gitSelfSource[0], gitSelfSource[1]);
       deviceWalkingEngineFile = ScriptingEngine.fileFromGit(gitWalkingEngine[0],
@@ -477,7 +478,7 @@ public class CreatureEditorController {
           //Push to existing gist
           ScriptingEngine.pushCodeToGit(remote, ScriptingEngine.getFullBranch(remote),
               relativePath, device.getXml(), commitMessage);
-        } catch (Exception e) {
+        } catch (final Exception e) {
           logger.severe("Could not commit.\n" + Throwables.getStackTraceAsString(e));
 
           Platform.runLater(() -> Notifications.create()
@@ -559,7 +560,7 @@ public class CreatureEditorController {
 
         Platform.runLater(() -> scriptTab.setContent(getScrollPane(
             new VBox(5, topLevelControls, content, scriptWidget))));
-      } catch (IOException e) {
+      } catch (final IOException e) {
         logger.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
 
         Platform.runLater(() -> scriptTab.setContent(getScrollPane(
@@ -570,7 +571,7 @@ public class CreatureEditorController {
     }
   }
 
-  private ScrollPane getScrollPane(@Nonnull Node node) {
+  private ScrollPane getScrollPane(@Nonnull final Node node) {
     final ScrollPane pane = new ScrollPane(node);
     pane.setFitToWidth(true);
     pane.setPadding(new Insets(5));
@@ -584,8 +585,9 @@ public class CreatureEditorController {
    * @param device {@link MobileBase} to query used hardware channels from
    * @param toAdd list to add the new limb to
    */
-  private void promptAndAddLimb(@Nonnull String defaultFileName, @Nonnull MobileBase device,
-      @Nonnull List<DHParameterKinematics> toAdd) {
+  private void promptAndAddLimb(@Nonnull final String defaultFileName,
+      @Nonnull final MobileBase device,
+      @Nonnull final List<DHParameterKinematics> toAdd) {
     try {
       final String xmlContent = ScriptingEngine.codeFromGit(
           "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git", defaultFileName)[0];
@@ -608,23 +610,23 @@ public class CreatureEditorController {
         toAdd.add(newLeg);
         regenerateMenus();
       });
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.warning("Could not add limb.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
   @FXML
-  private void onRegenCAD(ActionEvent actionEvent) {
+  private void onRegenCAD(final ActionEvent actionEvent) {
     regenCAD();
   }
 
   @FXML
-  private void onGenPrintableCAD(ActionEvent actionEvent) {
+  private void onGenPrintableCAD(final ActionEvent actionEvent) {
     genSTLs(device, cadManager, false);
   }
 
   @FXML
-  private void onGenKinSTL(ActionEvent actionEvent) {
+  private void onGenKinSTL(final ActionEvent actionEvent) {
     genSTLs(device, cadManager, true);
   }
 
@@ -645,8 +647,9 @@ public class CreatureEditorController {
    * @param cadManager CAD manager to gen STLs with
    * @param isKinematic whether to gen kinematic STLs
    */
-  public void genSTLs(@Nonnull MobileBase device, @Nonnull MobileBaseCadManager cadManager,
-      @Nonnull Boolean isKinematic) {
+  public void genSTLs(@Nonnull final MobileBase device,
+      @Nonnull final MobileBaseCadManager cadManager,
+      @Nonnull final Boolean isKinematic) {
     final File defaultStlDir = new File(System.getProperty("user.home")
         + "/bowler-workspace/STL/");
 

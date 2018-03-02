@@ -21,8 +21,8 @@ public class ScriptTabLimbSelection extends LimbSelection {
       LoggerUtilities.getLogger(ScriptTabLimbSelection.class.getSimpleName());
   private final VBox widget;
 
-  public ScriptTabLimbSelection(DHParameterKinematics limb,
-      AceCreatureLabController controller) {
+  public ScriptTabLimbSelection(final DHParameterKinematics limb,
+      final AceCreatureLabController controller) {
     super(limb);
 
     widget = new VBox(5, getTitleLabel(limb.getScriptingName()));

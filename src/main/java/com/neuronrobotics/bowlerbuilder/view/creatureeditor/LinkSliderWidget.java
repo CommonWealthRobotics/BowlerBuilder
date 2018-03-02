@@ -48,7 +48,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   private double seconds;
   private String paramsKey;
 
-  public LinkSliderWidget(int linkIndex, DHLink dhlink, AbstractKinematicsNR d) {
+  public LinkSliderWidget(final int linkIndex, final DHLink dhlink, final AbstractKinematicsNR d) {
     this.linkIndex = linkIndex;
     this.device = d;
     if (DHParameterKinematics.class.isInstance(device)) {
@@ -57,7 +57,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
 
     abstractLink = device.getAbstractLink(linkIndex);
 
-    TextField name = new TextField(abstractLink.getLinkConfiguration().getName());
+    final TextField name = new TextField(abstractLink.getLinkConfiguration().getName());
     name.setMaxWidth(100.0);
     name.setOnAction(event -> abstractLink.getLinkConfiguration().setName(name.getText()));
 
@@ -68,7 +68,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
         180,
         dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm"));
 
-    GridPane panel = new GridPane();
+    final GridPane panel = new GridPane();
 
     panel.getColumnConstraints().add(new ColumnConstraints(30));
     panel.getColumnConstraints().add(new ColumnConstraints(120));
@@ -82,11 +82,11 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
     abstractLink.addLinkListener(this);
   }
 
-  public void setUpperBound(double newBound) {
+  public void setUpperBound(final double newBound) {
     setpoint.setUpperBound(newBound);
   }
 
-  public void setLowerBound(double newBound) {
+  public void setLowerBound(final double newBound) {
     setpoint.setLowerBound(newBound);
   }
 
@@ -107,7 +107,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
    *
    * @param controller {@link BowlerJInputDevice} controller
    */
-  public void setGameController(BowlerJInputDevice controller) {
+  public void setGameController(final BowlerJInputDevice controller) {
     this.controller = controller;
 
     if (controller != null && jogTHreadHandle == null) {
@@ -116,7 +116,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
     }
 
     if (controller != null) {
-      Controller hwController = controller.getController();
+      final Controller hwController = controller.getController();
       paramsKey = hwController.getName();
       getGameController().clearListeners();
       getGameController().addListeners(this);
@@ -129,7 +129,8 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   }
 
   @Override
-  public void onEvent(Component comp, Event event, float value, String eventString) {
+  public void onEvent(final Component comp, final Event event, final float value,
+      final String eventString) {
 
     if (comp.getName().toLowerCase(Locale.ENGLISH)
         .contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x"))) {
@@ -144,28 +145,30 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   }
 
   @Override
-  public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
-    double value = setpoint.getValue();
+  public void onSliderMoving(final EngineeringUnitsSliderWidget source,
+      final double newAngleDegrees) {
+    final double value = setpoint.getValue();
     try {
       device.setDesiredJointAxisValue(linkIndex, value, 0);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.log(Level.WARNING, "Could not set new joint axis value of " + value + ".\n"
           + Throwables.getStackTraceAsString(e));
     }
   }
 
   @Override
-  public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+  public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
+      final double newAngleDegrees) {
     //Don't need to implement
   }
 
   @Override
-  public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
+  public void onLinkLimit(final AbstractLink arg0, final PIDLimitEvent arg1) {
     //Don't need to implement
   }
 
   @Override
-  public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+  public void onLinkPositionUpdate(final AbstractLink arg0, final double arg1) {
     setpoint.setValue(arg1);
   }
 
@@ -173,7 +176,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
     return setpoint;
   }
 
-  public void setSetpoint(EngineeringUnitsSliderWidget setpoint) {
+  public void setSetpoint(final EngineeringUnitsSliderWidget setpoint) {
     this.setpoint = setpoint;
   }
 
@@ -192,7 +195,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
           try {
             device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
             getSetpoint().setValue(newValue);
-          } catch (Exception e) {
+          } catch (final Exception e) {
             logger.log(Level.WARNING, "Could not set new joint axis value of " + newValue + ".\n"
                 + Throwables.getStackTraceAsString(e));
           }
@@ -204,7 +207,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
       }
     }
 
-    private void setToSet(double newValue, double toSeconds) {
+    private void setToSet(final double newValue, final double toSeconds) {
       this.newValue = newValue;
       this.toSeconds = toSeconds;
       controlThreadRunning = true;

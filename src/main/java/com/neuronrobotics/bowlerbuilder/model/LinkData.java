@@ -13,8 +13,8 @@ public class LinkData {
   public final LinkConfiguration linkConfiguration;
   public final AbstractKinematicsNR device;
 
-  public LinkData(DHParameterKinematics parentLimb, Integer index, DHLink dhLink,
-      LinkConfiguration linkConfiguration, AbstractKinematicsNR device) {
+  public LinkData(final DHParameterKinematics parentLimb, final Integer index, final DHLink dhLink,
+      final LinkConfiguration linkConfiguration, final AbstractKinematicsNR device) {
     this.parentLimb = parentLimb;
     this.index = index;
     this.dhLink = dhLink;

@@ -13,29 +13,29 @@ import javafx.scene.layout.GridPane;
 
 public class AddLinkDialog extends Dialog<String[]> {
 
-  public AddLinkDialog(Set<Integer> takenChannels) {
+  public AddLinkDialog(final Set<Integer> takenChannels) {
     super();
 
     setTitle("Add Link");
 
-    Label linkNameLabel = new Label("Link name");
+    final Label linkNameLabel = new Label("Link name");
     GridPane.setHalignment(linkNameLabel, HPos.RIGHT);
     final ValidatedTextField linkNameField = new ValidatedTextField("Link name cannot be empty",
         text -> !text.isEmpty());
     linkNameField.setId("linkNameField");
     GridPane.setHalignment(linkNameField, HPos.LEFT);
 
-    Label hwIndexLabel = new Label("Hardware index");
+    final Label hwIndexLabel = new Label("Hardware index");
     GridPane.setHalignment(hwIndexLabel, HPos.RIGHT);
-    ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
+    final ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
         text -> {
-          Integer result = Ints.tryParse(text);
+          final Integer result = Ints.tryParse(text);
           return result != null && !takenChannels.contains(result);
         });
     hwIndexField.setId("hwIndexField");
     GridPane.setHalignment(hwIndexField, HPos.LEFT);
 
-    GridPane content = new GridPane();
+    final GridPane content = new GridPane();
     content.setHgap(5);
     content.setVgap(5);
 
@@ -47,7 +47,7 @@ public class AddLinkDialog extends Dialog<String[]> {
     getDialogPane().setContent(content);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     okButton.disableProperty().bind(Bindings.or(linkNameField.invalidProperty(),
         hwIndexField.invalidProperty()));
     okButton.setDefaultButton(true);

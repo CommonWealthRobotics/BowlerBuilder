@@ -19,8 +19,8 @@ public interface Selection {
    * @param text label text
    * @return label
    */
-  default Label getTitleLabel(String text) {
-    Label label = new Label(text);
+  default Label getTitleLabel(final String text) {
+    final Label label = new Label(text);
     label.setFont(Font.font(16));
     return label;
   }

@@ -15,7 +15,7 @@ public abstract class LinkSelection implements Selection {
    * @param dhLink link
    * @param configuration configuration
    */
-  public LinkSelection(DHLink dhLink, LinkConfiguration configuration) {
+  public LinkSelection(final DHLink dhLink, final LinkConfiguration configuration) {
     this.dhLink = dhLink;
     this.configuration = configuration;
   }

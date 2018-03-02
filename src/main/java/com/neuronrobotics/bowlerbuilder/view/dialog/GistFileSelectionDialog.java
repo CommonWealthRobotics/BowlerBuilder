@@ -27,7 +27,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
   private final ValidatedTextField gistField;
   private final ComboBox<String> fileChooser;
 
-  public GistFileSelectionDialog(String title, Predicate<String> extensionFilter) {
+  public GistFileSelectionDialog(final String title, final Predicate<String> extensionFilter) {
     super();
 
     gistField = new ValidatedTextField("Invalid Gist URL", url ->
@@ -44,7 +44,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
           List<String> files = ScriptingEngine.filesInGit(gistField.getText());
           files = files.stream().filter(extensionFilter).collect(Collectors.toList());
           fileChooser.setItems(FXCollections.observableArrayList(files));
-        } catch (Exception e) {
+        } catch (final Exception e) {
           logger.warning("Could not fetch files in the gist: " + gistField.getText() + "\n"
               + Throwables.getStackTraceAsString(e));
         }
@@ -53,7 +53,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
 
     setTitle(title);
 
-    GridPane pane = new GridPane();
+    final GridPane pane = new GridPane();
     pane.setId("root");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);
@@ -71,7 +71,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
 
     Platform.runLater(gistField::requestFocus);
 
-    Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     okButton.disableProperty().bind(gistField.invalidProperty());
     okButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
             fileChooser.getSelectionModel().getSelectedItem() == null

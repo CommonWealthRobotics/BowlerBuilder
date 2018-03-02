@@ -25,7 +25,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
   private final AceCreatureLabController controller;
   private final SplitPane pane;
 
-  public CreatureLabTab(String title) throws IOException {
+  public CreatureLabTab(final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),
@@ -33,7 +33,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
 
     final TabPane tabPane = new TabPane();
 
-    FXMLLoader cadViewerLoader = new FXMLLoader(CreatureLabTab.class.getResource(
+    final FXMLLoader cadViewerLoader = new FXMLLoader(CreatureLabTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
         null,
         null,
@@ -41,16 +41,16 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
             new CADModelViewerControllerModule())::getInstance);
 
     logger.info("Loading CADModelViewer.");
-    Node cadViewer = cadViewerLoader.load();
+    final Node cadViewer = cadViewerLoader.load();
 
-    FXMLLoader creatureEditorLoader = new FXMLLoader(CreatureLabTab.class.getResource(
+    final FXMLLoader creatureEditorLoader = new FXMLLoader(CreatureLabTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/CreatureEditor.fxml"),
         null,
         null,
         BowlerBuilder.getInjector()::getInstance);
 
     logger.info("Loading CreatureEditor.");
-    Node creatureEditor = creatureEditorLoader.load();
+    final Node creatureEditor = creatureEditorLoader.load();
 
     pane = new SplitPane(tabPane, creatureEditor, cadViewer);
 

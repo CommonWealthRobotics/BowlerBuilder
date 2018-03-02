@@ -8,8 +8,8 @@ public class AceCadEditorTabController {
   private final CADModelViewerController cadModelViewerController;
 
   public AceCadEditorTabController(
-      AceScriptEditorController aceScriptEditorController,
-      CADModelViewerController cadModelViewerController) {
+      final AceScriptEditorController aceScriptEditorController,
+      final CADModelViewerController cadModelViewerController) {
     this.aceScriptEditorController = aceScriptEditorController;
     this.cadModelViewerController = cadModelViewerController;
 
@@ -23,11 +23,11 @@ public class AceCadEditorTabController {
    *
    * @param item script result
    */
-  private void parseCSG(Object item) {
+  private void parseCSG(final Object item) {
     if (item instanceof CSG) {
       cadModelViewerController.addCSG((CSG) item);
     } else if (item instanceof Iterable) {
-      Iterable<?> itemList = (Iterable) item;
+      final Iterable<?> itemList = (Iterable) item;
       itemList.forEach(this::parseCSG);
     }
   }

@@ -18,21 +18,21 @@ public class ConfigTabLinkSelection extends LinkSelection implements
   private final MobileBaseCadManager cadManager;
   private final VBox widget;
 
-  public ConfigTabLinkSelection(DHLink dhLink, LinkConfiguration configuration,
-      DHParameterKinematics device, MobileBaseCadManager cadManager) {
+  public ConfigTabLinkSelection(final DHLink dhLink, final LinkConfiguration configuration,
+      final DHParameterKinematics device, final MobileBaseCadManager cadManager) {
     super(dhLink, configuration);
     this.cadManager = cadManager;
 
     widget = new VBox(5);
     widget.setPadding(new Insets(5));
 
-    DHSettingsWidget dhSettings = new DHSettingsWidget(
+    final DHSettingsWidget dhSettings = new DHSettingsWidget(
         "D-H Configuration for " + configuration.getName(), dhLink,
         device, this);
     widget.getChildren().add(dhSettings.getView());
 
     widget.getChildren().add(getTitleLabel("Link Configuration for " + configuration.getName()));
-    LinkConfigurationWidget linkConfig = new LinkConfigurationWidget(configuration,
+    final LinkConfigurationWidget linkConfig = new LinkConfigurationWidget(configuration,
         device.getFactory(), null);
     widget.getChildren().add(linkConfig);
   }
@@ -43,12 +43,14 @@ public class ConfigTabLinkSelection extends LinkSelection implements
   }
 
   @Override
-  public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+  public void onSliderMoving(final EngineeringUnitsSliderWidget source,
+      final double newAngleDegrees) {
     //Don't need to implement
   }
 
   @Override
-  public void onSliderDoneMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+  public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
+      final double newAngleDegrees) {
     cadManager.generateCad();
   }
 

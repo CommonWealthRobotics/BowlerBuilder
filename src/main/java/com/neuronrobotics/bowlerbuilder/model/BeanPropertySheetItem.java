@@ -12,7 +12,7 @@ public class BeanPropertySheetItem implements PropertySheet.Item {
 
   private final Property prop;
 
-  public BeanPropertySheetItem(Property prop) {
+  public BeanPropertySheetItem(final Property prop) {
     this.prop = prop;
   }
 
@@ -42,7 +42,7 @@ public class BeanPropertySheetItem implements PropertySheet.Item {
   }
 
   @Override
-  public void setValue(Object value) {
+  public void setValue(final Object value) {
     prop.setValue(value); //Type validation is handled at the UI level
   }
 

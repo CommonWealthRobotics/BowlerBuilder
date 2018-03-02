@@ -9,14 +9,14 @@ public class StringClipper {
    * @param lines max line count
    * @return clipped string
    */
-  public String clipStringToLines(String input, int lines) {
-    String[] allLines = input.split("[\n|\r]");
+  public String clipStringToLines(final String input, final int lines) {
+    final String[] allLines = input.split("[\n|\r]");
 
-    StringBuilder out = new StringBuilder();
+    final StringBuilder out = new StringBuilder();
     final int upperBound = Math.min(lines, allLines.length);
 
     for (int i = 0; i < upperBound; i++) {
-      String line = allLines[i];
+      final String line = allLines[i];
       out.append(line);
       if (i < upperBound - 1) {
         out.append('\n');

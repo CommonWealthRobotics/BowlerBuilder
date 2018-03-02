@@ -12,7 +12,7 @@ public abstract class ScriptEditorTab<T> extends AbstractTab<T> {
 
   private final ScriptEditorView scriptEditorView;
 
-  public ScriptEditorTab(String title, ScriptEditorView scriptEditorView) {
+  public ScriptEditorTab(final String title, final ScriptEditorView scriptEditorView) {
     super(title);
     this.scriptEditorView = scriptEditorView;
   }

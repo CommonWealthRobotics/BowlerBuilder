@@ -7,7 +7,7 @@ public class LimbLayoutControllerModule extends AbstractModule {
 
   private final MobileBase device;
 
-  public LimbLayoutControllerModule(MobileBase device) {
+  public LimbLayoutControllerModule(final MobileBase device) {
     this.device = device;
   }
 

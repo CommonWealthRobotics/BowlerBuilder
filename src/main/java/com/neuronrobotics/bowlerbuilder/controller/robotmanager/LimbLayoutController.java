@@ -51,7 +51,7 @@ public class LimbLayoutController {
   private HBox fixedPaneHBox;
 
   @Inject
-  public LimbLayoutController(MobileBase device) {
+  public LimbLayoutController(final MobileBase device) {
     this.device = device;
     limbSelection = new SimpleObjectProperty<>();
   }
@@ -63,7 +63,7 @@ public class LimbLayoutController {
       armIcon.setImage(AssetFactory.loadAsset("Load-Limb-Arms.png"));
       steerableIcon.setImage(AssetFactory.loadAsset("Load-Limb-Steerable-Wheels.png"));
       fixedIcon.setImage(AssetFactory.loadAsset("Load-Limb-Fixed-Wheels.png"));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.warning("Could not load icon assets.\n" + Throwables.getStackTraceAsString(e));
     }
 
@@ -79,7 +79,7 @@ public class LimbLayoutController {
    * @param hBox HBox to add buttons to
    * @param limbs limbs to generate buttons from
    */
-  protected void addButtons(HBox hBox, List<DHParameterKinematics> limbs) {
+  protected void addButtons(final HBox hBox, final List<DHParameterKinematics> limbs) {
     hBox.getChildren().addAll(limbs.stream()
         .map(limb -> {
           final Button button = new Button(limb.getScriptingName());
@@ -89,19 +89,19 @@ public class LimbLayoutController {
         .collect(Collectors.toList()));
   }
 
-  public void addToLegHBox(Node node) {
+  public void addToLegHBox(final Node node) {
     legHBox.getChildren().add(node);
   }
 
-  public void addToArmHBox(Node node) {
+  public void addToArmHBox(final Node node) {
     armHBox.getChildren().add(node);
   }
 
-  public void addToSteerableHBox(Node node) {
+  public void addToSteerableHBox(final Node node) {
     steerableHBox.getChildren().add(node);
   }
 
-  public void addToFixedHBox(Node node) {
+  public void addToFixedHBox(final Node node) {
     fixedHBox.getChildren().add(node);
   }
 

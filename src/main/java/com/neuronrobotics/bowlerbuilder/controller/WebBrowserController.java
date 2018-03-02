@@ -38,27 +38,27 @@ public class WebBrowserController {
 
 
   @FXML
-  private void onBackPage(ActionEvent actionEvent) {
+  private void onBackPage(final ActionEvent actionEvent) {
     Platform.runLater(() -> webView.getEngine().executeScript("history.back()"));
   }
 
   @FXML
-  private void onNextPage(ActionEvent actionEvent) {
+  private void onNextPage(final ActionEvent actionEvent) {
     Platform.runLater(() -> webView.getEngine().executeScript("history.forward()"));
   }
 
   @FXML
-  private void onReloadPage(ActionEvent actionEvent) {
+  private void onReloadPage(final ActionEvent actionEvent) {
     webView.getEngine().reload();
   }
 
   @FXML
-  private void onHomePage(ActionEvent actionEvent) {
+  private void onHomePage(final ActionEvent actionEvent) {
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
   }
 
   @FXML
-  private void onNavigate(ActionEvent actionEvent) {
+  private void onNavigate(final ActionEvent actionEvent) {
     String url = urlField.getText();
 
     if (!url.toLowerCase(Locale.ENGLISH).matches("^\\w+://.*")) {
@@ -68,7 +68,7 @@ public class WebBrowserController {
     loadPage(url);
   }
 
-  public void loadPage(String url) {
+  public void loadPage(final String url) {
     webView.getEngine().load(url);
   }
 

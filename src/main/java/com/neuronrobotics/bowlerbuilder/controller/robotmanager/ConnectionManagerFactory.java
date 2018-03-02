@@ -5,7 +5,7 @@ import javafx.scene.layout.HBox;
 
 public class ConnectionManagerFactory {
 
-  public ConnectionManager get(HBox connectionsHeader, Accordion accordion) {
+  public ConnectionManager get(final HBox connectionsHeader, final Accordion accordion) {
     return new ConnectionManager(connectionsHeader, accordion);
   }
 

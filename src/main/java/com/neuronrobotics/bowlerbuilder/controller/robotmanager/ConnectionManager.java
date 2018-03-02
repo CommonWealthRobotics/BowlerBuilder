@@ -25,12 +25,12 @@ public class ConnectionManager implements IDeviceAddedListener {
   private final Map<BowlerAbstractDevice, TitledPane> paneMap;
   private boolean removingAll; //NOPMD
 
-  public ConnectionManager(HBox connectionsHeader, Accordion accordion) {
+  public ConnectionManager(final HBox connectionsHeader, final Accordion accordion) {
     devices = new ArrayList<>();
     this.accordion = accordion;
     paneMap = new HashMap<>();
 
-    Button disconnectAll = new Button("Disconnect All");
+    final Button disconnectAll = new Button("Disconnect All");
     disconnectAll.setGraphic(AssetFactory.loadIcon("Disconnect-All.png"));
     disconnectAll.setOnAction(event -> {
       removingAll = true;
@@ -60,15 +60,15 @@ public class ConnectionManager implements IDeviceAddedListener {
   }
 
   @Override
-  public void onNewDeviceAdded(BowlerAbstractDevice device) {
+  public void onNewDeviceAdded(final BowlerAbstractDevice device) {
     devices.add(device);
 
-    TitledPane pane = new TitledPane();
+    final TitledPane pane = new TitledPane();
     pane.setText(device.getScriptingName());
 
-    HBox content = new HBox();
+    final HBox content = new HBox();
 
-    Button disconnect = new Button("Disconnect " + device.getScriptingName());
+    final Button disconnect = new Button("Disconnect " + device.getScriptingName());
     disconnect.setGraphic(AssetFactory.loadIcon("Disconnect-Device.png"));
 
     content.getChildren().add(disconnect);
@@ -79,7 +79,7 @@ public class ConnectionManager implements IDeviceAddedListener {
   }
 
   @Override
-  public void onDeviceRemoved(BowlerAbstractDevice device) {
+  public void onDeviceRemoved(final BowlerAbstractDevice device) {
     if (!removingAll) {
       devices.remove(device);
       Platform.runLater(() -> accordion.getPanes().remove(paneMap.get(device)));

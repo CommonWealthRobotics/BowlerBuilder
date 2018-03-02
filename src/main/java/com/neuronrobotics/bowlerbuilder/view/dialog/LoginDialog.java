@@ -24,7 +24,7 @@ public class LoginDialog extends Dialog<Boolean> {
     passField.setId("loginPassField");
     passField.setPromptText("Password");
 
-    VBox vBox = new VBox();
+    final VBox vBox = new VBox();
     vBox.setSpacing(5);
     vBox.getChildren().addAll(nameField, passField);
     nameField.requestFocus();
@@ -33,7 +33,7 @@ public class LoginDialog extends Dialog<Boolean> {
     getDialogPane().setContent(vBox);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
             !(!nameField.getText().isEmpty()
                 && !passField.getText().isEmpty()),

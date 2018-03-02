@@ -12,7 +12,8 @@ public abstract class CadEditorTab<T> extends ScriptEditorTab<T> {
 
   private final CadEngine cadEngine;
 
-  public CadEditorTab(String title, ScriptEditorView scriptEditorView, CadEngine cadEngine) {
+  public CadEditorTab(final String title, final ScriptEditorView scriptEditorView,
+      final CadEngine cadEngine) {
     super(title, scriptEditorView);
     this.cadEngine = cadEngine;
   }

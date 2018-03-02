@@ -20,11 +20,11 @@ public final class FxUtil {
    *
    * @param runnable runnable to run
    */
-  public static void runFXAndWait(Runnable runnable) throws InterruptedException {
+  public static void runFXAndWait(final Runnable runnable) throws InterruptedException {
     if (Platform.isFxApplicationThread()) {
       runnable.run();
     } else {
-      CountDownLatch latch = new CountDownLatch(1);
+      final CountDownLatch latch = new CountDownLatch(1);
       Platform.runLater(() -> {
         runnable.run();
         latch.countDown();
@@ -42,7 +42,7 @@ public final class FxUtil {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  public static <T> T returnFX(Callable<T> callable)
+  public static <T> T returnFX(final Callable<T> callable)
       throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
 
@@ -65,7 +65,7 @@ public final class FxUtil {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  public static <T> T returnFXAndWait(Callable<T> callable)
+  public static <T> T returnFXAndWait(final Callable<T> callable)
       throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
     runFXAndWait(query);

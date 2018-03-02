@@ -10,12 +10,12 @@ public class AceWebEngine implements WebEngineAdapter {
 
   private final WebEngine webEngine;
 
-  public AceWebEngine(WebEngine webEngine) {
+  public AceWebEngine(final WebEngine webEngine) {
     this.webEngine = webEngine;
   }
 
   @Override
-  public Object executeScript(String script) {
+  public Object executeScript(final String script) {
     return webEngine.executeScript(script);
   }
 

@@ -5,9 +5,9 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 
 public abstract class LimbSelection implements Selection {
 
-  protected DHParameterKinematics limb;
+  protected final DHParameterKinematics limb;
 
-  public LimbSelection(DHParameterKinematics limb) {
+  public LimbSelection(final DHParameterKinematics limb) {
     this.limb = limb;
   }
 

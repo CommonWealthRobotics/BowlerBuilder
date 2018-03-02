@@ -23,7 +23,7 @@ public class AddFileToGistDialog extends Dialog<String> {
 
     setTitle("New File");
 
-    GridPane pane = new GridPane();
+    final GridPane pane = new GridPane();
     pane.setId("root");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);
@@ -37,7 +37,7 @@ public class AddFileToGistDialog extends Dialog<String> {
 
     //FxUtil.runFX(nameField::requestFocus);
 
-    Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+    final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(nameField.invalidProperty());
     addButton.setDefaultButton(true);
 

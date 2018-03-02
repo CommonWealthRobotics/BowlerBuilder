@@ -15,33 +15,35 @@ import javafx.scene.text.Text;
 
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number> {
 
-  private TextField setpointValue;
-  private Slider setpoint;
+  private final TextField setpointValue;
+  private final Slider setpoint;
   private EngineeringUnitsChangeListener listener;
   private boolean intCast;
   private boolean allowResize = true;
 
-  public EngineeringUnitsSliderWidget(EngineeringUnitsChangeListener listener, double min,
-      double max, double current, double width, String units, boolean intCast) {
+  public EngineeringUnitsSliderWidget(final EngineeringUnitsChangeListener listener,
+      final double min,
+      final double max, final double current, final double width, final String units,
+      final boolean intCast) {
     this(listener, min, max, current, width, units);
     this.intCast = intCast;
   }
 
   public EngineeringUnitsSliderWidget(
-      EngineeringUnitsChangeListener listener,
-      double current,
-      double width,
-      String units) {
+      final EngineeringUnitsChangeListener listener,
+      final double current,
+      final double width,
+      final String units) {
     this(listener, current / 2, current * 2, current, width, units);
   }
 
   public EngineeringUnitsSliderWidget(
-      EngineeringUnitsChangeListener listener,
-      double min,
-      double max,
-      double current,
-      double width,
-      String units) {
+      final EngineeringUnitsChangeListener listener,
+      final double min,
+      final double max,
+      final double current,
+      final double width,
+      final String units) {
     this.listener = listener;
     setpoint = new Slider();
 
@@ -49,7 +51,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     double fixedMax = max;
 
     if (fixedMin > fixedMax) {
-      double minStart = fixedMin;
+      final double minStart = fixedMin;
       fixedMin = fixedMax;
       fixedMax = minStart;
     }
@@ -72,7 +74,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
     setpointValue = new TextField(getFormatted(current));
     setpointValue.setOnAction(event -> Platform.runLater(() -> {
-      double val = Double.parseDouble(setpointValue.getText());
+      final double val = Double.parseDouble(setpointValue.getText());
       setValue(val);
       getListener().onSliderMoving(this, val);
       getListener().onSliderDoneMoving(this, val);
@@ -80,7 +82,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
 
     setpoint.setMaxWidth(width);
     setpoint.valueChangingProperty().addListener((observable, oldValue, newValue) -> {
-      double val = Double.parseDouble(setpointValue.getText());
+      final double val = Double.parseDouble(setpointValue.getText());
       if (!newValue) {
         getListener().onSliderDoneMoving(this, val);
       }
@@ -91,31 +93,31 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     getColumnConstraints().add(new ColumnConstraints(width + 20));
     getColumnConstraints().add(new ColumnConstraints(100));
 
-    String unitsString = "(" + units + ")";
+    final String unitsString = "(" + units + ")";
     getColumnConstraints().add(new ColumnConstraints(unitsString.length() * 7));
 
     add(setpoint, 0, 0);
     add(setpointValue, 1, 0);
-    Text unitText = new Text(unitsString);
-    HBox unitTextWrapper = new HBox(unitText); //Wrapper so we get padding
+    final Text unitText = new Text(unitsString);
+    final HBox unitTextWrapper = new HBox(unitText); //Wrapper so we get padding
     unitTextWrapper.setPadding(new Insets(0, 0, 0, 5));
     unitTextWrapper.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(unitTextWrapper, Priority.NEVER);
     add(unitTextWrapper, 2, 0);
   }
 
-  public void setUpperBound(double newBound) {
+  public void setUpperBound(final double newBound) {
     setpoint.setMax(newBound);
   }
 
-  public void setLowerBound(double newBound) {
+  public void setLowerBound(final double newBound) {
     setpoint.setMin(newBound);
   }
 
   @Override
-  public void changed(ObservableValue<? extends Number> observable,
-      Number oldValue,
-      Number newValue) {
+  public void changed(final ObservableValue<? extends Number> observable,
+      final Number oldValue,
+      final Number newValue) {
     updateValue();
   }
 
@@ -131,7 +133,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
    *
    * @param value new value
    */
-  public void setValue(double value) {
+  public void setValue(final double value) {
     Platform.runLater(() -> {
       setpoint.valueProperty().removeListener(this);
       double val = value;
@@ -151,7 +153,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
         }
       }
 
-      double range = Math.abs(setpoint.getMax() - setpoint.getMin());
+      final double range = Math.abs(setpoint.getMax() - setpoint.getMin());
       setpoint.setMajorTickUnit(range);
       setpoint.setValue(val);
       setpointValue.setText(getFormatted(setpoint.getValue()));
@@ -169,7 +171,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
    * @param value the value to format
    * @return formatted version
    */
-  public String getFormatted(double value) {
+  public String getFormatted(final double value) {
     if (intCast) {
       return String.valueOf((int) value);
     }
@@ -186,13 +188,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     if (listener == null) {
       return new EngineeringUnitsChangeListener() {
         @Override
-        public void onSliderMoving(EngineeringUnitsSliderWidget source, double newAngleDegrees) {
+        public void onSliderMoving(final EngineeringUnitsSliderWidget source,
+            final double newAngleDegrees) {
           //Default is nothing
         }
 
         @Override
-        public void onSliderDoneMoving(EngineeringUnitsSliderWidget source,
-            double newAngleDegrees) {
+        public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
+            final double newAngleDegrees) {
           //Default is nothing
         }
       };
@@ -201,7 +204,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     return listener;
   }
 
-  public void setListener(EngineeringUnitsChangeListener listener) {
+  public void setListener(final EngineeringUnitsChangeListener listener) {
     this.listener = listener;
   }
 
@@ -209,7 +212,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     return allowResize;
   }
 
-  public void setAllowResize(boolean allowResize) {
+  public void setAllowResize(final boolean allowResize) {
     this.allowResize = allowResize;
   }
 

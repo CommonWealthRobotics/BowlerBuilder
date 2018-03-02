@@ -13,24 +13,24 @@ public class ConfigTabLimbSelection extends LimbSelection {
 
   private final TransformWidget widget;
 
-  public ConfigTabLimbSelection(DHParameterKinematics limb, MobileBase device,
-      MobileBaseCadManager cadManager) {
+  public ConfigTabLimbSelection(final DHParameterKinematics limb, final MobileBase device,
+      final MobileBaseCadManager cadManager) {
     super(limb);
 
     widget = new TransformWidget("Limb Configuration for " + limb.getScriptingName(),
         limb.getRobotToFiducialTransform(),
         new TransformChangeListener() {
           @Override
-          public void onTransformFinished(TransformNR newTrans) {
+          public void onTransformFinished(final TransformNR newTrans) {
             cadManager.generateCad();
           }
 
           @Override
-          public void onTransformChanging(TransformNR newTrans) {
+          public void onTransformChanging(final TransformNR newTrans) {
             limb.setRobotToFiducialTransform(newTrans);
             limb.getCurrentTaskSpaceTransform();
             //this calls the render update function attached as the on joint space update
-            double[] joint = limb.getCurrentJointSpaceVector();
+            final double[] joint = limb.getCurrentJointSpaceVector();
             limb.getChain().getChain(joint);
             Platform.runLater(() -> limb.onJointSpaceUpdate(limb, joint));
           }

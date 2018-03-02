@@ -20,7 +20,7 @@ public class PublishDialog extends Dialog<String> {
     commitMessage.setPrefHeight(100);
     commitMessage.setPrefWidth(300);
 
-    GridPane pane = new GridPane();
+    final GridPane pane = new GridPane();
     pane.setId("publishDialogRoot");
     pane.setAlignment(Pos.CENTER);
     pane.setHgap(5);

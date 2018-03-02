@@ -15,31 +15,31 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
 
   private final ListView<Plugin> pluginListView;
 
-  public ManagePluginsDialog(ObservableList<Plugin> plugins) {
+  public ManagePluginsDialog(final ObservableList<Plugin> plugins) {
     super();
 
     pluginListView = new ListView<>(plugins);
     pluginListView.setId("pluginList");
 
-    Button addWidgetButton = new Button("Add Plugin");
+    final Button addWidgetButton = new Button("Add Plugin");
     addWidgetButton.setId("addPlugin");
     addWidgetButton.setOnAction(event -> {
-      AddPluginDialog dialog = new AddPluginDialog();
+      final AddPluginDialog dialog = new AddPluginDialog();
       final Optional<Boolean> result = dialog.showAndWait();
       if (result.isPresent() && result.get()) {
         plugins.add(new Plugin(dialog.getSource(), dialog.getDisplayName()));
       }
     });
 
-    Button removeWidgetButton = new Button("Remove Plugin");
+    final Button removeWidgetButton = new Button("Remove Plugin");
     removeWidgetButton.setId("removePlugin");
     removeWidgetButton.setOnAction(event ->
         pluginListView.getSelectionModel().getSelectedItems()
             .forEach(pluginListView.getItems()::remove));
 
-    HBox controlBox = new HBox(5, addWidgetButton, removeWidgetButton);
+    final HBox controlBox = new HBox(5, addWidgetButton, removeWidgetButton);
 
-    VBox view = new VBox(5, controlBox, pluginListView);
+    final VBox view = new VBox(5, controlBox, pluginListView);
 
     setTitle("Manage Plugins");
     getDialogPane().setContent(view);
@@ -49,7 +49,7 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
     setResultConverter(buttonType -> pluginListView.getItems());
   }
 
-  public void setPlugins(ObservableList<Plugin> plugins) {
+  public void setPlugins(final ObservableList<Plugin> plugins) {
     pluginListView.setItems(plugins);
   }
 

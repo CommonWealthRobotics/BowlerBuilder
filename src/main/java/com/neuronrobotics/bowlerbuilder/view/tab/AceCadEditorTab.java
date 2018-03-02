@@ -19,29 +19,29 @@ public class AceCadEditorTab extends CadEditorTab<AceCadEditorTabController> {
   private final AceCadEditorTabController controller;
   private final SplitPane pane;
 
-  public AceCadEditorTab(String title) throws IOException {
+  public AceCadEditorTab(final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),
         BowlerBuilder.getInjector().getInstance(BowlerCadEngine.class));
 
-    FXMLLoader scriptEditorLoader = new FXMLLoader(AceCadEditorTab.class.getResource(
+    final FXMLLoader scriptEditorLoader = new FXMLLoader(AceCadEditorTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/AceScriptEditor.fxml"),
         null,
         null,
         BowlerBuilder.getInjector().createChildInjector(
             new AceCadEditorControllerModule(getScriptEditorView()))::getInstance);
 
-    Node scriptEditor = scriptEditorLoader.load();
+    final Node scriptEditor = scriptEditorLoader.load();
 
-    FXMLLoader cadViewerLoader = new FXMLLoader(AceCadEditorTab.class.getResource(
+    final FXMLLoader cadViewerLoader = new FXMLLoader(AceCadEditorTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
         null,
         null,
         BowlerBuilder.getInjector().createChildInjector(
             new CADModelViewerControllerModule())::getInstance);
 
-    Node cadViewer = cadViewerLoader.load();
+    final Node cadViewer = cadViewerLoader.load();
 
     pane = new SplitPane(scriptEditor, cadViewer);
 

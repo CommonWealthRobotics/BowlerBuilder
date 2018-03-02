@@ -113,7 +113,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final BooleanProperty handShowingProperty;
 
   @Inject
-  public BowlerCadEngine(CsgParser csgParser) {
+  public BowlerCadEngine(final CsgParser csgParser) {
     this.csgParser = csgParser;
 
     axisShowingProperty = new SimpleBooleanProperty(true);
@@ -173,7 +173,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     camera.setRotationAxis(Rotate.Z_AXIS);
     camera.setRotate(180);
 
-    CSG cylinder = new Cylinder(
+    final CSG cylinder = new Cylinder(
         0, // Radius at the top
         5, // Radius at the bottom
         20, // Height
@@ -262,7 +262,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
               + "</mobilebase>\n"
               + "\n"
               + "</root>");
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.log(Level.SEVERE,
           "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
     }
@@ -279,14 +279,14 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   private void buildAxes() {
     try {
-      Image ruler = AssetFactory.loadAsset("ruler.png");
-      Image groundLocal = AssetFactory.loadAsset("ground.png");
-      Affine groundMove = new Affine();
+      final Image ruler = AssetFactory.loadAsset("ruler.png");
+      final Image groundLocal = AssetFactory.loadAsset("ground.png");
+      final Affine groundMove = new Affine();
       groundMove.setTx(-groundLocal.getHeight() / 2);
       groundMove.setTy(-groundLocal.getWidth() / 2);
 
-      double scale = 0.25;
-      Affine zRuler = new Affine();
+      final double scale = 0.25;
+      final Affine zRuler = new Affine();
       zRuler.setTz(-20 * scale);
       zRuler.appendScale(scale, scale, scale);
       zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
@@ -294,38 +294,38 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       zRuler.appendRotation(90, 0, 0, 0, 0, 1, 0);
       zRuler.appendRotation(-180, 0, 0, 0, 1, 0, 0);
 
-      Affine yRuler = new Affine();
+      final Affine yRuler = new Affine();
       yRuler.setTx(-130 * scale);
       yRuler.setTy(-20 * scale);
       yRuler.appendScale(scale, scale, scale);
       yRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
       yRuler.appendRotation(-90, 0, 0, 0, 0, 0, 1);
 
-      Affine downset = new Affine();
+      final Affine downset = new Affine();
       downset.setTz(0.1);
 
-      Affine xp = new Affine();
+      final Affine xp = new Affine();
       xp.setTx(-20 * scale);
       xp.appendScale(scale, scale, scale);
       xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
 
       Platform.runLater(() -> {
-        ImageView groundView = new ImageView(groundLocal);
+        final ImageView groundView = new ImageView(groundLocal);
         groundView.getTransforms().addAll(groundMove, downset);
         groundView.setOpacity(0.3);
 
-        ImageView zrulerImage = new ImageView(ruler);
+        final ImageView zrulerImage = new ImageView(ruler);
         zrulerImage.getTransforms().addAll(zRuler, downset);
 
-        ImageView rulerImage = new ImageView(ruler);
+        final ImageView rulerImage = new ImageView(ruler);
         rulerImage.getTransforms().addAll(xp, downset);
 
-        ImageView yrulerImage = new ImageView(ruler);
+        final ImageView yrulerImage = new ImageView(ruler);
         yrulerImage.getTransforms().addAll(yRuler, downset);
 
         gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
-        Affine groundPlacement = new Affine();
+        final Affine groundPlacement = new Affine();
         groundPlacement.setTz(-1);
         ground = new Group();
         ground.getTransforms().add(groundPlacement);
@@ -336,7 +336,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         axisGroup.getChildren().addAll(focusGroup, meshViewGroup);
         world.getChildren().addAll(lookGroup, axisGroup);
       });
-    } catch (Exception e) {
+    } catch (final Exception e) {
       logger.log(Level.WARNING,
           "Could not load ruler/ground assets for CAD view.\n"
               + Throwables.getStackTraceAsString(e));
@@ -372,17 +372,17 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    *
    * @param scene the scene
    */
-  private void handleMouse(SubScene scene) {
+  private void handleMouse(final SubScene scene) {
     scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
       long lastClickedTimeLocal;
-      long offset = 500;
+      static final long offset = 500;
 
       @Override
-      public void handle(MouseEvent event) {
+      public void handle(final MouseEvent event) {
         resetMouseTime(); //NOPMD
-        long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
+        final long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
         FxTimer.runLater(Duration.ofMillis(100), () -> {
-          long diff = System.currentTimeMillis() - lastSelectedTime; //NOPMD
+          final long diff = System.currentTimeMillis() - lastSelectedTime; //NOPMD
           // reset only if an object is not being selected
           if (diff > 2000 && lastClickedDifference < offset) {
             cancelSelection(); //NOPMD
@@ -411,7 +411,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       mouseDeltaY = (mousePosY - mouseOldY);
 
       double modifier = 1.0;
-      double modifierFactor = 0.1;
+      final double modifierFactor = 0.1;
 
       if (mouseEvent.isControlDown()) {
         modifier = 0.1;
@@ -420,7 +420,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
 
       if (mouseEvent.isPrimaryButtonDown()) {
-        TransformNR trans = new TransformNR(
+        final TransformNR trans = new TransformNR(
             0,
             0,
             0,
@@ -435,7 +435,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
           moveCamera(trans, 0);
         }
       } else if (mouseEvent.isSecondaryButtonDown()) {
-        double depth = -100 / getVirtualCam().getZoomDepth();
+        final double depth = -100 / getVirtualCam().getZoomDepth();
         moveCamera(
             new TransformNR(
                 mouseDeltaX * modifierFactor * modifier * 1 / depth,
@@ -448,7 +448,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
     scene.addEventHandler(ScrollEvent.ANY, event -> {
       if (ScrollEvent.SCROLL == event.getEventType()) {
-        double zoomFactor = -(event.getDeltaY()) * getVirtualCam().getZoomDepth() / 500;
+        final double zoomFactor = -(event.getDeltaY()) * getVirtualCam().getZoomDepth() / 500;
         virtualCam.setZoomDepth(getVirtualCam().getZoomDepth() + zoomFactor);
       }
       event.consume();
@@ -461,7 +461,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param newPose transform to move by
    * @param seconds seconds to move over
    */
-  private void moveCamera(TransformNR newPose, double seconds) {
+  private void moveCamera(final TransformNR newPose, final double seconds) {
     flyingCamera.DriveArc(newPose, seconds);
   }
 
@@ -478,15 +478,15 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * De-select the selection.
    */
   private void cancelSelection() {
-    for (CSG key : getCsgMap().keySet()) {
+    for (final CSG key : getCsgMap().keySet()) {
       Platform.runLater(() ->
           getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); //NOPMD
     }
 
     this.selectedCsg = null;
-    TransformNR startSelectNr = previousTarget.copy();
-    TransformNR targetNR = new TransformNR();
-    Affine interpolator = new Affine();
+    final TransformNR startSelectNr = previousTarget.copy();
+    final TransformNR targetNR = new TransformNR();
+    final Affine interpolator = new Affine();
     TransformFactory.nrToAffine(startSelectNr, interpolator);
 
     Platform.runLater(() -> {
@@ -502,20 +502,20 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     this.lastMouseMovementTime = System.currentTimeMillis();
   }
 
-  private void focusInterpolate(TransformNR start,
-      TransformNR target,
-      int depth,
-      int targetDepth,
-      Affine interpolator) {
+  private void focusInterpolate(final TransformNR start,
+      final TransformNR target,
+      final int depth,
+      final int targetDepth,
+      final Affine interpolator) {
 
-    double depthScale = 1 - (double) depth / (double) targetDepth;
-    double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
+    final double depthScale = 1 - (double) depth / (double) targetDepth;
+    final double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
 
-    double difference = start.getX() - target.getX();
+    final double difference = start.getX() - target.getX();
 
-    double xIncrement = difference * sinunsoidalScale;
-    double yIncrement = (start.getY() - target.getY()) * sinunsoidalScale;
-    double zIncrement = (start.getZ() - target.getZ()) * sinunsoidalScale;
+    final double xIncrement = difference * sinunsoidalScale;
+    final double yIncrement = (start.getY() - target.getY()) * sinunsoidalScale;
+    final double zIncrement = (start.getZ() - target.getZ()) * sinunsoidalScale;
 
     Platform.runLater(() -> {
       interpolator.setTx(xIncrement);
@@ -534,8 +534,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   private void removeAllFocusTransforms() {
-    ObservableList<Transform> allTrans = focusGroup.getTransforms();
-    Transform[] toRemove = allTrans.toArray(new Transform[allTrans.size()]);
+    final ObservableList<Transform> allTrans = focusGroup.getTransforms();
+    final Transform[] toRemove = allTrans.toArray(new Transform[allTrans.size()]);
     Arrays.stream(toRemove).forEach(allTrans::remove);
   }
 
@@ -543,7 +543,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return csgMap;
   }
 
-  private void setCsgMap(Map<CSG, MeshView> csgMap) {
+  private void setCsgMap(final Map<CSG, MeshView> csgMap) {
     this.csgMap = csgMap;
   }
 
@@ -560,7 +560,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return camera.fieldOfViewProperty();
   }
 
-  private void setSubScene(SubScene scene) {
+  private void setSubScene(final SubScene scene) {
     this.scene = scene;
   }
 
@@ -568,7 +568,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return virtualCam;
   }
 
-  private void setVirtualCam(VirtualCameraDevice virtualCam) {
+  private void setVirtualCam(final VirtualCameraDevice virtualCam) {
     this.virtualCam = virtualCam;
   }
 
@@ -576,7 +576,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return flyingCamera;
   }
 
-  private void setFlyingCamera(VirtualCameraMobileBase flyingCamera) {
+  private void setFlyingCamera(final VirtualCameraMobileBase flyingCamera) {
     this.flyingCamera = flyingCamera;
   }
 
@@ -591,9 +591,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param lineNumber line number in script
    */
   @Override
-  public void setSelectedCsg(File script, int lineNumber) {
+  public void setSelectedCsg(final File script, final int lineNumber) {
     Platform.runLater(() -> {
-      Collection<CSG> csgs = csgParser.parseCsgFromSource(script.getName(), lineNumber, csgMap);
+      final Collection<CSG> csgs = csgParser
+          .parseCsgFromSource(script.getName(), lineNumber, csgMap);
 
       lastSelectedTime = System.currentTimeMillis();
 
@@ -613,9 +614,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param selection CSGs to select
    */
   @Override
-  public void selectCSGs(Collection<CSG> selection) {
+  public void selectCSGs(final Collection<CSG> selection) {
     selection.forEach(csg -> {
-      MeshView meshView = csgMap.get(csg);
+      final MeshView meshView = csgMap.get(csg);
       if (meshView != null) {
         FxTimer.runLater(Duration.ofMillis(20), () ->
             meshView.setMaterial(new PhongMaterial(Color.GOLD)));
@@ -629,7 +630,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param selection CSG to select
    * @param csgMap map containing CSGs MeshViews
    */
-  private void selectCSG(CSG selection, Map<CSG, MeshView> csgMap) {
+  private void selectCSG(final CSG selection, final Map<CSG, MeshView> csgMap) {
     if (selection.equals(selectedCsg)) {
       return;
     }
@@ -643,11 +644,11 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     FxTimer.runLater(Duration.ofMillis(20), () ->
         getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
 
-    double xCenter = selectedCsg.getCenterX();
-    double yCenter = selectedCsg.getCenterY();
-    double zCenter = selectedCsg.getCenterZ();
+    final double xCenter = selectedCsg.getCenterX();
+    final double yCenter = selectedCsg.getCenterY();
+    final double zCenter = selectedCsg.getCenterZ();
 
-    TransformNR poseToMove = new TransformNR();
+    final TransformNR poseToMove = new TransformNR();
 
     if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
       poseToMove.translateX(xCenter);
@@ -661,17 +662,17 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       poseToMove.translateZ(zCenter);
     }
 
-    Affine centering = TransformFactory.nrToAffine(poseToMove);
+    final Affine centering = TransformFactory.nrToAffine(poseToMove);
     // this section keeps the camera oriented the same way to avoid whipping around
-    TransformNR rotationOnlyCOmponentOfManipulator
+    final TransformNR rotationOnlyCOmponentOfManipulator
         = TransformFactory.affineToNr(selectedCsg.getManipulator());
     rotationOnlyCOmponentOfManipulator.setX(0);
     rotationOnlyCOmponentOfManipulator.setY(0);
     rotationOnlyCOmponentOfManipulator.setZ(0);
-    TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
+    final TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
 
-    TransformNR startSelectNr = previousTarget.copy();
-    TransformNR targetNR;
+    final TransformNR startSelectNr = previousTarget.copy();
+    final TransformNR targetNR;
 
     if (checkManipulator()) {
       targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
@@ -679,8 +680,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       targetNR = TransformFactory.affineToNr(centering);
     }
 
-    Affine interpolator = new Affine();
-    Affine correction = TransformFactory.nrToAffine(reverseRotation);
+    final Affine interpolator = new Affine();
+    final Affine correction = TransformFactory.nrToAffine(reverseRotation);
 
     Platform.runLater(() -> {
       interpolator.setTx(startSelectNr.getX() - targetNR.getX());
@@ -710,8 +711,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param csg CSG to add
    */
   @Override
-  public void addCSG(CSG csg) {
-    MeshView mesh = csg.getMesh();
+  public void addCSG(final CSG csg) {
+    final MeshView mesh = csg.getMesh();
     mesh.setMaterial(new PhongMaterial(csg.getColor()));
     mesh.setDepthTest(DepthTest.ENABLE);
     mesh.setCullFace(CullFace.BACK);
@@ -728,11 +729,11 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
         selectCSG(csg, csgMap);
       } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-        ContextMenu menu = new ContextMenu();
+        final ContextMenu menu = new ContextMenu();
         menu.setAutoHide(true);
 
         //Wireframe/Solid draw toggle
-        MenuItem wireframe;
+        final MenuItem wireframe;
 
         //Set the title of the MenuItem to the opposite of the current draw
         if (mesh.getDrawMode().equals(DrawMode.LINE)) {
@@ -752,15 +753,15 @@ public class BowlerCadEngine extends Pane implements CadEngine {
           }
         });
 
-        Set<String> params = csg.getParameters();
+        final Set<String> params = csg.getParameters();
         if (params != null) {
-          Menu parameters = new Menu("Parameters");
+          final Menu parameters = new Menu("Parameters");
           params.forEach(key -> {
             //Regenerate all objects if their parameters have changed
-            Runnable regenerateObjects = () -> {
+            final Runnable regenerateObjects = () -> {
               //Get the set of objects to check for regeneration after the initial regeneration
               //cycle
-              Set<CSG> objects = getCsgMap().keySet();
+              final Set<CSG> objects = getCsgMap().keySet();
 
               //Hide the menu because the parameter is done being changed
               menu.hide();
@@ -769,21 +770,21 @@ public class BowlerCadEngine extends Pane implements CadEngine {
               resetMouseTime();
             };
 
-            Parameter param = CSGDatabase.get(key);
+            final Parameter param = CSGDatabase.get(key);
             csg.setParameterIfNull(key);
 
             if (param instanceof LengthParameter) {
-              LengthParameter lp = (LengthParameter) param;
+              final LengthParameter lp = (LengthParameter) param;
 
-              EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
+              final EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
                   new EngineeringUnitsChangeListener() {
                     @Override
                     public void onSliderMoving(
-                        EngineeringUnitsSliderWidget sliderWidget,
-                        double newAngleDegrees) {
+                        final EngineeringUnitsSliderWidget sliderWidget,
+                        final double newAngleDegrees) {
                       try {
                         csg.setParameterNewValue(key, newAngleDegrees);
-                      } catch (Exception e) {
+                      } catch (final Exception e) {
                         logger.log(Level.SEVERE, //NOPMD
                             "Could not set new parameter value.\n"
                                 + Throwables.getStackTraceAsString(e));
@@ -792,8 +793,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
                     @Override
                     public void onSliderDoneMoving(
-                        EngineeringUnitsSliderWidget sliderWidget,
-                        double newAngleDegrees) {
+                        final EngineeringUnitsSliderWidget sliderWidget,
+                        final double newAngleDegrees) {
                       regenerateObjects.run();
                     }
                   },
@@ -803,15 +804,15 @@ public class BowlerCadEngine extends Pane implements CadEngine {
                   400,
                   key);
 
-              CustomMenuItem customMenuItem = new CustomMenuItem(widget);
+              final CustomMenuItem customMenuItem = new CustomMenuItem(widget);
               customMenuItem.setHideOnClick(false); //Regen will hide the menu
               parameters.getItems().add(customMenuItem);
             } else {
               if (param != null) {
-                Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
+                final Menu paramTypes = new Menu(param.getName() + " " + param.getStrValue());
 
                 param.getOptions().forEach(option -> {
-                  MenuItem customMenuItem = new MenuItem(option);
+                  final MenuItem customMenuItem = new MenuItem(option);
                   customMenuItem.setOnAction(event -> {
                     param.setStrValue(option);
                     CSGDatabase.get(param.getName()).setStrValue(option);
@@ -831,19 +832,19 @@ public class BowlerCadEngine extends Pane implements CadEngine {
           menu.getItems().add(parameters);
         }
 
-        MenuItem exportSTL = new MenuItem("Export as STL");
+        final MenuItem exportSTL = new MenuItem("Export as STL");
         exportSTL.setOnAction(event -> {
-          FileChooser chooser = new FileChooser();
+          final FileChooser chooser = new FileChooser();
           File save = chooser.showSaveDialog(root.getScene().getWindow());
           if (save != null) {
             if (!save.getPath().endsWith(".stl")) {
               save = new File(save.getAbsolutePath() + ".stl");
             }
 
-            CSG readyCSG = csg.prepForManufacturing();
+            final CSG readyCSG = csg.prepForManufacturing();
             try {
               FileUtils.write(save, readyCSG.toStlString());
-            } catch (IOException e) {
+            } catch (final IOException e) {
               logger.log(Level.SEVERE,
                   "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
             }
@@ -861,7 +862,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     Platform.runLater(() -> {
       try {
         meshViewGroup.getChildren().add(mesh);
-      } catch (IllegalArgumentException e) {
+      } catch (final IllegalArgumentException e) {
         logger.warning("Possible duplicate child added to CAD engine.");
         logger.fine(Throwables.getStackTraceAsString(e));
       }
@@ -872,12 +873,12 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   @Override
-  public void addAllCSGs(CSG... csgs) {
+  public void addAllCSGs(final CSG... csgs) {
     Arrays.stream(csgs).forEach(this::addCSG);
   }
 
   @Override
-  public void addAllCSGs(Collection<CSG> csgs) {
+  public void addAllCSGs(final Collection<CSG> csgs) {
     csgs.forEach(this::addCSG);
   }
 
@@ -907,17 +908,17 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return scene;
   }
 
-  private void fireRegenerate(String key, Set<CSG> currentObjectsToCheck) {
-    Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-      List<CSG> toAdd = new ArrayList<>();
-      List<CSG> toRemove = new ArrayList<>();
+  private void fireRegenerate(final String key, final Set<CSG> currentObjectsToCheck) {
+    final Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+      final List<CSG> toAdd = new ArrayList<>();
+      final List<CSG> toRemove = new ArrayList<>();
 
       //For each parameter of each object
       currentObjectsToCheck.forEach(object -> object.getParameters().forEach(param -> {
         //If the parameter matches the input
         if (param.contentEquals(key) && !toRemove.contains(object)) {
           //Regen the csg, remove the existing CSG, and add the new CSG
-          CSG regen = object.regenerate();
+          final CSG regen = object.regenerate();
           toRemove.add(object);
           toAdd.add(regen);
         }

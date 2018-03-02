@@ -10,18 +10,20 @@ import javafx.scene.control.Tab;
  */
 public abstract class AbstractTab<T> extends Tab {
 
-  public AbstractTab(String title) {
+  public AbstractTab(final String title) {
     super(title);
   }
 
   /**
    * Get the visual content of this tab.
+   *
    * @return root node
    */
   public abstract Node getView();
 
   /**
    * Get the controller for the content of this tab.
+   *
    * @return controller
    */
   public abstract T getController();

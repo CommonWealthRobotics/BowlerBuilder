@@ -26,10 +26,10 @@ public class CsgParser {
    * @param csgMap map containing CSG objects
    * @return CSG objects from the script
    */
-  public Collection<CSG> parseCsgFromSource(String scriptName,
-      int lineNumber,
-      Map<CSG, MeshView> csgMap) {
-    Collection<CSG> objsFromScriptLine = new ArrayList<>();
+  public Collection<CSG> parseCsgFromSource(final String scriptName,
+      final int lineNumber,
+      final Map<CSG, MeshView> csgMap) {
+    final Collection<CSG> objsFromScriptLine = new ArrayList<>();
 
     csgMap.keySet().forEach(testCSG -> testCSG.getCreationEventStackTraceList().stream()
         .map(trace -> trace.split(":"))
@@ -41,12 +41,12 @@ public class CsgParser {
                     .trim()))
         .forEach(traceParts -> {
           try {
-            int num = Integer.parseInt(traceParts[1].trim());
+            final int num = Integer.parseInt(traceParts[1].trim());
 
             if (num == lineNumber) {
               objsFromScriptLine.add(testCSG);
             }
-          } catch (Exception e) {
+          } catch (final Exception e) {
             logger.log(Level.WARNING,
                 "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
           }
