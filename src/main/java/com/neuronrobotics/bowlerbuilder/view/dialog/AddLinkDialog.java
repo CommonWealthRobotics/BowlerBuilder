@@ -3,12 +3,12 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 import com.google.common.primitives.Ints;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import java.util.Set;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 public class AddLinkDialog extends Dialog<String[]> {
@@ -20,7 +20,9 @@ public class AddLinkDialog extends Dialog<String[]> {
 
     Label linkNameLabel = new Label("Link name");
     GridPane.setHalignment(linkNameLabel, HPos.RIGHT);
-    TextField linkNameField = new TextField();
+    final ValidatedTextField linkNameField = new ValidatedTextField("Link name cannot be empty",
+        text -> !text.isEmpty());
+    linkNameField.setId("linkNameField");
     GridPane.setHalignment(linkNameField, HPos.LEFT);
 
     Label hwIndexLabel = new Label("Hardware index");
@@ -30,6 +32,7 @@ public class AddLinkDialog extends Dialog<String[]> {
           Integer result = Ints.tryParse(text);
           return result != null && !takenChannels.contains(result);
         });
+    hwIndexField.setId("hwIndexField");
     GridPane.setHalignment(hwIndexField, HPos.LEFT);
 
     GridPane content = new GridPane();
@@ -45,7 +48,8 @@ public class AddLinkDialog extends Dialog<String[]> {
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    okButton.disableProperty().bind(hwIndexField.invalidProperty());
+    okButton.disableProperty().bind(Bindings.or(linkNameField.invalidProperty(),
+        hwIndexField.invalidProperty()));
     okButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> {
