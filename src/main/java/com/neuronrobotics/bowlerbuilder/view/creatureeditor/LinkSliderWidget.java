@@ -33,7 +33,7 @@ import org.reactfx.util.FxTimer;
 public class LinkSliderWidget extends Group implements IJInputEventListener,
     EngineeringUnitsChangeListener, ILinkListener {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(LinkSliderWidget.class.getSimpleName());
   private final AbstractKinematicsNR device;
   private final int linkIndex;
@@ -48,9 +48,10 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   private double seconds;
   private String paramsKey;
 
-  public LinkSliderWidget(final int linkIndex, final DHLink dhlink, final AbstractKinematicsNR d) {
+  public LinkSliderWidget(final int linkIndex, final DHLink dhlink,
+      final AbstractKinematicsNR abstractKinematicsNR) {
     this.linkIndex = linkIndex;
-    this.device = d;
+    this.device = abstractKinematicsNR;
     if (DHParameterKinematics.class.isInstance(device)) {
       dhdevice = (DHParameterKinematics) device;
     }
@@ -151,7 +152,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
     try {
       device.setDesiredJointAxisValue(linkIndex, value, 0);
     } catch (final Exception e) {
-      logger.log(Level.WARNING, "Could not set new joint axis value of " + value + ".\n"
+      LOGGER.log(Level.WARNING, "Could not set new joint axis value of " + value + ".\n"
           + Throwables.getStackTraceAsString(e));
     }
   }
@@ -159,12 +160,12 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   @Override
   public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
       final double newAngleDegrees) {
-    //Don't need to implement
+    //Don'translate need to implement
   }
 
   @Override
   public void onLinkLimit(final AbstractLink arg0, final PIDLimitEvent arg1) {
-    //Don't need to implement
+    //Don'translate need to implement
   }
 
   @Override
@@ -196,7 +197,7 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
             device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
             getSetpoint().setValue(newValue);
           } catch (final Exception e) {
-            logger.log(Level.WARNING, "Could not set new joint axis value of " + newValue + ".\n"
+            LOGGER.log(Level.WARNING, "Could not set new joint axis value of " + newValue + ".\n"
                 + Throwables.getStackTraceAsString(e));
           }
 

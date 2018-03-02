@@ -21,7 +21,7 @@ import javafx.scene.layout.HBox;
 
 public class LimbLayoutController {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(LimbLayoutController.class.getSimpleName());
   protected final MobileBase device;
   protected final ObjectProperty<Optional<DHParameterKinematics>> limbSelection;
@@ -64,7 +64,7 @@ public class LimbLayoutController {
       steerableIcon.setImage(AssetFactory.loadAsset("Load-Limb-Steerable-Wheels.png"));
       fixedIcon.setImage(AssetFactory.loadAsset("Load-Limb-Fixed-Wheels.png"));
     } catch (final Exception e) {
-      logger.warning("Could not load icon assets.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.warning("Could not load icon assets.\n" + Throwables.getStackTraceAsString(e));
     }
 
     addButtons(legPaneHBox, device.getLegs());

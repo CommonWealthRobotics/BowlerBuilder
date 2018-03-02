@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class PreferencesService {
 
-  private static final Logger logger
+  private static final Logger LOGGER
       = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
   private final String prefsSaveDirPath;
   private final String prefsSaveFilePath;
@@ -101,7 +101,7 @@ public class PreferencesService {
    * @param <T> type of entry
    */
   public <T extends Serializable> void set(final String name, final T value) {
-    logger.fine("Set " + name + " to " + value);
+    LOGGER.fine("Set " + name + " to " + value);
     final Serializable prev = data.put(name, value);
     if (listeners.containsKey(name)) {
       listeners.get(name).forEach(listener -> listener.changed(prev, value));
@@ -112,21 +112,21 @@ public class PreferencesService {
    * Load in preferences from the save file.
    */
   public void load() {
-    logger.fine("Trying to load preferences from: " + prefsSaveFilePath);
+    LOGGER.fine("Trying to load preferences from: " + prefsSaveFilePath);
     final File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
       try (ObjectInputStream stream
           = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not open preferences save file.\n" + Throwables.getStackTraceAsString(e));
       } catch (final ClassNotFoundException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
     } else {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Preferences save file does not exist or is a directory: " + prefsSaveFilePath);
     }
   }
@@ -135,21 +135,21 @@ public class PreferencesService {
    * Overwrite the preferences file with the current preferences.
    */
   public void save() {
-    logger.fine("Trying to save preferences to: " + prefsSaveDirPath);
+    LOGGER.fine("Trying to save preferences to: " + prefsSaveDirPath);
     final File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
       try (ObjectOutputStream stream
           = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
         stream.writeObject(data);
       } catch (final FileNotFoundException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not find preferences save file.\n" + Throwables.getStackTraceAsString(e));
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
     } else {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not create file to save preferences for save file: " + prefsSaveFilePath);
     }
   }

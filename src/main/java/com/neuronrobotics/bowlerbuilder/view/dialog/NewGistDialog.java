@@ -85,7 +85,7 @@ public class NewGistDialog extends Dialog<List<String>> {
     return descField.getText();
   }
 
-  public boolean getIsPublic() {
+  public boolean isPublic() {
     return publicBox.isSelected();
   }
 

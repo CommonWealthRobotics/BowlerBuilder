@@ -5,19 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testfx.util.WaitForAsyncUtils;
 
-public class AddFileToGistDialogTest extends AutoClosingApplicationTest {
+public class AddFileToGistDialogTest extends AbstractAutoClosingApplicationTest {
 
   private AddFileToGistDialog dialog;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     dialog = new AddFileToGistDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();

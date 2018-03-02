@@ -8,7 +8,7 @@ import org.testfx.util.WaitForAsyncUtils;
  * A helpful version of {@link ApplicationTest} that automatically cleans up windows after it
  * finishes.
  */
-public abstract class AutoClosingApplicationTest extends ApplicationTest {
+public abstract class AbstractAutoClosingApplicationTest extends ApplicationTest {
 
   @AfterEach
   public void closeAllStages() {

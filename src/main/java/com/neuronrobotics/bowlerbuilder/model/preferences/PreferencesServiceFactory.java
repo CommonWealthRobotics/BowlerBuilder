@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class PreferencesServiceFactory {
 
-  private static final Map<String, PreferencesService> preferencesMap = new ConcurrentHashMap<>();
+  private static final Map<String, PreferencesService> PREFERENCES_MAP = new ConcurrentHashMap<>();
 
   /**
    * Make a new {@link PreferencesService}, or use the previous one if it is in the map.
@@ -17,11 +17,11 @@ public class PreferencesServiceFactory {
    * @return service
    */
   public PreferencesService create(final String folderName) {
-    if (preferencesMap.containsKey(folderName)) {
-      return preferencesMap.get(folderName);
+    if (PREFERENCES_MAP.containsKey(folderName)) {
+      return PREFERENCES_MAP.get(folderName);
     } else {
       final PreferencesService service = new PreferencesService(folderName);
-      preferencesMap.put(folderName, service);
+      PREFERENCES_MAP.put(folderName, service);
       return service;
     }
   }
@@ -30,11 +30,11 @@ public class PreferencesServiceFactory {
    * Save all {@link PreferencesService} that are loaded into the map.
    */
   public void saveAllCached() {
-    preferencesMap.values().forEach(PreferencesService::save);
+    PREFERENCES_MAP.values().forEach(PreferencesService::save);
   }
 
   public Collection<PreferencesService> getAllPreferencesServices() {
-    return preferencesMap.values();
+    return PREFERENCES_MAP.values();
   }
 
 }

@@ -62,7 +62,7 @@ public class WebBrowserController {
     String url = urlField.getText();
 
     if (!url.toLowerCase(Locale.ENGLISH).matches("^\\w+://.*")) {
-      url = String.format("http://%s", url);
+      url = String.format("http://%scale", url);
     }
 
     loadPage(url);

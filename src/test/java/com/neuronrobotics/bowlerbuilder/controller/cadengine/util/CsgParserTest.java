@@ -15,17 +15,17 @@ public class CsgParserTest {
 
   @Test
   public void parseCsgTest() throws Exception {
-    String script = "CSG foo = new Cube(1,1,1).toCSG();";
-    CSG result = (CSG) ScriptingEngine.inlineScriptStringRun(
+    final String script = "CSG foo = new Cube(1,1,1).toCSG();";
+    final CSG result = (CSG) ScriptingEngine.inlineScriptStringRun(
         script,
         new ArrayList<>(),
         "Groovy");
 
-    Map<CSG, MeshView> csgMap = new HashMap<>();
+    final Map<CSG, MeshView> csgMap = new HashMap<>();
     csgMap.put(result, result.getMesh());
 
-    CsgParser parser = new CsgParser();
-    Collection<CSG> test = parser.parseCsgFromSource("Script1", 1, csgMap);
+    final CsgParser parser = new CsgParser();
+    final Collection<CSG> test = parser.parseCsgFromSource("Script1", 1, csgMap);
 
     assertEquals(result, test.iterator().next());
   }

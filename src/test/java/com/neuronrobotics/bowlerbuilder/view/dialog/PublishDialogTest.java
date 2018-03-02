@@ -3,16 +3,16 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class PublishDialogTest extends AutoClosingApplicationTest {
+public class PublishDialogTest extends AbstractAutoClosingApplicationTest {
 
   private PublishDialog dialog;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     dialog = new PublishDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();

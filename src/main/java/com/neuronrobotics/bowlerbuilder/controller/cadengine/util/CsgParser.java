@@ -16,7 +16,7 @@ import javafx.scene.shape.MeshView;
  */
 public class CsgParser {
 
-  private static final Logger logger = LoggerUtilities.getLogger(CsgParser.class.getSimpleName());
+  private static final Logger LOGGER = LoggerUtilities.getLogger(CsgParser.class.getSimpleName());
 
   /**
    * Find the CSG object in the map from the source code.
@@ -47,7 +47,7 @@ public class CsgParser {
               objsFromScriptLine.add(testCSG);
             }
           } catch (final Exception e) {
-            logger.log(Level.WARNING,
+            LOGGER.log(Level.WARNING,
                 "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
           }
         }));

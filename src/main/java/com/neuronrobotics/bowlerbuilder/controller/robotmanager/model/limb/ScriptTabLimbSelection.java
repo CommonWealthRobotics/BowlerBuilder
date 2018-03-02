@@ -15,9 +15,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-public class ScriptTabLimbSelection extends LimbSelection {
+public class ScriptTabLimbSelection extends AbstractLimbSelection {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(ScriptTabLimbSelection.class.getSimpleName());
   private final VBox widget;
 
@@ -38,7 +38,7 @@ public class ScriptTabLimbSelection extends LimbSelection {
               AssetFactory.loadIcon("Edit-CAD-Engine.png"),
               cadEngineSource[0], cadEngineSource[1], cadEngineFile));
     } catch (GitAPIException | IOException e) {
-      logger.warning("Could not parse file from CAD engine source.\n"
+      LOGGER.warning("Could not parse file from CAD engine source.\n"
           + Throwables.getStackTraceAsString(e));
     }
 
@@ -53,7 +53,7 @@ public class ScriptTabLimbSelection extends LimbSelection {
               AssetFactory.loadIcon("Edit-Walking-Engine.png"),
               dhEngineSource[0], dhEngineSource[1], dhEngineFile));
     } catch (GitAPIException | IOException e) {
-      logger.warning("Could not parse file from DH engine source.\n"
+      LOGGER.warning("Could not parse file from DH engine source.\n"
           + Throwables.getStackTraceAsString(e));
     }
 

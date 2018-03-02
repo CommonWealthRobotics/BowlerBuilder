@@ -83,7 +83,7 @@ import org.kohsuke.github.PagedIterable;
 @Singleton
 public class MainWindowController {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
   private final PreferencesServiceFactory preferencesServiceFactory;
   private final PreferencesService preferencesService;
@@ -144,7 +144,7 @@ public class MainWindowController {
     try {
       stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
     } catch (final UnsupportedEncodingException e) {
-      logger.log(Level.SEVERE, "UTF-8 encoding not supported.");
+      LOGGER.log(Level.SEVERE, "UTF-8 encoding not supported.");
     }
 
     System.setOut(stream);
@@ -165,14 +165,14 @@ public class MainWindowController {
         try {
           ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
         } catch (final Exception e) {
-          logger.log(Level.WARNING,
+          LOGGER.log(Level.WARNING,
               "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
         }
       }
     } catch (final IOException e) {
-      logger.log(Level.WARNING,
+      LOGGER.log(Level.WARNING,
           "Could not automatically log in.\n");
-      logOut.setDisable(true); //Can't log out when not logged in
+      logOut.setDisable(true); //Can'translate log out when not logged in
     }
 
     reloadPlugins(preferencesService.get("Widgets", new ArrayList<>()));
@@ -192,7 +192,7 @@ public class MainWindowController {
       myOrgs.getItems().clear();
       myRepos.getItems().clear();
     } catch (final IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not log out from GitHub.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -214,7 +214,7 @@ public class MainWindowController {
               new File(
                   ScriptingEngine.getWorkspace().getAbsolutePath() + "/gistcache/"));
         } catch (IOException e) {
-          logger.log(Level.SEVERE,
+          LOGGER.log(Level.SEVERE,
               "Unable to delete cache.\n" + Throwables.getStackTraceAsString(e));
         }
 
@@ -249,7 +249,7 @@ public class MainWindowController {
       tabPane.getTabs().add(tab);
       tabPane.getSelectionModel().select(tab);
     } catch (final IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -309,7 +309,7 @@ public class MainWindowController {
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load WebBrowser.\n" + Throwables.getStackTraceAsString(e));
       }
     });
@@ -332,7 +332,7 @@ public class MainWindowController {
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
       }
     });
@@ -357,7 +357,7 @@ public class MainWindowController {
     Platform.runLater(() -> {
       try {
         final CreatureLabTab tab = new CreatureLabTab("Creature Lab");
-        final Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+        final Thread thread = LoggerUtilities.newLoggingThread(LOGGER, () -> {
           final AceCreatureLabController controller = tab.getController();
 
           try {
@@ -377,7 +377,7 @@ public class MainWindowController {
                 controller);
 
             mobileBaseCadManager.generateCad();
-            logger.log(Level.INFO, "Waiting for cad to generate.");
+            LOGGER.log(Level.INFO, "Waiting for cad to generate.");
 
             controller.getCreatureEditorController().getCadProgress().progressProperty()
                 .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
@@ -386,10 +386,10 @@ public class MainWindowController {
               ThreadUtil.wait(1000);
             }
           } catch (final IOException e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Could not load assets for robot.\n" + Throwables.getStackTraceAsString(e));
           } catch (final Exception e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Could not start building robot.\n" + Throwables.getStackTraceAsString(e));
           }
         });
@@ -399,14 +399,14 @@ public class MainWindowController {
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load AceCreatureEditor.\n" + Throwables.getStackTraceAsString(e));
       }
     });
   }
 
   private void tryLogin() {
-    ScriptingEngine.setLoginManager(s -> {
+    ScriptingEngine.setLoginManager(loginID -> {
       final LoginDialog dialog = new LoginDialog();
 
       final Optional<Boolean> result = dialog.showAndWait();
@@ -427,16 +427,16 @@ public class MainWindowController {
         setupMenusOnLogin();
       }
     } catch (final IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not launch GitHub as non-anonymous.\n" + Throwables.getStackTraceAsString(e));
       try {
         ScriptingEngine.setupAnyonmous();
       } catch (final IOException e1) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not launch GitHub anonymous.\n" + Throwables.getStackTraceAsString(e));
       }
     } catch (final GitAPIException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not log in.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -448,7 +448,7 @@ public class MainWindowController {
     try {
       ScriptingEngine.setAutoupdate(true);
     } catch (final IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not set auto update.\n" + Throwables.getStackTraceAsString(e));
     }
 
@@ -478,28 +478,28 @@ public class MainWindowController {
       try {
         myself = gitHub.getMyself();
 
-        LoggerUtilities.newLoggingThread(logger, () -> {
+        LoggerUtilities.newLoggingThread(LOGGER, () -> {
           try {
             loadGistsIntoMenus(myGists, myself.listGists());
           } catch (IOException e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Unable to list gists.\n" + Throwables.getStackTraceAsString(e));
           }
         }).start();
 
-        LoggerUtilities.newLoggingThread(logger, () -> {
+        LoggerUtilities.newLoggingThread(LOGGER, () -> {
           try {
             loadOrgsIntoMenus(myOrgs, myself.getAllOrganizations());
           } catch (IOException e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Unable to get organizations.\n" + Throwables.getStackTraceAsString(e));
           }
         }).start();
 
-        LoggerUtilities.newLoggingThread(logger, () ->
+        LoggerUtilities.newLoggingThread(LOGGER, () ->
             loadReposIntoMenus(myRepos, myself.listRepositories())).start();
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
       }
     });
@@ -512,7 +512,7 @@ public class MainWindowController {
     Platform.runLater(() -> {
       cadVitamins.getItems().clear();
 
-      LoggerUtilities.newLoggingThread(logger, () ->
+      LoggerUtilities.newLoggingThread(LOGGER, () ->
           Vitamins.listVitaminTypes().stream().sorted().forEach(vitamin -> {
 
             final Menu vitaminMenu = new Menu(vitamin);
@@ -569,7 +569,7 @@ public class MainWindowController {
                 .findFirst()
                 .ifPresent(newGist -> openGistFileInEditor(newGist, newGist.getFile(name)));
           } catch (final Exception e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Could not add file to gist.\n" + Throwables.getStackTraceAsString(e));
           }
         });
@@ -591,7 +591,7 @@ public class MainWindowController {
                 "Add file: " + selection.getName());
             reloadGitMenus();
           } catch (final Exception e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Could not add file from disk to gist.\n" + Throwables.getStackTraceAsString(e));
           }
         }
@@ -650,7 +650,7 @@ public class MainWindowController {
         }
         return name;
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Error while sanitizing organization name.\n" + Throwables.getStackTraceAsString(e));
       }
 
@@ -677,7 +677,7 @@ public class MainWindowController {
           try {
             loadPageIntoNewTab(org.getName(), org.getHtmlUrl());
           } catch (final IOException e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Could not get organization name when loading new tab.\n"
                     + Throwables.getStackTraceAsString(e));
           }
@@ -685,7 +685,7 @@ public class MainWindowController {
 
         menu.getItems().add(orgMenu);
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
       }
     });
@@ -716,7 +716,7 @@ public class MainWindowController {
         try {
           plugin.run();
         } catch (Exception e) {
-          logger.log(Level.SEVERE,
+          LOGGER.log(Level.SEVERE,
               "Unable to run plugin " + plugin.getGitSource() + "\n"
                   + Throwables.getStackTraceAsString(e));
         }
@@ -746,13 +746,13 @@ public class MainWindowController {
       @Override
       @SuppressFBWarnings(value = "DM_RUN_FINALIZERS_ON_EXIT")
       public void run() {
-        logger.log(Level.SEVERE, "Still alive for some reason. Printing threads and "
+        LOGGER.log(Level.SEVERE, "Still alive for some reason. Printing threads and "
             + "killing VM...");
 
         final Set<Thread> threads = Thread.getAllStackTraces().keySet();
         final StringBuilder threadString = new StringBuilder();
         threads.forEach(item -> threadString.append(item).append("\n"));
-        logger.log(Level.FINE, threadString.toString());
+        LOGGER.log(Level.FINE, threadString.toString());
 
         Runtime.getRuntime().exit(1); //Abnormal exit
       }
@@ -777,7 +777,7 @@ public class MainWindowController {
     try {
       return Optional.of(FxUtil.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
     } catch (ExecutionException | InterruptedException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not get selected tab.\n" + Throwables.getStackTraceAsString(e));
     }
 

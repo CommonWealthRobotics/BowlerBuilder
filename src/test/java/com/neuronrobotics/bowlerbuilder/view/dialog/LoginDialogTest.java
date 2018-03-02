@@ -4,16 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class LoginDialogTest extends AutoClosingApplicationTest {
+public class LoginDialogTest extends AbstractAutoClosingApplicationTest {
 
   private LoginDialog dialog;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     dialog = new LoginDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();

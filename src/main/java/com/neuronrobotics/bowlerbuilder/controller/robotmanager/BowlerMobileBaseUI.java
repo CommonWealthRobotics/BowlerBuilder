@@ -14,7 +14,7 @@ import javafx.application.Platform;
 
 public class BowlerMobileBaseUI implements IMobileBaseUI {
 
-  private static final Logger logger
+  private static final Logger LOGGER
       = LoggerUtilities.getLogger(IMobileBaseUI.class.getSimpleName());
 
   private final CadEngine cadEngine;
@@ -37,9 +37,9 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   }
 
   @Override
-  public void highlightException(final File file, final Exception e) {
-    logger.log(Level.WARNING,
-        "Exception in CAD script.\n" + Throwables.getStackTraceAsString(e));
+  public void highlightException(final File file, final Exception exception) {
+    LOGGER.log(Level.WARNING,
+        "Exception in CAD script.\n" + Throwables.getStackTraceAsString(exception));
   }
 
   @Override

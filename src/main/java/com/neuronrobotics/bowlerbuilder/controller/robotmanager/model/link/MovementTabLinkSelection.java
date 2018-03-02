@@ -7,7 +7,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
 
-public class MovementTabLinkSelection extends LinkSelection {
+public class MovementTabLinkSelection extends AbstractLinkSelection {
 
   private final LinkSliderWidget slider;
 

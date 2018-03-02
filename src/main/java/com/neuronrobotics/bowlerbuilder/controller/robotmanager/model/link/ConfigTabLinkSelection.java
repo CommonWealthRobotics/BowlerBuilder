@@ -12,7 +12,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-public class ConfigTabLinkSelection extends LinkSelection implements
+public class ConfigTabLinkSelection extends AbstractLinkSelection implements
     EngineeringUnitsChangeListener {
 
   private final MobileBaseCadManager cadManager;
@@ -45,7 +45,7 @@ public class ConfigTabLinkSelection extends LinkSelection implements
   @Override
   public void onSliderMoving(final EngineeringUnitsSliderWidget source,
       final double newAngleDegrees) {
-    //Don't need to implement
+    //Don'translate need to implement
   }
 
   @Override

@@ -17,24 +17,24 @@ import javafx.stage.Stage;
 @Singleton
 public class BowlerBuilder extends Application {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(BowlerBuilder.class.getSimpleName());
-  private static final Injector injector = Guice.createInjector();
+  private static final Injector INJECTOR = Guice.createInjector();
 
   @Override
   public void start(final Stage primaryStage) throws IOException {
     //Log uncaught exceptions on the FX thread
-    Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
-        logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
+    Thread.currentThread().setUncaughtExceptionHandler((exceptionThread, exception) ->
+        LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception)));
 
-    Thread.setDefaultUncaughtExceptionHandler((t, e) ->
-        logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
+    Thread.setDefaultUncaughtExceptionHandler((exceptionThread, exception) ->
+        LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception)));
 
     final FXMLLoader loader = new FXMLLoader(
         BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
         null,
         null,
-        injector::getInstance);
+        INJECTOR::getInstance);
     final Pane mainWindow = loader.load();
 
     primaryStage.setTitle("BowlerBuilder");
@@ -45,11 +45,11 @@ public class BowlerBuilder extends Application {
   }
 
   public static Injector getInjector() {
-    return injector;
+    return INJECTOR;
   }
 
   public static MainWindowController getMainController() {
-    return injector.getInstance(MainWindowController.class);
+    return INJECTOR.getInstance(MainWindowController.class);
   }
 
 }

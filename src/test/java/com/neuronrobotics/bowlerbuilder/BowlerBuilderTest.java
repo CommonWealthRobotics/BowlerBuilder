@@ -7,18 +7,18 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class BowlerBuilderTest extends AutoClosingApplicationTest {
+public class BowlerBuilderTest extends AbstractAutoClosingApplicationTest {
 
   @Override
-  public void start(Stage stage) throws Exception {
-    Injector injector = Guice.createInjector();
-    FXMLLoader loader = new FXMLLoader(
+  public void start(final Stage stage) throws Exception {
+    final Injector injector = Guice.createInjector();
+    final FXMLLoader loader = new FXMLLoader(
         getClass().getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
         null,
         null,
         injector::getInstance);
 
-    Pane mainWindow = loader.load();
+    final Pane mainWindow = loader.load();
     stage.setScene(new Scene(mainWindow));
     stage.show();
   }

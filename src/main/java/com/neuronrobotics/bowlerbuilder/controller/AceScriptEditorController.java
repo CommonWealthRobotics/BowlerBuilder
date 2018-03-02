@@ -47,7 +47,7 @@ import org.kohsuke.github.GHGistFile;
 
 public class AceScriptEditorController {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(AceScriptEditorController.class.getSimpleName());
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
@@ -88,7 +88,7 @@ public class AceScriptEditorController {
     this.scriptLangName = scriptLangName;
     this.stringClipper = stringClipper;
 
-    logger.log(Level.FINE, "factory: " + preferencesServiceFactory);
+    LOGGER.log(Level.FINE, "factory: " + preferencesServiceFactory);
 
     final PreferencesService preferencesService
         = preferencesServiceFactory.create("AceScriptEditorController");
@@ -103,7 +103,7 @@ public class AceScriptEditorController {
     preferencesService.addListener("Max Toast Length",
         (PreferenceListener<Integer>) (oldVal, newVal) -> maxToastLength.setValue(newVal));
 
-    logger.log(Level.FINE, "Running with language: " + scriptLangName);
+    LOGGER.log(Level.FINE, "Running with language: " + scriptLangName);
   }
 
   @FXML
@@ -121,7 +121,7 @@ public class AceScriptEditorController {
 
   @FXML
   private void runFile(final ActionEvent actionEvent) {
-    final Thread thread = LoggerUtilities.newLoggingThread(logger, this::runEditorContent);
+    final Thread thread = LoggerUtilities.newLoggingThread(LOGGER, this::runEditorContent);
     thread.setDaemon(true);
     thread.start();
   }
@@ -167,7 +167,7 @@ public class AceScriptEditorController {
             commitMessage
         );
       } catch (final Exception e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not commit.\n" + Throwables.getStackTraceAsString(e));
         Platform.runLater(() -> Notifications.create()
             .title("Commit failed")
@@ -182,13 +182,13 @@ public class AceScriptEditorController {
    */
   private void publishScratchpad() {
     final NewGistDialog dialog = new NewGistDialog();
-    dialog.showAndWait().ifPresent(__ -> {
+    dialog.showAndWait().ifPresent(result -> {
       try {
         //Make a new gist
         final GHGist newGist = GistUtilities.createNewGist(
             dialog.getName(),
             dialog.getDescription(),
-            dialog.getIsPublic()
+            dialog.isPublic()
         );
 
         final PublishDialog publishDialog = new PublishDialog();
@@ -211,12 +211,12 @@ public class AceScriptEditorController {
             tab.setText(dialog.getName());
             reloadMenus.run();
           } catch (final Exception e) {
-            logger.log(Level.SEVERE,
+            LOGGER.log(Level.SEVERE,
                 "Could not push code.\n" + Throwables.getStackTraceAsString(e));
           }
         });
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
       }
     });
@@ -245,7 +245,7 @@ public class AceScriptEditorController {
           scriptLangName = "BowlerGroovy";
         }
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load file: " + file.getAbsolutePath() + ".\n"
                 + Throwables.getStackTraceAsString(e));
       }
@@ -273,7 +273,7 @@ public class AceScriptEditorController {
 
       loadFile(file);
     } catch (GitAPIException | IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -297,7 +297,7 @@ public class AceScriptEditorController {
       try {
         scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
       } catch (final IOException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not load file: " + file.getAbsolutePath() + ".\n"
                 + Throwables.getStackTraceAsString(e));
       }
@@ -315,11 +315,11 @@ public class AceScriptEditorController {
         return runStringScript(
             FxUtil.returnFX(scriptEditor::getText), new ArrayList<>(), scriptLangName);
       } catch (final ExecutionException e) {
-        logger.log(Level.SEVERE,
+        LOGGER.log(Level.SEVERE,
             "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
       }
     } catch (final InterruptedException e) {
-      logger.log(Level.WARNING,
+      LOGGER.log(Level.WARNING,
           "CountDownLatch interrupted while waiting to get editor content.\n"
               + Throwables.getStackTraceAsString(e));
     }
@@ -328,7 +328,7 @@ public class AceScriptEditorController {
   }
 
   /**
-   * Run a script from a string in the editor's environment.
+   * Run a script from a string in the editor'scale environment.
    *
    * @param script script content
    * @param arguments script arguments
@@ -339,15 +339,15 @@ public class AceScriptEditorController {
       final String languageName) {
     try {
       //Run the code
-      logger.log(Level.FINE, "Running script.");
+      LOGGER.log(Level.FINE, "Running script.");
       final Object result = scriptRunner.runScript(script, arguments, languageName);
-      logger.log(Level.FINER, "Result is: " + result);
+      LOGGER.log(Level.FINER, "Result is: " + result);
       return result;
     } catch (final IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
     } catch (final GroovyRuntimeException e) {
-      logger.log(Level.WARNING,
+      LOGGER.log(Level.WARNING,
           "Error in CAD script: " + e.getMessage());
       Platform.runLater(() -> Notifications.create()
           .title("Error in CAD Script")
@@ -356,7 +356,7 @@ public class AceScriptEditorController {
           .position(Pos.BOTTOM_RIGHT)
           .showInformation());
     } catch (final Exception e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
     }
 

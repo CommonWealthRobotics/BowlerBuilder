@@ -24,7 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class LimbTabLimbSelection extends LimbSelection {
+public class LimbTabLimbSelection extends AbstractLimbSelection {
 
   private final ObjectProperty<LinkConfiguration> selectionProperty;
   private final VBox view;

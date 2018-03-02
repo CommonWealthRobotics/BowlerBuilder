@@ -18,41 +18,42 @@ import org.apache.commons.io.FileUtils;
 public final class LoggerUtilities {
 
   //Log file parent directory path
-  private static final String logFileDirPath;
+  private static final String LOG_FILE_DIR_PATH;
 
   //Log file path
-  private static final String logFilePath;
+  private static final String LOG_FILE_PATH;
 
   //FileHandler that saves to the log file
   private static FileHandler fileHandler;
 
   //Previous logger names
-  private static final Collection<String> loggerNames;
+  private static final Collection<String> LOGGER_NAMES;
 
   static {
-    logFileDirPath = getBowlerDirectory()
+    LOG_FILE_DIR_PATH = getBowlerDirectory()
         + File.separator
         + "logs"
         + File.separator;
 
-    logFilePath = logFileDirPath
+    LOG_FILE_PATH = LOG_FILE_DIR_PATH
         + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
         .format(new Date());
 
-    final File testFile = new File(logFileDirPath);
+    final File testFile = new File(LOG_FILE_DIR_PATH);
     try {
       if (testFile.exists() || testFile.mkdirs()) {
-        fileHandler = new FileHandler(logFilePath, true);
+        fileHandler = new FileHandler(LOG_FILE_PATH, true);
         fileHandler.setFormatter(new SimpleFormatter());
       } else {
-        throw new IOException("LoggerUtilities could not create the logging file: " + logFilePath);
+        throw new IOException(
+            "LoggerUtilities could not create the logging file: " + LOG_FILE_PATH);
       }
     } catch (final IOException e) {
-      //We can't call a logger here instead because we are the logger!
+      //We can'translate call a logger here instead because we are the logger!
       e.printStackTrace(); //NOPMD
     }
 
-    loggerNames = new ArrayList<>();
+    LOGGER_NAMES = new ArrayList<>();
   }
 
   private LoggerUtilities() {
@@ -60,11 +61,11 @@ public final class LoggerUtilities {
   }
 
   public static String getLogFileDirPath() {
-    return logFileDirPath;
+    return LOG_FILE_DIR_PATH;
   }
 
   public static String getLogFilePath() {
-    return logFilePath;
+    return LOG_FILE_PATH;
   }
 
   public static FileHandler getFileHandler() {
@@ -90,8 +91,9 @@ public final class LoggerUtilities {
    */
   public static Thread newLoggingThread(final Logger logger, final Runnable runnable) {
     final Thread thread = new Thread(runnable);
-    thread.setUncaughtExceptionHandler((t, e) ->
-        logger.log(Level.SEVERE, Throwables.getStackTraceAsString(e)));
+    thread.setUncaughtExceptionHandler((exceptionThread, exception) ->
+        logger.log(Level.SEVERE, "Uncaught exception in thread: " + exceptionThread.getName()
+            + "\n" + Throwables.getStackTraceAsString(exception)));
     return thread;
   }
 
@@ -102,7 +104,7 @@ public final class LoggerUtilities {
    * @return new logger
    */
   public static Logger getLogger(final String name) {
-    if (loggerNames.contains(name)) {
+    if (LOGGER_NAMES.contains(name)) {
       throw new UnsupportedOperationException(
           "Cannot add logger of name: " + name + ". A logger with the same name already exists.");
     }

@@ -13,7 +13,7 @@ import org.kohsuke.github.GitHub;
 
 public final class GistUtilities {
 
-  private static final Logger logger
+  private static final Logger LOGGER
       = LoggerUtilities.getLogger(GistUtilities.class.getSimpleName());
 
   private GistUtilities() {
@@ -59,7 +59,7 @@ public final class GistUtilities {
         ScriptingEngine.fileFromGit(gist.getGitPullUrl(), filename);
         break;
       } catch (final GitAPIException e) {
-        logger.log(Level.INFO, "Waiting on Git API.");
+        LOGGER.log(Level.INFO, "Waiting on Git API.");
       }
 
       ThreadUtil.wait(500);
@@ -89,7 +89,7 @@ public final class GistUtilities {
    * @return optional containing a valid gist URL, empty otherwise
    */
   public static Optional<String> isValidGitURL(final String url) {
-    //Any git URL is ((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
+    //Any git URL is ((git|ssh|http(scale)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
     if (url.matches("(http(s)?)(:(//)?)([\\w.@:/\\-~]+)(\\.git)(/)?")) {
       return Optional.of(url);
     }

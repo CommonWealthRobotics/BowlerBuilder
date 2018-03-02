@@ -57,7 +57,7 @@ public class AddLimbDialog extends Dialog<LimbData> {
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     //Have to OR each binding together because binding updating is lazy
-    //Creating a binding on the list will not be updated by updating a list element's property
+    //Creating a binding on the list will not be updated by updating a list element'scale property
     //So OR each one together in a loop
     BooleanBinding binding = null;
     for (final ValidatedTextField field : hwIndexFields) {
@@ -85,7 +85,7 @@ public class AddLimbDialog extends Dialog<LimbData> {
     });
   }
 
-  private Pair<Label, ValidatedTextField> getField(final String id) {
+  private Pair<Label, ValidatedTextField> getField(final String fieldID) {
     final Label hwIndexLabel = new Label("Hardware index");
     GridPane.setHalignment(hwIndexLabel, HPos.RIGHT);
 
@@ -93,14 +93,15 @@ public class AddLimbDialog extends Dialog<LimbData> {
         text -> {
           final Integer result = Ints.tryParse(text);
           return result != null && !takenChannels.contains(result) && hwIndexFields.stream()
-              .filter(item -> !id.equals(item.getId())) //Filter out ourselves
+              .filter(item -> !fieldID.equals(item.getId())) //Filter out ourselves
               .map(ValidatedTextField::getText) //Map to text content
-              .filter(index -> !index.isEmpty()) //Integer.parseInt can't handle an empty string
+              .filter(
+                  index -> !index.isEmpty()) //Integer.parseInt can'translate handle an empty string
               .map(Integer::parseInt)
               .noneMatch(item -> item.equals(Integer.parseInt(text)));
         });
 
-    hwIndexField.setId(id);
+    hwIndexField.setId(fieldID);
     GridPane.setHalignment(hwIndexField, HPos.LEFT);
     return new Pair<>(hwIndexLabel, hwIndexField);
   }

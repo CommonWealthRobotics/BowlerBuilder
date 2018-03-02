@@ -45,25 +45,25 @@ public class Line3D extends Cylinder {
 
     final double xyProjection = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 
-    final Affine xy = new Affine();
+    final Affine xyRot = new Affine();
     final double rotY = Math.toDegrees(Math.atan2(xyProjection, zDiff));
-    xy.appendRotation(-90 - rotY, 0, 0, 0, 0, 1, 0);
+    xyRot.appendRotation(-90 - rotY, 0, 0, 0, 0, 1, 0);
 
     final Affine orent = new Affine();
     orent.appendRotation(90, 0, 0, 0, 0, 0, 1);
     orent.setTx(lineLen / 2);
 
-    final Affine zp = new Affine();
+    final Affine zRot = new Affine();
     final double rotZ = Math.toDegrees(Math.atan2(xDiff, yDiff));
-    zp.appendRotation(-90 - rotZ, 0, 0, 0, 0, 0, 1);
+    zRot.appendRotation(-90 - rotZ, 0, 0, 0, 0, 0, 1);
     final Affine zTrans = new Affine();
     zTrans.setTx(startX);
     zTrans.setTy(startY);
     zTrans.setTz(startZ);
 
     getTransforms().add(zTrans);
-    getTransforms().add(zp);
-    getTransforms().add(xy);
+    getTransforms().add(zRot);
+    getTransforms().add(xyRot);
 
     getTransforms().add(orent);
 

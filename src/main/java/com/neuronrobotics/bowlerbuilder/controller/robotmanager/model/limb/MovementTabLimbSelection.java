@@ -8,10 +8,10 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 
-public class MovementTabLimbSelection extends LimbSelection {
+public class MovementTabLimbSelection extends AbstractLimbSelection {
 
   //Need static store so only one thread controls a limb at a time
-  private static final Map<DHParameterKinematics, JogWidget> jogWidgetMap = new HashMap<>();
+  private static final Map<DHParameterKinematics, JogWidget> JOG_WIDGET_MAP = new HashMap<>();
   private final VBox view;
 
   public MovementTabLimbSelection(final DHParameterKinematics limb) {
@@ -21,11 +21,11 @@ public class MovementTabLimbSelection extends LimbSelection {
 
     view.setPadding(new Insets(5));
 
-    if (jogWidgetMap.containsKey(limb)) {
-      view.getChildren().add(jogWidgetMap.get(limb).getView());
+    if (JOG_WIDGET_MAP.containsKey(limb)) {
+      view.getChildren().add(JOG_WIDGET_MAP.get(limb).getView());
     } else {
       final JogWidget jogWidget = new JogWidget(limb);
-      jogWidgetMap.put(limb, jogWidget);
+      JOG_WIDGET_MAP.put(limb, jogWidget);
       view.getChildren().add(jogWidget.getView());
     }
   }
@@ -38,22 +38,22 @@ public class MovementTabLimbSelection extends LimbSelection {
   /**
    * Stop the jog thread if there is a jog widget for the limb.
    *
-   * @param dh limb
+   * @param kinematics limb
    */
-  public void stopJogThread(final DHParameterKinematics dh) {
-    if (jogWidgetMap.containsKey(dh)) {
-      jogWidgetMap.get(dh).jogThreadRunningProperty().set(false);
+  public void stopJogThread(final DHParameterKinematics kinematics) {
+    if (JOG_WIDGET_MAP.containsKey(kinematics)) {
+      JOG_WIDGET_MAP.get(kinematics).jogThreadRunningProperty().set(false);
     }
   }
 
   /**
    * Start the jog thread if there is a jog widget for the limb.
    *
-   * @param dh limb
+   * @param kinematics limb
    */
-  public void startJogThread(final DHParameterKinematics dh) {
-    if (jogWidgetMap.containsKey(dh)) {
-      jogWidgetMap.get(dh).jogThreadRunningProperty().set(true);
+  public void startJogThread(final DHParameterKinematics kinematics) {
+    if (JOG_WIDGET_MAP.containsKey(kinematics)) {
+      JOG_WIDGET_MAP.get(kinematics).jogThreadRunningProperty().set(true);
     }
   }
 

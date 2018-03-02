@@ -2,15 +2,15 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import static org.junit.Assert.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class HelpDialogTest extends AutoClosingApplicationTest {
+public class HelpDialogTest extends AbstractAutoClosingApplicationTest {
 
   @Override
-  public void start(Stage stage) {
-    HelpDialog dialog = new HelpDialog();
+  public void start(final Stage stage) {
+    final HelpDialog dialog = new HelpDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();
   }

@@ -39,20 +39,20 @@ import javafx.scene.transform.Translate;
 
 public class XForm extends Group {
 
-  public final Translate t = new Translate();
-  public final Translate p = new Translate();
-  public final Translate ip = new Translate();
+  public final Translate translate = new Translate();
+  public final Translate translate1 = new Translate();
+  public final Translate translate2 = new Translate();
 
-  public final Rotate rx = new Rotate();
-  public final Rotate ry = new Rotate();
-  public final Rotate rz = new Rotate();
+  public final Rotate rotX = new Rotate();
+  public final Rotate rotY = new Rotate();
+  public final Rotate rotZ = new Rotate();
 
-  public final Scale s = new Scale();
+  public final Scale scale = new Scale();
 
   { //NOPMD
-    rx.setAxis(Rotate.X_AXIS);
-    ry.setAxis(Rotate.Y_AXIS);
-    rz.setAxis(Rotate.Z_AXIS);
+    rotX.setAxis(Rotate.X_AXIS);
+    rotY.setAxis(Rotate.Y_AXIS);
+    rotZ.setAxis(Rotate.Z_AXIS);
   }
 
   /**
@@ -60,7 +60,7 @@ public class XForm extends Group {
    */
   public XForm() {
     super();
-    getTransforms().addAll(t, rz, ry, rx, s);
+    getTransforms().addAll(translate, rotZ, rotY, rotX, scale);
   }
 
   /**
@@ -73,22 +73,23 @@ public class XForm extends Group {
     // choose the order of rotations based on the rotateOrder
     switch (rotateOrder) {
       case XYZ:
-        getTransforms().addAll(t, p, rz, ry, rx, s, ip);
+        getTransforms().addAll(translate, translate1, rotZ, rotY, rotX, scale, translate2);
         break;
       case XZY:
-        getTransforms().addAll(t, p, ry, rz, rx, s, ip);
+        getTransforms().addAll(translate, translate1, rotY, rotZ, rotX, scale, translate2);
         break;
       case YXZ:
-        getTransforms().addAll(t, p, rz, rx, ry, s, ip);
+        getTransforms().addAll(translate, translate1, rotZ, rotX, rotY, scale, translate2);
         break;
       case YZX:
-        getTransforms().addAll(t, p, rx, rz, ry, s, ip);  // For Camera
+        getTransforms()
+            .addAll(translate, translate1, rotX, rotZ, rotY, scale, translate2);  // For Camera
         break;
       case ZXY:
-        getTransforms().addAll(t, p, ry, rx, rz, s, ip);
+        getTransforms().addAll(translate, translate1, rotY, rotX, rotZ, scale, translate2);
         break;
       case ZYX:
-        getTransforms().addAll(t, p, rx, ry, rz, s, ip);
+        getTransforms().addAll(translate, translate1, rotX, rotY, rotZ, scale, translate2);
         break;
       default:
         break;
@@ -98,125 +99,125 @@ public class XForm extends Group {
   /**
    * Sets the translate.
    *
-   * @param x the x
-   * @param y the y
-   * @param z the z
+   * @param newX the x
+   * @param newY the y
+   * @param newZ the z
    */
-  public void setTranslate(final double x, final double y, final double z) {
-    t.setX(x);
-    t.setY(y);
-    t.setZ(z);
+  public void setTranslate(final double newX, final double newY, final double newZ) {
+    translate.setX(newX);
+    translate.setY(newY);
+    translate.setZ(newZ);
   }
 
   /**
    * Sets the translate.
    *
-   * @param x the x
-   * @param y the y
+   * @param newX the x
+   * @param newY the y
    */
-  public void setTranslate(final double x, final double y) {
-    t.setX(x);
-    t.setY(y);
+  public void setTranslate(final double newX, final double newY) {
+    translate.setX(newX);
+    translate.setY(newY);
   }
 
   /**
    * Sets the tx.
    *
-   * @param x the new tx
+   * @param newX the new tx
    */
   // Use these methods instead:
-  public void setTx(final double x) {
-    t.setX(x);
+  public void setTx(final double newX) {
+    translate.setX(newX);
   }
 
   // Cannot override these methods as they are final:
-  // public void setTranslateX(double x) { t.setX(x); }
-  // public void setTranslateY(double y) { t.setY(y); }
-  // public void setTranslateZ(double z) { t.setZ(z); }
+  // public void setTranslateX(double x) { translate.setX(x); }
+  // public void setTranslateY(double y) { translate.setY(y); }
+  // public void setTranslateZ(double z) { translate.setZ(z); }
 
   /**
    * Sets the ty.
    *
-   * @param y the new ty
+   * @param newY the new ty
    */
-  public void setTy(final double y) {
-    t.setY(y);
+  public void setTy(final double newY) {
+    translate.setY(newY);
   }
 
   /**
    * Sets the tz.
    *
-   * @param z the new tz
+   * @param newZ the new tz
    */
-  public void setTz(final double z) {
-    t.setZ(z);
+  public void setTz(final double newZ) {
+    translate.setZ(newZ);
   }
 
   /**
    * Sets the rotate.
    *
-   * @param x the x
-   * @param y the y
-   * @param z the z
+   * @param newX the x
+   * @param newY the y
+   * @param newZ the z
    */
-  public void setRotate(final double x, final double y, final double z) {
-    rx.setAngle(x);
-    ry.setAngle(y);
-    rz.setAngle(z);
+  public void setRotate(final double newX, final double newY, final double newZ) {
+    rotX.setAngle(newX);
+    rotY.setAngle(newY);
+    rotZ.setAngle(newZ);
   }
 
   /**
    * Sets the rotate x.
    *
-   * @param x the new rotate x
+   * @param newX the new rotate x
    */
-  public void setRotateX(final double x) {
-    rx.setAngle(x);
+  public void setRotateX(final double newX) {
+    rotX.setAngle(newX);
   }
 
   /**
    * Sets the rotate y.
    *
-   * @param y the new rotate y
+   * @param newY the new rotate y
    */
-  public void setRotateY(final double y) {
-    ry.setAngle(y);
+  public void setRotateY(final double newY) {
+    rotY.setAngle(newY);
   }
 
   /**
    * Sets the rotate z.
    *
-   * @param z the new rotate z
+   * @param newZ the new rotate z
    */
-  public void setRotateZ(final double z) {
-    rz.setAngle(z);
+  public void setRotateZ(final double newZ) {
+    rotZ.setAngle(newZ);
   }
 
   /**
-   * Sets the rx.
+   * Sets the rotX.
    *
-   * @param x the new rx
+   * @param newX the new rotX
    */
-  public void setRx(final double x) {
-    rx.setAngle(x);
+  public void setRotX(final double newX) {
+    rotX.setAngle(newX);
   }
 
   /**
-   * Sets the ry.
+   * Sets the rotY.
    *
-   * @param y the new ry
+   * @param newY the new rotY
    */
-  public void setRy(final double y) {
-    ry.setAngle(y);
+  public void setRotY(final double newY) {
+    rotY.setAngle(newY);
   }
 
   /**
-   * Sets the rz.
+   * Sets the rotZ.
    *
-   * @param z the new rz
+   * @param newZ the new rotZ
    */
-  public void setRz(final double z) {
-    rz.setAngle(z);
+  public void setRotZ(final double newZ) {
+    rotZ.setAngle(newZ);
   }
 
   /**
@@ -225,110 +226,110 @@ public class XForm extends Group {
    * @param scaleFactor the new scale
    */
   public void setScale(final double scaleFactor) {
-    s.setX(scaleFactor);
-    s.setY(scaleFactor);
-    s.setZ(scaleFactor);
+    scale.setX(scaleFactor);
+    scale.setY(scaleFactor);
+    scale.setZ(scaleFactor);
   }
 
   /**
    * Sets the scale.
    *
-   * @param x the x
-   * @param y the y
-   * @param z the z
+   * @param newX the x
+   * @param newY the y
+   * @param newZ the z
    */
-  public void setScale(final double x, final double y, final double z) {
-    s.setX(x);
-    s.setY(y);
-    s.setZ(z);
+  public void setScale(final double newX, final double newY, final double newZ) {
+    scale.setX(newX);
+    scale.setY(newY);
+    scale.setZ(newZ);
   }
 
   /**
    * Sets the sx.
    *
-   * @param x the new sx
+   * @param newX the x
    */
   // Use these methods instead:
-  public void setSx(final double x) {
-    s.setX(x);
+  public void setSx(final double newX) {
+    scale.setX(newX);
   }
 
   // Cannot override these methods as they are final:
-  // public void setScaleX(double x) { s.setX(x); }
-  // public void setScaleY(double y) { s.setY(y); }
-  // public void setScaleZ(double z) { s.setZ(z); }
+  // public void setScaleX(double x) { scale.setX(x); }
+  // public void setScaleY(double y) { scale.setY(y); }
+  // public void setScaleZ(double z) { scale.setZ(z); }
 
   /**
    * Sets the sy.
    *
-   * @param y the new sy
+   * @param newY the new sy
    */
-  public void setSy(final double y) {
-    s.setY(y);
+  public void setSy(final double newY) {
+    scale.setY(newY);
   }
 
   /**
    * Sets the sz.
    *
-   * @param z the new sz
+   * @param newZ the z
    */
-  public void setSz(final double z) {
-    s.setZ(z);
+  public void setSz(final double newZ) {
+    scale.setZ(newZ);
   }
 
   /**
    * Sets the pivot.
    *
-   * @param x the x
-   * @param y the y
-   * @param z the z
+   * @param newX the x
+   * @param newY the y
+   * @param newZ the z
    */
-  public void setPivot(final double x, final double y, final double z) {
-    p.setX(x);
-    p.setY(y);
-    p.setZ(z);
-    ip.setX(-x);
-    ip.setY(-y);
-    ip.setZ(-z);
+  public void setPivot(final double newX, final double newY, final double newZ) {
+    translate1.setX(newX);
+    translate1.setY(newY);
+    translate1.setZ(newZ);
+    translate2.setX(-newX);
+    translate2.setY(-newY);
+    translate2.setZ(-newZ);
   }
 
   /**
    * Reset.
    */
   public void reset() {
-    t.setX(0.0);
-    t.setY(0.0);
-    t.setZ(0.0);
-    rx.setAngle(0.0);
-    ry.setAngle(0.0);
-    rz.setAngle(0.0);
-    s.setX(1.0);
-    s.setY(1.0);
-    s.setZ(1.0);
-    p.setX(0.0);
-    p.setY(0.0);
-    p.setZ(0.0);
-    ip.setX(0.0);
-    ip.setY(0.0);
-    ip.setZ(0.0);
+    translate.setX(0.0);
+    translate.setY(0.0);
+    translate.setZ(0.0);
+    rotX.setAngle(0.0);
+    rotY.setAngle(0.0);
+    rotZ.setAngle(0.0);
+    scale.setX(1.0);
+    scale.setY(1.0);
+    scale.setZ(1.0);
+    translate1.setX(0.0);
+    translate1.setY(0.0);
+    translate1.setZ(0.0);
+    translate2.setX(0.0);
+    translate2.setY(0.0);
+    translate2.setZ(0.0);
   }
 
   /**
    * Reset tsp.
    */
   public void resetTSP() {
-    t.setX(0.0);
-    t.setY(0.0);
-    t.setZ(0.0);
-    s.setX(1.0);
-    s.setY(1.0);
-    s.setZ(1.0);
-    p.setX(0.0);
-    p.setY(0.0);
-    p.setZ(0.0);
-    ip.setX(0.0);
-    ip.setY(0.0);
-    ip.setZ(0.0);
+    translate.setX(0.0);
+    translate.setY(0.0);
+    translate.setZ(0.0);
+    scale.setX(1.0);
+    scale.setY(1.0);
+    scale.setZ(1.0);
+    translate1.setX(0.0);
+    translate1.setY(0.0);
+    translate1.setZ(0.0);
+    translate2.setX(0.0);
+    translate2.setY(0.0);
+    translate2.setZ(0.0);
   }
 
   public enum RotateOrder {

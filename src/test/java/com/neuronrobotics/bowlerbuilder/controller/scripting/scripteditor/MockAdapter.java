@@ -9,10 +9,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Worker;
 
 public class MockAdapter implements WebEngineAdapter {
+
   public String lastExecutedScript = "";
 
   @Override
-  public Object executeScript(String script) {
+  public Object executeScript(final String script) {
     lastExecutedScript = script;
     return null;
   }

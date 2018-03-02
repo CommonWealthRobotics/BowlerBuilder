@@ -13,7 +13,7 @@ import javafx.scene.transform.Affine;
 public class VirtualCameraDevice extends AbstractImageProvider {
 
   private static final int DEFAULT_ZOOM_DEPTH = -1500;
-  private static final Affine offset = TransformFactory.nrToAffine(
+  private static final Affine OFFSET = TransformFactory.nrToAffine(
       new TransformNR(0, 0, 0, new RotationNR(180, 0, 0))
   );
   private final Group cameraFrame = new Group();
@@ -41,7 +41,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   }
 
   public static Affine getOffset() {
-    return offset;
+    return OFFSET;
   }
 
   @Override

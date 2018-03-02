@@ -10,7 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
-public class LimbTabLinkSelection extends LinkSelection {
+public class LimbTabLinkSelection extends AbstractLinkSelection {
 
   private final VBox vBox;
 

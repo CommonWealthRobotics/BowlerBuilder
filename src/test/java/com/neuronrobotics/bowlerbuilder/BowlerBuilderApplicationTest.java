@@ -14,10 +14,10 @@ class BowlerBuilderApplicationTest extends FxRobot {
   @BeforeEach
   void before() throws Exception {
     FxToolkit.registerPrimaryStage();
-    Thread fxThread = new Thread(() -> {
+    final Thread fxThread = new Thread(() -> {
       try {
         FxToolkit.setupApplication(BowlerBuilder::new);
-      } catch (TimeoutException e) {
+      } catch (final TimeoutException e) {
         fail();
       }
     });

@@ -9,7 +9,7 @@ import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import javafx.application.Platform;
 import javafx.scene.Node;
 
-public class ConfigTabLimbSelection extends LimbSelection {
+public class ConfigTabLimbSelection extends AbstractLimbSelection {
 
   private final TransformWidget widget;
 

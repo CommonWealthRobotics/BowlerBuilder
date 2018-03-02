@@ -166,7 +166,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   /**
-   * Format a value according to this slider's formatting rules.
+   * Format a value according to this slider'scale formatting rules.
    *
    * @param value the value to format
    * @return formatted version

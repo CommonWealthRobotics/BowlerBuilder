@@ -24,14 +24,14 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
  */
 public class BowlerGroovy implements IScriptingLanguage {
 
-  private static final Logger logger
+  private static final Logger LOGGER
       = LoggerUtilities.getLogger(BowlerGroovy.class.getSimpleName());
-  private final BooleanProperty compilingProperty;
-  private final BooleanProperty runningProperty;
+  private final BooleanProperty compiling;
+  private final BooleanProperty running;
 
   public BowlerGroovy() {
-    compilingProperty = new SimpleBooleanProperty(false);
-    runningProperty = new SimpleBooleanProperty(false);
+    compiling = new SimpleBooleanProperty(false);
+    running = new SimpleBooleanProperty(false);
   }
 
   @Override
@@ -60,10 +60,10 @@ public class BowlerGroovy implements IScriptingLanguage {
   }
 
   private Object inline(final Object code, final ArrayList<Object> args) throws Exception {
-    compilingProperty.setValue(true);
+    compiling.setValue(true);
 
-    final CompilerConfiguration cc = new CompilerConfiguration();
-    cc.addCompilationCustomizers(new ImportCustomizer()
+    final CompilerConfiguration configuration = new CompilerConfiguration();
+    configuration.addCompilationCustomizers(new ImportCustomizer()
         .addStarImports(ScriptingEngine.getImports())
         .addStarImports(
             "com.neuronrobotics.bowlerbuilder",
@@ -86,7 +86,8 @@ public class BowlerGroovy implements IScriptingLanguage {
 
     binding.setVariable("args", args);
 
-    final GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding, cc);
+    final GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding,
+        configuration);
     final Script script;
 
     if (String.class.isInstance(code)) {
@@ -99,21 +100,21 @@ public class BowlerGroovy implements IScriptingLanguage {
       script = shell.parse((File) code);
     }
 
-    compilingProperty.setValue(false);
+    compiling.setValue(false);
 
-    runningProperty.setValue(true);
+    running.setValue(true);
     final Object result = script.run();
-    runningProperty.setValue(false);
+    running.setValue(false);
 
     return result;
   }
 
   public ReadOnlyBooleanProperty compilingProperty() {
-    return compilingProperty;
+    return compiling;
   }
 
   public ReadOnlyBooleanProperty runningProperty() {
-    return runningProperty;
+    return running;
   }
 
 }

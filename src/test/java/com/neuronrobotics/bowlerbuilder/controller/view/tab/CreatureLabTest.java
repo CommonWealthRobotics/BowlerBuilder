@@ -1,17 +1,15 @@
 package com.neuronrobotics.bowlerbuilder.controller.view.tab;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class CreatureLabTest extends AutoClosingApplicationTest {
-
-  private CreatureLabTab tab;
+public class CreatureLabTest extends AbstractAutoClosingApplicationTest {
 
   @Override
-  public void start(Stage stage) throws Exception {
-    tab = new CreatureLabTab("");
+  public void start(final Stage stage) throws Exception {
+    final CreatureLabTab tab = new CreatureLabTab("");
     stage.setScene(tab.getView().getScene());
     stage.show();
   }

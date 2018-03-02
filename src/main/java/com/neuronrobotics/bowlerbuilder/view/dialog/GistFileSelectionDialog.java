@@ -22,7 +22,7 @@ import javafx.scene.layout.GridPane;
 
 public class GistFileSelectionDialog extends Dialog<String[]> {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(GistFileSelectionDialog.class.getSimpleName());
   private final ValidatedTextField gistField;
   private final ComboBox<String> fileChooser;
@@ -45,7 +45,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
           files = files.stream().filter(extensionFilter).collect(Collectors.toList());
           fileChooser.setItems(FXCollections.observableArrayList(files));
         } catch (final Exception e) {
-          logger.warning("Could not fetch files in the gist: " + gistField.getText() + "\n"
+          LOGGER.warning("Could not fetch files in the gist: " + gistField.getText() + "\n"
               + Throwables.getStackTraceAsString(e));
         }
       }

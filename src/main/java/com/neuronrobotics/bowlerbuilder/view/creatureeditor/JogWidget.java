@@ -28,7 +28,7 @@ import javafx.scene.text.Font;
 
 public final class JogWidget {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(JogWidget.class.getSimpleName());
   private final VBox view;
   private final GridPane controlPane;
@@ -55,7 +55,7 @@ public final class JogWidget {
     final TextField increment = new TextField("0.4");
     increment.setMinWidth(Region.USE_COMPUTED_SIZE);
 
-    final HBox speedBox = new HBox(2, increment, new Label("m/s"));
+    final HBox speedBox = new HBox(2, increment, new Label("m/scale"));
     speedBox.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(speedBox, Priority.NEVER);
 
@@ -67,59 +67,59 @@ public final class JogWidget {
 
     final Button plusX = addButton(AssetFactory.loadIcon("Plus-X.png"), "", 1, 0);
     plusX.setOnMousePressed(event -> {
-      jogThread.setDx(Double.parseDouble(increment.getText()));
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setxStep(Double.parseDouble(increment.getText()));
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     plusX.setOnMouseReleased(event -> {
-      jogThread.setDx(0);
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setxStep(0);
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     final Button minusX = addButton(AssetFactory.loadIcon("Minus-X.png"), "", 1, 2);
     minusX.setOnMousePressed(event -> {
-      jogThread.setDx(-Double.parseDouble(increment.getText()));
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setxStep(-Double.parseDouble(increment.getText()));
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     minusX.setOnMouseReleased(event -> {
-      jogThread.setDx(0);
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setxStep(0);
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
 
     final Button plusY = addButton(AssetFactory.loadIcon("Plus-Y.png"), "", 0, 1);
     plusY.setOnMousePressed(event -> {
-      jogThread.setDy(Double.parseDouble(increment.getText()));
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setyStep(Double.parseDouble(increment.getText()));
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     plusY.setOnMouseReleased(event -> {
-      jogThread.setDy(0);
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setyStep(0);
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     final Button minusY = addButton(AssetFactory.loadIcon("Minus-Y.png"), "", 2, 1);
     minusY.setOnMousePressed(event -> {
-      jogThread.setDy(-Double.parseDouble(increment.getText()));
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setyStep(-Double.parseDouble(increment.getText()));
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     minusY.setOnMouseReleased(event -> {
-      jogThread.setDy(0);
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setyStep(0);
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
 
     final Button plusZ = addButton(AssetFactory.loadIcon("Plus-Z.png"), "", 0, 0);
     plusZ.setOnMousePressed(event -> {
-      jogThread.setDz(Double.parseDouble(increment.getText()));
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setzStep(Double.parseDouble(increment.getText()));
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     plusZ.setOnMouseReleased(event -> {
-      jogThread.setDz(0);
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setzStep(0);
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     final Button minusZ = addButton(AssetFactory.loadIcon("Minus-Z.png"), "", 2, 0);
     minusZ.setOnMousePressed(event -> {
-      jogThread.setDz(-Double.parseDouble(increment.getText()));
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setzStep(-Double.parseDouble(increment.getText()));
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
     minusZ.setOnMouseReleased(event -> {
-      jogThread.setDz(0);
-      jogThread.setDt(Double.parseDouble(time.getText()));
+      jogThread.setzStep(0);
+      jogThread.setTimeStep(Double.parseDouble(time.getText()));
     });
 
     final Button home = addButton(AssetFactory.loadIcon("Home.png"), "", 1, 1);
@@ -127,7 +127,7 @@ public final class JogWidget {
       try {
         limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
       } catch (final Exception e) {
-        logger.log(Level.WARNING, "Could not set task space transform.\n"
+        LOGGER.log(Level.WARNING, "Could not set task space transform.\n"
             + Throwables.getStackTraceAsString(e));
       }
     });
@@ -151,14 +151,15 @@ public final class JogWidget {
    *
    * @param icon Graphic
    * @param text Text
-   * @param x GridPane x coordinate
-   * @param y GridPane y coordinate
+   * @param xCol GridPane x coordinate
+   * @param yCol GridPane y coordinate
    * @return Button
    */
-  private Button addButton(final ImageView icon, final String text, final int x, final int y) {
+  private Button addButton(final ImageView icon, final String text,
+      final int xCol, final int yCol) {
     final Button out = new Button(text);
     out.setGraphic(icon);
-    controlPane.add(out, x, y);
+    controlPane.add(out, xCol, yCol);
     return out;
   }
 
@@ -180,10 +181,10 @@ public final class JogWidget {
 
   private class JogThread extends Thread {
 
-    private double dx;
-    private double dy;
-    private double dz;
-    private double dt = 0.4;
+    private double xStep;
+    private double yStep;
+    private double zStep;
+    private double timeStep = 0.4;
     private boolean home = true;
 
     public JogThread() {
@@ -196,51 +197,51 @@ public final class JogWidget {
         if (jogThreadRunning.get()) {
           if (home) {
             try {
-              dx = 0;
-              dy = 0;
-              dz = 0;
+              xStep = 0;
+              yStep = 0;
+              zStep = 0;
               home = false;
               limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
             } catch (final Exception e) {
-              logger.log(Level.WARNING, "Could not set task space transform.\n"
+              LOGGER.log(Level.WARNING, "Could not set task space transform.\n"
                   + Throwables.getStackTraceAsString(e));
             }
           } else {
             final TransformNR current = limb.getCurrentPoseTarget().copy();
 
-            current.translateX(dx);
-            current.translateY(dy);
-            current.translateZ(dz);
+            current.translateX(xStep);
+            current.translateY(yStep);
+            current.translateZ(zStep);
 
             try {
-              limb.setDesiredTaskSpaceTransform(current, dt);
+              limb.setDesiredTaskSpaceTransform(current, timeStep);
             } catch (final Exception e) {
-              logger.log(Level.WARNING, "Could not set task space transform.\n"
+              LOGGER.log(Level.WARNING, "Could not set task space transform.\n"
                   + Throwables.getStackTraceAsString(e));
             }
           }
 
-          ThreadUtil.wait((int) (dt * 1000));
+          ThreadUtil.wait((int) (timeStep * 1000));
         } else {
           ThreadUtil.wait(100);
         }
       }
     }
 
-    public void setDx(final double dx) {
-      this.dx = dx;
+    public void setxStep(final double xStep) {
+      this.xStep = xStep;
     }
 
-    public void setDy(final double dy) {
-      this.dy = dy;
+    public void setyStep(final double yStep) {
+      this.yStep = yStep;
     }
 
-    public void setDz(final double dz) {
-      this.dz = dz;
+    public void setzStep(final double zStep) {
+      this.zStep = zStep;
     }
 
-    public void setDt(final double dt) {
-      this.dt = dt;
+    public void setTimeStep(final double timeStep) {
+      this.timeStep = timeStep;
     }
 
     public void setHome(final boolean home) {

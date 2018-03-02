@@ -16,14 +16,14 @@ class PreferencesServiceTest {
 
   @Test
   void get() {
-    PreferencesService preferencesService = new PreferencesService("");
+    final PreferencesService preferencesService = new PreferencesService("");
     assertEquals("a", preferencesService.get("foo", "a"));
   }
 
   @Test
   void prefixListenerTest() {
-    PreferencesService preferencesService = new PreferencesService("");
-    BooleanProperty test = new SimpleBooleanProperty(false);
+    final PreferencesService preferencesService = new PreferencesService("");
+    final BooleanProperty test = new SimpleBooleanProperty(false);
     preferencesService.set("foo", "a");
     preferencesService.addListener("foo", (String oldVal, String newVal) ->
         test.setValue(true));
@@ -32,8 +32,8 @@ class PreferencesServiceTest {
 
   @Test
   void postfixListenerTest() {
-    PreferencesService preferencesService = new PreferencesService("");
-    BooleanProperty test = new SimpleBooleanProperty(false);
+    final PreferencesService preferencesService = new PreferencesService("");
+    final BooleanProperty test = new SimpleBooleanProperty(false);
     preferencesService.addListener("foo", (oldVal, newVal) -> test.setValue(true));
     preferencesService.set("foo", "a");
     assertTrue(test.getValue());
@@ -41,14 +41,14 @@ class PreferencesServiceTest {
 
   @Test
   void set() {
-    PreferencesService preferencesService = new PreferencesService("");
+    final PreferencesService preferencesService = new PreferencesService("");
     preferencesService.set("foo", "b");
     assertEquals("b", preferencesService.get("foo", "a"));
   }
 
   @Test
   void getAllValues() {
-    PreferencesService preferencesService = new PreferencesService("");
+    final PreferencesService preferencesService = new PreferencesService("");
     preferencesService.set("foo", "a");
     preferencesService.set("bar", "b");
     assertTrue(CollectionUtils.isEqualCollection(
@@ -58,10 +58,10 @@ class PreferencesServiceTest {
 
   @Test
   void getAll() {
-    PreferencesService preferencesService = new PreferencesService("");
+    final PreferencesService preferencesService = new PreferencesService("");
     preferencesService.set("foo", "a");
     preferencesService.set("bar", "b");
-    Map<String, String> test = new HashMap<>();
+    final Map<String, String> test = new HashMap<>();
     test.put("foo", "a");
     test.put("bar", "b");
     assertEquals(test, preferencesService.getAll());

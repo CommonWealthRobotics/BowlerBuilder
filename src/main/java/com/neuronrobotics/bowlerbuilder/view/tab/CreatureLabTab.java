@@ -16,11 +16,11 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 
 /**
- * {@link CadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
+ * {@link AbstractCadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
  */
-public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
+public class CreatureLabTab extends AbstractCadEditorTab<AceCreatureLabController> {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(CreatureLabTab.class.getSimpleName());
   private final AceCreatureLabController controller;
   private final SplitPane pane;
@@ -40,7 +40,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
         BowlerBuilder.getInjector().createChildInjector(
             new CADModelViewerControllerModule())::getInstance);
 
-    logger.info("Loading CADModelViewer.");
+    LOGGER.info("Loading CADModelViewer.");
     final Node cadViewer = cadViewerLoader.load();
 
     final FXMLLoader creatureEditorLoader = new FXMLLoader(CreatureLabTab.class.getResource(
@@ -49,7 +49,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
         null,
         BowlerBuilder.getInjector()::getInstance);
 
-    logger.info("Loading CreatureEditor.");
+    LOGGER.info("Loading CreatureEditor.");
     final Node creatureEditor = creatureEditorLoader.load();
 
     pane = new SplitPane(tabPane, creatureEditor, cadViewer);

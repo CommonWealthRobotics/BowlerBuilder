@@ -16,7 +16,7 @@ import javafx.scene.control.TabPane;
 
 public class AceCreatureLabController {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(AceCreatureLabController.class.getSimpleName());
   private final TabPane scriptEditorPane;
   private final Supplier<FXMLLoader> scriptEditorSupplier;
@@ -74,7 +74,7 @@ public class AceCreatureLabController {
       try {
         tab.setContent(loader.load());
       } catch (final IOException e) {
-        logger.severe("Could not load Ace script editor.\n"
+        LOGGER.severe("Could not load Ace script editor.\n"
             + Throwables.getStackTraceAsString(e));
       }
 

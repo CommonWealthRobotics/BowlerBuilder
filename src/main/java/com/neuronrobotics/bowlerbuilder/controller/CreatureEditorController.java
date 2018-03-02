@@ -70,7 +70,7 @@ import org.kohsuke.github.GitHub;
 
 public class CreatureEditorController {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(CreatureEditorController.class.getSimpleName());
   private final AnchorPane limbWidget;
   private final AnchorPane movementWidget;
@@ -245,7 +245,7 @@ public class CreatureEditorController {
             AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL));
       });
     } catch (final IOException e) {
-      logger.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -300,7 +300,7 @@ public class CreatureEditorController {
           newValue.ifPresent(linkData ->
               selectionProperty.set(new MovementTabLinkSelection(linkData))));
     } catch (final IOException e) {
-      logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -331,7 +331,7 @@ public class CreatureEditorController {
               selectionProperty.set(new ConfigTabLinkSelection(linkData.dhLink,
                   linkData.linkConfiguration, linkData.parentLimb, cadManager))));
     } catch (final IOException e) {
-      logger.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -347,7 +347,7 @@ public class CreatureEditorController {
 
       final Optional<String> result = dialog.showAndWait();
       result.ifPresent(name -> new Thread(() -> {
-        logger.log(Level.INFO, "Your new creature: " + name);
+        LOGGER.log(Level.INFO, "Your new creature: " + name);
         device.setScriptingName(name);
 
         final GitHub github = ScriptingEngine.getGithub();
@@ -362,36 +362,36 @@ public class CreatureEditorController {
           final String gitURL = "https://gist.github.com/"
               + ScriptingEngine.urlToGist(gist.getHtmlUrl()) + ".git";
 
-          logger.log(Level.INFO, "Creating new Robot repo.");
+          LOGGER.log(Level.INFO, "Creating new Robot repo.");
           while (true) {
             try {
               ScriptingEngine.fileFromGit(gitURL, filename);
               break;
             } catch (Exception ignored) {
-              logger.log(Level.INFO, "Waiting. " + gist + " not built yet.");
+              LOGGER.log(Level.INFO, "Waiting. " + gist + " not built yet.");
             }
             ThreadUtil.wait(500);
           }
-          logger.log(Level.INFO, "Creating Gist at: " + gitURL);
+          LOGGER.log(Level.INFO, "Creating Gist at: " + gitURL);
 
-          logger.log(Level.INFO, "Copying CAD engine.");
+          LOGGER.log(Level.INFO, "Copying CAD engine.");
           device.setGitCadEngine(ScriptingEngine.copyGitFile(device.getGitCadEngine()[0], gitURL,
               device.getGitCadEngine()[1]));
 
-          logger.log(Level.INFO, "Copying walking engine. Was: "
+          LOGGER.log(Level.INFO, "Copying walking engine. Was: "
               + Arrays.toString(device.getGitWalkingEngine()));
           device.setGitWalkingEngine(ScriptingEngine.copyGitFile(device.getGitWalkingEngine()[0],
               gitURL, device.getGitWalkingEngine()[1]));
 
-          logger.log(Level.INFO, "Walking engine is now: "
+          LOGGER.log(Level.INFO, "Walking engine is now: "
               + Arrays.toString(device.getGitWalkingEngine()));
           for (final DHParameterKinematics dh : device.getAllDHChains()) {
-            logger.log(Level.INFO, "Copying leg CAD engine: "
+            LOGGER.log(Level.INFO, "Copying leg CAD engine: "
                 + Arrays.toString(dh.getGitCadEngine()));
             dh.setGitCadEngine(ScriptingEngine.copyGitFile(dh.getGitCadEngine()[0], gitURL,
                 dh.getGitCadEngine()[1]));
 
-            logger.log(Level.INFO, "Copying leg DH engine.");
+            LOGGER.log(Level.INFO, "Copying leg DH engine.");
             dh.setGitDhEngine(ScriptingEngine.copyGitFile(dh.getGitDhEngine()[0], gitURL,
                 dh.getGitDhEngine()[1]));
           }
@@ -400,7 +400,7 @@ public class CreatureEditorController {
           ScriptingEngine.pushCodeToGit(gitURL, ScriptingEngine.getFullBranch(gitURL),
               filename, xml, "new Robot content");
 
-          logger.info("Clone finished.");
+          LOGGER.info("Clone finished.");
           Platform.runLater(() -> Notifications.create()
               .title("Clone Finished")
               .text("The creature cloning operation finished successfully.")
@@ -415,7 +415,7 @@ public class CreatureEditorController {
           mainWindowController.loadCreatureLab(selfSource);
           mainWindowController.reloadGitMenus();
         } catch (MalformedURLException e) {
-          logger.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
+          LOGGER.log(Level.SEVERE, "Could not make copy of creature. Malformed url.\n"
               + Throwables.getStackTraceAsString(e));
 
           Platform.runLater(() -> Notifications.create()
@@ -423,7 +423,7 @@ public class CreatureEditorController {
               .text("Could not make copy of creature.")
               .showError());
         } catch (Exception e) {
-          logger.log(Level.SEVERE, "Could not make copy of creature."
+          LOGGER.log(Level.SEVERE, "Could not make copy of creature."
               + Throwables.getStackTraceAsString(e));
 
           Platform.runLater(() -> Notifications.create()
@@ -452,7 +452,7 @@ public class CreatureEditorController {
           gitWalkingEngine[1]);
       deviceCADEngineFile = ScriptingEngine.fileFromGit(gitCADEngine[0], gitCADEngine[1]);
     } catch (GitAPIException | IOException e) {
-      logger.severe("Could not parse creature file from source: "
+      LOGGER.severe("Could not parse creature file from source: "
           + Arrays.toString(gitSelfSource) + "\n"
           + Arrays.toString(gitWalkingEngine) + "\n"
           + Throwables.getStackTraceAsString(e));
@@ -479,7 +479,7 @@ public class CreatureEditorController {
           ScriptingEngine.pushCodeToGit(remote, ScriptingEngine.getFullBranch(remote),
               relativePath, device.getXml(), commitMessage);
         } catch (final Exception e) {
-          logger.severe("Could not commit.\n" + Throwables.getStackTraceAsString(e));
+          LOGGER.severe("Could not commit.\n" + Throwables.getStackTraceAsString(e));
 
           Platform.runLater(() -> Notifications.create()
               .title("Commit error")
@@ -561,7 +561,7 @@ public class CreatureEditorController {
         Platform.runLater(() -> scriptTab.setContent(getScrollPane(
             new VBox(5, topLevelControls, content, scriptWidget))));
       } catch (final IOException e) {
-        logger.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
+        LOGGER.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
 
         Platform.runLater(() -> scriptTab.setContent(getScrollPane(
             new VBox(5, topLevelControls))));
@@ -611,7 +611,7 @@ public class CreatureEditorController {
         regenerateMenus();
       });
     } catch (final Exception e) {
-      logger.warning("Could not add limb.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.warning("Could not add limb.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -654,7 +654,7 @@ public class CreatureEditorController {
         + "/bowler-workspace/STL/");
 
     if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
-      logger.log(Level.WARNING, "Could not create default directory to save STL files.");
+      LOGGER.log(Level.WARNING, "Could not create default directory to save STL files.");
       return;
     }
 
@@ -665,11 +665,11 @@ public class CreatureEditorController {
       chooser.setInitialDirectory(defaultStlDir);
       final File baseDirForFiles = chooser.showDialog(creatureTabPane.getScene().getWindow());
       if (baseDirForFiles == null) {
-        logger.log(Level.INFO, "No directory selected. Not saving STL files.");
+        LOGGER.log(Level.INFO, "No directory selected. Not saving STL files.");
         return;
       }
 
-      LoggerUtilities.newLoggingThread(logger, () -> {
+      LoggerUtilities.newLoggingThread(LOGGER, () -> {
         try {
           final List<File> files = cadManager.generateStls(device, baseDirForFiles, isKinematic);
 
@@ -680,7 +680,7 @@ public class CreatureEditorController {
                       + files.get(0).getAbsolutePath())
                   .showInformation());
         } catch (IOException e) {
-          logger.log(Level.WARNING, "Could not generate STL files to save in: "
+          LOGGER.log(Level.WARNING, "Could not generate STL files to save in: "
               + baseDirForFiles.getAbsolutePath()
               + "\n" + Throwables.getStackTraceAsString(e));
 
@@ -691,11 +691,11 @@ public class CreatureEditorController {
                   .showError());
         } catch (RuntimeException e) {
           if (e.getMessage().contains("IgenerateBed")) {
-            logger.log(Level.INFO, "Cannot generate STL files because the supplied CAD manager "
+            LOGGER.log(Level.INFO, "Cannot generate STL files because the supplied CAD manager "
                 + "does not implement the IgenerateBed interface.\n"
                 + Throwables.getStackTraceAsString(e));
           } else {
-            logger.log(Level.WARNING, Throwables.getStackTraceAsString(e));
+            LOGGER.log(Level.WARNING, Throwables.getStackTraceAsString(e));
           }
 
           Platform.runLater(() ->

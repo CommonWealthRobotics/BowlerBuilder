@@ -12,7 +12,7 @@ import javafx.scene.control.Dialog;
 
 public class HelpDialog extends Dialog {
 
-  private static final Logger logger = LoggerUtilities.getLogger(HelpDialog.class.getSimpleName());
+  private static final Logger LOGGER = LoggerUtilities.getLogger(HelpDialog.class.getSimpleName());
 
   public HelpDialog() {
     super();
@@ -26,7 +26,7 @@ public class HelpDialog extends Dialog {
     try {
       getDialogPane().setContent(loader.load());
     } catch (final IOException e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not load Editor Help Dialog.\n" + Throwables.getStackTraceAsString(e));
     }
   }

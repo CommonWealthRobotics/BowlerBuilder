@@ -29,7 +29,8 @@ public class PreferencesDialog extends Dialog {
       final List<Property> props = service.getAll().entrySet().stream().map(entry -> {
         ObjectProperty<Serializable> property = new SimpleObjectProperty<>(
             null, entry.getKey(), entry.getValue());
-        property.addListener((observableValue, o, t1) -> service.set(entry.getKey(), t1));
+        property.addListener((observableValue, oldVal, newVal) ->
+            service.set(entry.getKey(), newVal));
         return property;
       }).collect(Collectors.toList());
 

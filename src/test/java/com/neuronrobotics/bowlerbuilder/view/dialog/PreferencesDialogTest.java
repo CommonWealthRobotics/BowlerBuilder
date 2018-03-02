@@ -3,7 +3,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
@@ -13,23 +13,23 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class PreferencesDialogTest extends AutoClosingApplicationTest {
+public class PreferencesDialogTest extends AbstractAutoClosingApplicationTest {
 
   private Stage stage;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     this.stage = stage;
   }
 
   @Test
   void valueChangedTest() {
-    PreferencesService service = new PreferencesService("");
+    final PreferencesService service = new PreferencesService("");
     service.set("a", "foo");
     service.set("b", 99);
 
     FxHelper.runAndWait(() -> {
-      PreferencesDialog dialog = new PreferencesDialog(Collections.singletonList(service));
+      final PreferencesDialog dialog = new PreferencesDialog(Collections.singletonList(service));
       stage.setScene(dialog.getDialogPane().getScene());
       stage.show();
     });
@@ -44,14 +44,14 @@ public class PreferencesDialogTest extends AutoClosingApplicationTest {
 
   @Test
   void listenerTest() {
-    PreferencesService service = new PreferencesService("");
+    final PreferencesService service = new PreferencesService("");
     service.set("a", "foo");
-    BooleanProperty val = new SimpleBooleanProperty(false);
+    final BooleanProperty val = new SimpleBooleanProperty(false);
     service.addListener("a", (PreferenceListener<String>) (oldVal, newVal) ->
         val.setValue(true));
 
     FxHelper.runAndWait(() -> {
-      PreferencesDialog dialog = new PreferencesDialog(Collections.singletonList(service));
+      final PreferencesDialog dialog = new PreferencesDialog(Collections.singletonList(service));
       stage.setScene(dialog.getDialogPane().getScene());
       stage.show();
     });

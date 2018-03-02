@@ -8,11 +8,11 @@ import javafx.scene.Node;
  *
  * @param <T> controller type
  */
-public abstract class ScriptEditorTab<T> extends AbstractTab<T> {
+public abstract class AbstractScriptEditorTab<T> extends AbstractTab<T> {
 
   private final ScriptEditorView scriptEditorView;
 
-  public ScriptEditorTab(final String title, final ScriptEditorView scriptEditorView) {
+  public AbstractScriptEditorTab(final String title, final ScriptEditorView scriptEditorView) {
     super(title);
     this.scriptEditorView = scriptEditorView;
   }

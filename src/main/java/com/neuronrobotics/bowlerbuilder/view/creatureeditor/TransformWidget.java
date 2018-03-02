@@ -21,16 +21,16 @@ import javafx.scene.text.Font;
 public class TransformWidget implements EngineeringUnitsChangeListener,
     EventHandler<ActionEvent> {
 
-  private static final Logger logger =
+  private static final Logger LOGGER =
       LoggerUtilities.getLogger(TransformWidget.class.getSimpleName());
   private final VBox view;
   private final TransformChangeListener onChange;
   private final EngineeringUnitsSliderWidget tilt;
   private final EngineeringUnitsSliderWidget elevation;
   private final EngineeringUnitsSliderWidget azimuth;
-  private final EngineeringUnitsSliderWidget tx;
-  private final EngineeringUnitsSliderWidget ty;
-  private final EngineeringUnitsSliderWidget tz;
+  private final EngineeringUnitsSliderWidget xPos;
+  private final EngineeringUnitsSliderWidget yPos;
+  private final EngineeringUnitsSliderWidget zPos;
 
   public TransformWidget(
       final String title, final TransformNR initialState, final TransformChangeListener onChange) {
@@ -42,64 +42,65 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
     final GridPane gridPane = new GridPane();
     gridPane.setHgap(10);
 
-    tx = new EngineeringUnitsSliderWidget(this, initialState.getX(), 100, "mm");
-    ty = new EngineeringUnitsSliderWidget(this, initialState.getY(), 100, "mm");
-    tz = new EngineeringUnitsSliderWidget(this, initialState.getZ(), 100, "mm");
+    xPos = new EngineeringUnitsSliderWidget(this, initialState.getX(), 100, "mm");
+    yPos = new EngineeringUnitsSliderWidget(this, initialState.getY(), 100, "mm");
+    zPos = new EngineeringUnitsSliderWidget(this, initialState.getZ(), 100, "mm");
 
     final RotationNR rot = initialState.getRotation();
-    double t = 0;
+    double tilt = 0;
     try {
-      t = Math.toDegrees(rot.getRotationTilt());
+      tilt = Math.toDegrees(rot.getRotationTilt());
     } catch (final Exception e) {
-      logger.log(Level.WARNING, "Could not convert tilt to degrees.\n"
+      LOGGER.log(Level.WARNING, "Could not convert tilt to degrees.\n"
           + Throwables.getStackTraceAsString(e));
     }
 
-    double e = 0;
+    double elevation = 0;
     try {
-      e = Math.toDegrees(rot.getRotationElevation());
+      elevation = Math.toDegrees(rot.getRotationElevation());
     } catch (final Exception ex) {
-      logger.log(Level.WARNING, "Could not convert elevation to degrees.\n"
+      LOGGER.log(Level.WARNING, "Could not convert elevation to degrees.\n"
           + Throwables.getStackTraceAsString(ex));
     }
 
-    double a = 0;
+    double azimuth = 0;
     try {
-      a = Math.toDegrees(rot.getRotationAzimuth());
+      azimuth = Math.toDegrees(rot.getRotationAzimuth());
     } catch (final Exception ex) {
-      logger.log(Level.WARNING, "Could not convert azimuth to degrees.\n"
+      LOGGER.log(Level.WARNING, "Could not convert azimuth to degrees.\n"
           + Throwables.getStackTraceAsString(ex));
     }
 
-    tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, t, 100, "degrees");
-    elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, e, 100, "degrees");
-    azimuth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, a, 100, "degrees");
+    this.tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, tilt, 100, "degrees");
+    this.elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, elevation, 100,
+        "degrees");
+    this.azimuth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, azimuth, 100, "degrees");
 
-    tilt.setAllowResize(false);
-    elevation.setAllowResize(false);
-    azimuth.setAllowResize(false);
+    this.tilt.setAllowResize(false);
+    this.elevation.setAllowResize(false);
+    this.azimuth.setAllowResize(false);
 
     final Label titleLabel = new Label(title);
     titleLabel.setFont(Font.font(16));
     view.getChildren().add(titleLabel);
 
     gridPane.add(getSliderLabel("X"), 0, 0);
-    gridPane.add(tx, 1, 0);
+    gridPane.add(xPos, 1, 0);
 
     gridPane.add(getSliderLabel("Y"), 0, 1);
-    gridPane.add(ty, 1, 1);
+    gridPane.add(yPos, 1, 1);
 
     gridPane.add(getSliderLabel("Z"), 0, 2);
-    gridPane.add(tz, 1, 2);
+    gridPane.add(zPos, 1, 2);
 
     gridPane.add(getSliderLabel("Tilt"), 0, 3);
-    gridPane.add(tilt, 1, 3);
+    gridPane.add(this.tilt, 1, 3);
 
     gridPane.add(getSliderLabel("Elevation"), 0, 4);
-    gridPane.add(elevation, 1, 4);
+    gridPane.add(this.elevation, 1, 4);
 
     gridPane.add(getSliderLabel("Azimuth"), 0, 5);
-    gridPane.add(azimuth, 1, 5);
+    gridPane.add(this.azimuth, 1, 5);
 
     view.getChildren().add(gridPane);
   }
@@ -113,9 +114,9 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
 
   private TransformNR getCurrent() {
     return new TransformNR(
-        tx.getValue(),
-        ty.getValue(),
-        tz.getValue(),
+        xPos.getValue(),
+        yPos.getValue(),
+        zPos.getValue(),
         new RotationNR(
             tilt.getValue(),
             azimuth.getValue(),

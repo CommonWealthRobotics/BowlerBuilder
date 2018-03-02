@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller;
 
 import static org.junit.Assert.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule;
@@ -16,18 +16,19 @@ import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-public class CADModelViewerTest extends AutoClosingApplicationTest {
+public class CADModelViewerTest extends AbstractAutoClosingApplicationTest {
+
   private CADModelViewerController controller;
 
   @Override
-  public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(
+  public void start(final Stage stage) throws Exception {
+    final FXMLLoader loader = new FXMLLoader(
         getClass().getResource("../view/CADModelViewer.fxml"),
         null,
         null,
         BowlerBuilder.getInjector()
             .createChildInjector(new CADModelViewerControllerModule())::getInstance);
-    BorderPane mainWindow = loader.load();
+    final BorderPane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));
     stage.show();
@@ -40,7 +41,7 @@ public class CADModelViewerTest extends AutoClosingApplicationTest {
 
   @Test
   void addCSGTest() {
-    CSG foo = new Cube(1, 1, 1).toCSG();
+    final CSG foo = new Cube(1, 1, 1).toCSG();
     controller.addCSG(foo);
 
     assertTrue(controller.getCsgMap().containsKey(foo));
@@ -48,8 +49,8 @@ public class CADModelViewerTest extends AutoClosingApplicationTest {
 
   @Test
   void addCSGsTest() {
-    CSG foo = new Cube(1, 1, 1).toCSG();
-    CSG bar = new Cube(2, 1, 1).toCSG();
+    final CSG foo = new Cube(1, 1, 1).toCSG();
+    final CSG bar = new Cube(2, 1, 1).toCSG();
     controller.addAllCSGs(foo, bar);
 
     assertTrue(controller.getCsgMap().containsKey(foo));
@@ -58,8 +59,8 @@ public class CADModelViewerTest extends AutoClosingApplicationTest {
 
   @Test
   void addCSGs2Test() {
-    CSG foo = new Cube(1, 1, 1).toCSG();
-    CSG bar = new Cube(2, 1, 1).toCSG();
+    final CSG foo = new Cube(1, 1, 1).toCSG();
+    final CSG bar = new Cube(2, 1, 1).toCSG();
     controller.addAllCSGs(Arrays.asList(foo, bar));
 
     assertTrue(controller.getCsgMap().containsKey(foo));

@@ -18,8 +18,8 @@ public class AceCadEditorTabController {
   }
 
   /**
-   * Recursively parse CSG's out of an Object. Can contain CSGs in an Iterable. Adds CSG's to the
-   * CAD viewer.
+   * Recursively parse CSG'scale out of an Object. Can contain CSGs in an Iterable. Adds CSG'scale
+   * to the CAD viewer.
    *
    * @param item script result
    */

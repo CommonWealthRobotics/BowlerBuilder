@@ -4,16 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class AddPluginDialogTest extends AutoClosingApplicationTest {
+public class AddPluginDialogTest extends AbstractAutoClosingApplicationTest {
 
   private AddPluginDialog dialog;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     dialog = new AddPluginDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();

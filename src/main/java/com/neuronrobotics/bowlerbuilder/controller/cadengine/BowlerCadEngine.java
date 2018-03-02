@@ -9,7 +9,7 @@ import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWid
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraDevice;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraMobileBase;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.XForm;
-import com.neuronrobotics.bowlerbuilder.view.cadengine.element.Axis;
+import com.neuronrobotics.bowlerbuilder.view.cadengine.element.Axis3D;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
@@ -72,7 +72,7 @@ import org.reactfx.util.FxTimer;
 
 public class BowlerCadEngine extends Pane implements CadEngine {
 
-  private static final Logger logger
+  private static final Logger LOGGER
       = LoggerUtilities.getLogger(BowlerCadEngine.class.getSimpleName());
 
   private final Group axisGroup = new Group();
@@ -89,7 +89,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final Group meshViewGroup = new Group();
   private final Group hand = new Group();
   private final Map<String, MeshView> csgNameMap = new WeakHashMap<>();
-  private final Map<MeshView, Axis> axisMap = new WeakHashMap<>();
+  private final Map<MeshView, Axis3D> axisMap = new WeakHashMap<>();
   private double mousePosX;
   private double mousePosY;
   private double mouseOldX;
@@ -109,15 +109,15 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
   private long lastSelectedTime = System.currentTimeMillis();
 
-  private final BooleanProperty axisShowingProperty;
-  private final BooleanProperty handShowingProperty;
+  private final BooleanProperty axisShowing;
+  private final BooleanProperty handShowing;
 
   @Inject
   public BowlerCadEngine(final CsgParser csgParser) {
     this.csgParser = csgParser;
 
-    axisShowingProperty = new SimpleBooleanProperty(true);
-    handShowingProperty = new SimpleBooleanProperty(true);
+    axisShowing = new SimpleBooleanProperty(true);
+    handShowing = new SimpleBooleanProperty(true);
 
     setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
     buildScene();
@@ -128,7 +128,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     handleMouse(scene);
     getChildren().add(scene);
 
-    //Clip view so it doesn't overlap with anything
+    //Clip view so it doesn'translate overlap with anything
     final Rectangle engineClip = new Rectangle();
     setClip(engineClip);
     layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
@@ -136,7 +136,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       engineClip.setHeight(newValue.getHeight());
     });
 
-    axisShowingProperty.addListener((observableValue, oldVal, newVal) -> {
+    axisShowing.addListener((observableValue, oldVal, newVal) -> {
       if (newVal) {
         showAxis();
       } else {
@@ -144,7 +144,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       }
     });
 
-    handShowingProperty.addListener((observableValue, oldVal, newVal) -> {
+    handShowing.addListener((observableValue, oldVal, newVal) -> {
       if (newVal) {
         showHand();
       } else {
@@ -157,8 +157,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * Build the scene. Setup camera angle and add world to the root.
    */
   private void buildScene() {
-    world.ry.setAngle(-90); //point z upwards
-    world.ry.setAngle(180); //arm out towards user
+    world.rotY.setAngle(-90); //point z upwards
+    world.rotY.setAngle(180); //arm out towards user
     root.getChildren().add(world);
   }
 
@@ -263,7 +263,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
               + "\n"
               + "</root>");
     } catch (final Exception e) {
-      logger.log(Level.SEVERE,
+      LOGGER.log(Level.SEVERE,
           "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
     }
 
@@ -304,10 +304,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       final Affine downset = new Affine();
       downset.setTz(0.1);
 
-      final Affine xp = new Affine();
-      xp.setTx(-20 * scale);
-      xp.appendScale(scale, scale, scale);
-      xp.appendRotation(180, 0, 0, 0, 1, 0, 0);
+      final Affine xRuler = new Affine();
+      xRuler.setTx(-20 * scale);
+      xRuler.appendScale(scale, scale, scale);
+      xRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
 
       Platform.runLater(() -> {
         final ImageView groundView = new ImageView(groundLocal);
@@ -318,7 +318,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         zrulerImage.getTransforms().addAll(zRuler, downset);
 
         final ImageView rulerImage = new ImageView(ruler);
-        rulerImage.getTransforms().addAll(xp, downset);
+        rulerImage.getTransforms().addAll(xRuler, downset);
 
         final ImageView yrulerImage = new ImageView(ruler);
         yrulerImage.getTransforms().addAll(yRuler, downset);
@@ -331,13 +331,13 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         ground.getTransforms().add(groundPlacement);
         focusGroup.getChildren().add(getVirtualCam().getCameraFrame());
 
-        gridGroup.getChildren().addAll(new Axis(), ground);
+        gridGroup.getChildren().addAll(new Axis3D(), ground);
         showAxis();
         axisGroup.getChildren().addAll(focusGroup, meshViewGroup);
         world.getChildren().addAll(lookGroup, axisGroup);
       });
     } catch (final Exception e) {
-      logger.log(Level.WARNING,
+      LOGGER.log(Level.WARNING,
           "Could not load ruler/ground assets for CAD view.\n"
               + Throwables.getStackTraceAsString(e));
     }
@@ -348,7 +348,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   private void showAxis() {
     Platform.runLater(() -> axisGroup.getChildren().add(gridGroup));
-    axisMap.forEach((mesh, axis) -> axis.show());
+    axisMap.forEach((mesh, axis3D) -> axis3D.show());
   }
 
   /**
@@ -356,7 +356,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   private void hideAxis() {
     Platform.runLater(() -> axisGroup.getChildren().remove(gridGroup));
-    axisMap.forEach((mesh, axis) -> axis.hide());
+    axisMap.forEach((mesh, axis3D) -> axis3D.hide());
   }
 
   private void showHand() {
@@ -375,7 +375,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private void handleMouse(final SubScene scene) {
     scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
       long lastClickedTimeLocal;
-      static final long offset = 500;
+      static final long OFFSET = 500;
 
       @Override
       public void handle(final MouseEvent event) {
@@ -384,7 +384,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
         FxTimer.runLater(Duration.ofMillis(100), () -> {
           final long diff = System.currentTimeMillis() - lastSelectedTime; //NOPMD
           // reset only if an object is not being selected
-          if (diff > 2000 && lastClickedDifference < offset) {
+          if (diff > 2000 && lastClickedDifference < OFFSET) {
             cancelSelection(); //NOPMD
           }
         });
@@ -774,7 +774,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
             csg.setParameterIfNull(key);
 
             if (param instanceof LengthParameter) {
-              final LengthParameter lp = (LengthParameter) param;
+              final LengthParameter lengthParameter = (LengthParameter) param;
 
               final EngineeringUnitsSliderWidget widget = new EngineeringUnitsSliderWidget(
                   new EngineeringUnitsChangeListener() {
@@ -785,7 +785,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
                       try {
                         csg.setParameterNewValue(key, newAngleDegrees);
                       } catch (final Exception e) {
-                        logger.log(Level.SEVERE, //NOPMD
+                        LOGGER.log(Level.SEVERE, //NOPMD
                             "Could not set new parameter value.\n"
                                 + Throwables.getStackTraceAsString(e));
                       }
@@ -798,9 +798,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
                       regenerateObjects.run();
                     }
                   },
-                  Double.parseDouble(lp.getOptions().get(1)),
-                  Double.parseDouble(lp.getOptions().get(0)),
-                  lp.getMM(),
+                  Double.parseDouble(lengthParameter.getOptions().get(1)),
+                  Double.parseDouble(lengthParameter.getOptions().get(0)),
+                  lengthParameter.getMM(),
                   400,
                   key);
 
@@ -817,7 +817,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
                     param.setStrValue(option);
                     CSGDatabase.get(param.getName()).setStrValue(option);
                     CSGDatabase.getParamListeners(param.getName())
-                        .forEach(l -> l.parameterChanged(param.getName(), param));
+                        .forEach(listener -> listener.parameterChanged(param.getName(), param));
                     regenerateObjects.run();
                   });
 
@@ -845,7 +845,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
             try {
               FileUtils.write(save, readyCSG.toStlString());
             } catch (final IOException e) {
-              logger.log(Level.SEVERE,
+              LOGGER.log(Level.SEVERE,
                   "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(e));
             }
           }
@@ -863,13 +863,13 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       try {
         meshViewGroup.getChildren().add(mesh);
       } catch (final IllegalArgumentException e) {
-        logger.warning("Possible duplicate child added to CAD engine.");
-        logger.fine(Throwables.getStackTraceAsString(e));
+        LOGGER.warning("Possible duplicate child added to CAD engine.");
+        LOGGER.fine(Throwables.getStackTraceAsString(e));
       }
     });
     csgMap.put(csg, mesh);
     csgNameMap.put(csg.getName(), mesh);
-    logger.log(Level.FINE, "Added CSG with name: " + csg.getName());
+    LOGGER.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
   @Override
@@ -890,12 +890,12 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
   @Override
   public BooleanProperty axisShowingProperty() {
-    return axisShowingProperty;
+    return axisShowing;
   }
 
   @Override
   public BooleanProperty handShowingProperty() {
-    return handShowingProperty;
+    return handShowing;
   }
 
   @Override
@@ -909,7 +909,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   private void fireRegenerate(final String key, final Set<CSG> currentObjectsToCheck) {
-    final Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
+    final Thread thread = LoggerUtilities.newLoggingThread(LOGGER, () -> {
       final List<CSG> toAdd = new ArrayList<>();
       final List<CSG> toRemove = new ArrayList<>();
 
@@ -929,9 +929,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       Platform.runLater(() ->
           toAdd.forEach(this::addCSG));
 
-      logger.log(Level.INFO, "Saving CSG database");
+      LOGGER.log(Level.INFO, "Saving CSG database");
       CSGDatabase.saveDatabase();
-      logger.log(Level.INFO, "Done saving CSG database");
+      LOGGER.log(Level.INFO, "Done saving CSG database");
     });
 
     thread.setDaemon(true);

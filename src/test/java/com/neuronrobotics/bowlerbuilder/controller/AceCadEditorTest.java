@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Guice;
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
@@ -21,20 +21,20 @@ import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class AceCadEditorTest extends AutoClosingApplicationTest {
+public class AceCadEditorTest extends AbstractAutoClosingApplicationTest {
 
   private AceScriptEditorController controller;
 
   @Override
-  public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(
+  public void start(final Stage stage) throws Exception {
+    final FXMLLoader loader = new FXMLLoader(
         getClass().getResource("../view/AceScriptEditor.fxml"),
         null,
         null,
         Guice.createInjector(
             new AceCadEditorControllerModule(
                 BowlerBuilder.getInjector().getInstance(AceEditorView.class)))::getInstance);
-    SplitPane mainWindow = loader.load();
+    final SplitPane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));
     stage.show();

@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
 /*
- *      Axis.java 1.0 98/11/25
+ *      Axis3D.java 1.0 98/11/25
  *
  * Copyright (c) 1998 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import javafx.scene.transform.Affine;
  * redistribute the Software for such purposes.
  */
 
-public class Axis extends Group {
+public class Axis3D extends Group {
 
   private final Line3D xAxis;
   private final Line3D yAxis;
@@ -46,33 +46,33 @@ public class Axis extends Group {
   private final Label zText;
 
 
-  public Axis() {
+  public Axis3D() {
     this(50);
   }
 
-  public Axis(final int i) {
-    final Affine xp = new Affine();
-    xp.setTx(i / 2.0);
+  public Axis3D(final int increment) {
+    final Affine plusX = new Affine();
+    plusX.setTx(increment / 2.0);
     xText = new Label("+X");
-    xText.getTransforms().add(xp);
+    xText.getTransforms().add(plusX);
 
-    final Affine yp = new Affine();
-    yp.setTy(i / 2.0);
+    final Affine plusY = new Affine();
+    plusY.setTy(increment / 2.0);
     yText = new Label("+Y");
-    yText.getTransforms().add(yp);
+    yText.getTransforms().add(plusY);
 
-    final Affine zTextAffine = new Affine();
-    zTextAffine.setTz(i / 2.0);
-    zTextAffine.setTx(i / 2.0);
-    zTextAffine.appendRotation(-90, 0, 0, 0, 1, 0, 0);
-    zTextAffine.appendRotation(180, 0, 0, 0, 0, 0, 1);
+    final Affine plusZ = new Affine();
+    plusZ.setTz(increment / 2.0);
+    plusZ.setTx(increment / 2.0);
+    plusZ.appendRotation(-90, 0, 0, 0, 1, 0, 0);
+    plusZ.appendRotation(180, 0, 0, 0, 0, 0, 1);
     zText = new Label("+Z");
-    zText.getTransforms().add(zTextAffine);
+    zText.getTransforms().add(plusZ);
 
     final double inset = 0;
-    xAxis = new Line3D(0, inset, 0, i, inset, 0);
-    yAxis = new Line3D(inset, 0, 0, inset, i, 0);
-    zAxis = new Line3D(inset, 0, 0, inset, 0, i);
+    xAxis = new Line3D(0, inset, 0, increment, inset, 0);
+    yAxis = new Line3D(inset, 0, 0, inset, increment, 0);
+    zAxis = new Line3D(inset, 0, 0, inset, 0, increment);
 
     final double strokeWidth = 0.1;
     xAxis.setStrokeWidth(strokeWidth);

@@ -4,17 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import java.util.Arrays;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class NewGistDialogTest extends AutoClosingApplicationTest {
+public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
 
   private NewGistDialog dialog;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     dialog = new NewGistDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();
@@ -32,7 +32,7 @@ public class NewGistDialogTest extends AutoClosingApplicationTest {
     assertEquals(Arrays.asList("a.b", "b"), dialog.getResult());
     assertEquals("a.b", dialog.getName());
     assertEquals("b", dialog.getDescription());
-    assertTrue(dialog.getIsPublic());
+    assertTrue(dialog.isPublic());
   }
 
   @Test

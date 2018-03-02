@@ -1,16 +1,14 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class GistFileSelectionDialogTest extends AutoClosingApplicationTest {
-
-  private GistFileSelectionDialog dialog;
+public class GistFileSelectionDialogTest extends AbstractAutoClosingApplicationTest {
 
   @Override
-  public void start(Stage stage) {
-    dialog = new GistFileSelectionDialog("", text -> true);
+  public void start(final Stage stage) {
+    final GistFileSelectionDialog dialog = new GistFileSelectionDialog("", text -> true);
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();
   }

@@ -8,11 +8,11 @@ import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.Script
  *
  * @param <T> controller type
  */
-public abstract class CadEditorTab<T> extends ScriptEditorTab<T> {
+public abstract class AbstractCadEditorTab<T> extends AbstractScriptEditorTab<T> {
 
   private final CadEngine cadEngine;
 
-  public CadEditorTab(final String title, final ScriptEditorView scriptEditorView,
+  public AbstractCadEditorTab(final String title, final ScriptEditorView scriptEditorView,
       final CadEngine cadEngine) {
     super(title, scriptEditorView);
     this.cadEngine = cadEngine;

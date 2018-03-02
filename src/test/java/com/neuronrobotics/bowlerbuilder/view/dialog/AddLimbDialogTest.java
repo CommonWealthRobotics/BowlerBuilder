@@ -4,19 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.neuronrobotics.bowlerbuilder.AutoClosingApplicationTest;
+import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
-public class AddLimbDialogTest extends AutoClosingApplicationTest {
+public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
 
   private AddLimbDialog dialog;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     final Set<Integer> set = new HashSet<>();
     set.add(1);
     set.add(2);

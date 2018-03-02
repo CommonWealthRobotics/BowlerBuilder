@@ -4,7 +4,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 
-public abstract class LinkSelection implements Selection {
+public abstract class AbstractLinkSelection implements Selection {
 
   protected final DHLink dhLink;
   protected final LinkConfiguration configuration;
@@ -15,7 +15,7 @@ public abstract class LinkSelection implements Selection {
    * @param dhLink link
    * @param configuration configuration
    */
-  public LinkSelection(final DHLink dhLink, final LinkConfiguration configuration) {
+  public AbstractLinkSelection(final DHLink dhLink, final LinkConfiguration configuration) {
     this.dhLink = dhLink;
     this.configuration = configuration;
   }

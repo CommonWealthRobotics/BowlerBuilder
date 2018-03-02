@@ -12,9 +12,9 @@ import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 
 /**
- * {@link CadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
+ * {@link AbstractCadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
  */
-public class AceCadEditorTab extends CadEditorTab<AceCadEditorTabController> {
+public class AceCadEditorTab extends AbstractCadEditorTab<AceCadEditorTabController> {
 
   private final AceCadEditorTabController controller;
   private final SplitPane pane;

@@ -16,7 +16,7 @@ public final class FxHelper {
    *
    * @param runnable the action to run on the application thread
    */
-  public static void runAndWait(Runnable runnable) {
+  public static void runAndWait(final Runnable runnable) {
     Platform.runLater(runnable);
     WaitForAsyncUtils.waitForFxEvents();
   }
@@ -34,10 +34,10 @@ public final class FxHelper {
    * @return True if a matching exception was thrown from the JavaFX thread, false otherwise
    * @throws InterruptedException If the current thread is interrupted while waiting
    */
-  public static boolean catchInJavaFXThread(Runnable runnable,
-                                            Class<?> exceptionClass,
-                                            long timeout,
-                                            TimeUnit timeoutUnit) throws InterruptedException {
+  public static boolean catchInJavaFXThread(final Runnable runnable,
+      final Class<?> exceptionClass,
+      final long timeout,
+      final TimeUnit timeoutUnit) throws InterruptedException {
     final CountDownLatch latch = new CountDownLatch(1);
     final boolean[] exceptionWasThrown = new boolean[1];
     exceptionWasThrown[0] = false;
