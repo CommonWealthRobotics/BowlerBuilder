@@ -5,6 +5,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 import org.junit.platform.console.options.Details
+import java.util.Collections.emptyList
 
 buildscript {
     repositories {
@@ -228,7 +229,7 @@ publishing {
 }
 
 task<Wrapper>("wrapper") {
-    gradleVersion = "4.1"
+    gradleVersion = "4.6"
 }
 
 /**
