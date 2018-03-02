@@ -9,6 +9,7 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Worker;
+import javax.annotation.Nonnull;
 
 /**
  * Editor for Cloud9 Ace.
@@ -19,7 +20,7 @@ public final class AceEditor implements ScriptEditor {
 
   private final WebEngineAdapter engine;
 
-  public AceEditor(final WebEngineAdapter webEngine) {
+  public AceEditor(@Nonnull final WebEngineAdapter webEngine) {
     this.engine = webEngine;
     LOGGER.log(Level.FINEST, "engine: " + webEngine);
   }
@@ -29,7 +30,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param text Text to insert
    */
-  public void insertAtCursor(final String text) {
+  public void insertAtCursor(@Nonnull final String text) {
     runAfterEngine(() -> {
       final String escaped = escape(text);
       LOGGER.fine("Inserting: " + escaped);
@@ -42,7 +43,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param text Text to insert
    */
-  public void setText(final String text) {
+  public void setText(@Nonnull final String text) {
     runAfterEngine(() -> {
       final String escaped = escape(text);
       LOGGER.fine("Setting: " + escaped);
@@ -56,7 +57,7 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to escape
    * @return Escaped version
    */
-  private String escape(final String text) {
+  private String escape(@Nonnull final String text) {
     String escaped = text;
     escaped = escaped.replace("\"", "\\\"");
     escaped = escaped.replace("'", "\\'");
@@ -150,7 +151,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param runnable runnable to run
    */
-  private void runAfterEngine(final Runnable runnable) {
+  private void runAfterEngine(@Nonnull final Runnable runnable) {
     if (checkEngine()) {
       runnable.run();
     } else {
@@ -171,7 +172,7 @@ public final class AceEditor implements ScriptEditor {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  private <T> T returnAfterEngine(final Callable<T> callable) throws ExecutionException,
+  private <T> T returnAfterEngine(@Nonnull final Callable<T> callable) throws ExecutionException,
       InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
     runAfterEngine(query);

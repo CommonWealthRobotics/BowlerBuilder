@@ -31,6 +31,8 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
@@ -42,8 +44,9 @@ public class LinkConfigurationWidget extends GridPane {
   private final LinkConfiguration conf;
   private AbstractLink activeLink; //NOPMD
 
-  public LinkConfigurationWidget(final LinkConfiguration configuration, final LinkFactory factory,
-      final EngineeringUnitsSliderWidget setpointSlider) {
+  public LinkConfigurationWidget(@Nonnull final LinkConfiguration configuration,
+      @Nonnull final LinkFactory factory,
+      @Nullable final EngineeringUnitsSliderWidget setpointSlider) {
     conf = configuration;
     activeLink = factory.getLink(conf);
     getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
@@ -385,7 +388,7 @@ public class LinkConfigurationWidget extends GridPane {
     add(newShaft, 1, 16);
   }
 
-  private void test(final String type) throws IOException {
+  private void test(@Nonnull final String type) throws IOException {
     LOGGER.log(Level.FINEST, "Running test with: " + type);
 
     try {
@@ -404,8 +407,8 @@ public class LinkConfigurationWidget extends GridPane {
     }
   }
 
-  private void edit(final String type, final String vitaminID,
-      final Map<String, Object> startingConf)
+  private void edit(@Nonnull final String type, @Nonnull final String vitaminID,
+      @Nonnull final Map<String, Object> startingConf)
       throws IOException {
     LOGGER.log(Level.INFO, "Configuration for " + conf.getElectroMechanicalSize());
     LOGGER.log(Level.INFO, "Saving " + vitaminID);

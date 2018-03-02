@@ -8,6 +8,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javax.annotation.Nonnull;
 
 /**
  * {@link ScriptRunner} passthrough to {@link ScriptingEngine}.
@@ -18,15 +19,15 @@ public class BowlerScriptRunner implements ScriptRunner {
   private final ObjectProperty<Object> result;
 
   @Inject
-  public BowlerScriptRunner(final BowlerGroovy language) {
+  public BowlerScriptRunner(@Nonnull final BowlerGroovy language) {
     this.language = language;
     result = new SimpleObjectProperty<>();
     ScriptingEngine.addScriptingLanguage(language);
   }
 
   @Override
-  public Object runScript(final String script, final ArrayList<Object> arguments,
-      final String languageName) throws Exception { //NOPMD
+  public Object runScript(@Nonnull final String script, final ArrayList<Object> arguments,
+      @Nonnull final String languageName) throws Exception { //NOPMD
     result.set(ScriptingEngine.inlineScriptStringRun(script, arguments, languageName));
     return result.get();
   }

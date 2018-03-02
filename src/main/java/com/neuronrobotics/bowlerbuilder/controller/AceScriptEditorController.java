@@ -38,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
+import javax.annotation.Nonnull;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
@@ -77,11 +78,12 @@ public class AceScriptEditorController {
   private Runnable reloadMenus;
 
   @Inject
-  public AceScriptEditorController(final PreferencesServiceFactory preferencesServiceFactory,
-      final ScriptEditorView scriptEditorView,
-      final ScriptRunner scriptRunner,
-      @Named("scriptLangName") final String scriptLangName,
-      final StringClipper stringClipper) {
+  public AceScriptEditorController(
+      @Nonnull final PreferencesServiceFactory preferencesServiceFactory,
+      @Nonnull final ScriptEditorView scriptEditorView,
+      @Nonnull final ScriptRunner scriptRunner,
+      @Nonnull @Named("scriptLangName") final String scriptLangName,
+      @Nonnull final StringClipper stringClipper) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
@@ -235,20 +237,18 @@ public class AceScriptEditorController {
    *
    * @param file File to load
    */
-  public void loadFile(final File file) {
-    if (file != null) {
-      try {
-        scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
-        if (file.getName().endsWith(".xml")) {
-          scriptLangName = "MobilBaseXML";
-        } else if (file.getName().endsWith(".groovy")) {
-          scriptLangName = "BowlerGroovy";
-        }
-      } catch (final IOException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not load file: " + file.getAbsolutePath() + ".\n"
-                + Throwables.getStackTraceAsString(e));
+  public void loadFile(@Nonnull final File file) {
+    try {
+      scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
+      if (file.getName().endsWith(".xml")) {
+        scriptLangName = "MobilBaseXML";
+      } else if (file.getName().endsWith(".groovy")) {
+        scriptLangName = "BowlerGroovy";
       }
+    } catch (final IOException e) {
+      LOGGER.log(Level.SEVERE,
+          "Could not load file: " + file.getAbsolutePath() + ".\n"
+              + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -258,7 +258,7 @@ public class AceScriptEditorController {
    * @param gist Parent gist
    * @param gistFile File in gist
    */
-  public void loadGist(final GHGist gist, final GHGistFile gistFile) {
+  public void loadGist(@Nonnull final GHGist gist, @Nonnull final GHGistFile gistFile) {
     isScratchpad = false;
     final File file;
 
@@ -285,7 +285,8 @@ public class AceScriptEditorController {
    * @param fileName filename in gist
    * @param file file on disk
    */
-  public void loadManualGist(final String pushURL, final String fileName, final File file) {
+  public void loadManualGist(@Nonnull final String pushURL, @Nonnull final String fileName,
+      @Nonnull final File file) {
     isScratchpad = false;
     manualRemote = pushURL;
     manualFile = fileName;
@@ -293,14 +294,12 @@ public class AceScriptEditorController {
     gistURLField.setText(pushURL);
     fileNameField.setText(fileName);
 
-    if (file != null) {
-      try {
-        scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
-      } catch (final IOException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not load file: " + file.getAbsolutePath() + ".\n"
-                + Throwables.getStackTraceAsString(e));
-      }
+    try {
+      scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
+    } catch (final IOException e) {
+      LOGGER.log(Level.SEVERE,
+          "Could not load file: " + file.getAbsolutePath() + ".\n"
+              + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -335,8 +334,9 @@ public class AceScriptEditorController {
    * @param languageName scripting language name
    * @return script result
    */
-  public Object runStringScript(final String script, final ArrayList<Object> arguments, //NOPMD
-      final String languageName) {
+  public Object runStringScript(@Nonnull final String script,
+      @Nonnull final ArrayList<Object> arguments, //NOPMD
+      @Nonnull final String languageName) {
     try {
       //Run the code
       LOGGER.log(Level.FINE, "Running script.");
@@ -368,7 +368,7 @@ public class AceScriptEditorController {
    *
    * @param tab Tab the editor is contained in
    */
-  public void initScratchpad(final Tab tab, final Runnable reloadMenus) {
+  public void initScratchpad(@Nonnull final Tab tab, @Nonnull final Runnable reloadMenus) {
     this.tab = tab;
     this.reloadMenus = reloadMenus;
   }

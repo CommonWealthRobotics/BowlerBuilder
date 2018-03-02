@@ -10,10 +10,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javax.annotation.Nonnull;
 
 public class AddLinkDialog extends Dialog<String[]> {
 
-  public AddLinkDialog(final Set<Integer> takenChannels) {
+  public AddLinkDialog(@Nonnull final Set<Integer> takenChannels) {
     super();
 
     setTitle("Add Link");

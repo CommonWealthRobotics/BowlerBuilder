@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javax.annotation.Nonnull;
 
 public class DHSettingsWidget implements EngineeringUnitsChangeListener {
 
@@ -24,9 +25,9 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
   private final EngineeringUnitsSliderWidget radius;
   private final DHParameterKinematics device2;
 
-  public DHSettingsWidget(final String title, final DHLink dhLink,
-      final DHParameterKinematics device2,
-      final EngineeringUnitsChangeListener externalListener) {
+  public DHSettingsWidget(@Nonnull final String title, @Nonnull final DHLink dhLink,
+      @Nonnull final DHParameterKinematics device2,
+      @Nonnull final EngineeringUnitsChangeListener externalListener) {
     this.dhLink = dhLink;
     this.device2 = device2;
     this.externalListener = externalListener;
@@ -80,7 +81,7 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
     vBox.getChildren().add(gridPane);
   }
 
-  private Label getSliderLabel(final String text) {
+  private Label getSliderLabel(@Nonnull final String text) {
     final Label out = new Label(text);
     out.setPadding(new Insets(0, 5, 0, 0));
     return out;

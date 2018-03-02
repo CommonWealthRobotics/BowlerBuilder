@@ -9,15 +9,16 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 
 public class LimbTabLinkSelection extends AbstractLinkSelection {
 
   private final VBox vBox;
 
-  public LimbTabLinkSelection(final DHLink dhLink, final LinkConfiguration configuration,
-      final DHParameterKinematics limb,
-      final LimbTabLimbSelection limbTabLimbSelection,
-      final CreatureEditorController creatureEditorController) {
+  public LimbTabLinkSelection(final DHLink dhLink, @Nonnull final LinkConfiguration configuration,
+      @Nonnull final DHParameterKinematics limb,
+      @Nonnull final LimbTabLimbSelection limbTabLimbSelection,
+      @Nonnull final CreatureEditorController creatureEditorController) {
     super(dhLink, configuration);
     vBox = new VBox(5);
 

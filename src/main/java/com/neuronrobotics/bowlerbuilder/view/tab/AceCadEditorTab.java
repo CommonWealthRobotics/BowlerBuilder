@@ -10,6 +10,7 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
+import javax.annotation.Nonnull;
 
 /**
  * {@link AbstractCadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
@@ -19,7 +20,7 @@ public class AceCadEditorTab extends AbstractCadEditorTab<AceCadEditorTabControl
   private final AceCadEditorTabController controller;
   private final SplitPane pane;
 
-  public AceCadEditorTab(final String title) throws IOException {
+  public AceCadEditorTab(@Nonnull final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),

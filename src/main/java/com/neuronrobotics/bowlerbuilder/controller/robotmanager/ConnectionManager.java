@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
+import javax.annotation.Nonnull;
 
 @Singleton
 public class ConnectionManager implements IDeviceAddedListener {
@@ -25,7 +26,8 @@ public class ConnectionManager implements IDeviceAddedListener {
   private final Map<BowlerAbstractDevice, TitledPane> paneMap;
   private boolean removingAll; //NOPMD
 
-  public ConnectionManager(final HBox connectionsHeader, final Accordion accordion) {
+  public ConnectionManager(@Nonnull final HBox connectionsHeader,
+      @Nonnull final Accordion accordion) {
     devices = new ArrayList<>();
     this.accordion = accordion;
     paneMap = new HashMap<>();

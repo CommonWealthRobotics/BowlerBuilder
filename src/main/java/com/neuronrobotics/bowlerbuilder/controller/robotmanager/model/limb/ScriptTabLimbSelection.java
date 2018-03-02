@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 public class ScriptTabLimbSelection extends AbstractLimbSelection {
@@ -21,8 +22,8 @@ public class ScriptTabLimbSelection extends AbstractLimbSelection {
       LoggerUtilities.getLogger(ScriptTabLimbSelection.class.getSimpleName());
   private final VBox widget;
 
-  public ScriptTabLimbSelection(final DHParameterKinematics limb,
-      final AceCreatureLabController controller) {
+  public ScriptTabLimbSelection(@Nonnull final DHParameterKinematics limb,
+      @Nonnull final AceCreatureLabController controller) {
     super(limb);
 
     widget = new VBox(5, getTitleLabel(limb.getScriptingName()));

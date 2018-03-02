@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javax.annotation.Nonnull;
 
 /**
  * {@link AbstractCadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
@@ -25,7 +26,7 @@ public class CreatureLabTab extends AbstractCadEditorTab<AceCreatureLabControlle
   private final AceCreatureLabController controller;
   private final SplitPane pane;
 
-  public CreatureLabTab(final String title) throws IOException {
+  public CreatureLabTab(@Nonnull final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),

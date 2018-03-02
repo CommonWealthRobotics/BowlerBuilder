@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javax.annotation.Nonnull;
 
 public class BowlerMobileBaseUI implements IMobileBaseUI {
 
@@ -20,12 +21,12 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   private final CadEngine cadEngine;
 
   @Inject
-  public BowlerMobileBaseUI(final CadEngine cadEngine) {
+  public BowlerMobileBaseUI(@Nonnull final CadEngine cadEngine) {
     this.cadEngine = cadEngine;
   }
 
   @Override
-  public void setAllCSG(final Collection<CSG> collection, final File file) {
+  public void setAllCSG(@Nonnull final Collection<CSG> collection, final File file) {
     Platform.runLater(() -> {
       cadEngine.clearMeshes();
       cadEngine.addAllCSGs(collection);
@@ -33,12 +34,12 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   }
 
   @Override
-  public void addCSG(final Collection<CSG> collection, final File file) {
+  public void addCSG(@Nonnull final Collection<CSG> collection, final File file) {
     Platform.runLater(() -> cadEngine.addAllCSGs(collection));
   }
 
   @Override
-  public void highlightException(final File file, final Exception exception) {
+  public void highlightException(final File file, @Nonnull final Exception exception) {
     LOGGER.warning("Exception in CAD script.\n" + Throwables.getStackTraceAsString(exception));
   }
 
@@ -48,7 +49,7 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   }
 
   @Override
-  public void setSelectedCsg(final Collection<CSG> collection) {
+  public void setSelectedCsg(@Nonnull final Collection<CSG> collection) {
     Platform.runLater(() -> cadEngine.selectCSGs(collection));
   }
 

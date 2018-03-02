@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor;
 
+import javax.annotation.Nonnull;
+
 /**
  * Interface to edit a text-based script.
  */
@@ -10,14 +12,14 @@ public interface ScriptEditor {
    *
    * @param text Text to insert
    */
-  void insertAtCursor(String text);
+  void insertAtCursor(@Nonnull String text);
 
   /**
    * Set the text in the editor, overwriting current content.
    *
    * @param text Text to insert
    */
-  void setText(String text);
+  void setText(@Nonnull String text);
 
   /**
    * Set the font size for the editor.

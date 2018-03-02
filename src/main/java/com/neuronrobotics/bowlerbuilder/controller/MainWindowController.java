@@ -37,9 +37,9 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -67,6 +67,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javax.annotation.Nonnull;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
@@ -287,7 +288,7 @@ public class MainWindowController {
    *
    * @param url URL to load
    */
-  public void loadPage(final String url) {
+  public void loadPage(@Nonnull final String url) {
     Platform.runLater(() -> webBrowserController.loadPage(url));
   }
 
@@ -297,7 +298,7 @@ public class MainWindowController {
    * @param tabName name for new tab
    * @param url URL to load
    */
-  public void loadPageIntoNewTab(final String tabName, final String url) {
+  public void loadPageIntoNewTab(@Nonnull final String tabName, @Nonnull final String url) {
     Platform.runLater(() -> {
       final FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
           "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
@@ -321,7 +322,8 @@ public class MainWindowController {
    * @param gist Gist containing file
    * @param gistFile File
    */
-  public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
+  public void openGistFileInEditor(@Nonnull final GHGist gist,
+      @Nonnull final GHGistFile gistFile) {
     Platform.runLater(() -> {
       try {
         final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
@@ -344,7 +346,7 @@ public class MainWindowController {
    * @param gist gist clone URL
    * @param fileName file name (with .xml extension)
    */
-  public void loadCreatureLab(final String gist, final String fileName) {
+  public void loadCreatureLab(@Nonnull final String gist, @Nonnull final String fileName) {
     loadCreatureLab(new String[]{gist, fileName});
   }
 
@@ -353,7 +355,7 @@ public class MainWindowController {
    *
    * @param file xml file in gist
    */
-  public void loadCreatureLab(final String[] file) { //NOPMD
+  public void loadCreatureLab(@Nonnull final String[] file) { //NOPMD
     Platform.runLater(() -> {
       try {
         final CreatureLabTab tab = new CreatureLabTab("Creature Lab");
@@ -545,7 +547,8 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param gists list of gists
    */
-  private void loadGistsIntoMenus(final Menu menu, final PagedIterable<GHGist> gists) {
+  private void loadGistsIntoMenus(@Nonnull final Menu menu,
+      @Nonnull final PagedIterable<GHGist> gists) {
     gists.forEach(gist -> {
       final MenuItem showWebGist = new MenuItem("Show Gist on Web");
       showWebGist.setOnAction(event ->
@@ -641,7 +644,8 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param orgs organizations
    */
-  private void loadOrgsIntoMenus(final Menu menu, final GHPersonSet<GHOrganization> orgs) {
+  private void loadOrgsIntoMenus(@Nonnull final Menu menu,
+      @Nonnull final GHPersonSet<GHOrganization> orgs) {
     final Function<GHOrganization, String> getName = org -> {
       try {
         String name = org.getName();
@@ -697,7 +701,8 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param repos repositories
    */
-  private void loadReposIntoMenus(final Menu menu, final PagedIterable<GHRepository> repos) {
+  private void loadReposIntoMenus(@Nonnull final Menu menu,
+      @Nonnull final PagedIterable<GHRepository> repos) {
     repos.asList().stream().sorted(Comparator.comparing(GHRepository::getName)).forEach(repo -> {
       final MenuItem menuItem = new MenuItem(repo.getName());
       menuItem.setOnAction(event ->
@@ -708,7 +713,7 @@ public class MainWindowController {
     });
   }
 
-  private void reloadPlugins(final List<Plugin> plugins) {
+  private void reloadPlugins(@Nonnull final Collection<Plugin> plugins) {
     installedPlugins.getItems().clear();
     installedPlugins.getItems().addAll(plugins.stream().map(plugin -> {
       final MenuItem item = new MenuItem(plugin.getDisplayName());
@@ -764,7 +769,7 @@ public class MainWindowController {
    *
    * @param tab tab to add
    */
-  public void addTab(final Tab tab) {
+  public void addTab(@Nonnull final Tab tab) {
     Platform.runLater(() -> tabPane.getTabs().add(tab));
   }
 

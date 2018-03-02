@@ -1,6 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import eu.mihosoft.vrl.v3d.CSG;
+import javax.annotation.Nonnull;
 
 public class AceCadEditorTabController {
 
@@ -8,8 +9,8 @@ public class AceCadEditorTabController {
   private final CADModelViewerController cadModelViewerController;
 
   public AceCadEditorTabController(
-      final AceScriptEditorController aceScriptEditorController,
-      final CADModelViewerController cadModelViewerController) {
+      @Nonnull final AceScriptEditorController aceScriptEditorController,
+      @Nonnull final CADModelViewerController cadModelViewerController) {
     this.aceScriptEditorController = aceScriptEditorController;
     this.cadModelViewerController = cadModelViewerController;
 
@@ -23,7 +24,7 @@ public class AceCadEditorTabController {
    *
    * @param item script result
    */
-  private void parseCSG(final Object item) {
+  private void parseCSG(@Nonnull final Object item) {
     if (item instanceof CSG) {
       cadModelViewerController.addCSG((CSG) item);
     } else if (item instanceof Iterable) {

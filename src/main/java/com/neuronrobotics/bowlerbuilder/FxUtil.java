@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import javafx.application.Platform;
+import javax.annotation.Nonnull;
 
 /**
  * JavaFX helper utility class.
@@ -20,7 +21,7 @@ public final class FxUtil {
    *
    * @param runnable runnable to run
    */
-  public static void runFXAndWait(final Runnable runnable) throws InterruptedException {
+  public static void runFXAndWait(@Nonnull final Runnable runnable) throws InterruptedException {
     if (Platform.isFxApplicationThread()) {
       runnable.run();
     } else {
@@ -42,7 +43,7 @@ public final class FxUtil {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  public static <T> T returnFX(final Callable<T> callable)
+  public static <T> T returnFX(@Nonnull final Callable<T> callable)
       throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
 
@@ -65,7 +66,7 @@ public final class FxUtil {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  public static <T> T returnFXAndWait(final Callable<T> callable)
+  public static <T> T returnFXAndWait(@Nonnull final Callable<T> callable)
       throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
     runFXAndWait(query);

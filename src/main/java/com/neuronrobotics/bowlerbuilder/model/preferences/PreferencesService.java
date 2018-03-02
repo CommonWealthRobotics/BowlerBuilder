@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 
 /**
  * Loads/saves preferences from/to a file.
@@ -36,7 +37,7 @@ public class PreferencesService {
    *
    * @param folderName unique folder name
    */
-  public PreferencesService(final String folderName) {
+  public PreferencesService(@Nonnull final String folderName) {
     data = new ConcurrentHashMap<>();
     listeners = new ConcurrentHashMap<>();
 
@@ -59,7 +60,8 @@ public class PreferencesService {
    * @param <T> type of entry
    * @return entry if present, else default value
    */
-  public <T extends Serializable> T get(final String name, final T defaultValue) {
+  public <T extends Serializable> T get(@Nonnull final String name,
+      @Nonnull final T defaultValue) {
     if (data.containsKey(name)) {
       final Serializable value = data.get(name);
       if (value.getClass().isInstance(defaultValue)) {
@@ -82,8 +84,8 @@ public class PreferencesService {
    * @param listener listener to notify
    * @param <T> type of entry
    */
-  public <T extends Serializable> void addListener(final String name,
-      final PreferenceListener<T> listener) {
+  public <T extends Serializable> void addListener(@Nonnull final String name,
+      @Nonnull final PreferenceListener<T> listener) {
     if (listeners.containsKey(name)) {
       listeners.get(name).add(listener);
     } else {
@@ -100,7 +102,7 @@ public class PreferencesService {
    * @param value value of entry
    * @param <T> type of entry
    */
-  public <T extends Serializable> void set(final String name, final T value) {
+  public <T extends Serializable> void set(@Nonnull final String name, @Nonnull final T value) {
     LOGGER.fine("Set " + name + " to " + value);
     final Serializable prev = data.put(name, value);
     if (listeners.containsKey(name)) {

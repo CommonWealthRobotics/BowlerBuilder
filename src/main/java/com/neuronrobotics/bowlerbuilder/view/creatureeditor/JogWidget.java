@@ -25,6 +25,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javax.annotation.Nonnull;
 
 public final class JogWidget {
 
@@ -36,7 +37,7 @@ public final class JogWidget {
   private final JogThread jogThread;
   private final BooleanProperty jogThreadRunning;
 
-  public JogWidget(final DHParameterKinematics limb) {
+  public JogWidget(@Nonnull final DHParameterKinematics limb) {
     view = new VBox(5);
     controlPane = new GridPane();
     this.limb = limb;
@@ -155,15 +156,15 @@ public final class JogWidget {
    * @param yCol GridPane y coordinate
    * @return Button
    */
-  private Button addButton(final ImageView icon, final String text,
-      final int xCol, final int yCol) {
+  private Button addButton(@Nonnull final ImageView icon, @Nonnull final String text,
+      @Nonnull final Integer xCol, @Nonnull final Integer yCol) {
     final Button out = new Button(text);
     out.setGraphic(icon);
     controlPane.add(out, xCol, yCol);
     return out;
   }
 
-  private Optional<Float> validateAsFloatingPoint(final String rawNumber) {
+  private Optional<Float> validateAsFloatingPoint(@Nonnull final String rawNumber) {
     return Optional.ofNullable(Floats.tryParse(rawNumber));
   }
 

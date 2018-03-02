@@ -4,17 +4,17 @@ import com.neuronrobotics.bowlerbuilder.view.creatureeditor.TransformChangeListe
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.TransformWidget;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javax.annotation.Nonnull;
 
 public class ConfigTabLimbSelection extends AbstractLimbSelection {
 
   private final TransformWidget widget;
 
-  public ConfigTabLimbSelection(final DHParameterKinematics limb, final MobileBase device,
-      final MobileBaseCadManager cadManager) {
+  public ConfigTabLimbSelection(@Nonnull final DHParameterKinematics limb,
+      @Nonnull final MobileBaseCadManager cadManager) {
     super(limb);
 
     widget = new TransformWidget("Limb Configuration for " + limb.getScriptingName(),

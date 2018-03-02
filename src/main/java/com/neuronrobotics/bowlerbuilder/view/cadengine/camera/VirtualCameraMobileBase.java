@@ -9,13 +9,14 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public class VirtualCameraMobileBase extends MobileBase { //NOPMD
 
   private IDriveEngine driveEngine = new IDriveEngineImplementation();
   private final List<VirtualCameraMobileBase> bases = new ArrayList<>();
 
-  public VirtualCameraMobileBase(final String text) throws UnsupportedEncodingException {
+  public VirtualCameraMobileBase(@Nonnull final String text) throws UnsupportedEncodingException {
     //super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
     super(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name())));
 
@@ -28,7 +29,7 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
    *
    * @param driveEngine drive engine
    */
-  public void setDriveEngine(final IDriveEngine driveEngine) {
+  public void setDriveEngine(@Nonnull final IDriveEngine driveEngine) {
     this.driveEngine = driveEngine;
     for (final VirtualCameraMobileBase base : bases) {
       base.setWalkingDriveEngine(getDriveEngine());

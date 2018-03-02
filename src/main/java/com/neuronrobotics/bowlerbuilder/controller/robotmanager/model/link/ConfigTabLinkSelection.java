@@ -11,6 +11,7 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 
 public class ConfigTabLinkSelection extends AbstractLinkSelection implements
     EngineeringUnitsChangeListener {
@@ -18,8 +19,10 @@ public class ConfigTabLinkSelection extends AbstractLinkSelection implements
   private final MobileBaseCadManager cadManager;
   private final VBox widget;
 
-  public ConfigTabLinkSelection(final DHLink dhLink, final LinkConfiguration configuration,
-      final DHParameterKinematics device, final MobileBaseCadManager cadManager) {
+  public ConfigTabLinkSelection(@Nonnull final DHLink dhLink,
+      @Nonnull final LinkConfiguration configuration,
+      @Nonnull final DHParameterKinematics device,
+      @Nonnull final MobileBaseCadManager cadManager) {
     super(dhLink, configuration);
     this.cadManager = cadManager;
 

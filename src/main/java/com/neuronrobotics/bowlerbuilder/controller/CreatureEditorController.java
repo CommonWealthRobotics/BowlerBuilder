@@ -323,7 +323,7 @@ public class CreatureEditorController {
 
       controller.limbSelectionProperty().addListener((observable, oldValue, newValue) ->
           newValue.ifPresent(limb -> {
-            selectionProperty.set(new ConfigTabLimbSelection(limb, device, cadManager));
+            selectionProperty.set(new ConfigTabLimbSelection(limb, cadManager));
           }));
 
       controller.linkSelectionProperty().addListener((observable, oldValue, newValue) ->

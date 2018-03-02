@@ -11,6 +11,7 @@ import javafx.scene.SubScene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
+import javax.annotation.Nonnull;
 
 public class CADModelViewerController {
 
@@ -21,7 +22,7 @@ public class CADModelViewerController {
   private boolean handShowing = true;
 
   @Inject
-  public CADModelViewerController(final CadEngine engine) {
+  public CADModelViewerController(@Nonnull final CadEngine engine) {
     this.engine = engine;
   }
 
@@ -45,7 +46,7 @@ public class CADModelViewerController {
    *
    * @param csg CSG to add
    */
-  public void addCSG(final CSG csg) {
+  public void addCSG(@Nonnull final CSG csg) {
     engine.addCSG(csg);
   }
 
@@ -54,7 +55,7 @@ public class CADModelViewerController {
    *
    * @param csgs CSGs to add
    */
-  public void addAllCSGs(final CSG... csgs) {
+  public void addAllCSGs(@Nonnull final CSG... csgs) {
     engine.addAllCSGs(csgs);
   }
 
@@ -63,7 +64,7 @@ public class CADModelViewerController {
    *
    * @param csgs List of CSGs to add
    */
-  public void addAllCSGs(final Collection<CSG> csgs) {
+  public void addAllCSGs(@Nonnull final Collection<CSG> csgs) {
     engine.addAllCSGs(csgs);
   }
 

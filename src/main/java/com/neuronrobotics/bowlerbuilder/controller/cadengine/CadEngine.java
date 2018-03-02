@@ -8,6 +8,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.SubScene;
 import javafx.scene.shape.MeshView;
+import javax.annotation.Nonnull;
 
 /**
  * Interface to a CAD engine to display and interact with CSGs.
@@ -19,21 +20,21 @@ public interface CadEngine {
    *
    * @param csg CSG to add
    */
-  void addCSG(CSG csg);
+  void addCSG(@Nonnull CSG csg);
 
   /**
    * Add MeshViews from all CSGs.
    *
    * @param csgs CSGs to add
    */
-  void addAllCSGs(CSG... csgs);
+  void addAllCSGs(@Nonnull CSG... csgs);
 
   /**
    * Add MeshViews from all CSGs.
    *
    * @param csgs List of CSGs to add
    */
-  void addAllCSGs(Collection<CSG> csgs);
+  void addAllCSGs(@Nonnull Collection<CSG> csgs);
 
   /**
    * Select all CSGs from the line in the script.
@@ -41,14 +42,14 @@ public interface CadEngine {
    * @param script script containing CSG source
    * @param lineNumber line number in script
    */
-  void setSelectedCsg(File script, int lineNumber);
+  void setSelectedCsg(@Nonnull File script, int lineNumber);
 
   /**
    * Select all CSGs in the collection.
    *
    * @param selection CSGs to select
    */
-  void selectCSGs(Collection<CSG> selection);
+  void selectCSGs(@Nonnull Collection<CSG> selection);
 
   /**
    * Removes all meshes except for the background.

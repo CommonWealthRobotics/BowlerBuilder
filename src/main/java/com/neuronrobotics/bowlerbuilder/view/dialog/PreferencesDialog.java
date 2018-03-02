@@ -4,7 +4,6 @@ import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
@@ -14,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import org.controlsfx.control.PropertySheet;
 
 /**
@@ -21,7 +21,7 @@ import org.controlsfx.control.PropertySheet;
  */
 public class PreferencesDialog extends Dialog {
 
-  public PreferencesDialog(final Collection<PreferencesService> preferencesServices) {
+  public PreferencesDialog(@Nonnull final Iterable<PreferencesService> preferencesServices) {
     super();
 
     final List<PropertySheet> propertySheets = new ArrayList<>();

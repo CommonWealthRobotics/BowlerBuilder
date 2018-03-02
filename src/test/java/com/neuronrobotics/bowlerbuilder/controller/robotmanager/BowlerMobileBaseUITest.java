@@ -21,7 +21,7 @@ public class BowlerMobileBaseUITest extends AbstractAutoClosingApplicationTest {
   private BowlerMobileBaseUI controller;
 
   @Override
-  public void start(Stage stage) {
+  public void start(final Stage stage) {
     controller = BowlerBuilder.getInjector()
         .createChildInjector(new CADModelViewerControllerModule())
         .getInstance(BowlerMobileBaseUI.class);

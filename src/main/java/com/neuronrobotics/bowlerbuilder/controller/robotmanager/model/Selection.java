@@ -3,6 +3,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
+import javax.annotation.Nonnull;
 
 public interface Selection {
 
@@ -19,7 +20,7 @@ public interface Selection {
    * @param text label text
    * @return label
    */
-  default Label getTitleLabel(final String text) {
+  default Label getTitleLabel(@Nonnull final String text) {
     final Label label = new Label(text);
     label.setFont(Font.font(16));
     return label;

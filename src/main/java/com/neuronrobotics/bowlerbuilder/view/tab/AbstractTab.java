@@ -2,6 +2,7 @@ package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javax.annotation.Nonnull;
 
 /**
  * A generic tab.
@@ -10,7 +11,7 @@ import javafx.scene.control.Tab;
  */
 public abstract class AbstractTab<T> extends Tab {
 
-  public AbstractTab(final String title) {
+  public AbstractTab(@Nonnull final String title) {
     super(title);
   }
 

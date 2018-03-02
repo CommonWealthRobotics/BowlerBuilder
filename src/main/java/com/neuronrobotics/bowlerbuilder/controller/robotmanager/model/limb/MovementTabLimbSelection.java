@@ -7,6 +7,7 @@ import java.util.Map;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 
 public class MovementTabLimbSelection extends AbstractLimbSelection {
 
@@ -14,7 +15,7 @@ public class MovementTabLimbSelection extends AbstractLimbSelection {
   private static final Map<DHParameterKinematics, JogWidget> JOG_WIDGET_MAP = new HashMap<>();
   private final VBox view;
 
-  public MovementTabLimbSelection(final DHParameterKinematics limb) {
+  public MovementTabLimbSelection(@Nonnull final DHParameterKinematics limb) {
     super(limb);
 
     view = new VBox(5);

@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
+import javax.annotation.Nonnull;
 
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number> {
 
@@ -21,7 +22,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   private boolean intCast;
   private boolean allowResize = true;
 
-  public EngineeringUnitsSliderWidget(final EngineeringUnitsChangeListener listener,
+  public EngineeringUnitsSliderWidget(@Nonnull final EngineeringUnitsChangeListener listener,
       final double min,
       final double max, final double current, final double width, final String units,
       final boolean intCast) {
@@ -30,7 +31,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   public EngineeringUnitsSliderWidget(
-      final EngineeringUnitsChangeListener listener,
+      @Nonnull final EngineeringUnitsChangeListener listener,
       final double current,
       final double width,
       final String units) {
@@ -38,7 +39,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   public EngineeringUnitsSliderWidget(
-      final EngineeringUnitsChangeListener listener,
+      @Nonnull final EngineeringUnitsChangeListener listener,
       final double min,
       final double max,
       final double current,

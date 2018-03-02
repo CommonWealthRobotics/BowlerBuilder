@@ -23,6 +23,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 
 public class LimbTabLimbSelection extends AbstractLimbSelection {
 
@@ -31,8 +32,9 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
   private final AnchorPane widget;
   private final HBox scrollPaneContent;
 
-  public LimbTabLimbSelection(final MobileBase device, final DHParameterKinematics limb,
-      final CreatureEditorController creatureEditorController) {
+  public LimbTabLimbSelection(@Nonnull final MobileBase device,
+      @Nonnull final DHParameterKinematics limb,
+      @Nonnull final CreatureEditorController creatureEditorController) {
     super(limb);
 
     view = new VBox(5);
@@ -121,7 +123,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
     content.getChildren().add(controlsBox);
   }
 
-  private List<Button> getLinkButtons(final List<LinkConfiguration> configs) {
+  private List<Button> getLinkButtons(@Nonnull final List<LinkConfiguration> configs) {
     return configs.stream().map(config -> {
       final Button linkButton = new Button(config.getName());
       //Set the selection to this link

@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javax.annotation.Nonnull;
 
 public class AceCreatureLabController {
 
@@ -25,10 +26,10 @@ public class AceCreatureLabController {
   private final CADModelViewerController cadModelViewerController;
   private final CreatureEditorController creatureEditorController;
 
-  public AceCreatureLabController(final TabPane scriptEditorPane,
-      final Supplier<FXMLLoader> scriptEditorSupplier,
-      final CADModelViewerController cadModelViewerController,
-      final CreatureEditorController creatureEditorController) {
+  public AceCreatureLabController(@Nonnull final TabPane scriptEditorPane,
+      @Nonnull final Supplier<FXMLLoader> scriptEditorSupplier,
+      @Nonnull final CADModelViewerController cadModelViewerController,
+      @Nonnull final CreatureEditorController creatureEditorController) {
     this.scriptEditorPane = scriptEditorPane;
     this.scriptEditorSupplier = scriptEditorSupplier;
     this.tabNameMap = new HashMap<>();
@@ -37,20 +38,20 @@ public class AceCreatureLabController {
     this.creatureEditorController = creatureEditorController;
   }
 
-  public void loadFileIntoNewTab(final String title, final String pushURL, final String fileName,
-      final File file) {
+  public void loadFileIntoNewTab(@Nonnull final String title, @Nonnull final String pushURL,
+      @Nonnull final String fileName, @Nonnull final File file) {
     loadFileIntoNewTab(title, Optional.empty(), pushURL, fileName, file);
   }
 
   public void loadFileIntoNewTab(
-      final String title, final Node graphic, final String pushURL, final String fileName,
-      final File file) {
+      @Nonnull final String title, @Nonnull final Node graphic, @Nonnull final String pushURL,
+      @Nonnull final String fileName, @Nonnull final File file) {
     loadFileIntoNewTab(title, Optional.of(graphic), pushURL, fileName, file);
   }
 
-  private void loadFileIntoNewTab(final String title, final Optional<Node> graphic,
-      final String pushURL,
-      final String fileName, final File file) {
+  private void loadFileIntoNewTab(@Nonnull final String title,
+      @Nonnull final Optional<Node> graphic, @Nonnull final String pushURL,
+      @Nonnull final String fileName, @Nonnull final File file) {
     if (tabNameMap.containsKey(title)) {
       final Tab tab = tabNameMap.get(title);
       if (tabControllerMap.containsKey(tab)) {

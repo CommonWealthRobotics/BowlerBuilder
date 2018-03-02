@@ -19,6 +19,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javax.annotation.Nonnull;
 
 public class GistFileSelectionDialog extends Dialog<String[]> {
 
@@ -27,7 +28,8 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
   private final ValidatedTextField gistField;
   private final ComboBox<String> fileChooser;
 
-  public GistFileSelectionDialog(final String title, final Predicate<String> extensionFilter) {
+  public GistFileSelectionDialog(@Nonnull final String title,
+      @Nonnull final Predicate<String> extensionFilter) {
     super();
 
     gistField = new ValidatedTextField("Invalid Gist URL", url ->

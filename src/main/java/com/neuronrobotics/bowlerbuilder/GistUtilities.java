@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
@@ -27,8 +28,8 @@ public final class GistUtilities {
    * @param isPublic Public/private viewing
    * @return New gist
    */
-  public static GHGist createNewGist(final String filename, final String description,
-      final boolean isPublic)
+  public static GHGist createNewGist(@Nonnull final String filename,
+      @Nonnull final String description, @Nonnull final Boolean isPublic)
       throws IOException {
     //Setup gist
     final GitHub gitHub = ScriptingEngine.getGithub();
@@ -49,7 +50,8 @@ public final class GistUtilities {
    * @param filename Gist file filename
    * @return New gist
    */
-  private static GHGist createGistFromBuilder(final GHGistBuilder builder, final String filename)
+  private static GHGist createGistFromBuilder(@Nonnull final GHGistBuilder builder,
+      @Nonnull final String filename)
       throws IOException {
     final GHGist gist;
     gist = builder.create();
@@ -74,7 +76,7 @@ public final class GistUtilities {
    * @param fileName File name to validate
    * @return An optional containing a valid file name, empty otherwise
    */
-  public static Optional<String> isValidCodeFileName(final String fileName) {
+  public static Optional<String> isValidCodeFileName(@Nonnull final String fileName) {
     if (fileName.matches("^.*\\.[^\\\\]+$")) {
       return Optional.of(fileName);
     }
@@ -88,7 +90,7 @@ public final class GistUtilities {
    * @param url gist URL
    * @return optional containing a valid gist URL, empty otherwise
    */
-  public static Optional<String> isValidGitURL(final String url) {
+  public static Optional<String> isValidGitURL(@Nonnull final String url) {
     //Any git URL is ((git|ssh|http(scale)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
     if (url.matches("(http(s)?)(:(//)?)([\\w.@:/\\-~]+)(\\.git)(/)?")) {
       return Optional.of(url);

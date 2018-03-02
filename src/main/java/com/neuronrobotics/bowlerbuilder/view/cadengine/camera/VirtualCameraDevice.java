@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.transform.Affine;
+import javax.annotation.Nonnull;
 
 public class VirtualCameraDevice extends AbstractImageProvider {
 
@@ -22,7 +23,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   private final Affine zoomAffine = new Affine();
   private final Group manipulationFrame;
 
-  public VirtualCameraDevice(final Camera camera, final Group hand) {
+  public VirtualCameraDevice(@Nonnull final Camera camera, @Nonnull final Group hand) {
     setCamera(camera);
     setScriptingName("virtualCameraDevice");
 
