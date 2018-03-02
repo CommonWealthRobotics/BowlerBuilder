@@ -40,6 +40,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
         BowlerBuilder.getInjector().createChildInjector(
             new CADModelViewerControllerModule())::getInstance);
 
+    logger.info("Loading CADModelViewer.");
     Node cadViewer = cadViewerLoader.load();
 
     FXMLLoader creatureEditorLoader = new FXMLLoader(CreatureLabTab.class.getResource(
@@ -48,6 +49,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
         null,
         BowlerBuilder.getInjector()::getInstance);
 
+    logger.info("Loading CreatureEditor.");
     Node creatureEditor = creatureEditorLoader.load();
 
     pane = new SplitPane(tabPane, creatureEditor, cadViewer);

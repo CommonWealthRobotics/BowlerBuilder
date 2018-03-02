@@ -59,6 +59,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javax.annotation.Nonnull;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.Git;
@@ -103,7 +104,7 @@ public class CreatureEditorController {
   private AceCreatureLabController controller;
 
   @Inject
-  public CreatureEditorController(MainWindowController mainWindowController) {
+  public CreatureEditorController(@Nonnull MainWindowController mainWindowController) {
     this.mainWindowController = mainWindowController;
 
     limbWidget = new AnchorPane();
@@ -121,7 +122,7 @@ public class CreatureEditorController {
    * @param device device to check
    * @return all taken channels
    */
-  public static Set<Integer> getTakenChannels(MobileBase device) {
+  public static Set<Integer> getTakenChannels(@Nonnull MobileBase device) {
     return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
         .flatMap(Collection::stream)
         .map(LinkConfiguration::getHardwareIndex)
@@ -181,8 +182,8 @@ public class CreatureEditorController {
    * @param device {@link MobileBase} to load menus from
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
-  public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-      AceCreatureLabController controller) {
+  public void generateMenus(@Nonnull MobileBase device, @Nonnull MobileBaseCadManager cadManager,
+      @Nonnull AceCreatureLabController controller) {
     this.device = device;
     this.cadManager = cadManager;
     this.controller = controller;
@@ -247,7 +248,7 @@ public class CreatureEditorController {
     }
   }
 
-  private Button getAddLinkButton(ImageView icon, LimbType limbType) {
+  private Button getAddLinkButton(@Nonnull ImageView icon, @Nonnull LimbType limbType) {
     final Button button = new Button();
     button.setGraphic(icon);
     button.setOnAction(event -> {
@@ -283,7 +284,7 @@ public class CreatureEditorController {
 
     try {
       final Node content = loader.load();
-      VBox container = new VBox(10, content, movementWidget);
+      final VBox container = new VBox(10, content, movementWidget);
       container.maxWidth(Double.MAX_VALUE);
       content.maxWidth(Double.MAX_VALUE);
       Platform.runLater(() -> movementTab.setContent(getScrollPane(container)));
@@ -312,7 +313,7 @@ public class CreatureEditorController {
 
     try {
       final Node content = loader.load();
-      VBox container = new VBox(10, content, configWidget);
+      final VBox container = new VBox(10, content, configWidget);
       container.maxWidth(Double.MAX_VALUE);
       content.maxWidth(Double.MAX_VALUE);
       Platform.runLater(() -> configTab.setContent(getScrollPane(container)));
@@ -404,7 +405,7 @@ public class CreatureEditorController {
               .text("The creature cloning operation finished successfully.")
               .show());
 
-          MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
+          final MobileBase mobileBase = new MobileBase(IOUtils.toInputStream(xml, "UTF-8"));
           mobileBase.setGitSelfSource(new String[]{gitURL, name + ".xml"});
           device.disconnect();
 
@@ -464,13 +465,14 @@ public class CreatureEditorController {
     }
 
     if (ScriptingEngine.checkOwner(deviceXMLFile)) {
-      Button publish = new Button("Publish");
+      final Button publish = new Button("Publish");
       publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
       publish.setOnAction(event -> new PublishDialog().showAndWait().ifPresent(commitMessage -> {
         try {
-          Git git = ScriptingEngine.locateGit(deviceXMLFile);
-          String remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-          String relativePath = ScriptingEngine.findLocalPath(deviceXMLFile, git);
+          final Git git = ScriptingEngine.locateGit(deviceXMLFile);
+          final String remote = git.getRepository().getConfig()
+              .getString("remote", "origin", "url");
+          final String relativePath = ScriptingEngine.findLocalPath(deviceXMLFile, git);
 
           //Push to existing gist
           ScriptingEngine.pushCodeToGit(remote, ScriptingEngine.getFullBranch(remote),
@@ -496,27 +498,27 @@ public class CreatureEditorController {
             gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile);
       });
 
-      Button editWalkingEngine = new Button("Edit Walking Engine");
+      final Button editWalkingEngine = new Button("Edit Walking Engine");
       editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
       editWalkingEngine.setOnAction(event ->
           controller.loadFileIntoNewTab("Walking Engine",
               AssetFactory.loadIcon("Edit-Walking-Engine.png"),
               gitWalkingEngine[0], gitWalkingEngine[1], deviceWalkingEngineFile));
 
-      Button editCADEngine = new Button("Edit CAD Engine");
+      final Button editCADEngine = new Button("Edit CAD Engine");
       editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
       editCADEngine.setOnAction(event ->
           controller.loadFileIntoNewTab("CAD Engine",
               AssetFactory.loadIcon("Edit-CAD-Engine.png"),
               gitCADEngine[0], gitCADEngine[1], deviceCADEngineFile));
 
-      Button setWalkingEngine = new Button("Set Walking Engine");
+      final Button setWalkingEngine = new Button("Set Walking Engine");
       setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
       setWalkingEngine.setOnAction(event ->
           new GistFileSelectionDialog("Select Walking Engine", file -> !file.endsWith(".xml"))
               .showAndWait().ifPresent(result -> device.setGitWalkingEngine(result)));
 
-      Button setCADEngine = new Button("Set CAD Engine");
+      final Button setCADEngine = new Button("Set CAD Engine");
       setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
       setCADEngine.setOnAction(event ->
           new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
@@ -568,8 +570,8 @@ public class CreatureEditorController {
     }
   }
 
-  private ScrollPane getScrollPane(Node node) {
-    ScrollPane pane = new ScrollPane(node);
+  private ScrollPane getScrollPane(@Nonnull Node node) {
+    final ScrollPane pane = new ScrollPane(node);
     pane.setFitToWidth(true);
     pane.setPadding(new Insets(5));
     return pane;
@@ -582,8 +584,8 @@ public class CreatureEditorController {
    * @param device {@link MobileBase} to query used hardware channels from
    * @param toAdd list to add the new limb to
    */
-  private void promptAndAddLimb(String defaultFileName, MobileBase device,
-      List<DHParameterKinematics> toAdd) {
+  private void promptAndAddLimb(@Nonnull String defaultFileName, @Nonnull MobileBase device,
+      @Nonnull List<DHParameterKinematics> toAdd) {
     try {
       final String xmlContent = ScriptingEngine.codeFromGit(
           "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git", defaultFileName)[0];
@@ -643,8 +645,8 @@ public class CreatureEditorController {
    * @param cadManager CAD manager to gen STLs with
    * @param isKinematic whether to gen kinematic STLs
    */
-  public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-      Boolean isKinematic) {
+  public void genSTLs(@Nonnull MobileBase device, @Nonnull MobileBaseCadManager cadManager,
+      @Nonnull Boolean isKinematic) {
     final File defaultStlDir = new File(System.getProperty("user.home")
         + "/bowler-workspace/STL/");
 
