@@ -14,10 +14,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
-public class AceCreatureEditorController {
+public class AceCreatureLabController {
 
   private static final Logger logger =
-      LoggerUtilities.getLogger(AceCreatureEditorController.class.getSimpleName());
+      LoggerUtilities.getLogger(AceCreatureLabController.class.getSimpleName());
   private final TabPane scriptEditorPane;
   private final Supplier<FXMLLoader> scriptEditorSupplier;
   private final Map<String, Tab> tabNameMap;
@@ -25,7 +25,7 @@ public class AceCreatureEditorController {
   private final CADModelViewerController cadModelViewerController;
   private final CreatureEditorController creatureEditorController;
 
-  public AceCreatureEditorController(TabPane scriptEditorPane,
+  public AceCreatureLabController(TabPane scriptEditorPane,
                                      Supplier<FXMLLoader> scriptEditorSupplier,
                                      CADModelViewerController cadModelViewerController,
                                      CreatureEditorController creatureEditorController) {

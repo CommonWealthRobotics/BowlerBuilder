@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.AceCreatureEditorController;
+import com.neuronrobotics.bowlerbuilder.controller.AceCreatureLabController;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule;
@@ -18,11 +18,11 @@ import javafx.scene.control.TabPane;
 /**
  * {@link CadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
  */
-public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
+public class CreatureLabTab extends CadEditorTab<AceCreatureLabController> {
 
   private static final Logger logger =
       LoggerUtilities.getLogger(CreatureLabTab.class.getSimpleName());
-  private final AceCreatureEditorController controller;
+  private final AceCreatureLabController controller;
   private final SplitPane pane;
 
   public CreatureLabTab(String title) throws IOException {
@@ -52,7 +52,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
 
     pane = new SplitPane(tabPane, creatureEditor, cadViewer);
 
-    controller = new AceCreatureEditorController(tabPane,
+    controller = new AceCreatureLabController(tabPane,
         () -> new FXMLLoader(CreatureLabTab.class.getResource(
             "/com/neuronrobotics/bowlerbuilder/view/AceScriptEditor.fxml"),
             null,
@@ -76,7 +76,7 @@ public class CreatureLabTab extends CadEditorTab<AceCreatureEditorController> {
   }
 
   @Override
-  public AceCreatureEditorController getController() {
+  public AceCreatureLabController getController() {
     return controller;
   }
 

@@ -2,7 +2,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.AceCreatureEditorController;
+import com.neuronrobotics.bowlerbuilder.controller.AceCreatureLabController;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
@@ -22,7 +22,7 @@ public class ScriptTabLimbSelection extends LimbSelection {
   private final VBox widget;
 
   public ScriptTabLimbSelection(DHParameterKinematics limb,
-                                AceCreatureEditorController controller) {
+                                AceCreatureLabController controller) {
     super(limb);
 
     widget = new VBox(5, getTitleLabel(limb.getScriptingName()));

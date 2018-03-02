@@ -357,7 +357,7 @@ public class MainWindowController {
       try {
         CreatureLabTab tab = new CreatureLabTab("Creature Lab");
         Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
-          AceCreatureEditorController controller = tab.getController();
+          AceCreatureLabController controller = tab.getController();
 
           try {
             String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
