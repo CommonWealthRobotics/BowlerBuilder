@@ -15,19 +15,6 @@ public final class FxUtil {
   }
 
   /**
-   * Run the runnable on the FX thread if not already on that thread.
-   *
-   * @param runnable runnable to run
-   */
-  public static void runFX(Runnable runnable) {
-    //    if (Platform.isFxApplicationThread()) {
-    //      runnable.run();
-    //    } else {
-    Platform.runLater(runnable);
-    //    }
-  }
-
-  /**
    * Run the runnable on the FX thread if not already on that thread. Block for the runnable to
    * finish.
    *

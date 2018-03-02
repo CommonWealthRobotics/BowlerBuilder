@@ -1,11 +1,11 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.geometry.Pos;
@@ -55,7 +55,7 @@ public class NewGistDialog extends Dialog<List<String>> {
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    FxUtil.runFX(nameField::requestFocus);
+    Platform.runLater(nameField::requestFocus);
 
     Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->

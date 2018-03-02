@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
@@ -77,10 +78,10 @@ public class AceScriptEditorController {
 
   @Inject
   public AceScriptEditorController(PreferencesServiceFactory preferencesServiceFactory,
-                                   ScriptEditorView scriptEditorView,
-                                   ScriptRunner scriptRunner,
-                                   @Named("scriptLangName") String scriptLangName,
-                                   StringClipper stringClipper) {
+      ScriptEditorView scriptEditorView,
+      ScriptRunner scriptRunner,
+      @Named("scriptLangName") String scriptLangName,
+      StringClipper stringClipper) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
@@ -168,7 +169,7 @@ public class AceScriptEditorController {
       } catch (Exception e) {
         logger.log(Level.SEVERE,
             "Could not commit.\n" + Throwables.getStackTraceAsString(e));
-        FxUtil.runFX(() -> Notifications.create()
+        Platform.runLater(() -> Notifications.create()
             .title("Commit failed")
             .text("Could not perform commit. Changes not saved.")
             .showError());
@@ -347,7 +348,7 @@ public class AceScriptEditorController {
     } catch (GroovyRuntimeException e) {
       logger.log(Level.WARNING,
           "Error in CAD script: " + e.getMessage());
-      FxUtil.runFX(() -> Notifications.create()
+      Platform.runLater(() -> Notifications.create()
           .title("Error in CAD Script")
           .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
           .owner(fileEditorRoot)

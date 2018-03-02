@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerstudio.creature.IMobileBaseUI;
@@ -11,6 +10,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 public class BowlerMobileBaseUI implements IMobileBaseUI {
 
@@ -25,7 +25,7 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
 
   @Override
   public void setAllCSG(Collection<CSG> collection, File file) {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       cadEngine.clearMeshes();
       cadEngine.addAllCSGs(collection);
     });
@@ -33,7 +33,7 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
 
   @Override
   public void addCSG(Collection<CSG> collection, File file) {
-    FxUtil.runFX(() -> cadEngine.addAllCSGs(collection));
+    Platform.runLater(() -> cadEngine.addAllCSGs(collection));
   }
 
   @Override
@@ -49,7 +49,7 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
 
   @Override
   public void setSelectedCsg(Collection<CSG> collection) {
-    FxUtil.runFX(() -> cadEngine.selectCSGs(collection));
+    Platform.runLater(() -> cadEngine.selectCSGs(collection));
   }
 
 }

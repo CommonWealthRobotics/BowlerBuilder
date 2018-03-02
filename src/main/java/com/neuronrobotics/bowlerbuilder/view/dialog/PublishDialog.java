@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import com.neuronrobotics.bowlerbuilder.FxUtil;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -33,7 +33,7 @@ public class PublishDialog extends Dialog<String> {
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    FxUtil.runFX(commitMessage::requestFocus);
+    Platform.runLater(commitMessage::requestFocus);
 
     setResultConverter(buttonType -> {
       if (buttonType == ButtonType.OK) {

@@ -22,7 +22,7 @@ public class ScriptTabLimbSelection extends LimbSelection {
   private final VBox widget;
 
   public ScriptTabLimbSelection(DHParameterKinematics limb,
-                                AceCreatureLabController controller) {
+      AceCreatureLabController controller) {
     super(limb);
 
     widget = new VBox(5, getTitleLabel(limb.getScriptingName()));

@@ -26,9 +26,9 @@ public class AceCreatureLabController {
   private final CreatureEditorController creatureEditorController;
 
   public AceCreatureLabController(TabPane scriptEditorPane,
-                                     Supplier<FXMLLoader> scriptEditorSupplier,
-                                     CADModelViewerController cadModelViewerController,
-                                     CreatureEditorController creatureEditorController) {
+      Supplier<FXMLLoader> scriptEditorSupplier,
+      CADModelViewerController cadModelViewerController,
+      CreatureEditorController creatureEditorController) {
     this.scriptEditorPane = scriptEditorPane;
     this.scriptEditorSupplier = scriptEditorSupplier;
     this.tabNameMap = new HashMap<>();
@@ -42,12 +42,12 @@ public class AceCreatureLabController {
   }
 
   public void loadFileIntoNewTab(String title, Node graphic, String pushURL, String fileName,
-                                 File file) {
+      File file) {
     loadFileIntoNewTab(title, Optional.of(graphic), pushURL, fileName, file);
   }
 
   private void loadFileIntoNewTab(String title, Optional<Node> graphic, String pushURL,
-                                  String fileName, File file) {
+      String fileName, File file) {
     if (tabNameMap.containsKey(title)) {
       Tab tab = tabNameMap.get(title);
       if (tabControllerMap.containsKey(tab)) {

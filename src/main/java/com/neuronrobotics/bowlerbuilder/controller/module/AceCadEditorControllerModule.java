@@ -3,8 +3,8 @@ package com.neuronrobotics.bowlerbuilder.controller.module;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
-import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner.BowlerScriptRunner;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.ScriptRunner;
+import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner.BowlerScriptRunner;
 
 public class AceCadEditorControllerModule extends AbstractModule {
 

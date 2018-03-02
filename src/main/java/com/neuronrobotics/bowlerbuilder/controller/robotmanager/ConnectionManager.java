@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.inject.Singleton;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -41,7 +41,7 @@ public class ConnectionManager implements IDeviceAddedListener {
         }
 
         DeviceManager.remove(device);
-        FxUtil.runFX(() -> accordion.getPanes().remove(paneMap.get(device)));
+        Platform.runLater(() -> accordion.getPanes().remove(paneMap.get(device)));
       });
 
       devices.clear();
@@ -49,7 +49,7 @@ public class ConnectionManager implements IDeviceAddedListener {
       removingAll = false;
     });
 
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       connectionsHeader.setPadding(new Insets(5));
       connectionsHeader.setSpacing(5);
       connectionsHeader.getChildren().addAll(AssetFactory.loadIcon("Connected-Devices.png"),
@@ -75,14 +75,14 @@ public class ConnectionManager implements IDeviceAddedListener {
     pane.setContent(content);
 
     paneMap.put(device, pane);
-    FxUtil.runFX(() -> accordion.getPanes().add(pane));
+    Platform.runLater(() -> accordion.getPanes().add(pane));
   }
 
   @Override
   public void onDeviceRemoved(BowlerAbstractDevice device) {
     if (!removingAll) {
       devices.remove(device);
-      FxUtil.runFX(() -> accordion.getPanes().remove(paneMap.get(device)));
+      Platform.runLater(() -> accordion.getPanes().remove(paneMap.get(device)));
     }
   }
 

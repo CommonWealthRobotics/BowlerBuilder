@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller;
 
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import java.util.Locale;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -39,12 +39,12 @@ public class WebBrowserController {
 
   @FXML
   private void onBackPage(ActionEvent actionEvent) {
-    FxUtil.runFX(() -> webView.getEngine().executeScript("history.back()"));
+    Platform.runLater(() -> webView.getEngine().executeScript("history.back()"));
   }
 
   @FXML
   private void onNextPage(ActionEvent actionEvent) {
-    FxUtil.runFX(() -> webView.getEngine().executeScript("history.forward()"));
+    Platform.runLater(() -> webView.getEngine().executeScript("history.forward()"));
   }
 
   @FXML

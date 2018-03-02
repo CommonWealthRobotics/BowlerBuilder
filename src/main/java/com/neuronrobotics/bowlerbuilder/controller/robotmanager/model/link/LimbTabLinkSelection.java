@@ -15,9 +15,9 @@ public class LimbTabLinkSelection extends LinkSelection {
   private final VBox vBox;
 
   public LimbTabLinkSelection(DHLink dhLink, LinkConfiguration configuration,
-                              DHParameterKinematics limb,
-                              LimbTabLimbSelection limbTabLimbSelection,
-                              CreatureEditorController creatureEditorController) {
+      DHParameterKinematics limb,
+      LimbTabLimbSelection limbTabLimbSelection,
+      CreatureEditorController creatureEditorController) {
     super(dhLink, configuration);
     vBox = new VBox(5);
 

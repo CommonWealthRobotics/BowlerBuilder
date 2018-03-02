@@ -27,8 +27,8 @@ public class CsgParser {
    * @return CSG objects from the script
    */
   public Collection<CSG> parseCsgFromSource(String scriptName,
-                                            int lineNumber,
-                                            Map<CSG, MeshView> csgMap) {
+      int lineNumber,
+      Map<CSG, MeshView> csgMap) {
     Collection<CSG> objsFromScriptLine = new ArrayList<>();
 
     csgMap.keySet().forEach(testCSG -> testCSG.getCreationEventStackTraceList().stream()

@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.view.cadengine;
 
-import com.neuronrobotics.bowlerbuilder.FxUtil;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -71,7 +71,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     setpoint.setMinorTickCount(5);
 
     setpointValue = new TextField(getFormatted(current));
-    setpointValue.setOnAction(event -> FxUtil.runFX(() -> {
+    setpointValue.setOnAction(event -> Platform.runLater(() -> {
       double val = Double.parseDouble(setpointValue.getText());
       setValue(val);
       getListener().onSliderMoving(this, val);
@@ -120,7 +120,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   private void updateValue() {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       setpointValue.setText(getFormatted(setpoint.getValue()));
       getListener().onSliderMoving(this, setpoint.getValue());
     });
@@ -132,7 +132,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
    * @param value new value
    */
   public void setValue(double value) {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       setpoint.valueProperty().removeListener(this);
       double val = value;
       if (val > setpoint.getMax()) {

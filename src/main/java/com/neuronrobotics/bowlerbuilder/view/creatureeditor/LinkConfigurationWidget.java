@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.google.common.base.Throwables;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
@@ -19,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -409,7 +409,7 @@ public class LinkConfigurationWidget extends GridPane {
 
     test(type);
 
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       Alert dialog = new Alert(AlertType.CONFIRMATION);
       dialog.setTitle("Edit Hardware Wizard");
       dialog.setHeaderText("Update the hardare configurations");

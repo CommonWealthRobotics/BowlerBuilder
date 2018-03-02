@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class HelpDialogTest extends AutoClosingApplicationTest {
 
   @Override
-  public void start(Stage stage) throws Exception {
+  public void start(Stage stage) {
     HelpDialog dialog = new HelpDialog();
     stage.setScene(dialog.getDialogPane().getScene());
     stage.show();

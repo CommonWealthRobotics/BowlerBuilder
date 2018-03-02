@@ -1,7 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.google.common.base.Throwables;
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.view.dialog.util.ValidatedTextField;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
@@ -69,7 +69,7 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
     setResizable(true);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    FxUtil.runFX(gistField::requestFocus);
+    Platform.runLater(gistField::requestFocus);
 
     Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     okButton.disableProperty().bind(gistField.invalidProperty());

@@ -1,10 +1,10 @@
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
-import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -99,7 +99,7 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
     //this calls the render update function attached as the on joint space update
     double[] joint = device2.getCurrentJointSpaceVector();
     device2.getChain().getChain(joint);
-    FxUtil.runFX(() -> device2.onJointSpaceUpdate(device2, joint));
+    Platform.runLater(() -> device2.onJointSpaceUpdate(device2, joint));
   }
 
   @Override

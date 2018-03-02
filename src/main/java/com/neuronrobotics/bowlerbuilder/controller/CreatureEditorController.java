@@ -182,7 +182,7 @@ public class CreatureEditorController {
    * @param cadManager {@link MobileBaseCadManager} to trigger CAD regens to
    */
   public void generateMenus(MobileBase device, MobileBaseCadManager cadManager,
-                            AceCreatureLabController controller) {
+      AceCreatureLabController controller) {
     this.device = device;
     this.cadManager = cadManager;
     this.controller = controller;
@@ -583,7 +583,7 @@ public class CreatureEditorController {
    * @param toAdd list to add the new limb to
    */
   private void promptAndAddLimb(String defaultFileName, MobileBase device,
-                                List<DHParameterKinematics> toAdd) {
+      List<DHParameterKinematics> toAdd) {
     try {
       final String xmlContent = ScriptingEngine.codeFromGit(
           "https://gist.github.com/d11d69722610930ae1db9e5821a26178.git", defaultFileName)[0];
@@ -644,7 +644,7 @@ public class CreatureEditorController {
    * @param isKinematic whether to gen kinematic STLs
    */
   public void genSTLs(MobileBase device, MobileBaseCadManager cadManager,
-                      Boolean isKinematic) {
+      Boolean isKinematic) {
     final File defaultStlDir = new File(System.getProperty("user.home")
         + "/bowler-workspace/STL/");
 

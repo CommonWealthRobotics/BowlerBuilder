@@ -122,7 +122,7 @@ public class MainWindowController {
 
   @Inject
   protected MainWindowController(PreferencesServiceFactory preferencesServiceFactory,
-                                 ConnectionManagerFactory connectionManagerFactory) {
+      ConnectionManagerFactory connectionManagerFactory) {
     this.preferencesServiceFactory = preferencesServiceFactory;
     this.connectionManagerFactory = connectionManagerFactory;
 
@@ -218,7 +218,7 @@ public class MainWindowController {
               "Unable to delete cache.\n" + Throwables.getStackTraceAsString(e));
         }
 
-        FxUtil.runFX(this::quit);
+        Platform.runLater(this::quit);
       }).start();
     }
   }
@@ -287,7 +287,7 @@ public class MainWindowController {
    * @param url URL to load
    */
   public void loadPage(String url) {
-    FxUtil.runFX(() -> webBrowserController.loadPage(url));
+    Platform.runLater(() -> webBrowserController.loadPage(url));
   }
 
   /**
@@ -297,7 +297,7 @@ public class MainWindowController {
    * @param url URL to load
    */
   public void loadPageIntoNewTab(String tabName, String url) {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       FXMLLoader loader = new FXMLLoader(MainWindowController.class.getResource(
           "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
 
@@ -321,7 +321,7 @@ public class MainWindowController {
    * @param gistFile File
    */
   public void openGistFileInEditor(GHGist gist, GHGistFile gistFile) {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       try {
         AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
         AceCadEditorTabController controller = tab.getController();
@@ -353,7 +353,7 @@ public class MainWindowController {
    * @param file xml file in gist
    */
   public void loadCreatureLab(String[] file) { //NOPMD
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       try {
         CreatureLabTab tab = new CreatureLabTab("Creature Lab");
         Thread thread = LoggerUtilities.newLoggingThread(logger, () -> {
@@ -418,7 +418,7 @@ public class MainWindowController {
     try {
       ScriptingEngine.waitForLogin();
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
-        FxUtil.runFX(() -> Notifications.create()
+        Platform.runLater(() -> Notifications.create()
             .title("Login Success")
             .text("Successfully logged in to GitHub as " + ScriptingEngine.getLoginID())
             .show());
@@ -460,7 +460,7 @@ public class MainWindowController {
    * Reload the GitHub-related menus.
    */
   public void reloadGitMenus() {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       //Wait for GitHub to load in
       GitHub gitHub;
 
@@ -507,7 +507,7 @@ public class MainWindowController {
    * Reload the CAD menus.
    */
   public void reloadCadMenus() {
-    FxUtil.runFX(() -> {
+    Platform.runLater(() -> {
       cadVitamins.getItems().clear();
 
       LoggerUtilities.newLoggingThread(logger, () ->
@@ -550,7 +550,7 @@ public class MainWindowController {
           loadPageIntoNewTab(gist.getDescription(), gist.getHtmlUrl()));
 
       MenuItem addFileToGist = new MenuItem("Add File");
-      addFileToGist.setOnAction(event -> FxUtil.runFX(() -> {
+      addFileToGist.setOnAction(event -> Platform.runLater(() -> {
         AddFileToGistDialog dialog = new AddFileToGistDialog();
         dialog.showAndWait().ifPresent(name -> {
           try {
@@ -574,7 +574,7 @@ public class MainWindowController {
       }));
 
       MenuItem addFileFromDisk = new MenuItem("Add File from Disk");
-      addFileFromDisk.setOnAction(event -> FxUtil.runFX(() -> {
+      addFileFromDisk.setOnAction(event -> Platform.runLater(() -> {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File to Add");
         File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
@@ -763,7 +763,7 @@ public class MainWindowController {
    * @param tab tab to add
    */
   public void addTab(Tab tab) {
-    FxUtil.runFX(() -> tabPane.getTabs().add(tab));
+    Platform.runLater(() -> tabPane.getTabs().add(tab));
   }
 
   /**
@@ -793,7 +793,7 @@ public class MainWindowController {
 
     @Override
     public void write(int character) {
-      FxUtil.runFX(() -> textArea.appendText(String.valueOf((char) character)));
+      Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
     }
   }
 
