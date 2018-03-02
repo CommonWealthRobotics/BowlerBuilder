@@ -12,6 +12,7 @@ import groovy.lang.Script;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -40,12 +41,14 @@ public class BowlerGroovy implements IScriptingLanguage {
   }
 
   @Override
-  public Object inlineScriptRun(final File code, final ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(final File code, final ArrayList<Object> args)
+      throws Exception { //NOPMD
     return this.inline(code, args);
   }
 
   @Override
-  public Object inlineScriptRun(final String code, final ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(final String code, final ArrayList<Object> args)
+      throws Exception { //NOPMD
     return this.inline(code, args);
   }
 
@@ -59,7 +62,7 @@ public class BowlerGroovy implements IScriptingLanguage {
     return new ArrayList<>(Arrays.asList("java", "groovy"));
   }
 
-  private Object inline(final Object code, final ArrayList<Object> args) throws Exception {
+  private Object inline(final Object code, final List<Object> args) throws Exception { //NOPMD
     compiling.setValue(true);
 
     final CompilerConfiguration configuration = new CompilerConfiguration();

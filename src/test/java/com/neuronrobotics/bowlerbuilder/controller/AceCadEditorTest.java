@@ -13,6 +13,7 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditorView;
 import eu.mihosoft.vrl.v3d.CSG;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +27,7 @@ public class AceCadEditorTest extends AbstractAutoClosingApplicationTest {
   private AceScriptEditorController controller;
 
   @Override
-  public void start(final Stage stage) throws Exception {
+  public void start(final Stage stage) throws IOException {
     final FXMLLoader loader = new FXMLLoader(
         getClass().getResource("../view/AceScriptEditor.fxml"),
         null,

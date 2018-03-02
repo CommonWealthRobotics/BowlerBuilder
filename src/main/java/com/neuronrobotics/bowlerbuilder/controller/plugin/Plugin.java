@@ -17,7 +17,7 @@ public class Plugin implements Serializable {
   /**
    * Clone and run the gist code for this Plugin.
    */
-  public void run() throws Exception {
+  public void run() throws Exception { //NOPMD
     ScriptingEngine.gitScriptRun(gitSource, "main.groovy", new ArrayList<>());
   }
 

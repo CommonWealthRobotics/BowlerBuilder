@@ -17,8 +17,8 @@ public interface ScriptRunner {
    * @param languageName language name
    * @return result
    */
-  Object runScript(String script, ArrayList<Object> arguments, String languageName)
-      throws Exception;
+  Object runScript(String script, ArrayList<Object> arguments, String languageName) //NOPMD
+      throws Exception; //NOPMD
 
   /**
    * Get whether the script is currently compiling.

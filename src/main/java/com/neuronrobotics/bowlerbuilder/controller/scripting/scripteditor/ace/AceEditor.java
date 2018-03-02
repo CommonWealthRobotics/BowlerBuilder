@@ -171,8 +171,8 @@ public final class AceEditor implements ScriptEditor {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  private <T> T returnAfterEngine(final Callable<T> callable)
-      throws Exception {
+  private <T> T returnAfterEngine(final Callable<T> callable) throws ExecutionException,
+      InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
     runAfterEngine(query);
     return query.get();

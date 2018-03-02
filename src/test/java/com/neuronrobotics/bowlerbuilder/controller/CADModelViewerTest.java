@@ -8,6 +8,7 @@ import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule;
 import eu.mihosoft.vrl.v3d.CSG;
 import eu.mihosoft.vrl.v3d.Cube;
+import java.io.IOException;
 import java.util.Arrays;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -21,7 +22,7 @@ public class CADModelViewerTest extends AbstractAutoClosingApplicationTest {
   private CADModelViewerController controller;
 
   @Override
-  public void start(final Stage stage) throws Exception {
+  public void start(final Stage stage) throws IOException {
     final FXMLLoader loader = new FXMLLoader(
         getClass().getResource("../view/CADModelViewer.fxml"),
         null,

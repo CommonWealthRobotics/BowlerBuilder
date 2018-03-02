@@ -30,5 +30,6 @@
     <rule ref="rulesets/java/strings.xml">
         <exclude name="AvoidDuplicateLiterals" pattern=".*/test/.*"/>
     </rule>
+    <rule ref="rulesets/java/typeresolution.xml"/>
     <rule ref="rulesets/java/unnecessary.xml"/>
 </ruleset>

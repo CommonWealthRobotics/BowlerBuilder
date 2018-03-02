@@ -6,6 +6,7 @@ import com.neuronrobotics.bowlerbuilder.controller.CreatureEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.module.LimbLayoutControllerModule;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
+import java.io.IOException;
 import java.util.ArrayList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,7 +15,7 @@ import javafx.stage.Stage;
 public class LimbLayoutTest extends AbstractAutoClosingApplicationTest {
 
   @Override
-  public void start(final Stage stage) throws Exception {
+  public void start(final Stage stage) throws IOException {
     final FXMLLoader loader = new FXMLLoader(CreatureEditorController.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
         null,

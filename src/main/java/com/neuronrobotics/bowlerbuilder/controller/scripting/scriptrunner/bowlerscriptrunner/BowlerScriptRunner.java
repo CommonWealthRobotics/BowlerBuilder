@@ -26,8 +26,7 @@ public class BowlerScriptRunner implements ScriptRunner {
 
   @Override
   public Object runScript(final String script, final ArrayList<Object> arguments,
-      final String languageName)
-      throws Exception {
+      final String languageName) throws Exception { //NOPMD
     result.set(ScriptingEngine.inlineScriptStringRun(script, arguments, languageName));
     return result.get();
   }

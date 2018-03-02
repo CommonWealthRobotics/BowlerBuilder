@@ -335,7 +335,7 @@ public class AceScriptEditorController {
    * @param languageName scripting language name
    * @return script result
    */
-  public Object runStringScript(final String script, final ArrayList<Object> arguments,
+  public Object runStringScript(final String script, final ArrayList<Object> arguments, //NOPMD
       final String languageName) {
     try {
       //Run the code

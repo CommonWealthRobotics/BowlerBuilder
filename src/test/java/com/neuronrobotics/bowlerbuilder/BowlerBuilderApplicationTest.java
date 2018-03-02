@@ -12,7 +12,7 @@ import org.testfx.util.WaitForAsyncUtils;
 class BowlerBuilderApplicationTest extends FxRobot {
 
   @BeforeEach
-  void before() throws Exception {
+  void before() throws TimeoutException {
     FxToolkit.registerPrimaryStage();
     final Thread fxThread = new Thread(() -> {
       try {

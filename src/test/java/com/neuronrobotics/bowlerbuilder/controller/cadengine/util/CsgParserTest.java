@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 public class CsgParserTest {
 
   @Test
-  public void parseCsgTest() throws Exception {
+  public void parseCsgTest() throws Exception { //NOPMD
     final String script = "CSG foo = new Cube(1,1,1).toCSG();";
     final CSG result = (CSG) ScriptingEngine.inlineScriptStringRun(
         script,

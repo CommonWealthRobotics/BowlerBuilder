@@ -405,7 +405,7 @@ public class LinkConfigurationWidget extends GridPane {
   }
 
   private void edit(final String type, final String vitaminID,
-      final HashMap<String, Object> startingConf)
+      final Map<String, Object> startingConf)
       throws IOException {
     LOGGER.log(Level.INFO, "Configuration for " + conf.getElectroMechanicalSize());
     LOGGER.log(Level.INFO, "Saving " + vitaminID);

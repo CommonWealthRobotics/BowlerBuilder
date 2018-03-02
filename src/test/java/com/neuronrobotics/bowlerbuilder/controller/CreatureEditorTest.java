@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
+import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -15,7 +16,7 @@ public class CreatureEditorTest extends AbstractAutoClosingApplicationTest {
   private CreatureEditorController controller;
 
   @Override
-  public void start(final Stage stage) throws Exception {
+  public void start(final Stage stage) throws IOException {
     final FXMLLoader loader = new FXMLLoader(CreatureLabTab.class.getResource(
         "/com/neuronrobotics/bowlerbuilder/view/CreatureEditor.fxml"),
         null,
