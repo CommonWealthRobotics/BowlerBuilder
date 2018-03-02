@@ -115,20 +115,6 @@ public class CreatureEditorController {
     selectedWidgetPane = new SimpleObjectProperty<>();
   }
 
-  /**
-   * Calculate the taken ("occupied") hardware channels on the device based on the config saved to
-   * the device.
-   *
-   * @param device device to check
-   * @return all taken channels
-   */
-  public static Set<Integer> getTakenChannels(@Nonnull final MobileBase device) {
-    return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
-        .flatMap(Collection::stream)
-        .map(LinkConfiguration::getHardwareIndex)
-        .collect(Collectors.toSet());
-  }
-
   @FXML
   protected void initialize() {
     selectedWidgetPane.set(limbWidget); //Limb widget to start
@@ -174,6 +160,20 @@ public class CreatureEditorController {
 
     genKinSTL.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
     genKinSTL.setText("Kinematic STL");
+  }
+
+  /**
+   * Calculate the taken ("occupied") hardware channels on the device based on the config saved to
+   * the device.
+   *
+   * @param device device to check
+   * @return all taken channels
+   */
+  public static Set<Integer> getTakenChannels(@Nonnull final MobileBase device) {
+    return device.getAllDHChains().stream().map(AbstractKinematicsNR::getLinkConfigurations)
+        .flatMap(Collection::stream)
+        .map(LinkConfiguration::getHardwareIndex)
+        .collect(Collectors.toSet());
   }
 
   /**
