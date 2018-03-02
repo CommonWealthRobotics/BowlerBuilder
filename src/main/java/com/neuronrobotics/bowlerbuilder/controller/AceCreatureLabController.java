@@ -21,7 +21,7 @@ public class AceCreatureLabController {
       LoggerUtilities.getLogger(AceCreatureLabController.class.getSimpleName());
   private final TabPane scriptEditorPane;
   private final Supplier<FXMLLoader> scriptEditorSupplier;
-  private final Map<String, Tab> tabNameMap;
+  private final Map<File, Tab> tabMap;
   private final Map<Tab, AceScriptEditorController> tabControllerMap;
   private final CADModelViewerController cadModelViewerController;
   private final CreatureEditorController creatureEditorController;
@@ -32,7 +32,7 @@ public class AceCreatureLabController {
       @Nonnull final CreatureEditorController creatureEditorController) {
     this.scriptEditorPane = scriptEditorPane;
     this.scriptEditorSupplier = scriptEditorSupplier;
-    this.tabNameMap = new HashMap<>();
+    this.tabMap = new HashMap<>();
     this.tabControllerMap = new HashMap<>();
     this.cadModelViewerController = cadModelViewerController;
     this.creatureEditorController = creatureEditorController;
@@ -43,17 +43,16 @@ public class AceCreatureLabController {
     loadFileIntoNewTab(title, Optional.empty(), pushURL, fileName, file);
   }
 
-  public void loadFileIntoNewTab(
-      @Nonnull final String title, @Nonnull final Node graphic, @Nonnull final String pushURL,
-      @Nonnull final String fileName, @Nonnull final File file) {
+  public void loadFileIntoNewTab(@Nonnull final String title, @Nonnull final Node graphic,
+      @Nonnull final String pushURL, @Nonnull final String fileName, @Nonnull final File file) {
     loadFileIntoNewTab(title, Optional.of(graphic), pushURL, fileName, file);
   }
 
   private void loadFileIntoNewTab(@Nonnull final String title,
       @Nonnull final Optional<Node> graphic, @Nonnull final String pushURL,
       @Nonnull final String fileName, @Nonnull final File file) {
-    if (tabNameMap.containsKey(title)) {
-      final Tab tab = tabNameMap.get(title);
+    if (tabMap.containsKey(file)) {
+      final Tab tab = tabMap.get(file);
       if (tabControllerMap.containsKey(tab)) {
         tabControllerMap.get(tab).loadManualGist(pushURL, fileName, file);
         scriptEditorPane.getSelectionModel().select(tab);
@@ -63,13 +62,13 @@ public class AceCreatureLabController {
       tab.setText(title);
       graphic.ifPresent(tab::setGraphic);
       tab.setOnClosed(event -> {
-        tabNameMap.remove(title);
+        tabMap.remove(file);
         tabControllerMap.remove(tab);
       });
 
       scriptEditorPane.getTabs().add(tab);
       scriptEditorPane.getSelectionModel().select(tab);
-      tabNameMap.put(title, tab);
+      tabMap.put(file, tab);
 
       final FXMLLoader loader = scriptEditorSupplier.get();
       try {
