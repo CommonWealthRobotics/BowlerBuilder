@@ -4,6 +4,8 @@ import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraDevice;
@@ -114,13 +116,23 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final BooleanProperty handShowing;
 
   @Inject
-  public BowlerCadEngine(@Nonnull final CsgParser csgParser) {
+  public BowlerCadEngine(@Nonnull final CsgParser csgParser,
+      @Nonnull final PreferencesServiceFactory preferencesServiceFactory) {
     this.csgParser = csgParser;
 
     axisShowing = new SimpleBooleanProperty(true);
     handShowing = new SimpleBooleanProperty(true);
 
-    setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
+    final PreferencesService preferencesService =
+        preferencesServiceFactory.create("BowlerCadEngine");
+    preferencesService.load();
+    final Boolean shouldAA = preferencesService.get("CAD Engine Antialiasing", true);
+
+    if (shouldAA) {
+      setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
+    } else {
+      setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.DISABLED));
+    }
     buildScene();
     buildCamera();
     buildAxes();

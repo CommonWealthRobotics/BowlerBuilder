@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
@@ -68,7 +67,7 @@ public class PreferencesService {
         return (T) value;
       } else {
         throw new RuntimeException(
-            "Preferences map entry type is not aligned with default value type.");
+            "Preferences map entry type is different than default value type.");
       }
     } else {
       data.put(name, defaultValue);
@@ -121,15 +120,14 @@ public class PreferencesService {
           = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (final IOException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not open preferences save file.\n" + Throwables.getStackTraceAsString(e));
+        LOGGER.severe("Could not open preferences save file.\n"
+            + Throwables.getStackTraceAsString(e));
       } catch (final ClassNotFoundException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
+        LOGGER.severe("Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
     } else {
-      LOGGER.log(Level.SEVERE,
-          "Preferences save file does not exist or is a directory: " + prefsSaveFilePath);
+      LOGGER.warning("Preferences save file does not exist or is a directory: "
+          + prefsSaveFilePath);
     }
   }
 
@@ -144,15 +142,14 @@ public class PreferencesService {
           = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
         stream.writeObject(data);
       } catch (final FileNotFoundException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not find preferences save file.\n" + Throwables.getStackTraceAsString(e));
+        LOGGER.severe("Could not find preferences save file.\n"
+            + Throwables.getStackTraceAsString(e));
       } catch (final IOException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
+        LOGGER.severe("Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
     } else {
-      LOGGER.log(Level.SEVERE,
-          "Could not create file to save preferences for save file: " + prefsSaveFilePath);
+      LOGGER.severe("Could not create file to save preferences for save file: "
+          + prefsSaveFilePath);
     }
   }
 
