@@ -15,6 +15,9 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.Scrip
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.model.LimbType;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
@@ -79,6 +82,7 @@ public class CreatureEditorController {
   private final ObjectProperty<Selection> selectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
   private final MainWindowController mainWindowController;
+  private final PreferencesService preferencesService;
   @FXML
   private ProgressIndicator cadProgress;
   @FXML
@@ -104,7 +108,8 @@ public class CreatureEditorController {
   private AceCreatureLabController controller;
 
   @Inject
-  public CreatureEditorController(@Nonnull final MainWindowController mainWindowController) {
+  public CreatureEditorController(@Nonnull final MainWindowController mainWindowController,
+      @Nonnull final PreferencesServiceFactory preferencesServiceFactory) {
     this.mainWindowController = mainWindowController;
 
     limbWidget = new AnchorPane();
@@ -113,10 +118,25 @@ public class CreatureEditorController {
     scriptWidget = new AnchorPane();
     selectionProperty = new SimpleObjectProperty<>();
     selectedWidgetPane = new SimpleObjectProperty<>();
+
+    preferencesService = preferencesServiceFactory.create("CreatureEditorController");
+    preferencesService.load();
   }
 
   @FXML
   protected void initialize() {
+    autoRegenCAD.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      if (cadManager != null) {
+        cadManager.setAutoRegen(newValue);
+      }
+    });
+
+    preferencesService.addListener("Auto-Regenerate CAD",
+        (PreferenceListener<Boolean>) (oldVal, newVal) ->
+            autoRegenCAD.selectedProperty().set(newVal));
+
+    autoRegenCAD.selectedProperty().set(preferencesService.get("Auto-Regenerate CAD", false));
+
     selectedWidgetPane.set(limbWidget); //Limb widget to start
 
     //Change the widget pane new widgets go into when the user changes tabs
@@ -189,8 +209,6 @@ public class CreatureEditorController {
     this.cadManager = cadManager;
     this.controller = controller;
 
-    autoRegenCAD.selectedProperty().addListener((observable, oldValue, newValue) ->
-        cadManager.setAutoRegen(newValue));
     cadManager.setAutoRegen(autoRegenCAD.isSelected());
 
     //TODO: Make the content fit width
