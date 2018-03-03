@@ -26,6 +26,7 @@ public class MovementTabLimbSelection extends AbstractLimbSelection {
       view.getChildren().add(JOG_WIDGET_MAP.get(limb).getView());
     } else {
       final JogWidget jogWidget = new JogWidget(limb);
+      jogWidget.jogThreadRunningProperty().set(true);
       JOG_WIDGET_MAP.put(limb, jogWidget);
       view.getChildren().add(jogWidget.getView());
     }

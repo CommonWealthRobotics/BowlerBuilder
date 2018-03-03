@@ -49,7 +49,7 @@ public class LimbLinkLayoutController extends LimbLayoutController {
             linkButton.setOnAction(event -> {
               linkSelection.set(Optional.of(
                   new LinkData(limb, finalI, link, configuration, limb)));
-              limbSelection.set(null);
+              limbSelection.set(Optional.empty());
             });
             hBoxInner.getChildren().add(linkButton);
           }

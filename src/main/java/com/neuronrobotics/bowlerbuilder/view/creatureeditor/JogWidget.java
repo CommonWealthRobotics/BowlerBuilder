@@ -27,7 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javax.annotation.Nonnull;
 
-public final class JogWidget {
+public class JogWidget {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(JogWidget.class.getSimpleName());
@@ -41,9 +41,18 @@ public final class JogWidget {
     view = new VBox(5);
     controlPane = new GridPane();
     this.limb = limb;
-    jogThreadRunning = new SimpleBooleanProperty(true);
     jogThread = new JogThread();
-    jogThread.start();
+
+    jogThreadRunning = new SimpleBooleanProperty(false);
+    jogThreadRunning.addListener((observable, oldValue, newValue) -> {
+      if (newValue) {
+        try {
+          jogThread.start();
+        } catch (IllegalThreadStateException ignored) {
+          //The thread was already started. That is fine.
+        }
+      }
+    });
 
     view.setPadding(new Insets(5));
     controlPane.setHgap(5);
