@@ -93,6 +93,8 @@ public class MainWindowController {
   @FXML
   private BorderPane root;
   @FXML
+  private MenuItem logIn;
+  @FXML
   private MenuItem logOut;
   @FXML
   private Menu myGists;
@@ -133,6 +135,9 @@ public class MainWindowController {
 
   @FXML
   protected void initialize() {
+    consoleTab.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
+    connectionTab.setGraphic(AssetFactory.loadIcon("Connected-Devices.png"));
+
     //Add date to console
     console.setText(console.getText()
         + new SimpleDateFormat(
@@ -145,7 +150,7 @@ public class MainWindowController {
     try {
       stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
     } catch (final UnsupportedEncodingException e) {
-      LOGGER.log(Level.SEVERE, "UTF-8 encoding not supported.");
+      LOGGER.severe("UTF-8 encoding not supported.");
     }
 
     System.setOut(stream);
@@ -166,14 +171,13 @@ public class MainWindowController {
         try {
           ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
         } catch (final Exception e) {
-          LOGGER.log(Level.WARNING,
-              "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
+          LOGGER.warning("Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
         }
       }
     } catch (final IOException e) {
-      LOGGER.log(Level.WARNING,
-          "Could not automatically log in.\n");
-      logOut.setDisable(true); //Can'translate log out when not logged in
+      LOGGER.warning("Could not automatically log in.");
+      logOut.setDisable(true); //Can't log out when not logged in
+      logIn.setDisable(false);
     }
 
     reloadPlugins(preferencesService.get("Widgets", new ArrayList<>()));
@@ -188,6 +192,7 @@ public class MainWindowController {
   private void onLogOutFromGitHub(final ActionEvent actionEvent) {
     try {
       ScriptingEngine.logout();
+      logIn.setDisable(false);
       logOut.setDisable(true);
       myGists.getItems().clear();
       myOrgs.getItems().clear();
@@ -454,6 +459,7 @@ public class MainWindowController {
           "Could not set auto update.\n" + Throwables.getStackTraceAsString(e));
     }
 
+    logIn.setDisable(true);
     logOut.setDisable(false);
 
     reloadGitMenus();

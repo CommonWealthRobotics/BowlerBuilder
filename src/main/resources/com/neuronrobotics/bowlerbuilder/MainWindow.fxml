@@ -32,7 +32,7 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Git">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#onLogInToGitHub" text="Log in to GitHub" />
+                <MenuItem id = "logIn" fx:id="logIn" mnemonicParsing="false" onAction="#onLogInToGitHub" text="Log in to GitHub" />
                   <MenuItem id="logOut" fx:id="logOut" mnemonicParsing="false" onAction="#onLogOutFromGitHub" text="Log out from GitHub" />
                   <Menu id="myGists" fx:id="myGists" mnemonicParsing="false" text="My Gists" />
                   <Menu id="myOrgs" fx:id="myOrgs" mnemonicParsing="false" text="My Organizations" />
