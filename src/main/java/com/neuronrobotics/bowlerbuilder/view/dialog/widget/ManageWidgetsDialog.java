@@ -4,7 +4,8 @@
 
 package com.neuronrobotics.bowlerbuilder.view.dialog.widget;
 
-import com.neuronrobotics.bowlerbuilder.controller.widget.Widget;
+import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.AddPluginDialog;
 import java.util.List;
 import java.util.Optional;
 import javafx.collections.ObservableList;
@@ -15,35 +16,35 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class ManageWidgetsDialog extends Dialog<List<Widget>> {
+public class ManageWidgetsDialog extends Dialog<List<Plugin>> {
 
-  private final ListView<Widget> widgetListView;
+  private final ListView<Plugin> widgetListView;
 
-  public ManageWidgetsDialog(ObservableList<Widget> widgets) {
+  public ManageWidgetsDialog(final ObservableList<Plugin> widgets) {
     super();
 
     widgetListView = new ListView<>(widgets);
     widgetListView.setId("widgetList");
 
-    Button addWidgetButton = new Button("Add Widget");
+    final Button addWidgetButton = new Button("Add Widget");
     addWidgetButton.setId("addWidget");
     addWidgetButton.setOnAction(event -> {
-      AddWidgetDialog dialog = new AddWidgetDialog();
+      final AddPluginDialog dialog = new AddPluginDialog();
       final Optional<Boolean> result = dialog.showAndWait();
       if (result.isPresent() && result.get()) {
-        widgets.add(new Widget(dialog.getSource(), dialog.getDisplayName()));
+        widgets.add(new Plugin(dialog.getSource(), dialog.getDisplayName()));
       }
     });
 
-    Button removeWidgetButton = new Button("Remove Widget");
+    final Button removeWidgetButton = new Button("Remove Widget");
     removeWidgetButton.setId("removeWidget");
     removeWidgetButton.setOnAction(event ->
         widgetListView.getSelectionModel().getSelectedItems()
             .forEach(widgetListView.getItems()::remove));
 
-    HBox controlBox = new HBox(5, addWidgetButton, removeWidgetButton);
+    final HBox controlBox = new HBox(5, addWidgetButton, removeWidgetButton);
 
-    VBox view = new VBox(5, controlBox, widgetListView);
+    final VBox view = new VBox(5, controlBox, widgetListView);
 
     setTitle("Manage Widgets");
     getDialogPane().setContent(view);
@@ -53,7 +54,7 @@ public class ManageWidgetsDialog extends Dialog<List<Widget>> {
     setResultConverter(buttonType -> widgetListView.getItems());
   }
 
-  public void setWidgets(ObservableList<Widget> widgets) {
+  public void setWidgets(final ObservableList<Plugin> widgets) {
     widgetListView.setItems(widgets);
   }
 

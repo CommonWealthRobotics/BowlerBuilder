@@ -48,7 +48,7 @@ public class JogWidget {
       if (newValue) {
         try {
           jogThread.start();
-        } catch (IllegalThreadStateException ignored) {
+        } catch (final IllegalThreadStateException ignored) {
           LOGGER.finer("Tried to start jog thread which is already started.");
         }
       }
