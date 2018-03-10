@@ -44,7 +44,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
@@ -106,6 +109,10 @@ public class MainWindowController {
   private Menu myOrgs;
   @FXML
   private Menu myRepos;
+  @FXML
+  private Menu favorites;
+  @FXML
+  private Menu creatures;
   @FXML
   private Menu cadVitamins;
   @FXML
@@ -216,7 +223,7 @@ public class MainWindowController {
     alert.setContentText("Deleting the cache will remove unsaved work and quit. Are you sure?");
 
     if (alert.showAndWait().isPresent() && alert.getResult() == ButtonType.OK) {
-      new Thread(() -> {
+      LoggerUtilities.newLoggingThread(LOGGER, () -> {
         Thread.currentThread().setName("Delete Cache Thread");
 
         try {
@@ -510,6 +517,9 @@ public class MainWindowController {
 
         LoggerUtilities.newLoggingThread(LOGGER, () ->
             loadReposIntoMenus(myRepos, myself.listRepositories())).start();
+
+        LoggerUtilities.newLoggingThread(LOGGER, () ->
+            loadFavoritesIntoMenus(favorites)).start();
       } catch (final IOException e) {
         LOGGER.log(Level.SEVERE,
             "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
@@ -558,7 +568,7 @@ public class MainWindowController {
    * @param gists list of gists
    */
   private void loadGistsIntoMenus(@Nonnull final Menu menu,
-      @Nonnull final PagedIterable<GHGist> gists) {
+      @Nonnull final Iterable<GHGist> gists) {
     gists.forEach(gist -> {
       final MenuItem showWebGist = new MenuItem("Show Gist on Web");
       showWebGist.setOnAction(event ->
@@ -589,7 +599,7 @@ public class MainWindowController {
       }));
 
       final MenuItem addFileFromDisk = new MenuItem("Add File from Disk");
-      addFileFromDisk.setOnAction(event -> Platform.runLater(() -> {
+      addFileFromDisk.setOnAction(event -> {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File to Add");
         final File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
@@ -608,7 +618,16 @@ public class MainWindowController {
                 "Could not add file from disk to gist.\n" + Throwables.getStackTraceAsString(e));
           }
         }
-      }));
+      });
+
+      final MenuItem favoriteGist = new MenuItem("Favorite");
+      favoriteGist.setOnAction(event -> {
+        preferencesService.get("Favorite Gists",
+            new HashSet<String>())
+            .add(ScriptingEngine.urlToGist(gist.getGitPushUrl()));
+        favorites.getItems().clear();
+        loadFavoritesIntoMenus(favorites);
+      });
 
       String gistMenuText = gist.getDescription();
       if (gistMenuText == null || gistMenuText.length() == 0) {
@@ -624,7 +643,7 @@ public class MainWindowController {
       gistMenuText = gistMenuText.substring(0, Math.min(25, gistMenuText.length()));
 
       final Menu gistMenu = new Menu(gistMenuText);
-      gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
+      gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk, favoriteGist);
 
       gist.getFiles().forEach((name, gistFile) -> {
         if (name.endsWith(".xml")) {
@@ -721,6 +740,27 @@ public class MainWindowController {
               repo.gitHttpTransportUrl()));
       menu.getItems().add(menuItem);
     });
+  }
+
+  private void loadFavoritesIntoMenus(@Nonnull final Menu menu) {
+    final HashSet<String> gistIDs = preferencesService.get("Favorite Gists",
+        new HashSet<String>());
+    final GitHub gitHub = ScriptingEngine.getGithub();
+
+    final List<GHGist> gists = gistIDs.stream()
+        .map(gistID -> {
+          try {
+            return gitHub.getGist(gistID);
+          } catch (IOException e) {
+            LOGGER.warning("Unable to get GHGist from gist ID when loading favorites.\n"
+                + Throwables.getStackTraceAsString(e));
+          }
+          return null;
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+    loadGistsIntoMenus(menu, gists);
   }
 
   private void reloadPlugins(@Nonnull final Collection<Plugin> plugins) {
