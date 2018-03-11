@@ -79,6 +79,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 import org.kohsuke.github.GHMyself;
@@ -520,6 +523,9 @@ public class MainWindowController {
 
         LoggerUtilities.newLoggingThread(LOGGER, () ->
             loadFavoritesIntoMenus(favorites)).start();
+
+        LoggerUtilities.newLoggingThread(LOGGER, () ->
+            loadCreaturesIntoMenus(creatures)).start();
       } catch (final IOException e) {
         LOGGER.log(Level.SEVERE,
             "Could not get GitHub.\n" + Throwables.getStackTraceAsString(e));
@@ -761,6 +767,37 @@ public class MainWindowController {
         .collect(Collectors.toList());
 
     loadGistsIntoMenus(menu, gists);
+  }
+
+  private void loadCreaturesIntoMenus(@Nonnull final Menu menu) {
+    try {
+      final String gistURL = preferencesService.get("Default Creatures Push URL",
+          "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git");
+      final String gistName = preferencesService.get("Default Creatures Filename",
+          "defaultCreatures.json");
+      final String[] code = ScriptingEngine.codeFromGit(gistURL, gistName);
+
+      if (code != null) {
+        final String content = code[0];
+        final JSONParser parser = new JSONParser();
+        final JSONObject result = (JSONObject) parser.parse(content);
+
+        final JSONArray jsonArray = (JSONArray) result.get("files");
+        for (final Object element : jsonArray) {
+          final JSONObject jsonObject = (JSONObject) element;
+          final String pushURL = (String) jsonObject.get("pushURL");
+          final String fileName = (String) jsonObject.get("fileName");
+          final String creatureName = (String) jsonObject.get("creatureName");
+
+          final MenuItem menuItem = new MenuItem(creatureName);
+          menuItem.setOnAction(event -> loadCreatureLab(pushURL, fileName));
+          menu.getItems().add(menuItem);
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.warning("Could not load default creatures.\n"
+          + Throwables.getStackTraceAsString(e));
+    }
   }
 
   private void reloadPlugins(@Nonnull final Collection<Plugin> plugins) {
