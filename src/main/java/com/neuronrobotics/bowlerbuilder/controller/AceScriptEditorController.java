@@ -127,9 +127,7 @@ public class AceScriptEditorController {
 
   @FXML
   private void runFile(final ActionEvent actionEvent) {
-    final Thread thread = LoggerUtilities.newLoggingThread(LOGGER, this::runEditorContent);
-    thread.setDaemon(true);
-    thread.start();
+    LoggerUtilities.newLoggingThread(LOGGER, this::runEditorContent).start();
   }
 
   @FXML

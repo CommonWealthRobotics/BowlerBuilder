@@ -378,7 +378,7 @@ public class MainWindowController {
     Platform.runLater(() -> {
       try {
         final CreatureLabTab tab = new CreatureLabTab("Creature Lab");
-        final Thread thread = LoggerUtilities.newLoggingThread(LOGGER, () -> {
+        LoggerUtilities.newLoggingThread(LOGGER, () -> {
           final AceCreatureLabController controller = tab.getController();
 
           try {
@@ -413,9 +413,7 @@ public class MainWindowController {
             LOGGER.log(Level.SEVERE,
                 "Could not start building robot.\n" + Throwables.getStackTraceAsString(e));
           }
-        });
-        thread.setDaemon(true);
-        thread.start();
+        }).start();
 
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
@@ -495,6 +493,8 @@ public class MainWindowController {
       myGists.getItems().clear();
       myOrgs.getItems().clear();
       myRepos.getItems().clear();
+      favorites.getItems().clear();
+      creatures.getItems().clear();
 
       final GHMyself myself;
       try {
@@ -626,14 +626,43 @@ public class MainWindowController {
         }
       });
 
-      final MenuItem favoriteGist = new MenuItem("Favorite");
-      favoriteGist.setOnAction(event -> {
-        preferencesService.get("Favorite Gists",
-            new HashSet<String>())
-            .add(ScriptingEngine.urlToGist(gist.getGitPushUrl()));
-        favorites.getItems().clear();
-        loadFavoritesIntoMenus(favorites);
-      });
+      final HashSet<String> favoriteGists = preferencesService.get("Favorite Gists",
+          new HashSet<String>());
+      MenuItem favoriteGist = null;
+      final String gistID = ScriptingEngine.urlToGist(gist.getGitPushUrl());
+
+      try {
+        final GHMyself myself = ScriptingEngine.getGithub().getMyself();
+        final Iterable<GHGist> reloadGists = myself.listGists();
+
+        final Runnable reloadFavorites = () -> {
+          favorites.getItems().clear();
+          myGists.getItems().clear();
+
+          loadFavoritesIntoMenus(favorites);
+          loadGistsIntoMenus(myGists, reloadGists);
+        };
+
+        if (favoriteGists.contains(gistID)) {
+          favoriteGist = new MenuItem("Unfavorite");
+          favoriteGist.setOnAction(event -> {
+            favoriteGists.remove(gistID);
+
+            //Reload gists and favorites
+            LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
+          });
+        } else {
+          favoriteGist = new MenuItem("Favorite");
+          favoriteGist.setOnAction(event -> {
+            favoriteGists.add(gistID);
+
+            //Reload gists and favorites
+            LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
+          });
+        }
+      } catch (IOException e) {
+        LOGGER.warning("Could not get user's gists.\n" + Throwables.getStackTraceAsString(e));
+      }
 
       String gistMenuText = gist.getDescription();
       if (gistMenuText == null || gistMenuText.length() == 0) {
@@ -649,7 +678,10 @@ public class MainWindowController {
       gistMenuText = gistMenuText.substring(0, Math.min(25, gistMenuText.length()));
 
       final Menu gistMenu = new Menu(gistMenuText);
-      gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk, favoriteGist);
+      gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
+      if (favoriteGist != null) {
+        gistMenu.getItems().add(favoriteGist);
+      }
 
       gist.getFiles().forEach((name, gistFile) -> {
         if (name.endsWith(".xml")) {

@@ -100,6 +100,7 @@ public final class LoggerUtilities {
     thread.setUncaughtExceptionHandler((exceptionThread, exception) ->
         logger.log(Level.SEVERE, "Uncaught exception in thread: " + exceptionThread.getName()
             + "\n" + Throwables.getStackTraceAsString(exception)));
+    thread.setDaemon(true);
     return thread;
   }
 

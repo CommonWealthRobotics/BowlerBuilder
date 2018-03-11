@@ -952,7 +952,6 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       LOGGER.log(Level.INFO, "Done saving CSG database");
     });
 
-    thread.setDaemon(true);
     thread.setName("CAD Regenerate Thread");
     thread.start();
   }
