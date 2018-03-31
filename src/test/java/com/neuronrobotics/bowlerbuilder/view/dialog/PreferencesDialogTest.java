@@ -14,6 +14,7 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import java.util.Collections;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ public class PreferencesDialogTest extends AbstractAutoClosingApplicationTest {
     });
 
     doubleClickOn("foo").write("bar");
-    doubleClickOn("99").write("98");
+    doubleClickOn("99").press(KeyCode.DELETE).press(KeyCode.DELETE).write("98");
     clickOn("OK");
 
     assertEquals("bar", service.get("a", "baz"));
