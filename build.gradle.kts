@@ -81,10 +81,12 @@ dependencies {
     compile(group = "commons-validator", name = "commons-validator", version = "1.6")
     compile(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     compile(group = "io.reactivex.rxjava2", name = "rxjava", version = "2.1.9")
-    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version="0.31.3")
+    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.31.3")
+    compile("org.nd4j:nd4j-native-platform:0.9.1")
 
     fun junitJupiter(name: String, version: String = "5.0.0") =
             create(group = "org.junit.jupiter", name = name, version = version)
+
     fun testFx(name: String, version: String = "4.0.+") =
             create(group = "org.testfx", name = name, version = version)
 
@@ -154,7 +156,7 @@ tasks.withType<JacocoReport> {
     }
 }
 afterEvaluate {
-    val junitPlatformTest : JavaExec by tasks
+    val junitPlatformTest: JavaExec by tasks
     jacoco {
         applyTo(junitPlatformTest)
     }
@@ -179,6 +181,8 @@ if (project.hasProperty("jenkinsBuild") || project.hasProperty("headless")) {
                  * but not with the virtualized ones in headless mode.
                  */
                 exclude("NonHeadlessTests")
+
+                exclude("ExcludedTest")
             }
         }
     }
@@ -201,7 +205,7 @@ publishing {
             artifactId = "BowlerBuilder"
             version = "0.0.1"
             val shadowJar: ShadowJar by tasks
-            artifact (shadowJar) {
+            artifact(shadowJar) {
                 classifier = null
             }
         }
@@ -215,14 +219,16 @@ task<Wrapper>("wrapper") {
 /**
  * Retrieves the [java][org.gradle.api.plugins.JavaPluginConvention] project convention.
  */
-val Project.`java`: org.gradle.api.plugins.JavaPluginConvention get() =
-    convention.getPluginByName("java")
+val Project.`java`: org.gradle.api.plugins.JavaPluginConvention
+    get() =
+        convention.getPluginByName("java")
 
 /**
  * Retrieves the [checkstyle][org.gradle.api.plugins.quality.CheckstyleExtension] project extension.
  */
-val Project.`checkstyle`: org.gradle.api.plugins.quality.CheckstyleExtension get() =
-    extensions.getByName("checkstyle") as org.gradle.api.plugins.quality.CheckstyleExtension
+val Project.`checkstyle`: org.gradle.api.plugins.quality.CheckstyleExtension
+    get() =
+        extensions.getByName("checkstyle") as org.gradle.api.plugins.quality.CheckstyleExtension
 
 /**
  * Configures the [checkstyle][org.gradle.api.plugins.quality.CheckstyleExtension] project extension.
@@ -233,8 +239,9 @@ fun Project.`checkstyle`(configure: org.gradle.api.plugins.quality.CheckstyleExt
 /**
  * Retrieves the [pmd][org.gradle.api.plugins.quality.PmdExtension] project extension.
  */
-val Project.`pmd`: org.gradle.api.plugins.quality.PmdExtension get() =
-    extensions.getByName("pmd") as org.gradle.api.plugins.quality.PmdExtension
+val Project.`pmd`: org.gradle.api.plugins.quality.PmdExtension
+    get() =
+        extensions.getByName("pmd") as org.gradle.api.plugins.quality.PmdExtension
 
 /**
  * Configures the [pmd][org.gradle.api.plugins.quality.PmdExtension] project extension.
@@ -245,8 +252,9 @@ fun Project.`pmd`(configure: org.gradle.api.plugins.quality.PmdExtension.() -> U
 /**
  * Retrieves the [findbugs][org.gradle.api.plugins.quality.FindBugsExtension] project extension.
  */
-val Project.`findbugs`: org.gradle.api.plugins.quality.FindBugsExtension get() =
-    extensions.getByName("findbugs") as org.gradle.api.plugins.quality.FindBugsExtension
+val Project.`findbugs`: org.gradle.api.plugins.quality.FindBugsExtension
+    get() =
+        extensions.getByName("findbugs") as org.gradle.api.plugins.quality.FindBugsExtension
 
 /**
  * Configures the [findbugs][org.gradle.api.plugins.quality.FindBugsExtension] project extension.
@@ -257,8 +265,9 @@ fun Project.`findbugs`(configure: org.gradle.api.plugins.quality.FindBugsExtensi
 /**
  * Retrieves the [junitPlatform][org.junit.platform.gradle.plugin.JUnitPlatformExtension] project extension.
  */
-val Project.`junitPlatform`: org.junit.platform.gradle.plugin.JUnitPlatformExtension get() =
-    extensions.getByName("junitPlatform") as org.junit.platform.gradle.plugin.JUnitPlatformExtension
+val Project.`junitPlatform`: org.junit.platform.gradle.plugin.JUnitPlatformExtension
+    get() =
+        extensions.getByName("junitPlatform") as org.junit.platform.gradle.plugin.JUnitPlatformExtension
 
 /**
  * Configures the [junitPlatform][org.junit.platform.gradle.plugin.JUnitPlatformExtension] project extension.
