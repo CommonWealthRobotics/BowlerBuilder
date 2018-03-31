@@ -6,13 +6,19 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 import org.junit.platform.console.options.Details
 import java.util.Collections.emptyList
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+val kotlin_version: String by extra
 
 buildscript {
+    var kotlin_version: String by extra
+    kotlin_version = "1.2.31"
     repositories {
         mavenCentral()
     }
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0")
+        classpath(kotlinModule("gradle-plugin", kotlin_version))
     }
 }
 
@@ -33,6 +39,7 @@ apply {
     plugin("findbugs")
     plugin("jacoco")
     plugin("org.junit.platform.gradle.plugin")
+    plugin("kotlin")
 }
 
 group = "com.neuronrobotics.bowlerbuilder"
@@ -62,18 +69,6 @@ spotless {
 repositories {
     mavenCentral()
     jcenter()
-//    maven { setUrl("https://repository-bubblecloud.forge.cloudbees.com/release/") }
-//    maven { setUrl("https://clojars.org/repo") }
-//    maven { setUrl("https://oss.sonatype.org/content/repositories/releases/")  }
-//    maven { setUrl("https://jline.sourceforge.net/m2repo") }
-//    maven { setUrl("https://repo.spring.io/milestone") }
-//    maven { setUrl("https://oss.sonatype.org/content/repositories/snapshots/")  }
-//    maven { setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")  }
-//    maven { setUrl("https://jenkinsci.artifactoryonline.com/jenkinsci/public/") }
-//    maven { setUrl("https://plugins.gradle.org/m2/") }
-//    maven { setUrl("https://dl.bintray.com/clearcontrol/ClearControl") }
-//    maven { setUrl("https://jitpack.io") }
-//    maven { setUrl("http://maven-eclipse.github.io/maven") }
 }
 
 dependencies {
@@ -86,15 +81,6 @@ dependencies {
     compile(group = "commons-validator", name = "commons-validator", version = "1.6")
     compile(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     compile(group = "io.reactivex.rxjava2", name = "rxjava", version = "2.1.9")
-//    compile(group = "eu.mihosoft.vrl.jcsg", name = "jcsg", version = "0.5.6")
-//    compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.28.0")
-//    compile(group = "org.kohsuke", name = "github-api", version = "1.90")
-//    compile(group = "com.neuronrobotics", name = "JavaCad", version = "0.11.0")
-//    compile(group = "org.bubblecloud.jbullet", name = "jbullet", version = "2.72.2.4") //down
-//    compile 'org.bubblecloud.jbullet:jbullet:2.72.2.4'
-//    compile "com.neuronrobotics:JavaCad:0.11.0"
-//    compile(project(":lib/src/jbullet"))
-//    compile(files("jars/BowlerScriptingKernel-0.31.0.jar"))
     compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version="0.31.3")
 
     fun junitJupiter(name: String, version: String = "5.0.0") =
@@ -112,14 +98,8 @@ dependencies {
 
     testRuntime(testFx(name = "openjfx-monocle", version = "8u76-b04"))
     testRuntime(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.0.0")
-
+    compile(kotlinModule("stdlib-jdk8", kotlin_version))
 }
-
-//test {
-//    testLogging {
-//        exceptionFormat = 'full'
-//    }
-//}
 
 application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
@@ -285,3 +265,12 @@ val Project.`junitPlatform`: org.junit.platform.gradle.plugin.JUnitPlatformExten
  */
 fun Project.`junitPlatform`(configure: org.junit.platform.gradle.plugin.JUnitPlatformExtension.() -> Unit) =
         extensions.configure("junitPlatform", configure)
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
