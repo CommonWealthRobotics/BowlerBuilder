@@ -18,7 +18,6 @@ import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditorView;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -70,8 +69,7 @@ public class AceCadEditorTest extends AbstractAutoClosingApplicationTest {
 
   @Test
   void runStringScriptTest() {
-    controller.runStringScript("CSG foo = new Sphere(10).toCSG();", new ArrayList<>(),
-        "BowlerGroovy");
+    controller.runStringScript("CSG foo = new Sphere(10).toCSG();", null, "BowlerGroovy");
 
     assertTrue(controller.getScriptRunner().resultProperty().get() instanceof CSG);
   }

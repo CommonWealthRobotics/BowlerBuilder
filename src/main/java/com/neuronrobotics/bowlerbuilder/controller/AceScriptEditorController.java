@@ -43,6 +43,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
@@ -314,7 +315,7 @@ public class AceScriptEditorController {
     try {
       try {
         return runStringScript(
-            FxUtil.returnFX(scriptEditor::getText), new ArrayList<>(), scriptLangName);
+            FxUtil.returnFX(scriptEditor::getText), null, scriptLangName);
       } catch (final ExecutionException e) {
         LOGGER.log(Level.SEVERE,
             "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
@@ -337,7 +338,7 @@ public class AceScriptEditorController {
    * @return script result
    */
   public Object runStringScript(@Nonnull final String script,
-      @Nonnull final ArrayList<Object> arguments, //NOPMD
+      @Nullable final ArrayList<Object> arguments, //NOPMD
       @Nonnull final String languageName) {
     try {
       //Run the code
