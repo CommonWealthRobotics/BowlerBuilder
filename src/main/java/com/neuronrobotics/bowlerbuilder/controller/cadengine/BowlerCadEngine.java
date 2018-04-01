@@ -411,10 +411,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     });
 
     scene.setOnMousePressed(mouseEvent -> {
+      mouseOldX = mousePosX;
+      mouseOldY = mousePosY;
       mousePosX = mouseEvent.getSceneX();
       mousePosY = mouseEvent.getSceneY();
-      mouseOldX = mouseEvent.getSceneX();
-      mouseOldY = mouseEvent.getSceneY();
       resetMouseTime();
     });
 
@@ -552,7 +552,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
   private void removeAllFocusTransforms() {
     final ObservableList<Transform> allTrans = focusGroup.getTransforms();
-    final Transform[] toRemove = allTrans.toArray(new Transform[allTrans.size()]);
+    final Transform[] toRemove = allTrans.toArray(new Transform[0]);
     Arrays.stream(toRemove).forEach(allTrans::remove);
   }
 
@@ -744,7 +744,13 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
     mesh.setOnMouseClicked(mouseEvent -> {
       if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-        selectCSG(csg, csgMap);
+        if (mouseOldX == mouseEvent.getSceneX() && mouseOldY == mouseEvent.getSceneY()) {
+          selectCSG(csg, csgMap);
+        }
+        mouseOldX = mousePosX;
+        mouseOldY = mousePosY;
+        mousePosX = mouseEvent.getSceneX();
+        mousePosY = mouseEvent.getSceneY();
       } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
         final ContextMenu menu = new ContextMenu();
         menu.setAutoHide(true);
