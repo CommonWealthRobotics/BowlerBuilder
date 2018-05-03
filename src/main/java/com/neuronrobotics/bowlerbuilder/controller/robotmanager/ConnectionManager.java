@@ -6,6 +6,7 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Singleton;
+import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraDevice;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.sdk.common.BowlerAbstractDevice;
 import com.neuronrobotics.sdk.common.DeviceManager;
@@ -56,6 +57,11 @@ public class ConnectionManager implements IDeviceAddedListener {
 
   @Override
   public void onNewDeviceAdded(@Nonnull final BowlerAbstractDevice device) {
+    // Don't add Camera devices
+    if (device instanceof VirtualCameraDevice) {
+      return;
+    }
+
     devices.add(device);
 
     final TitledPane pane = new TitledPane();
