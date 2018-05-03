@@ -174,7 +174,7 @@ public class MainWindowController {
 
     SplitPane.setResizableWithParent(console, false);
 
-    //Just need to initialize here (ConnectionManager marked @singleton)
+    //Just needed to initialize here (ConnectionManager marked @singleton)
     connectionManagerFactory.get(connectionsHeader, connections);
 
     try {
