@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.cadengine;
 
 import eu.mihosoft.vrl.v3d.CSG;
@@ -14,9 +13,7 @@ import javafx.scene.SubScene;
 import javafx.scene.shape.MeshView;
 import javax.annotation.Nonnull;
 
-/**
- * Interface to a CAD engine to display and interact with CSGs.
- */
+/** Interface to a CAD engine to display and interact with CSGs. */
 public interface CadEngine {
 
   /**
@@ -55,23 +52,23 @@ public interface CadEngine {
    */
   void selectCSGs(@Nonnull Collection<CSG> selection);
 
-  /**
-   * Removes all meshes except for the background.
-   */
+  /** Removes all meshes except for the background. */
   void clearMeshes();
 
-  /**
-   * Home the camera.
-   */
+  /** Home the camera. */
   void homeCamera();
 
   /**
    * Whether the x/y/z axes and grid are showing.
+   *
+   * @return whether the axes are showing
    */
   BooleanProperty axisShowingProperty();
 
   /**
    * Whether the hand is showing.
+   *
+   * @return whether the hand is showing
    */
   BooleanProperty handShowingProperty();
 
@@ -95,5 +92,4 @@ public interface CadEngine {
    * @return subscene
    */
   SubScene getSubScene();
-
 }

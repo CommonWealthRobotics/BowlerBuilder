@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder;
 
 import java.util.concurrent.Callable;
@@ -11,29 +10,28 @@ import java.util.concurrent.FutureTask;
 import javafx.application.Platform;
 import javax.annotation.Nonnull;
 
-/**
- * JavaFX helper utility class.
- */
+/** JavaFX helper utility class. */
 public final class FxUtil {
 
-  private FxUtil() {
-  }
+  private FxUtil() {}
 
   /**
    * Run the runnable on the FX thread if not already on that thread. Block for the runnable to
    * finish.
    *
    * @param runnable runnable to run
+   * @throws InterruptedException when waiting for the runnable to finish
    */
   public static void runFXAndWait(@Nonnull final Runnable runnable) throws InterruptedException {
     if (Platform.isFxApplicationThread()) {
       runnable.run();
     } else {
       final CountDownLatch latch = new CountDownLatch(1);
-      Platform.runLater(() -> {
-        runnable.run();
-        latch.countDown();
-      });
+      Platform.runLater(
+          () -> {
+            runnable.run();
+            latch.countDown();
+          });
       latch.await();
     }
   }
@@ -76,5 +74,4 @@ public final class FxUtil {
     runFXAndWait(query);
     return query.get();
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.util;
 
 import com.google.common.base.Throwables;
@@ -16,9 +15,7 @@ import java.util.logging.Logger;
 import javafx.scene.shape.MeshView;
 import javax.annotation.Nonnull;
 
-/**
- * Simple class to hold CSG parsing logic.
- */
+/** Simple class to hold CSG parsing logic. */
 public class CsgParser {
 
   private static final Logger LOGGER = LoggerUtilities.getLogger(CsgParser.class.getSimpleName());
@@ -31,33 +28,42 @@ public class CsgParser {
    * @param csgMap map containing CSG objects
    * @return CSG objects from the script
    */
-  public Collection<CSG> parseCsgFromSource(@Nonnull final String scriptName,
+  public Collection<CSG> parseCsgFromSource(
+      @Nonnull final String scriptName,
       final int lineNumber,
       @Nonnull final Map<CSG, MeshView> csgMap) {
     final Collection<CSG> objsFromScriptLine = new ArrayList<>();
 
-    csgMap.keySet().forEach(testCSG -> testCSG.getCreationEventStackTraceList().stream()
-        .map(trace -> trace.split(":"))
-        .filter(traceParts ->
-            traceParts[0].trim()
-                .toLowerCase(Locale.US)
-                .contains(scriptName
-                    .toLowerCase(Locale.US)
-                    .trim()))
-        .forEach(traceParts -> {
-          try {
-            final int num = Integer.parseInt(traceParts[1].trim());
+    csgMap
+        .keySet()
+        .forEach(
+            testCSG ->
+                testCSG
+                    .getCreationEventStackTraceList()
+                    .stream()
+                    .map(trace -> trace.split(":"))
+                    .filter(
+                        traceParts ->
+                            traceParts[0]
+                                .trim()
+                                .toLowerCase(Locale.US)
+                                .contains(scriptName.toLowerCase(Locale.US).trim()))
+                    .forEach(
+                        traceParts -> {
+                          try {
+                            final int num = Integer.parseInt(traceParts[1].trim());
 
-            if (num == lineNumber) {
-              objsFromScriptLine.add(testCSG);
-            }
-          } catch (final Exception e) {
-            LOGGER.log(Level.WARNING,
-                "Could not selected CSG in script.\n" + Throwables.getStackTraceAsString(e));
-          }
-        }));
+                            if (num == lineNumber) {
+                              objsFromScriptLine.add(testCSG);
+                            }
+                          } catch (final Exception e) {
+                            LOGGER.log(
+                                Level.WARNING,
+                                "Could not selected CSG in script.\n"
+                                    + Throwables.getStackTraceAsString(e));
+                          }
+                        }));
 
     return objsFromScriptLine;
   }
-
 }

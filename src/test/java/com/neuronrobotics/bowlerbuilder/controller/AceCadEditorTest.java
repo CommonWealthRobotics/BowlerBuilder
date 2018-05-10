@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import static org.junit.Assert.assertEquals;
@@ -31,13 +30,15 @@ public class AceCadEditorTest extends AbstractAutoClosingApplicationTest {
 
   @Override
   public void start(final Stage stage) throws IOException {
-    final FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("../view/AceScriptEditor.fxml"),
-        null,
-        null,
-        Guice.createInjector(
-            new AceCadEditorControllerModule(
-                BowlerBuilder.getInjector().getInstance(AceEditorView.class)))::getInstance);
+    final FXMLLoader loader =
+        new FXMLLoader(
+            getClass().getResource("../view/AceScriptEditor.fxml"),
+            null,
+            null,
+            Guice.createInjector(
+                    new AceCadEditorControllerModule(
+                        BowlerBuilder.getInjector().getInstance(AceEditorView.class)))
+                ::getInstance);
     final SplitPane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));
@@ -80,5 +81,4 @@ public class AceCadEditorTest extends AbstractAutoClosingApplicationTest {
 
     assertEquals("foo\nbar", FxUtil.returnFX(() -> controller.getScriptEditor().getText()));
   }
-
 }

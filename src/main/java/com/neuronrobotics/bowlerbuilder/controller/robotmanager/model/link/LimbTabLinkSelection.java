@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
 import com.neuronrobotics.bowlerbuilder.controller.CreatureEditorController;
@@ -19,7 +18,9 @@ public class LimbTabLinkSelection extends AbstractLinkSelection {
 
   private final VBox vBox;
 
-  public LimbTabLinkSelection(final DHLink dhLink, @Nonnull final LinkConfiguration configuration,
+  public LimbTabLinkSelection(
+      final DHLink dhLink,
+      @Nonnull final LinkConfiguration configuration,
       @Nonnull final DHParameterKinematics limb,
       @Nonnull final LimbTabLimbSelection limbTabLimbSelection,
       @Nonnull final CreatureEditorController creatureEditorController) {
@@ -28,12 +29,13 @@ public class LimbTabLinkSelection extends AbstractLinkSelection {
 
     final Button removeLink = new Button();
     removeLink.setGraphic(AssetFactory.loadIcon("Remove-Link.png"));
-    removeLink.setOnAction(event -> {
-      limb.removeLink(configuration.getLinkIndex());
-      limbTabLimbSelection.clearSelectedWidget();
-      limbTabLimbSelection.regenerateLinkButtons();
-      creatureEditorController.regenerateMenus();
-    });
+    removeLink.setOnAction(
+        event -> {
+          limb.removeLink(configuration.getLinkIndex());
+          limbTabLimbSelection.clearSelectedWidget();
+          limbTabLimbSelection.regenerateLinkButtons();
+          creatureEditorController.regenerateMenus();
+        });
 
     vBox.getChildren().addAll(getTitleLabel(configuration.getName()), new VBox(5, removeLink));
   }
@@ -42,5 +44,4 @@ public class LimbTabLinkSelection extends AbstractLinkSelection {
   public Node getWidget() {
     return vBox;
   }
-
 }

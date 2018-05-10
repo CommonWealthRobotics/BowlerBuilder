@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import static org.junit.Assert.assertEquals;
@@ -33,11 +32,13 @@ public class PreferencesDialogTest extends AbstractAutoClosingApplicationTest {
     service.set("a", "foo");
     service.set("b", 99);
 
-    FxHelper.runAndWait(() -> {
-      final PreferencesDialog dialog = new PreferencesDialog(Collections.singletonList(service));
-      stage.setScene(dialog.getDialogPane().getScene());
-      stage.show();
-    });
+    FxHelper.runAndWait(
+        () -> {
+          final PreferencesDialog dialog =
+              new PreferencesDialog(Collections.singletonList(service));
+          stage.setScene(dialog.getDialogPane().getScene());
+          stage.show();
+        });
 
     doubleClickOn("foo").write("bar");
     doubleClickOn("99").press(KeyCode.DELETE).press(KeyCode.DELETE).write("98");
@@ -52,19 +53,19 @@ public class PreferencesDialogTest extends AbstractAutoClosingApplicationTest {
     final PreferencesService service = new PreferencesService("");
     service.set("a", "foo");
     final BooleanProperty val = new SimpleBooleanProperty(false);
-    service.addListener("a", (PreferenceListener<String>) (oldVal, newVal) ->
-        val.setValue(true));
+    service.addListener("a", (PreferenceListener<String>) (oldVal, newVal) -> val.setValue(true));
 
-    FxHelper.runAndWait(() -> {
-      final PreferencesDialog dialog = new PreferencesDialog(Collections.singletonList(service));
-      stage.setScene(dialog.getDialogPane().getScene());
-      stage.show();
-    });
+    FxHelper.runAndWait(
+        () -> {
+          final PreferencesDialog dialog =
+              new PreferencesDialog(Collections.singletonList(service));
+          stage.setScene(dialog.getDialogPane().getScene());
+          stage.show();
+        });
 
     doubleClickOn("foo").write("bar");
     clickOn("OK");
 
     assertTrue(val.getValue());
   }
-
 }

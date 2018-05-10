@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import static org.junit.Assert.assertTrue;
@@ -27,12 +26,13 @@ public class CADModelViewerTest extends AbstractAutoClosingApplicationTest {
 
   @Override
   public void start(final Stage stage) throws IOException {
-    final FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("../view/CADModelViewer.fxml"),
-        null,
-        null,
-        BowlerBuilder.getInjector()
-            .createChildInjector(new CADModelViewerControllerModule())::getInstance);
+    final FXMLLoader loader =
+        new FXMLLoader(
+            getClass().getResource("../view/CADModelViewer.fxml"),
+            null,
+            null,
+            BowlerBuilder.getInjector().createChildInjector(new CADModelViewerControllerModule())
+                ::getInstance);
     final BorderPane mainWindow = loader.load();
     controller = loader.getController();
     stage.setScene(new Scene(mainWindow));
@@ -71,5 +71,4 @@ public class CADModelViewerTest extends AbstractAutoClosingApplicationTest {
     assertTrue(controller.getCsgMap().containsKey(foo));
     assertTrue(controller.getCsgMap().containsKey(bar));
   }
-
 }

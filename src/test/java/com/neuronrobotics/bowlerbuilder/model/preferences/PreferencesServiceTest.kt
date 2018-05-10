@@ -1,15 +1,16 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.model.preferences
 
 import javafx.beans.property.SimpleBooleanProperty
 import org.apache.commons.collections.CollectionUtils
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.Serializable
-import java.util.*
+import java.util.Arrays
 
 internal class PreferencesServiceTest {
 
@@ -64,5 +65,4 @@ internal class PreferencesServiceTest {
         test["bar"] = "b"
         assertEquals(test, preferencesService.all)
     }
-
 }

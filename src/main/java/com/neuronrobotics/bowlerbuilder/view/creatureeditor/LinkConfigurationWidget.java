@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.google.common.base.Throwables;
@@ -46,9 +45,17 @@ public class LinkConfigurationWidget extends GridPane {
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(LinkConfigurationWidget.class.getSimpleName());
   private final LinkConfiguration conf;
-  private AbstractLink activeLink; //NOPMD
+  private AbstractLink activeLink; // NOPMD
 
-  public LinkConfigurationWidget(@Nonnull final LinkConfiguration configuration,
+  /**
+   * From BowlerStudio.
+   *
+   * @param configuration link config
+   * @param factory link factory
+   * @param setpointSlider link position slider
+   */
+  public LinkConfigurationWidget(
+      @Nonnull final LinkConfiguration configuration,
       @Nonnull final LinkFactory factory,
       @Nullable final EngineeringUnitsSliderWidget setpointSlider) {
     conf = configuration;
@@ -59,91 +66,109 @@ public class LinkConfigurationWidget extends GridPane {
     setHgap(20);
 
     final TextField mass = new TextField(getFormatted(conf.getMassKg()));
-    mass.setOnAction(event -> {
-      conf.setMassKg(Double.parseDouble(mass.getText()));
-      activeLink.setTargetEngineeringUnits(0);
-      activeLink.flush(0);
-    });
+    mass.setOnAction(
+        event -> {
+          conf.setMassKg(Double.parseDouble(mass.getText()));
+          activeLink.setTargetEngineeringUnits(0);
+          activeLink.flush(0);
+        });
 
     final TransformNR currentCentroid = conf.getCenterOfMassFromCentroid();
     final TextField massx = new TextField(getFormatted(currentCentroid.getX()));
-    massx.setOnAction(event -> {
-      currentCentroid.setX(Double.parseDouble(massx.getText()));
-      conf.setCenterOfMassFromCentroid(currentCentroid);
-      activeLink.setTargetEngineeringUnits(0);
-      activeLink.flush(0);
-    });
+    massx.setOnAction(
+        event -> {
+          currentCentroid.setX(Double.parseDouble(massx.getText()));
+          conf.setCenterOfMassFromCentroid(currentCentroid);
+          activeLink.setTargetEngineeringUnits(0);
+          activeLink.flush(0);
+        });
 
     final TextField massy = new TextField(getFormatted(currentCentroid.getY()));
-    massy.setOnAction(event -> {
-      currentCentroid.setY(Double.parseDouble(massy.getText()));
-      conf.setCenterOfMassFromCentroid(currentCentroid);
-      activeLink.setTargetEngineeringUnits(0);
-      activeLink.flush(0);
-    });
+    massy.setOnAction(
+        event -> {
+          currentCentroid.setY(Double.parseDouble(massy.getText()));
+          conf.setCenterOfMassFromCentroid(currentCentroid);
+          activeLink.setTargetEngineeringUnits(0);
+          activeLink.flush(0);
+        });
 
     final TextField massz = new TextField(getFormatted(currentCentroid.getZ()));
-    massz.setOnAction(event -> {
-      currentCentroid.setZ(Double.parseDouble(massz.getText()));
-      conf.setCenterOfMassFromCentroid(currentCentroid);
-      activeLink.setTargetEngineeringUnits(0);
-      activeLink.flush(0);
-    });
+    massz.setOnAction(
+        event -> {
+          currentCentroid.setZ(Double.parseDouble(massz.getText()));
+          conf.setCenterOfMassFromCentroid(currentCentroid);
+          activeLink.setTargetEngineeringUnits(0);
+          activeLink.flush(0);
+        });
 
     final TextField scale = new TextField(getFormatted(conf.getScale()));
-    scale.setOnAction(event -> {
-      conf.setScale(Double.parseDouble(scale.getText()));
-      activeLink.setTargetEngineeringUnits(0);
-      activeLink.flush(0);
-    });
+    scale.setOnAction(
+        event -> {
+          conf.setScale(Double.parseDouble(scale.getText()));
+          activeLink.setTargetEngineeringUnits(0);
+          activeLink.flush(0);
+        });
 
     final Button editShaft = new Button("Edit " + conf.getShaftSize());
-    editShaft.setOnAction(event -> LoggerUtilities.newLoggingThread(LOGGER, () -> {
-      try {
-        final String type = conf.getShaftType();
-        final String sizeID = conf.getShaftSize();
-        edit(type, sizeID, Vitamins.getConfiguration(type, sizeID));
-      } catch (Exception e) {
-        LOGGER.warning("Could not edit Vitamin configuration.\n"
-            + Throwables.getStackTraceAsString(e));
-      }
-    }).start());
+    editShaft.setOnAction(
+        event ->
+            LoggerUtilities.newLoggingThread(
+                    LOGGER,
+                    () -> {
+                      try {
+                        final String type = conf.getShaftType();
+                        final String sizeID = conf.getShaftSize();
+                        edit(type, sizeID, Vitamins.getConfiguration(type, sizeID));
+                      } catch (Exception e) {
+                        LOGGER.warning(
+                            "Could not edit Vitamin configuration.\n"
+                                + Throwables.getStackTraceAsString(e));
+                      }
+                    })
+                .start());
 
     final Button newShaft = new Button("New " + conf.getShaftType());
-    newShaft.setOnAction(event -> {
-      final TextInputDialog dialog = new TextInputDialog("New Size");
-      dialog.setTitle("Wizard for new " + conf.getShaftType());
-      dialog.setHeaderText("Enter the Side ID for a new " + conf.getShaftType());
-      dialog.setContentText("Size: ");
+    newShaft.setOnAction(
+        event -> {
+          final TextInputDialog dialog = new TextInputDialog("New Size");
+          dialog.setTitle("Wizard for new " + conf.getShaftType());
+          dialog.setHeaderText("Enter the Side ID for a new " + conf.getShaftType());
+          dialog.setContentText("Size: ");
 
-      // Traditional way to get the response value.
-      final Optional<String> result = dialog.showAndWait();
-      result.ifPresent(size -> {
-        // Create the custom dialog.
-        final String type = conf.getShaftType();
+          // Traditional way to get the response value.
+          final Optional<String> result = dialog.showAndWait();
+          result.ifPresent(
+              size -> {
+                // Create the custom dialog.
+                final String type = conf.getShaftType();
 
-        LoggerUtilities.newLoggingThread(LOGGER, () -> {
-          try {
-            test(type);
-            Vitamins.newVitamin(size, type);
-            edit(type, size, Vitamins.getConfiguration(type, conf.getShaftSize()));
-          } catch (Exception e) {
-            LOGGER.warning("Could not set new size.\n" + Throwables.getStackTraceAsString(e));
-          }
-        }).start();
-      });
-    });
+                LoggerUtilities.newLoggingThread(
+                        LOGGER,
+                        () -> {
+                          try {
+                            test(type);
+                            Vitamins.newVitamin(size, type);
+                            edit(type, size, Vitamins.getConfiguration(type, conf.getShaftSize()));
+                          } catch (Exception e) {
+                            LOGGER.warning(
+                                "Could not set new size.\n" + Throwables.getStackTraceAsString(e));
+                          }
+                        })
+                    .start();
+              });
+        });
 
     final ComboBox<String> shaftSize = new ComboBox<>();
     for (final String s : Vitamins.listVitaminSizes(conf.getShaftType())) {
       shaftSize.getItems().add(s);
     }
 
-    shaftSize.setOnAction(event -> {
-      conf.setShaftSize(shaftSize.getSelectionModel().getSelectedItem());
-      newShaft.setText("New " + conf.getShaftType());
-      editShaft.setText("Edit " + conf.getShaftSize());
-    });
+    shaftSize.setOnAction(
+        event -> {
+          conf.setShaftSize(shaftSize.getSelectionModel().getSelectedItem());
+          newShaft.setText("New " + conf.getShaftType());
+          editShaft.setText("Edit " + conf.getShaftSize());
+        });
 
     shaftSize.getSelectionModel().select(conf.getShaftSize());
 
@@ -155,65 +180,83 @@ public class LinkConfigurationWidget extends GridPane {
       }
     }
 
-    shaftType.setOnAction(event -> {
-      conf.setShaftType(shaftType.getSelectionModel().getSelectedItem());
-      shaftSize.getItems().clear();
+    shaftType.setOnAction(
+        event -> {
+          conf.setShaftType(shaftType.getSelectionModel().getSelectedItem());
+          shaftSize.getItems().clear();
 
-      for (final String s : Vitamins.listVitaminSizes(conf.getShaftType())) {
-        shaftSize.getItems().add(s);
-      }
+          for (final String s : Vitamins.listVitaminSizes(conf.getShaftType())) {
+            shaftSize.getItems().add(s);
+          }
 
-      newShaft.setText("New " + conf.getShaftType());
-      editShaft.setText("Edit " + conf.getShaftSize());
-    });
+          newShaft.setText("New " + conf.getShaftType());
+          editShaft.setText("Edit " + conf.getShaftSize());
+        });
 
     shaftType.getSelectionModel().select(conf.getShaftType());
 
     // Actuator editing
     final Button editHardware = new Button("Edit " + conf.getElectroMechanicalSize());
-    editHardware.setOnAction(event -> LoggerUtilities.newLoggingThread(LOGGER, () -> {
-      try {
-        final String type = conf.getElectroMechanicalType();
-        final String sizeID = conf.getElectroMechanicalSize();
-        edit(type, sizeID, Vitamins.getConfiguration(type, sizeID));
-      } catch (Exception e) {
-        LOGGER.log(Level.WARNING, "Could not edit Vitamin configuration.\n"
-            + Throwables.getStackTraceAsString(e));
-      }
-    }).start());
+    editHardware.setOnAction(
+        event ->
+            LoggerUtilities.newLoggingThread(
+                    LOGGER,
+                    () -> {
+                      try {
+                        final String type = conf.getElectroMechanicalType();
+                        final String sizeID = conf.getElectroMechanicalSize();
+                        edit(type, sizeID, Vitamins.getConfiguration(type, sizeID));
+                      } catch (Exception e) {
+                        LOGGER.log(
+                            Level.WARNING,
+                            "Could not edit Vitamin configuration.\n"
+                                + Throwables.getStackTraceAsString(e));
+                      }
+                    })
+                .start());
     final Button newHardware = new Button("New " + conf.getElectroMechanicalType());
-    newHardware.setOnAction(event -> {
-      final TextInputDialog dialog = new TextInputDialog("New Size");
-      dialog.setTitle("Wizard for new " + conf.getElectroMechanicalType());
-      dialog.setHeaderText("Enter the Side ID for a new " + conf.getElectroMechanicalType());
-      dialog.setContentText("Size: ");
+    newHardware.setOnAction(
+        event -> {
+          final TextInputDialog dialog = new TextInputDialog("New Size");
+          dialog.setTitle("Wizard for new " + conf.getElectroMechanicalType());
+          dialog.setHeaderText("Enter the Side ID for a new " + conf.getElectroMechanicalType());
+          dialog.setContentText("Size: ");
 
-      // Traditional way to get the response value.
-      final Optional<String> result = dialog.showAndWait();
-      result.ifPresent(size -> {
-        // Create the custom dialog.
-        final String type = conf.getElectroMechanicalType();
-        LoggerUtilities.newLoggingThread(LOGGER, () -> {
-          try {
-            test(type);
-            Vitamins.newVitamin(size, type);
-            edit(type, size, Vitamins.getConfiguration(type, conf.getElectroMechanicalSize()));
-          } catch (Exception e) {
-            LOGGER.warning("Could not set new size.\n" + Throwables.getStackTraceAsString(e));
-          }
-        }).start();
-      });
-    });
+          // Traditional way to get the response value.
+          final Optional<String> result = dialog.showAndWait();
+          result.ifPresent(
+              size -> {
+                // Create the custom dialog.
+                final String type = conf.getElectroMechanicalType();
+                LoggerUtilities.newLoggingThread(
+                        LOGGER,
+                        () -> {
+                          try {
+                            test(type);
+                            Vitamins.newVitamin(size, type);
+                            edit(
+                                type,
+                                size,
+                                Vitamins.getConfiguration(type, conf.getElectroMechanicalSize()));
+                          } catch (Exception e) {
+                            LOGGER.warning(
+                                "Could not set new size.\n" + Throwables.getStackTraceAsString(e));
+                          }
+                        })
+                    .start();
+              });
+        });
 
     final ComboBox<String> emHardwareSize = new ComboBox<>();
     for (final String s : Vitamins.listVitaminSizes(conf.getElectroMechanicalType())) {
       emHardwareSize.getItems().add(s);
     }
-    emHardwareSize.setOnAction(event -> {
-      conf.setElectroMechanicalSize(emHardwareSize.getSelectionModel().getSelectedItem());
-      newHardware.setText("New " + conf.getElectroMechanicalType());
-      editHardware.setText("Edit " + conf.getElectroMechanicalSize());
-    });
+    emHardwareSize.setOnAction(
+        event -> {
+          conf.setElectroMechanicalSize(emHardwareSize.getSelectionModel().getSelectedItem());
+          newHardware.setText("New " + conf.getElectroMechanicalType());
+          editHardware.setText("Edit " + conf.getElectroMechanicalSize());
+        });
     emHardwareSize.getSelectionModel().select(conf.getElectroMechanicalSize());
 
     final ComboBox<String> emHardwareType = new ComboBox<>();
@@ -223,116 +266,139 @@ public class LinkConfigurationWidget extends GridPane {
         emHardwareType.getItems().add(vitaminsType);
       }
     }
-    emHardwareType.setOnAction(event -> {
-      conf.setElectroMechanicalType(emHardwareType.getSelectionModel().getSelectedItem());
-      emHardwareSize.getItems().clear();
-      for (final String s : Vitamins.listVitaminSizes(conf.getElectroMechanicalType())) {
-        emHardwareSize.getItems().add(s);
-      }
-      newHardware.setText("New " + conf.getElectroMechanicalType());
-      editHardware.setText("Edit " + conf.getElectroMechanicalSize());
-    });
+    emHardwareType.setOnAction(
+        event -> {
+          conf.setElectroMechanicalType(emHardwareType.getSelectionModel().getSelectedItem());
+          emHardwareSize.getItems().clear();
+          for (final String s : Vitamins.listVitaminSizes(conf.getElectroMechanicalType())) {
+            emHardwareSize.getItems().add(s);
+          }
+          newHardware.setText("New " + conf.getElectroMechanicalType());
+          editHardware.setText("Edit " + conf.getElectroMechanicalSize());
+        });
     emHardwareType.getSelectionModel().select(conf.getElectroMechanicalType());
 
     final TextField deviceName = new TextField(configuration.getDeviceScriptingName());
-    deviceName.setOnAction(event -> {
-      conf.setDeviceScriptingName(deviceName.getText());
-      factory.refreshHardwareLayer(conf);
-      activeLink = factory.getLink(conf);
-      LOGGER.log(Level.INFO, "Link device to " + conf.getDeviceScriptingName());
-    });
+    deviceName.setOnAction(
+        event -> {
+          conf.setDeviceScriptingName(deviceName.getText());
+          factory.refreshHardwareLayer(conf);
+          activeLink = factory.getLink(conf);
+          LOGGER.log(Level.INFO, "Link device to " + conf.getDeviceScriptingName());
+        });
 
     add(new Text("Scale To Degrees "), 0, 0);
     add(scale, 1, 0);
     add(new Text("(unitless)"), 2, 0);
 
-    final EngineeringUnitsSliderWidget lowerBound = new EngineeringUnitsSliderWidget(
-        new EngineeringUnitsChangeListener() {
+    final EngineeringUnitsSliderWidget lowerBound =
+        new EngineeringUnitsSliderWidget(
+            new EngineeringUnitsChangeListener() {
 
-          @Override
-          public void onSliderMoving(final EngineeringUnitsSliderWidget source,
-              final double newAngleDegrees) {
-            conf.setLowerLimit(newAngleDegrees);
-            final double eng;
-            if (conf.getScale() > 0) {
-              eng = activeLink.getMinEngineeringUnits();
-            } else {
-              eng = activeLink.getMaxEngineeringUnits();
-            }
+              @Override
+              public void onSliderMoving(
+                  final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+                conf.setLowerLimit(newAngleDegrees);
+                final double eng;
+                if (conf.getScale() > 0) {
+                  eng = activeLink.getMinEngineeringUnits();
+                } else {
+                  eng = activeLink.getMaxEngineeringUnits();
+                }
 
-            activeLink.setTargetEngineeringUnits(eng);
-            activeLink.flush(0);
+                activeLink.setTargetEngineeringUnits(eng);
+                activeLink.flush(0);
 
-            if (setpointSlider != null) {
-              setpointSlider.setLowerBound(eng);
-            }
-          }
+                if (setpointSlider != null) {
+                  setpointSlider.setLowerBound(eng);
+                }
+              }
 
-          @Override
-          public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
-              final double newAngleDegrees) {
-            activeLink.setTargetEngineeringUnits(0);
-            activeLink.flush(0);
-          }
-        }, 0, 255, conf.getLowerLimit(), 150, "device units", true);
+              @Override
+              public void onSliderDoneMoving(
+                  final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+                activeLink.setTargetEngineeringUnits(0);
+                activeLink.flush(0);
+              }
+            },
+            0,
+            255,
+            conf.getLowerLimit(),
+            150,
+            "device units",
+            true);
 
-    final EngineeringUnitsSliderWidget upperBound = new EngineeringUnitsSliderWidget(
-        new EngineeringUnitsChangeListener() {
-          @Override
-          public void onSliderMoving(final EngineeringUnitsSliderWidget source,
-              final double newAngleDegrees) {
-            conf.setUpperLimit(newAngleDegrees);
-            final double eng;
-            if (conf.getScale() < 0) {
-              eng = activeLink.getMinEngineeringUnits();
-            } else {
-              eng = activeLink.getMaxEngineeringUnits();
-            }
+    final EngineeringUnitsSliderWidget upperBound =
+        new EngineeringUnitsSliderWidget(
+            new EngineeringUnitsChangeListener() {
+              @Override
+              public void onSliderMoving(
+                  final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+                conf.setUpperLimit(newAngleDegrees);
+                final double eng;
+                if (conf.getScale() < 0) {
+                  eng = activeLink.getMinEngineeringUnits();
+                } else {
+                  eng = activeLink.getMaxEngineeringUnits();
+                }
 
-            activeLink.setTargetEngineeringUnits(eng);
-            activeLink.flush(0);
-            if (setpointSlider != null) {
-              setpointSlider.setLowerBound(eng);
-            }
-          }
+                activeLink.setTargetEngineeringUnits(eng);
+                activeLink.flush(0);
+                if (setpointSlider != null) {
+                  setpointSlider.setLowerBound(eng);
+                }
+              }
 
-          @Override
-          public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
-              final double newAngleDegrees) {
-            activeLink.setTargetEngineeringUnits(0);
-            activeLink.flush(0);
-          }
-        }, 0, 255, conf.getUpperLimit(), 150, "device units", true);
+              @Override
+              public void onSliderDoneMoving(
+                  final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+                activeLink.setTargetEngineeringUnits(0);
+                activeLink.flush(0);
+              }
+            },
+            0,
+            255,
+            conf.getUpperLimit(),
+            150,
+            "device units",
+            true);
 
-    final EngineeringUnitsSliderWidget zero = new EngineeringUnitsSliderWidget(
-        new EngineeringUnitsChangeListener() {
-          @Override
-          public void onSliderMoving(final EngineeringUnitsSliderWidget source,
-              final double newAngleDegrees) {
-            conf.setStaticOffset(newAngleDegrees);
-            activeLink.setTargetEngineeringUnits(0);
-            activeLink.flush(0);
-          }
+    final EngineeringUnitsSliderWidget zero =
+        new EngineeringUnitsSliderWidget(
+            new EngineeringUnitsChangeListener() {
+              @Override
+              public void onSliderMoving(
+                  final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+                conf.setStaticOffset(newAngleDegrees);
+                activeLink.setTargetEngineeringUnits(0);
+                activeLink.flush(0);
+              }
 
-          @Override
-          public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
-              final double newAngleDegrees) {
-            //Don'translate need ot implement
-          }
-        }, conf.getLowerLimit(), conf.getUpperLimit(), conf.getStaticOffset(),
-        150, "device units", true);
+              @Override
+              public void onSliderDoneMoving(
+                  final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+                // Don'translate need ot implement
+              }
+            },
+            conf.getLowerLimit(),
+            conf.getUpperLimit(),
+            conf.getStaticOffset(),
+            150,
+            "device units",
+            true);
 
     final ComboBox<String> channel = new ComboBox<>();
     for (int i = 0; i < 24; i++) {
       channel.getItems().add(Integer.toString(i));
     }
 
-    channel.setOnAction(event -> {
-      conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
-      factory.refreshHardwareLayer(conf);
-      activeLink = factory.getLink(conf);
-      LOGGER.log(Level.INFO, "Link channel changed to " + conf.getTypeString());
-    });
+    channel.setOnAction(
+        event -> {
+          conf.setHardwareIndex(Integer.parseInt(channel.getSelectionModel().getSelectedItem()));
+          factory.refreshHardwareLayer(conf);
+          activeLink = factory.getLink(conf);
+          LOGGER.log(Level.INFO, "Link channel changed to " + conf.getTypeString());
+        });
 
     channel.getSelectionModel().select(conf.getHardwareIndex());
 
@@ -341,10 +407,11 @@ public class LinkConfigurationWidget extends GridPane {
       comboBox.getItems().add(type.getName());
     }
 
-    comboBox.setOnAction(event -> {
-      conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
-      LOGGER.log(Level.INFO, "Link type changed to " + conf.getTypeString());
-    });
+    comboBox.setOnAction(
+        event -> {
+          conf.setType(LinkType.fromString(comboBox.getSelectionModel().getSelectedItem()));
+          LOGGER.log(Level.INFO, "Link type changed to " + conf.getTypeString());
+        });
 
     comboBox.getSelectionModel().select(conf.getTypeString());
 
@@ -399,19 +466,20 @@ public class LinkConfigurationWidget extends GridPane {
       Vitamins.saveDatabase(type);
     } catch (final TransportException e) {
       final GitHub github = ScriptingEngine.getGithub();
-      final GHRepository repo = github.getUser("madhephaestus")
-          .getRepository("Hardware-Dimensions");
+      final GHRepository repo =
+          github.getUser("madhephaestus").getRepository("Hardware-Dimensions");
       final GHRepository forked = repo.fork();
       LOGGER.log(Level.FINE, "Vitamins forked to " + forked.getGitTransportUrl());
-      Vitamins.setGitRepoDatabase("https://github.com/"
-          + github.getMyself().getLogin()
-          + "/Hardware-Dimensions.git");
+      Vitamins.setGitRepoDatabase(
+          "https://github.com/" + github.getMyself().getLogin() + "/Hardware-Dimensions.git");
     } catch (final Exception e) {
       LOGGER.warning("Could not save Vitamin database.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
-  private void edit(@Nonnull final String type, @Nonnull final String vitaminID,
+  private void edit(
+      @Nonnull final String type,
+      @Nonnull final String vitaminID,
       @Nonnull final Map<String, Object> startingConf)
       throws IOException {
     LOGGER.log(Level.INFO, "Configuration for " + conf.getElectroMechanicalSize());
@@ -419,59 +487,72 @@ public class LinkConfigurationWidget extends GridPane {
 
     test(type);
 
-    Platform.runLater(() -> {
-      final Alert dialog = new Alert(AlertType.CONFIRMATION);
-      dialog.setTitle("Edit Hardware Wizard");
-      dialog.setHeaderText("Update the hardare configurations");
+    Platform.runLater(
+        () -> {
+          final Alert dialog = new Alert(AlertType.CONFIRMATION);
+          dialog.setTitle("Edit Hardware Wizard");
+          dialog.setHeaderText("Update the hardare configurations");
 
-      // Create the username and password labels and fields.
-      final GridPane grid = new GridPane();
-      grid.setHgap(10);
-      grid.setVgap(10);
-      grid.setPadding(new Insets(20, 150, 10, 10));
+          // Create the username and password labels and fields.
+          final GridPane grid = new GridPane();
+          grid.setHgap(10);
+          grid.setVgap(10);
+          grid.setPadding(new Insets(20, 150, 10, 10));
 
-      final Map<String, TextField> valueFields = new HashMap<>();
+          final Map<String, TextField> valueFields = new HashMap<>();
 
-      int row = 0;
-      for (final Map.Entry<String, Object> entry : startingConf.entrySet()) {
-        final TextField username = new TextField(); //NOPMD
-        username.setText(entry.getValue().toString());
-        grid.add(new Label(entry.getKey()), 0, row); //NOPMD
-        grid.add(username, 1, row);
-        valueFields.put(entry.getKey(), username);
-        row++;
-      }
-
-      dialog.getDialogPane().setContent(grid);
-      final Optional<ButtonType> result = dialog.showAndWait();
-      if (result.isPresent() && result.get() == ButtonType.OK) {
-        LoggerUtilities.newLoggingThread(LOGGER, () -> {
-          for (final Entry<String, TextField> entry : valueFields.entrySet()) {
-            final String key = entry.getKey();
-            final String value = entry.getValue().getText();
-
-            try {
-              Vitamins.setParameter(type, vitaminID, key, value);
-            } catch (Exception e) {
-              LOGGER.warning("Could not set Vitamin parameter with: "
-                  + type + ", " + vitaminID + ", " + key + ", " + value + "\n"
-                  + Throwables.getStackTraceAsString(e));
-            }
+          int row = 0;
+          for (final Map.Entry<String, Object> entry : startingConf.entrySet()) {
+            final TextField username = new TextField(); // NOPMD
+            username.setText(entry.getValue().toString());
+            grid.add(new Label(entry.getKey()), 0, row); // NOPMD
+            grid.add(username, 1, row);
+            valueFields.put(entry.getKey(), username);
+            row++;
           }
-          try {
-            Vitamins.saveDatabase(type);
-          } catch (Exception e) {
-            LOGGER.warning("Could not save vitamin database with: " + type + "\n"
-                + Throwables.getStackTraceAsString(e));
-          }
-        }).start();
-      }
-    });
 
+          dialog.getDialogPane().setContent(grid);
+          final Optional<ButtonType> result = dialog.showAndWait();
+          if (result.isPresent() && result.get() == ButtonType.OK) {
+            LoggerUtilities.newLoggingThread(
+                    LOGGER,
+                    () -> {
+                      for (final Entry<String, TextField> entry : valueFields.entrySet()) {
+                        final String key = entry.getKey();
+                        final String value = entry.getValue().getText();
+
+                        try {
+                          Vitamins.setParameter(type, vitaminID, key, value);
+                        } catch (Exception e) {
+                          LOGGER.warning(
+                              "Could not set Vitamin parameter with: "
+                                  + type
+                                  + ", "
+                                  + vitaminID
+                                  + ", "
+                                  + key
+                                  + ", "
+                                  + value
+                                  + "\n"
+                                  + Throwables.getStackTraceAsString(e));
+                        }
+                      }
+                      try {
+                        Vitamins.saveDatabase(type);
+                      } catch (Exception e) {
+                        LOGGER.warning(
+                            "Could not save vitamin database with: "
+                                + type
+                                + "\n"
+                                + Throwables.getStackTraceAsString(e));
+                      }
+                    })
+                .start();
+          }
+        });
   }
 
   private String getFormatted(final double value) {
     return String.format("%4.3f%n", (double) value);
   }
-
 }

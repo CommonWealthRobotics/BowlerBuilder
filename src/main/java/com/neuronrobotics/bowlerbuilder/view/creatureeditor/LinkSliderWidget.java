@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.google.common.base.Throwables;
@@ -34,8 +33,8 @@ import net.java.games.input.Event;
 import org.reactfx.util.FxTimer;
 
 @SuppressWarnings("restriction")
-public class LinkSliderWidget extends Group implements IJInputEventListener,
-    EngineeringUnitsChangeListener, ILinkListener {
+public class LinkSliderWidget extends Group
+    implements IJInputEventListener, EngineeringUnitsChangeListener, ILinkListener {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(LinkSliderWidget.class.getSimpleName());
@@ -52,8 +51,15 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   private double seconds;
   private String paramsKey;
 
-  public LinkSliderWidget(final int linkIndex, final DHLink dhlink,
-      final AbstractKinematicsNR abstractKinematicsNR) {
+  /**
+   * From BowlerStudio.
+   *
+   * @param linkIndex hardware index
+   * @param dhlink DH link
+   * @param abstractKinematicsNR attached device
+   */
+  public LinkSliderWidget(
+      final int linkIndex, final DHLink dhlink, final AbstractKinematicsNR abstractKinematicsNR) {
     this.linkIndex = linkIndex;
     this.device = abstractKinematicsNR;
     if (DHParameterKinematics.class.isInstance(device)) {
@@ -66,12 +72,14 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
     name.setMaxWidth(100.0);
     name.setOnAction(event -> abstractLink.getLinkConfiguration().setName(name.getText()));
 
-    setSetpoint(new EngineeringUnitsSliderWidget(this,
-        abstractLink.getMinEngineeringUnits(),
-        abstractLink.getMaxEngineeringUnits(),
-        device.getCurrentJointSpaceVector()[linkIndex],
-        180,
-        dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm"));
+    setSetpoint(
+        new EngineeringUnitsSliderWidget(
+            this,
+            abstractLink.getMinEngineeringUnits(),
+            abstractLink.getMaxEngineeringUnits(),
+            device.getCurrentJointSpaceVector()[linkIndex],
+            180,
+            dhlink.getLinkType() == DhLinkType.ROTORY ? "degrees" : "mm"));
 
     final GridPane panel = new GridPane();
 
@@ -134,10 +142,11 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   }
 
   @Override
-  public void onEvent(final Component comp, final Event event, final float value,
-      final String eventString) {
+  public void onEvent(
+      final Component comp, final Event event, final float value, final String eventString) {
 
-    if (comp.getName().toLowerCase(Locale.ENGLISH)
+    if (comp.getName()
+        .toLowerCase(Locale.ENGLISH)
         .contentEquals((String) ConfigurationDatabase.getObject(paramsKey, "jogLink", "x"))) {
       slider = -value;
     }
@@ -150,26 +159,30 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
   }
 
   @Override
-  public void onSliderMoving(final EngineeringUnitsSliderWidget source,
-      final double newAngleDegrees) {
+  public void onSliderMoving(
+      final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     final double value = setpoint.getValue();
     try {
       device.setDesiredJointAxisValue(linkIndex, value, 0);
     } catch (final Exception e) {
-      LOGGER.log(Level.WARNING, "Could not set new joint axis value of " + value + ".\n"
-          + Throwables.getStackTraceAsString(e));
+      LOGGER.log(
+          Level.WARNING,
+          "Could not set new joint axis value of "
+              + value
+              + ".\n"
+              + Throwables.getStackTraceAsString(e));
     }
   }
 
   @Override
-  public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
-      final double newAngleDegrees) {
-    //Don'translate need to implement
+  public void onSliderDoneMoving(
+      final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+    // Don'translate need to implement
   }
 
   @Override
   public void onLinkLimit(final AbstractLink arg0, final PIDLimitEvent arg1) {
-    //Don'translate need to implement
+    // Don'translate need to implement
   }
 
   @Override
@@ -201,8 +214,12 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
             device.setDesiredJointAxisValue(linkIndex, newValue, toSeconds);
             getSetpoint().setValue(newValue);
           } catch (final Exception e) {
-            LOGGER.log(Level.WARNING, "Could not set new joint axis value of " + newValue + ".\n"
-                + Throwables.getStackTraceAsString(e));
+            LOGGER.log(
+                Level.WARNING,
+                "Could not set new joint axis value of "
+                    + newValue
+                    + ".\n"
+                    + Throwables.getStackTraceAsString(e));
           }
 
           controlThreadRunning = false;
@@ -217,7 +234,5 @@ public class LinkSliderWidget extends Group implements IJInputEventListener,
       this.toSeconds = toSeconds;
       controlThreadRunning = true;
     }
-
   }
-
 }

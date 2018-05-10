@@ -1,14 +1,11 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor;
 
 import javax.annotation.Nonnull;
 
-/**
- * Interface to edit a text-based script.
- */
+/** Interface to edit a text-based script. */
 public interface ScriptEditor {
 
   /**
@@ -59,5 +56,4 @@ public interface ScriptEditor {
    * @return Cursor position
    */
   int getCursorPosition();
-
 }

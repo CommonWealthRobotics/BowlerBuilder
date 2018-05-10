@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
@@ -19,8 +18,8 @@ import javax.annotation.Nonnull;
 
 public class BowlerMobileBaseUI implements IMobileBaseUI {
 
-  private static final Logger LOGGER
-      = LoggerUtilities.getLogger(IMobileBaseUI.class.getSimpleName());
+  private static final Logger LOGGER =
+      LoggerUtilities.getLogger(IMobileBaseUI.class.getSimpleName());
 
   private final CadEngine cadEngine;
 
@@ -31,10 +30,11 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
 
   @Override
   public void setAllCSG(@Nonnull final Collection<CSG> collection, final File file) {
-    Platform.runLater(() -> {
-      cadEngine.clearMeshes();
-      cadEngine.addAllCSGs(collection);
-    });
+    Platform.runLater(
+        () -> {
+          cadEngine.clearMeshes();
+          cadEngine.addAllCSGs(collection);
+        });
   }
 
   @Override
@@ -56,5 +56,4 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   public void setSelectedCsg(@Nonnull final Collection<CSG> collection) {
     Platform.runLater(() -> cadEngine.selectCSGs(collection));
   }
-
 }

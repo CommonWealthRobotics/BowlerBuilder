@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
@@ -10,7 +9,7 @@ import org.eclipse.jgit.api.errors.GitAPIException
 import org.kohsuke.github.GHGist
 import org.kohsuke.github.GHGistBuilder
 import java.io.IOException
-import java.util.*
+import java.util.Optional
 import java.util.logging.Level
 
 object GistUtilities {
@@ -28,7 +27,7 @@ object GistUtilities {
     @JvmStatic
     @Throws(IOException::class)
     fun createNewGist(filename: String, description: String, isPublic: Boolean): GHGist {
-        //Setup gist
+        // Setup gist
         val gitHub = ScriptingEngine.getGithub()
         val builder = gitHub.createGist()
 
@@ -36,7 +35,7 @@ object GistUtilities {
         builder.description(description)
         builder.public_(isPublic)
 
-        //Make gist
+        // Make gist
         return createGistFromBuilder(builder, filename)
     }
 
@@ -89,12 +88,11 @@ object GistUtilities {
      */
     @JvmStatic
     fun isValidGitURL(url: String): Optional<String> {
-        //Any git URL is ((git|ssh|http(scale)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
+        // Any git URL is ((git|ssh|http(scale)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?
         return if (url.matches("(http(s)?)(:(//)?)([\\w.@:/\\-~]+)(\\.git)(/)?".toRegex())) {
             Optional.of(url)
         } else {
             Optional.empty()
         }
     }
-
 }

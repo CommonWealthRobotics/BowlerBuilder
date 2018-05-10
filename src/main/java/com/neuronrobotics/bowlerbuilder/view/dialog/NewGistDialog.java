@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
@@ -27,11 +26,13 @@ public class NewGistDialog extends Dialog<List<String>> {
   private final TextField descField;
   private final CheckBox publicBox;
 
+  /** A {@link Dialog} to make a new gist. */
   public NewGistDialog() {
     super();
 
-    nameField = new ValidatedTextField("Invalid File Name", name ->
-        GistUtilities.isValidCodeFileName(name).isPresent());
+    nameField =
+        new ValidatedTextField(
+            "Invalid File Name", name -> GistUtilities.isValidCodeFileName(name).isPresent());
     descField = new TextField();
     publicBox = new CheckBox();
 
@@ -62,23 +63,24 @@ public class NewGistDialog extends Dialog<List<String>> {
     Platform.runLater(nameField::requestFocus);
 
     final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
-            !(!nameField.invalidProperty().getValue()
-                && !descField.getText().isEmpty()),
-        nameField.invalidProperty(),
-        descField.textProperty()));
+    addButton
+        .disableProperty()
+        .bind(
+            Bindings.createBooleanBinding(
+                () -> !(!nameField.invalidProperty().getValue() && !descField.getText().isEmpty()),
+                nameField.invalidProperty(),
+                descField.textProperty()));
     addButton.setDefaultButton(true);
 
-    setResultConverter(buttonType -> {
-      if (buttonType.equals(ButtonType.OK)) {
-        final List<String> data = new ArrayList<>();
-        Collections.addAll(data,
-            nameField.getText(),
-            descField.getText());
-        return data;
-      }
-      return null;
-    });
+    setResultConverter(
+        buttonType -> {
+          if (buttonType.equals(ButtonType.OK)) {
+            final List<String> data = new ArrayList<>();
+            Collections.addAll(data, nameField.getText(), descField.getText());
+            return data;
+          }
+          return null;
+        });
   }
 
   public String getName() {
@@ -100,5 +102,4 @@ public class NewGistDialog extends Dialog<List<String>> {
   public ReadOnlyBooleanProperty invalidNameProperty() {
     return nameField.invalidProperty();
   }
-
 }

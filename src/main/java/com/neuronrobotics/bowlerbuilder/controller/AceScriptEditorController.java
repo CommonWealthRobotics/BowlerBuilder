@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.common.base.Throwables;
@@ -42,8 +41,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
@@ -51,6 +50,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
+@ParametersAreNonnullByDefault
 public class AceScriptEditorController {
 
   private static final Logger LOGGER =
@@ -62,18 +62,12 @@ public class AceScriptEditorController {
   private final IntegerProperty fontSize;
   private final IntegerProperty maxToastLength;
   private String scriptLangName;
-  @FXML
-  private SplitPane fileEditorRoot;
-  @FXML
-  private BorderPane editorBorderPane;
-  @FXML
-  private Button runButton;
-  @FXML
-  private Button publishButton;
-  @FXML
-  private TextField fileNameField;
-  @FXML
-  private TextField gistURLField;
+  @FXML private SplitPane fileEditorRoot;
+  @FXML private BorderPane editorBorderPane;
+  @FXML private Button runButton;
+  @FXML private Button publishButton;
+  @FXML private TextField fileNameField;
+  @FXML private TextField gistURLField;
   private GHGist gist;
   private String manualRemote;
   private GHGistFile gistFile;
@@ -84,11 +78,11 @@ public class AceScriptEditorController {
 
   @Inject
   public AceScriptEditorController(
-      @Nonnull final PreferencesServiceFactory preferencesServiceFactory,
-      @Nonnull final ScriptEditorView scriptEditorView,
-      @Nonnull final ScriptRunner scriptRunner,
-      @Nonnull @Named("scriptLangName") final String scriptLangName,
-      @Nonnull final StringClipper stringClipper) {
+      final PreferencesServiceFactory preferencesServiceFactory,
+      final ScriptEditorView scriptEditorView,
+      final ScriptRunner scriptRunner,
+      @Named("scriptLangName") final String scriptLangName,
+      final StringClipper stringClipper) {
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
@@ -97,17 +91,20 @@ public class AceScriptEditorController {
 
     LOGGER.log(Level.FINE, "factory: " + preferencesServiceFactory);
 
-    final PreferencesService preferencesService
-        = preferencesServiceFactory.create("AceScriptEditorController");
+    final PreferencesService preferencesService =
+        preferencesServiceFactory.create("AceScriptEditorController");
     fontSize = new SimpleIntegerProperty(preferencesService.get("Font Size", 14));
-    preferencesService.addListener("Font Size",
-        (PreferenceListener<Integer>) (oldVal, newVal) -> {
-          fontSize.setValue(newVal);
-          scriptEditor.setFontSize(newVal);
-        });
+    preferencesService.addListener(
+        "Font Size",
+        (PreferenceListener<Integer>)
+            (oldVal, newVal) -> {
+              fontSize.setValue(newVal);
+              scriptEditor.setFontSize(newVal);
+            });
 
     maxToastLength = new SimpleIntegerProperty(preferencesService.get("Max Toast Length", 15));
-    preferencesService.addListener("Max Toast Length",
+    preferencesService.addListener(
+        "Max Toast Length",
         (PreferenceListener<Integer>) (oldVal, newVal) -> maxToastLength.setValue(newVal));
 
     LOGGER.log(Level.FINE, "Running with language: " + scriptLangName);
@@ -140,96 +137,99 @@ public class AceScriptEditorController {
     }
   }
 
-  /**
-   * Publish the editor contents normally (not scratchpad).
-   */
+  /** Publish the editor contents normally (not scratchpad). */
   private void publishNormal() {
-    new PublishDialog().showAndWait().ifPresent(commitMessage -> {
-      try {
-        final String remote;
-        final String relativePath;
+    new PublishDialog()
+        .showAndWait()
+        .ifPresent(
+            commitMessage -> {
+              try {
+                final String remote;
+                final String relativePath;
 
-        if (gist == null) {
-          remote = manualRemote;
-          relativePath = manualFile;
-        } else {
-          final File currentFile = ScriptingEngine.fileFromGit(
-              gist.getGitPushUrl(),
-              gistFile.getFileName()
-          );
+                if (gist == null) {
+                  remote = manualRemote;
+                  relativePath = manualFile;
+                } else {
+                  final File currentFile =
+                      ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
 
-          final Git git = ScriptingEngine.locateGit(currentFile);
-          remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-          relativePath = ScriptingEngine.findLocalPath(currentFile, git);
-        }
+                  final Git git = ScriptingEngine.locateGit(currentFile);
+                  remote = git.getRepository().getConfig().getString("remote", "origin", "url");
+                  relativePath = ScriptingEngine.findLocalPath(currentFile, git);
+                }
 
-        //Push to existing gist
-        ScriptingEngine.pushCodeToGit(
-            remote,
-            ScriptingEngine.getFullBranch(remote),
-            relativePath,
-            scriptEditor.getText(),
-            commitMessage
-        );
-      } catch (final Exception e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not commit.\n" + Throwables.getStackTraceAsString(e));
-        Platform.runLater(() -> Notifications.create()
-            .title("Commit failed")
-            .text("Could not perform commit. Changes not saved.")
-            .showError());
-      }
-    });
+                // Push to existing gist
+                ScriptingEngine.pushCodeToGit(
+                    remote,
+                    ScriptingEngine.getFullBranch(remote),
+                    relativePath,
+                    scriptEditor.getText(),
+                    commitMessage);
+              } catch (final Exception e) {
+                LOGGER.log(
+                    Level.SEVERE, "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+                Platform.runLater(
+                    () ->
+                        Notifications.create()
+                            .title("Commit failed")
+                            .text("Could not perform commit. Changes not saved.")
+                            .showError());
+              }
+            });
   }
 
-  /**
-   * Publish the editor contents during scratchpad mode.
-   */
+  /** Publish the editor contents during scratchpad mode. */
   private void publishScratchpad() {
     final NewGistDialog dialog = new NewGistDialog();
-    dialog.showAndWait().ifPresent(result -> {
-      try {
-        //Make a new gist
-        final GHGist newGist = GistUtilities.createNewGist(
-            dialog.getName(),
-            dialog.getDescription(),
-            dialog.isPublic()
-        );
+    dialog
+        .showAndWait()
+        .ifPresent(
+            result -> {
+              try {
+                // Make a new gist
+                final GHGist newGist =
+                    GistUtilities.createNewGist(
+                        dialog.getName(), dialog.getDescription(), dialog.isPublic());
 
-        final PublishDialog publishDialog = new PublishDialog();
-        publishDialog.showAndWait().ifPresent(commitMessage -> {
-          try {
-            //Push the new gist
-            ScriptingEngine.pushCodeToGit(
-                newGist.getGitPushUrl(),
-                ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
-                dialog.getName(),
-                scriptEditor.getText(),
-                commitMessage
-            );
+                final PublishDialog publishDialog = new PublishDialog();
+                publishDialog
+                    .showAndWait()
+                    .ifPresent(
+                        commitMessage -> {
+                          try {
+                            // Push the new gist
+                            ScriptingEngine.pushCodeToGit(
+                                newGist.getGitPushUrl(),
+                                ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
+                                dialog.getName(),
+                                scriptEditor.getText(),
+                                commitMessage);
 
-            isScratchpad = false;
-            gistURLField.setText(newGist.getGitPushUrl());
-            fileNameField.setText(dialog.getName());
-            gist = newGist;
-            gistFile = newGist.getFiles().get(dialog.getName());
-            tab.setText(dialog.getName());
-            reloadMenus.run();
-          } catch (final Exception e) {
-            LOGGER.log(Level.SEVERE,
-                "Could not push code.\n" + Throwables.getStackTraceAsString(e));
-          }
-        });
-      } catch (final IOException e) {
-        LOGGER.log(Level.SEVERE,
-            "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
-      }
-    });
+                            isScratchpad = false;
+                            gistURLField.setText(newGist.getGitPushUrl());
+                            fileNameField.setText(dialog.getName());
+                            gist = newGist;
+                            gistFile = newGist.getFiles().get(dialog.getName());
+                            tab.setText(dialog.getName());
+                            reloadMenus.run();
+                          } catch (final Exception e) {
+                            LOGGER.log(
+                                Level.SEVERE,
+                                "Could not push code.\n" + Throwables.getStackTraceAsString(e));
+                          }
+                        });
+              } catch (final IOException e) {
+                LOGGER.log(
+                    Level.SEVERE,
+                    "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
+              }
+            });
   }
 
   @FXML
   private void onCopyGist(final ActionEvent actionEvent) {
-    //Put gist URL on system clipboard
+    // Put gist URL on system clipboard
     final ClipboardContent content = new ClipboardContent();
     content.putString(gistURLField.getText());
     Clipboard.getSystemClipboard().setContent(content);
@@ -240,7 +240,7 @@ public class AceScriptEditorController {
    *
    * @param file File to load
    */
-  public void loadFile(@Nonnull final File file) {
+  public void loadFile(final File file) {
     try {
       scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
       if (file.getName().endsWith(".xml")) {
@@ -249,8 +249,11 @@ public class AceScriptEditorController {
         scriptLangName = "BowlerGroovy";
       }
     } catch (final IOException e) {
-      LOGGER.log(Level.SEVERE,
-          "Could not load file: " + file.getAbsolutePath() + ".\n"
+      LOGGER.log(
+          Level.SEVERE,
+          "Could not load file: "
+              + file.getAbsolutePath()
+              + ".\n"
               + Throwables.getStackTraceAsString(e));
     }
   }
@@ -261,7 +264,7 @@ public class AceScriptEditorController {
    * @param gist Parent gist
    * @param gistFile File in gist
    */
-  public void loadGist(@Nonnull final GHGist gist, @Nonnull final GHGistFile gistFile) {
+  public void loadGist(final GHGist gist, final GHGistFile gistFile) {
     isScratchpad = false;
     final File file;
 
@@ -276,8 +279,7 @@ public class AceScriptEditorController {
 
       loadFile(file);
     } catch (GitAPIException | IOException e) {
-      LOGGER.log(Level.SEVERE,
-          "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.log(Level.SEVERE, "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
@@ -288,8 +290,7 @@ public class AceScriptEditorController {
    * @param fileName filename in gist
    * @param file file on disk
    */
-  public void loadManualGist(@Nonnull final String pushURL, @Nonnull final String fileName,
-      @Nonnull final File file) {
+  public void loadManualGist(final String pushURL, final String fileName, final File file) {
     isScratchpad = false;
     manualRemote = pushURL;
     manualFile = fileName;
@@ -300,8 +301,11 @@ public class AceScriptEditorController {
     try {
       scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
     } catch (final IOException e) {
-      LOGGER.log(Level.SEVERE,
-          "Could not load file: " + file.getAbsolutePath() + ".\n"
+      LOGGER.log(
+          Level.SEVERE,
+          "Could not load file: "
+              + file.getAbsolutePath()
+              + ".\n"
               + Throwables.getStackTraceAsString(e));
     }
   }
@@ -314,14 +318,15 @@ public class AceScriptEditorController {
   public Object runEditorContent() {
     try {
       try {
-        return runStringScript(
-            FxUtil.returnFX(scriptEditor::getText), null, scriptLangName);
+        return runStringScript(FxUtil.returnFX(scriptEditor::getText), null, scriptLangName);
       } catch (final ExecutionException e) {
-        LOGGER.log(Level.SEVERE,
+        LOGGER.log(
+            Level.SEVERE,
             "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
       }
     } catch (final InterruptedException e) {
-      LOGGER.log(Level.WARNING,
+      LOGGER.log(
+          Level.WARNING,
           "CountDownLatch interrupted while waiting to get editor content.\n"
               + Throwables.getStackTraceAsString(e));
     }
@@ -337,30 +342,31 @@ public class AceScriptEditorController {
    * @param languageName scripting language name
    * @return script result
    */
-  public Object runStringScript(@Nonnull final String script,
-      @Nullable final ArrayList<Object> arguments, //NOPMD
-      @Nonnull final String languageName) {
+  public Object runStringScript(
+      final String script,
+      @Nullable final ArrayList<Object> arguments, // NOPMD
+      final String languageName) {
     try {
-      //Run the code
+      // Run the code
       LOGGER.log(Level.FINE, "Running script.");
       final Object result = scriptRunner.runScript(script, arguments, languageName);
       LOGGER.log(Level.FINER, "Result is: " + result);
       return result;
     } catch (final IOException e) {
-      LOGGER.log(Level.SEVERE,
-          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.log(
+          Level.SEVERE, "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
     } catch (final GroovyRuntimeException e) {
-      LOGGER.log(Level.WARNING,
-          "Error in CAD script: " + e.getMessage());
-      Platform.runLater(() -> Notifications.create()
-          .title("Error in CAD Script")
-          .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
-          .owner(fileEditorRoot)
-          .position(Pos.BOTTOM_RIGHT)
-          .showInformation());
+      LOGGER.log(Level.WARNING, "Error in CAD script: " + e.getMessage());
+      Platform.runLater(
+          () ->
+              Notifications.create()
+                  .title("Error in CAD Script")
+                  .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
+                  .owner(fileEditorRoot)
+                  .position(Pos.BOTTOM_RIGHT)
+                  .showInformation());
     } catch (final Exception e) {
-      LOGGER.log(Level.SEVERE,
-          "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.log(Level.SEVERE, "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
     }
 
     return null;
@@ -369,9 +375,10 @@ public class AceScriptEditorController {
   /**
    * Gives the scratchpad code what it needs to work properly.
    *
-   * @param tab Tab the editor is contained in
+   * @param tab the tab the editor is contained in
+   * @param reloadMenus the runnable run to reload the main Git menus
    */
-  public void initScratchpad(@Nonnull final Tab tab, @Nonnull final Runnable reloadMenus) {
+  public void initScratchpad(final Tab tab, final Runnable reloadMenus) {
     this.tab = tab;
     this.reloadMenus = reloadMenus;
   }
@@ -400,5 +407,4 @@ public class AceScriptEditorController {
   public void setScriptLangName(final String scriptLangName) {
     this.scriptLangName = scriptLangName;
   }
-
 }

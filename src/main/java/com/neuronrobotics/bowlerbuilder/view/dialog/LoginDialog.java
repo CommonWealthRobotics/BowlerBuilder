@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import javafx.beans.binding.Bindings;
@@ -17,6 +16,7 @@ public class LoginDialog extends Dialog<Boolean> {
   private final TextField nameField;
   private final PasswordField passField;
 
+  /** A {@link Dialog} to log in to GitHub. */
   public LoginDialog() {
     super();
 
@@ -38,11 +38,13 @@ public class LoginDialog extends Dialog<Boolean> {
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
-            !(!nameField.getText().isEmpty()
-                && !passField.getText().isEmpty()),
-        nameField.textProperty(),
-        passField.textProperty()));
+    addButton
+        .disableProperty()
+        .bind(
+            Bindings.createBooleanBinding(
+                () -> !(!nameField.getText().isEmpty() && !passField.getText().isEmpty()),
+                nameField.textProperty(),
+                passField.textProperty()));
     addButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> !buttonType.getButtonData().isCancelButton());
@@ -55,5 +57,4 @@ public class LoginDialog extends Dialog<Boolean> {
   public String getPassword() {
     return passField.getText();
   }
-
 }

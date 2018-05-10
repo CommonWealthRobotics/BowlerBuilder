@@ -1,11 +1,14 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.WebEngineAdapter
-import javafx.beans.property.*
+import javafx.beans.property.ReadOnlyBooleanProperty
+import javafx.beans.property.ReadOnlyDoubleProperty
+import javafx.beans.property.ReadOnlyObjectProperty
+import javafx.beans.property.ReadOnlyStringProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.concurrent.Worker
 
 class MockAdapter : WebEngineAdapter {

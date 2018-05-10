@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner;
 
 import java.util.ArrayList;
@@ -9,9 +8,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javax.annotation.Nonnull;
 
-/**
- * Interface for compiling and running a script.
- */
+/** Interface for compiling and running a script. */
 public interface ScriptRunner {
 
   /**
@@ -21,10 +18,11 @@ public interface ScriptRunner {
    * @param arguments arguments
    * @param languageName language name
    * @return result
+   * @throws Exception a script could throw an exception
    */
-  Object runScript(@Nonnull String script,
-      ArrayList<Object> arguments, @Nonnull String languageName) //NOPMD
-      throws Exception; //NOPMD
+  Object runScript(
+      @Nonnull String script, ArrayList<Object> arguments, @Nonnull String languageName) // NOPMD
+      throws Exception; // NOPMD
 
   /**
    * Get whether the script is currently compiling.
@@ -60,5 +58,4 @@ public interface ScriptRunner {
    * @return return value from the script
    */
   ReadOnlyObjectProperty<Object> resultProperty();
-
 }

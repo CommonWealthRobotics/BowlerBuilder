@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.JogWidget;
@@ -11,15 +10,21 @@ import java.util.Map;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class MovementTabLimbSelection extends AbstractLimbSelection {
 
-  //Need static store so only one thread controls a limb at a time
+  // Need static store so only one thread controls a limb at a time
   private static final Map<DHParameterKinematics, JogWidget> JOG_WIDGET_MAP = new HashMap<>();
   private final VBox view;
 
-  public MovementTabLimbSelection(@Nonnull final DHParameterKinematics limb) {
+  /**
+   * Limb selection in the movement tab.
+   *
+   * @param limb the limb
+   */
+  public MovementTabLimbSelection(final DHParameterKinematics limb) {
     super(limb);
 
     view = new VBox(5);
@@ -62,5 +67,4 @@ public class MovementTabLimbSelection extends AbstractLimbSelection {
       JOG_WIDGET_MAP.get(kinematics).jogThreadRunningProperty().set(true);
     }
   }
-
 }

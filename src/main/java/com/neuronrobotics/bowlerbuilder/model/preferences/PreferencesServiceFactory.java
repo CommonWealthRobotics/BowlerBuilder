@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.model.preferences;
 
 import com.google.inject.Singleton;
@@ -31,9 +30,7 @@ public class PreferencesServiceFactory {
     }
   }
 
-  /**
-   * Save all {@link PreferencesService} that are loaded into the map.
-   */
+  /** Save all {@link PreferencesService} that are loaded into the map. */
   public void saveAllCached() {
     PREFERENCES_MAP.values().forEach(PreferencesService::save);
   }
@@ -41,5 +38,4 @@ public class PreferencesServiceFactory {
   public Collection<PreferencesService> getAllPreferencesServices() {
     return PREFERENCES_MAP.values();
   }
-
 }

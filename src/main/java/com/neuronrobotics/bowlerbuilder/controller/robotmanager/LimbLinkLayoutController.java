@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.inject.Inject;
@@ -32,36 +31,42 @@ public class LimbLinkLayoutController extends LimbLayoutController {
   }
 
   @Override
-  protected void addButtons(@Nonnull final HBox hBox,
-      @Nonnull final List<DHParameterKinematics> limbs) {
-    hBox.getChildren().addAll(limbs.stream()
-        .map(limb -> {
-          final Button limbButton = new Button(limb.getScriptingName());
-          limbButton.setOnAction(event -> limbSelection.set(Optional.of(limb)));
+  protected void addButtons(
+      @Nonnull final HBox hBox, @Nonnull final List<DHParameterKinematics> limbs) {
+    hBox.getChildren()
+        .addAll(
+            limbs
+                .stream()
+                .map(
+                    limb -> {
+                      final Button limbButton = new Button(limb.getScriptingName());
+                      limbButton.setOnAction(event -> limbSelection.set(Optional.of(limb)));
 
-          final VBox content = new VBox(5, limbButton);
-          content.setAlignment(Pos.CENTER);
+                      final VBox content = new VBox(5, limbButton);
+                      content.setAlignment(Pos.CENTER);
 
-          final HBox hBoxInner = new HBox(5);
-          final List<DHLink> links = limb.getChain().getLinks();
-          for (int i = 0; i < links.size(); i++) {
-            final DHLink link = links.get(i);
-            final LinkConfiguration configuration = limb.getLinkConfiguration(i);
-            final Integer finalI = i; //Needed for lambda
+                      final HBox hBoxInner = new HBox(5);
+                      final List<DHLink> links = limb.getChain().getLinks();
+                      for (int i = 0; i < links.size(); i++) {
+                        final DHLink link = links.get(i);
+                        final LinkConfiguration configuration = limb.getLinkConfiguration(i);
+                        final Integer finalI = i; // Needed for lambda
 
-            final Button linkButton = new Button(configuration.getName());
-            linkButton.setOnAction(event -> {
-              linkSelection.set(Optional.of(
-                  new LinkData(limb, finalI, link, configuration, limb)));
-              limbSelection.set(Optional.empty());
-            });
-            hBoxInner.getChildren().add(linkButton);
-          }
+                        final Button linkButton = new Button(configuration.getName());
+                        linkButton.setOnAction(
+                            event -> {
+                              linkSelection.set(
+                                  Optional.of(
+                                      new LinkData(limb, finalI, link, configuration, limb)));
+                              limbSelection.set(Optional.empty());
+                            });
+                        hBoxInner.getChildren().add(linkButton);
+                      }
 
-          content.getChildren().add(hBoxInner);
-          return content;
-        })
-        .collect(Collectors.toList()));
+                      content.getChildren().add(hBoxInner);
+                      return content;
+                    })
+                .collect(Collectors.toList()));
   }
 
   public Optional<LinkData> getLinkSelection() {
@@ -71,5 +76,4 @@ public class LimbLinkLayoutController extends LimbLayoutController {
   public ObjectProperty<Optional<LinkData>> linkSelectionProperty() {
     return linkSelection;
   }
-
 }

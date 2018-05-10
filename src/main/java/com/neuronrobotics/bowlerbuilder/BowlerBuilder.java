@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder;
 
 import com.google.common.base.Throwables;
@@ -27,24 +26,28 @@ public class BowlerBuilder extends Application {
 
   @Override
   public void start(final Stage primaryStage) throws IOException {
-    //Log uncaught exceptions on the FX thread
-    Thread.currentThread().setUncaughtExceptionHandler((exceptionThread, exception) ->
-        LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception)));
+    // Log uncaught exceptions on the FX thread
+    Thread.currentThread()
+        .setUncaughtExceptionHandler(
+            (exceptionThread, exception) ->
+                LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception)));
 
-    Thread.setDefaultUncaughtExceptionHandler((exceptionThread, exception) ->
-        LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception)));
+    Thread.setDefaultUncaughtExceptionHandler(
+        (exceptionThread, exception) ->
+            LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception)));
 
-    final FXMLLoader loader = new FXMLLoader(
-        BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
-        null,
-        null,
-        INJECTOR::getInstance);
+    final FXMLLoader loader =
+        new FXMLLoader(
+            BowlerBuilder.class.getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
+            null,
+            null,
+            INJECTOR::getInstance);
     final Pane mainWindow = loader.load();
 
     primaryStage.setTitle("BowlerBuilder");
     primaryStage.setScene(new Scene(mainWindow));
-    primaryStage.setOnCloseRequest(event ->
-        ((MainWindowController) loader.getController()).saveAndQuit());
+    primaryStage.setOnCloseRequest(
+        event -> ((MainWindowController) loader.getController()).saveAndQuit());
     primaryStage.show();
   }
 
@@ -55,5 +58,4 @@ public class BowlerBuilder extends Application {
   public static MainWindowController getMainController() {
     return INJECTOR.getInstance(MainWindowController.class);
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.google.common.base.Throwables;
@@ -23,8 +22,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class GistFileSelectionDialog extends Dialog<String[]> {
 
   private static final Logger LOGGER =
@@ -32,30 +32,42 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
   private final ValidatedTextField gistField;
   private final ComboBox<String> fileChooser;
 
-  public GistFileSelectionDialog(@Nonnull final String title,
-      @Nonnull final Predicate<String> extensionFilter) {
+  /**
+   * A {@link Dialog} to select files from a GitHub Gist.
+   *
+   * @param title dialog title
+   * @param extensionFilter file extension filter
+   */
+  public GistFileSelectionDialog(final String title, final Predicate<String> extensionFilter) {
     super();
 
-    gistField = new ValidatedTextField("Invalid Gist URL", url ->
-        GistUtilities.isValidGitURL(url).isPresent());
+    gistField =
+        new ValidatedTextField(
+            "Invalid Gist URL", url -> GistUtilities.isValidGitURL(url).isPresent());
     gistField.setId("gistField");
 
     fileChooser = new ComboBox<>();
     fileChooser.setId("gistFileChooser");
 
     fileChooser.disableProperty().bind(gistField.invalidProperty());
-    gistField.invalidProperty().addListener((observable, oldValue, newValue) -> {
-      if (!newValue) {
-        try {
-          List<String> files = ScriptingEngine.filesInGit(gistField.getText());
-          files = files.stream().filter(extensionFilter).collect(Collectors.toList());
-          fileChooser.setItems(FXCollections.observableArrayList(files));
-        } catch (final Exception e) {
-          LOGGER.warning("Could not fetch files in the gist: " + gistField.getText() + "\n"
-              + Throwables.getStackTraceAsString(e));
-        }
-      }
-    });
+    gistField
+        .invalidProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              if (!newValue) {
+                try {
+                  List<String> files = ScriptingEngine.filesInGit(gistField.getText());
+                  files = files.stream().filter(extensionFilter).collect(Collectors.toList());
+                  fileChooser.setItems(FXCollections.observableArrayList(files));
+                } catch (final Exception e) {
+                  LOGGER.warning(
+                      "Could not fetch files in the gist: "
+                          + gistField.getText()
+                          + "\n"
+                          + Throwables.getStackTraceAsString(e));
+                }
+              }
+            });
 
     setTitle(title);
 
@@ -79,21 +91,26 @@ public class GistFileSelectionDialog extends Dialog<String[]> {
 
     final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     okButton.disableProperty().bind(gistField.invalidProperty());
-    okButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
-            fileChooser.getSelectionModel().getSelectedItem() == null
-                || gistField.getText().isEmpty(),
-        gistField.textProperty(),
-        fileChooser.getSelectionModel().selectedItemProperty()));
+    okButton
+        .disableProperty()
+        .bind(
+            Bindings.createBooleanBinding(
+                () ->
+                    fileChooser.getSelectionModel().getSelectedItem() == null
+                        || gistField.getText().isEmpty(),
+                gistField.textProperty(),
+                fileChooser.getSelectionModel().selectedItemProperty()));
     okButton.setDefaultButton(true);
 
-    setResultConverter(buttonType -> {
-      if (buttonType.equals(ButtonType.OK)) {
-        return new String[]{gistField.getText(),
-            fileChooser.getSelectionModel().getSelectedItem()};
-      }
+    setResultConverter(
+        buttonType -> {
+          if (buttonType.equals(ButtonType.OK)) {
+            return new String[] {
+              gistField.getText(), fileChooser.getSelectionModel().getSelectedItem()
+            };
+          }
 
-      return null;
-    });
+          return null;
+        });
   }
-
 }

@@ -1,3 +1,6 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.view.cadengine.element;
 
 import javafx.application.Platform;
@@ -45,11 +48,11 @@ public class Axis3D extends Group {
   private final Label yText;
   private final Label zText;
 
-
   public Axis3D() {
     this(50);
   }
 
+  // CHECKSTYLE:OFF
   public Axis3D(final int increment) {
     final Affine plusX = new Affine();
     plusX.setTx(increment / 2.0);
@@ -86,6 +89,7 @@ public class Axis3D extends Group {
 
     Platform.runLater(() -> getChildren().addAll(xAxis, yAxis, zAxis, xText, yText, zText));
   }
+  // CHECKSTYLE:ON
 
   public void show() {
     Platform.runLater(() -> getChildren().addAll(xAxis, yAxis, zAxis, xText, yText, zText));
@@ -94,5 +98,4 @@ public class Axis3D extends Group {
   public void hide() {
     Platform.runLater(() -> getChildren().removeAll(xAxis, yAxis, zAxis, xText, yText, zText));
   }
-
 }

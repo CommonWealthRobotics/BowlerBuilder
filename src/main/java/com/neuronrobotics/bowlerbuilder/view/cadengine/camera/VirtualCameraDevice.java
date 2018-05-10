@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.cadengine.camera;
 
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
@@ -18,9 +17,8 @@ import javax.annotation.Nonnull;
 public class VirtualCameraDevice extends AbstractImageProvider {
 
   private static final int DEFAULT_ZOOM_DEPTH = -1500;
-  private static final Affine OFFSET = TransformFactory.nrToAffine(
-      new TransformNR(0, 0, 0, new RotationNR(180, 0, 0))
-  );
+  private static final Affine OFFSET =
+      TransformFactory.nrToAffine(new TransformNR(0, 0, 0, new RotationNR(180, 0, 0)));
   private final Group cameraFrame = new Group();
   private Camera camera;
   private double zoomDepth = getDefaultZoomDepth();
@@ -65,12 +63,10 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     return null;
   }
 
-  /**
-   * Nothing to disconnect.
-   */
+  /** Nothing to disconnect. */
   @Override
   public void disconnectDeviceImp() {
-    //Not used
+    // Not used
   }
 
   /**
@@ -126,6 +122,4 @@ public class VirtualCameraDevice extends AbstractImageProvider {
 
     zoomAffine.setTz(this.zoomDepth);
   }
-
 }
-

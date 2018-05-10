@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
@@ -17,31 +16,48 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.controlsfx.control.PropertySheet;
 
-/**
- * Dialog to show user preferences from a {@link PropertySheet}.
- */
+/** Dialog to show user preferences from a {@link PropertySheet}. */
+@ParametersAreNonnullByDefault
 public class PreferencesDialog extends Dialog {
 
-  public PreferencesDialog(@Nonnull final Iterable<PreferencesService> preferencesServices) {
+  /**
+   * A {@link Dialog} to edit preferences.
+   *
+   * @param preferencesServices the preferences to edit
+   */
+  public PreferencesDialog(final Iterable<PreferencesService> preferencesServices) {
     super();
 
     final List<PropertySheet> propertySheets = new ArrayList<>();
-    preferencesServices.forEach(service -> {
-      final List<Property> props = service.getAll().entrySet().stream().map(entry -> {
-        ObjectProperty<Serializable> property = new SimpleObjectProperty<>(
-            null, entry.getKey(), entry.getValue());
-        property.addListener((observableValue, oldVal, newVal) ->
-            service.set(entry.getKey(), newVal));
-        return property;
-      }).collect(Collectors.toList());
+    preferencesServices.forEach(
+        service -> {
+          final List<Property> props =
+              service
+                  .getAll()
+                  .entrySet()
+                  .stream()
+                  .map(
+                      entry -> {
+                        ObjectProperty<Serializable> property =
+                            new SimpleObjectProperty<>(null, entry.getKey(), entry.getValue());
+                        property.addListener(
+                            (observableValue, oldVal, newVal) ->
+                                service.set(entry.getKey(), newVal));
+                        return property;
+                      })
+                  .collect(Collectors.toList());
 
-      propertySheets.add(new PropertySheet(FXCollections.observableArrayList(
-          props.stream().map(BeanPropertySheetItem::new).collect(Collectors.toList())
-      )));
-    });
+          propertySheets.add(
+              new PropertySheet(
+                  FXCollections.observableArrayList(
+                      props
+                          .stream()
+                          .map(BeanPropertySheetItem::new)
+                          .collect(Collectors.toList()))));
+        });
 
     final VBox vBox = new VBox(5);
     propertySheets.forEach(vBox.getChildren()::add);
@@ -49,5 +65,4 @@ public class PreferencesDialog extends Dialog {
     getDialogPane().getButtonTypes().add(ButtonType.OK);
     getDialogPane().setId("preferencesDialogPane");
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.google.common.primitives.Ints;
@@ -27,7 +26,16 @@ public class AddLimbDialog extends Dialog<LimbData> {
   private final Set<Integer> takenChannels;
   private final ObservableList<ValidatedTextField> hwIndexFields;
 
-  public AddLimbDialog(@Nonnull final String name, @Nonnull final Integer numberOfHWIndices,
+  /**
+   * A {@link Dialog} to add a limb to a creature.
+   *
+   * @param name limb name
+   * @param numberOfHWIndices number of links to add
+   * @param takenChannels the hardware channels in use
+   */
+  public AddLimbDialog(
+      @Nonnull final String name,
+      @Nonnull final Integer numberOfHWIndices,
       @Nonnull final Set<Integer> takenChannels) {
     super();
     this.takenChannels = takenChannels;
@@ -38,8 +46,8 @@ public class AddLimbDialog extends Dialog<LimbData> {
     final Label linkNameLabel = new Label("Link name");
     GridPane.setHalignment(linkNameLabel, HPos.RIGHT);
 
-    final ValidatedTextField linkNameField = new ValidatedTextField("Link name cannot be empty",
-        text -> !text.isEmpty());
+    final ValidatedTextField linkNameField =
+        new ValidatedTextField("Link name cannot be empty", text -> !text.isEmpty());
     linkNameField.setText(name);
     linkNameField.setId("linkNameField");
     GridPane.setHalignment(linkNameField, HPos.LEFT);
@@ -61,9 +69,10 @@ public class AddLimbDialog extends Dialog<LimbData> {
     getDialogPane().setContent(content);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    //Have to OR each binding together because binding updating is lazy
-    //Creating a binding on the list will not be updated by updating a list element'scale property
-    //So OR each one together in a loop
+    // Have to OR each binding together because binding updating is lazy
+    // Creating a binding on the list will not be updated by updating a list element'scale
+    // property
+    // So OR each one together in a loop
     BooleanBinding binding = null;
     for (final ValidatedTextField field : hwIndexFields) {
       if (binding == null) {
@@ -77,38 +86,48 @@ public class AddLimbDialog extends Dialog<LimbData> {
     okButton.disableProperty().bind(Bindings.or(binding, linkNameField.invalidProperty()));
     okButton.setDefaultButton(true);
 
-    setResultConverter(buttonType -> {
-      if (buttonType.equals(ButtonType.OK)) {
-        return new LimbData(linkNameField.getText(),
-            hwIndexFields.stream()
-                .map(ValidatedTextField::getText)
-                .map(Integer::parseInt)
-                .collect(Collectors.toList()));
-      }
+    setResultConverter(
+        buttonType -> {
+          if (buttonType.equals(ButtonType.OK)) {
+            return new LimbData(
+                linkNameField.getText(),
+                hwIndexFields
+                    .stream()
+                    .map(ValidatedTextField::getText)
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList()));
+          }
 
-      return null;
-    });
+          return null;
+        });
   }
 
   private Pair<Label, ValidatedTextField> getField(@Nonnull final String fieldID) {
     final Label hwIndexLabel = new Label("Hardware index");
     GridPane.setHalignment(hwIndexLabel, HPos.RIGHT);
 
-    final ValidatedTextField hwIndexField = new ValidatedTextField("Invalid number",
-        text -> {
-          final Integer result = Ints.tryParse(text);
-          return result != null && !takenChannels.contains(result) && hwIndexFields.stream()
-              .filter(item -> !fieldID.equals(item.getId())) //Filter out ourselves
-              .map(ValidatedTextField::getText) //Map to text content
-              .filter(
-                  index -> !index.isEmpty()) //Integer.parseInt can'translate handle an empty string
-              .map(Integer::parseInt)
-              .noneMatch(item -> item.equals(Integer.parseInt(text)));
-        });
+    final ValidatedTextField hwIndexField =
+        new ValidatedTextField(
+            "Invalid number",
+            text -> {
+              final Integer result = Ints.tryParse(text);
+              return result != null
+                  && !takenChannels.contains(result)
+                  && hwIndexFields
+                      .stream()
+                      .filter(item -> !fieldID.equals(item.getId())) // Filter out
+                      // ourselves
+                      .map(ValidatedTextField::getText) // Map to text content
+                      .filter(index -> !index.isEmpty()) // Integer.parseInt
+                      // can'translate
+                      // handle an empty
+                      // string
+                      .map(Integer::parseInt)
+                      .noneMatch(item -> item.equals(Integer.parseInt(text)));
+            });
 
     hwIndexField.setId(fieldID);
     GridPane.setHalignment(hwIndexField, HPos.LEFT);
     return new Pair<>(hwIndexLabel, hwIndexField);
   }
-
 }

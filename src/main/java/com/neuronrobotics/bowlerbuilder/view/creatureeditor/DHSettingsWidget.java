@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
@@ -29,7 +28,17 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
   private final EngineeringUnitsSliderWidget radius;
   private final DHParameterKinematics device2;
 
-  public DHSettingsWidget(@Nonnull final String title, @Nonnull final DHLink dhLink,
+  /**
+   * A widget to change a link's DH parameters.
+   *
+   * @param title configuration name
+   * @param dhLink the link
+   * @param device2 the device the link is attached to
+   * @param externalListener dh param change listener
+   */
+  public DHSettingsWidget(
+      @Nonnull final String title,
+      @Nonnull final DHLink dhLink,
       @Nonnull final DHParameterKinematics device2,
       @Nonnull final EngineeringUnitsChangeListener externalListener) {
     this.dhLink = dhLink;
@@ -42,29 +51,17 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
     vBox = new VBox(5);
     vBox.getChildren().add(titleLabel);
 
-    delta = new EngineeringUnitsSliderWidget(this,
-        0,
-        200,
-        dhLink.getDelta(),
-        180, "mm");
+    delta = new EngineeringUnitsSliderWidget(this, 0, 200, dhLink.getDelta(), 180, "mm");
 
-    theta = new EngineeringUnitsSliderWidget(this,
-        -180,
-        180,
-        Math.toDegrees(dhLink.getTheta()),
-        180, "degrees");
+    theta =
+        new EngineeringUnitsSliderWidget(
+            this, -180, 180, Math.toDegrees(dhLink.getTheta()), 180, "degrees");
 
-    radius = new EngineeringUnitsSliderWidget(this,
-        0,
-        200,
-        dhLink.getRadius(),
-        180, "mm");
+    radius = new EngineeringUnitsSliderWidget(this, 0, 200, dhLink.getRadius(), 180, "mm");
 
-    alpha = new EngineeringUnitsSliderWidget(this,
-        -180,
-        180,
-        Math.toDegrees(dhLink.getAlpha()),
-        180, "degrees");
+    alpha =
+        new EngineeringUnitsSliderWidget(
+            this, -180, 180, Math.toDegrees(dhLink.getAlpha()), 180, "degrees");
 
     final GridPane gridPane = new GridPane();
     gridPane.setAlignment(Pos.CENTER_LEFT);
@@ -92,8 +89,8 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
   }
 
   @Override
-  public void onSliderMoving(final EngineeringUnitsSliderWidget source,
-      final double newAngleDegrees) {
+  public void onSliderMoving(
+      final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     dhLink.setTheta(Math.toRadians(theta.getValue()));
     dhLink.setAlpha(Math.toRadians(alpha.getValue()));
     dhLink.setRadius(radius.getValue());
@@ -103,15 +100,15 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
       externalListener.onSliderMoving(source, newAngleDegrees);
     }
 
-    //this calls the render update function attached as the on joint space update
+    // this calls the render update function attached as the on joint space update
     final double[] joint = device2.getCurrentJointSpaceVector();
     device2.getChain().getChain(joint);
     Platform.runLater(() -> device2.onJointSpaceUpdate(device2, joint));
   }
 
   @Override
-  public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
-      final double newAngleDegrees) {
+  public void onSliderDoneMoving(
+      final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     if (externalListener != null) {
       externalListener.onSliderDoneMoving(source, newAngleDegrees);
     }
@@ -120,5 +117,4 @@ public class DHSettingsWidget implements EngineeringUnitsChangeListener {
   public Node getView() {
     return vBox;
   }
-
 }

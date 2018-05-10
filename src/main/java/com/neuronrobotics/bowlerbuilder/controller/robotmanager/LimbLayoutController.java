@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.base.Throwables;
@@ -30,30 +29,18 @@ public class LimbLayoutController {
       LoggerUtilities.getLogger(LimbLayoutController.class.getSimpleName());
   protected final MobileBase device;
   protected final ObjectProperty<Optional<DHParameterKinematics>> limbSelection;
-  @FXML
-  private HBox legHBox;
-  @FXML
-  private ImageView legIcon;
-  @FXML
-  private HBox legPaneHBox;
-  @FXML
-  private HBox armHBox;
-  @FXML
-  private ImageView armIcon;
-  @FXML
-  private HBox armPaneHBox;
-  @FXML
-  private HBox steerableHBox;
-  @FXML
-  private ImageView steerableIcon;
-  @FXML
-  private HBox steerablePaneHBox;
-  @FXML
-  private HBox fixedHBox;
-  @FXML
-  private ImageView fixedIcon;
-  @FXML
-  private HBox fixedPaneHBox;
+  @FXML private HBox legHBox;
+  @FXML private ImageView legIcon;
+  @FXML private HBox legPaneHBox;
+  @FXML private HBox armHBox;
+  @FXML private ImageView armIcon;
+  @FXML private HBox armPaneHBox;
+  @FXML private HBox steerableHBox;
+  @FXML private ImageView steerableIcon;
+  @FXML private HBox steerablePaneHBox;
+  @FXML private HBox fixedHBox;
+  @FXML private ImageView fixedIcon;
+  @FXML private HBox fixedPaneHBox;
 
   @Inject
   public LimbLayoutController(@Nonnull final MobileBase device) {
@@ -84,15 +71,19 @@ public class LimbLayoutController {
    * @param hBox HBox to add buttons to
    * @param limbs limbs to generate buttons from
    */
-  protected void addButtons(@Nonnull final HBox hBox,
-      @Nonnull final List<DHParameterKinematics> limbs) {
-    hBox.getChildren().addAll(limbs.stream()
-        .map(limb -> {
-          final Button button = new Button(limb.getScriptingName());
-          button.setOnAction(event -> limbSelection.set(Optional.of(limb)));
-          return button;
-        })
-        .collect(Collectors.toList()));
+  protected void addButtons(
+      @Nonnull final HBox hBox, @Nonnull final List<DHParameterKinematics> limbs) {
+    hBox.getChildren()
+        .addAll(
+            limbs
+                .stream()
+                .map(
+                    limb -> {
+                      final Button button = new Button(limb.getScriptingName());
+                      button.setOnAction(event -> limbSelection.set(Optional.of(limb)));
+                      return button;
+                    })
+                .collect(Collectors.toList()));
   }
 
   public void addToLegHBox(final Node node) {
@@ -118,5 +109,4 @@ public class LimbLayoutController {
   public ReadOnlyObjectProperty<Optional<DHParameterKinematics>> limbSelectionProperty() {
     return limbSelection;
   }
-
 }

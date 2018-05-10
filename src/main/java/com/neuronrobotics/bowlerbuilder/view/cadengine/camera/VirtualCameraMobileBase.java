@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.cadengine.camera;
 
 import com.neuronrobotics.sdk.addons.kinematics.IDriveEngine;
@@ -15,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public class VirtualCameraMobileBase extends MobileBase { //NOPMD
+public class VirtualCameraMobileBase extends MobileBase { // NOPMD
 
   private IDriveEngine driveEngine = new IDriveEngineImplementation();
   private final List<VirtualCameraMobileBase> bases = new ArrayList<>();
 
   public VirtualCameraMobileBase(@Nonnull final String text) throws UnsupportedEncodingException {
-    //super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
+    // super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
     super(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name())));
 
     setWalkingDriveEngine(driveEngine);
@@ -52,21 +51,17 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
 
     final TransformNR pureTrans = new TransformNR();
 
-    /**
-     * Not used.
-     */
+    /** Not used. */
     @Override
     public void DriveVelocityStraight(final MobileBase source, final double cmPerSecond) {
-      //Not used
+      // Not used
     }
 
-    /**
-     * Not used.
-     */
+    /** Not used. */
     @Override
     public void DriveVelocityArc(
         final MobileBase source, final double degreesPerSecond, final double cmRadius) {
-      //Not used
+      // Not used
     }
 
     /**
@@ -83,18 +78,24 @@ public class VirtualCameraMobileBase extends MobileBase { //NOPMD
       pureTrans.setZ(newPose.getZ());
 
       final TransformNR global = source.getFiducialToGlobalTransform().times(pureTrans);
-      global.setRotation(new RotationNR(
-          tlOffset + (Math.toDegrees(
-              newPose.getRotation().getRotationTilt() + global.getRotation().getRotationTilt())
-              % 360),
-          azOffset + (Math.toDegrees(newPose.getRotation().getRotationAzimuth()
-              + global.getRotation().getRotationAzimuth()) % 360),
-          elOffset + Math.toDegrees(newPose.getRotation().getRotationElevation()
-              + global.getRotation().getRotationElevation())
-      ));
+      global.setRotation(
+          new RotationNR(
+              tlOffset
+                  + (Math.toDegrees(
+                          newPose.getRotation().getRotationTilt()
+                              + global.getRotation().getRotationTilt())
+                      % 360),
+              azOffset
+                  + (Math.toDegrees(
+                          newPose.getRotation().getRotationAzimuth()
+                              + global.getRotation().getRotationAzimuth())
+                      % 360),
+              elOffset
+                  + Math.toDegrees(
+                      newPose.getRotation().getRotationElevation()
+                          + global.getRotation().getRotationElevation())));
 
       source.setGlobalToFiducialTransform(global);
     }
   }
-
 }

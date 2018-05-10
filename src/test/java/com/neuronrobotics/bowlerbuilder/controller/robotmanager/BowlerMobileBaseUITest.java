@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import static org.junit.Assert.assertTrue;
@@ -26,9 +25,10 @@ public class BowlerMobileBaseUITest extends AbstractAutoClosingApplicationTest {
 
   @Override
   public void start(final Stage stage) {
-    controller = BowlerBuilder.getInjector()
-        .createChildInjector(new CADModelViewerControllerModule())
-        .getInstance(BowlerMobileBaseUI.class);
+    controller =
+        BowlerBuilder.getInjector()
+            .createChildInjector(new CADModelViewerControllerModule())
+            .getInstance(BowlerMobileBaseUI.class);
   }
 
   @AfterEach
@@ -55,5 +55,4 @@ public class BowlerMobileBaseUITest extends AbstractAutoClosingApplicationTest {
     assertTrue(controller.getVisibleCSGs().contains(foo));
     assertTrue(controller.getVisibleCSGs().contains(bar));
   }
-
 }

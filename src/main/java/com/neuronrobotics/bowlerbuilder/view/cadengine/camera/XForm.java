@@ -1,3 +1,6 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.view.cadengine.camera;
 
 /*
@@ -49,15 +52,13 @@ public class XForm extends Group {
 
   public final Scale scale = new Scale();
 
-  { //NOPMD
+  { // NOPMD
     rotX.setAxis(Rotate.X_AXIS);
     rotY.setAxis(Rotate.Y_AXIS);
     rotZ.setAxis(Rotate.Z_AXIS);
   }
 
-  /**
-   * Instantiates a new xform.
-   */
+  /** Instantiates a new xform. */
   public XForm() {
     super();
     getTransforms().addAll(translate, rotZ, rotY, rotX, scale);
@@ -83,7 +84,7 @@ public class XForm extends Group {
         break;
       case YZX:
         getTransforms()
-            .addAll(translate, translate1, rotX, rotZ, rotY, scale, translate2);  // For Camera
+            .addAll(translate, translate1, rotX, rotZ, rotY, scale, translate2); // For Camera
         break;
       case ZXY:
         getTransforms().addAll(translate, translate1, rotY, rotX, rotZ, scale, translate2);
@@ -293,9 +294,7 @@ public class XForm extends Group {
     translate2.setZ(-newZ);
   }
 
-  /**
-   * Reset.
-   */
+  /** Reset. */
   public void reset() {
     translate.setX(0.0);
     translate.setY(0.0);
@@ -314,9 +313,7 @@ public class XForm extends Group {
     translate2.setZ(0.0);
   }
 
-  /**
-   * Reset tsp.
-   */
+  /** Reset tsp. */
   public void resetTSP() {
     translate.setX(0.0);
     translate.setY(0.0);
@@ -340,5 +337,4 @@ public class XForm extends Group {
     ZXY,
     ZYX
   }
-
 }

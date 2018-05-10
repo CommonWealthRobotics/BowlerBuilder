@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.google.common.collect.ImmutableList;
@@ -31,26 +30,32 @@ public class ConnectionManager implements IDeviceAddedListener {
   private final Accordion accordion;
   private final Map<BowlerAbstractDevice, TitledPane> paneMap;
 
-  public ConnectionManager(@Nonnull final HBox connectionsHeader,
-      @Nonnull final Accordion accordion) {
+  public ConnectionManager(
+      @Nonnull final HBox connectionsHeader, @Nonnull final Accordion accordion) {
     devices = new ArrayList<>();
     this.accordion = accordion;
     paneMap = new HashMap<>();
 
     final Button disconnectAll = new Button("Disconnect All");
     disconnectAll.setGraphic(AssetFactory.loadIcon("Disconnect-All.png"));
-    disconnectAll.setOnAction(__ -> {
-      final ImmutableList<BowlerAbstractDevice> devicesCopy = ImmutableList.copyOf(devices);
-      devicesCopy.forEach(device -> disconnectDevice(accordion, device));
-      System.out.println("remove all done");
-    });
+    disconnectAll.setOnAction(
+        __ -> {
+          final ImmutableList<BowlerAbstractDevice> devicesCopy = ImmutableList.copyOf(devices);
+          devicesCopy.forEach(device -> disconnectDevice(accordion, device));
+          System.out.println("remove all done");
+        });
 
-    Platform.runLater(() -> {
-      connectionsHeader.setPadding(new Insets(5));
-      connectionsHeader.setSpacing(5);
-      connectionsHeader.getChildren().addAll(AssetFactory.loadIcon("Connected-Devices.png"),
-          new Label("Connected Devices"), disconnectAll);
-    });
+    Platform.runLater(
+        () -> {
+          connectionsHeader.setPadding(new Insets(5));
+          connectionsHeader.setSpacing(5);
+          connectionsHeader
+              .getChildren()
+              .addAll(
+                  AssetFactory.loadIcon("Connected-Devices.png"),
+                  new Label("Connected Devices"),
+                  disconnectAll);
+        });
 
     DeviceManager.addDeviceAddedListener(this);
   }
@@ -83,20 +88,21 @@ public class ConnectionManager implements IDeviceAddedListener {
     disconnectDevice(accordion, device);
   }
 
-  protected void disconnectDevice(@Nonnull final Accordion accordion,
-      @Nonnull final BowlerAbstractDevice device) {
+  protected void disconnectDevice(
+      @Nonnull final Accordion accordion, @Nonnull final BowlerAbstractDevice device) {
     if (device.isAvailable()) {
       device.disconnect();
     }
 
     DeviceManager.remove(device);
 
-    //Have to save the pane before the map is cleared because the JavaFx update can happen after the map is cleared
+    // Have to save the pane before the map is cleared because the JavaFx update can happen
+    // after
+    // the map is cleared
     final TitledPane devicePane = paneMap.get(device);
     Platform.runLater(() -> accordion.getPanes().remove(devicePane));
     devices.remove(device);
     paneMap.remove(device);
     System.out.println("disconnect done for:" + device.getScriptingName());
   }
-
 }

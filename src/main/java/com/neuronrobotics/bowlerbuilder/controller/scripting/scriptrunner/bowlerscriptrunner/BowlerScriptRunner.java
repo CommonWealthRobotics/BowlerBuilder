@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner;
 
 import com.google.inject.Inject;
@@ -14,9 +13,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javax.annotation.Nonnull;
 
-/**
- * {@link ScriptRunner} passthrough to {@link ScriptingEngine}.
- */
+/** {@link ScriptRunner} passthrough to {@link ScriptingEngine}. */
 public class BowlerScriptRunner implements ScriptRunner {
 
   private final BowlerGroovy language;
@@ -30,8 +27,11 @@ public class BowlerScriptRunner implements ScriptRunner {
   }
 
   @Override
-  public Object runScript(@Nonnull final String script, final ArrayList<Object> arguments,
-      @Nonnull final String languageName) throws Exception { //NOPMD
+  public Object runScript(
+      @Nonnull final String script,
+      final ArrayList<Object> arguments,
+      @Nonnull final String languageName)
+      throws Exception { // NOPMD
     result.set(ScriptingEngine.inlineScriptStringRun(script, arguments, languageName));
     return result.get();
   }
@@ -60,5 +60,4 @@ public class BowlerScriptRunner implements ScriptRunner {
   public ReadOnlyObjectProperty<Object> resultProperty() {
     return result;
   }
-
 }

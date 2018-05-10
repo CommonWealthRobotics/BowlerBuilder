@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder;
 
 import com.google.inject.Guice;
@@ -17,11 +16,12 @@ public class BowlerBuilderTest extends AbstractAutoClosingApplicationTest {
   @Override
   public void start(final Stage stage) throws IOException {
     final Injector injector = Guice.createInjector();
-    final FXMLLoader loader = new FXMLLoader(
-        getClass().getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
-        null,
-        null,
-        injector::getInstance);
+    final FXMLLoader loader =
+        new FXMLLoader(
+            getClass().getResource("/com/neuronrobotics/bowlerbuilder/MainWindow.fxml"),
+            null,
+            null,
+            injector::getInstance);
 
     final Pane mainWindow = loader.load();
     stage.setScene(new Scene(mainWindow));

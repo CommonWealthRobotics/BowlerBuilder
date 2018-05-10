@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import java.util.Locale;
@@ -15,18 +14,12 @@ import org.controlsfx.glyphfont.Glyph;
 
 public class WebBrowserController {
 
-  @FXML
-  private Button backPageButton;
-  @FXML
-  private Button nextPageButton;
-  @FXML
-  private Button reloadPageButton;
-  @FXML
-  private Button homePageButton;
-  @FXML
-  private TextField urlField;
-  @FXML
-  private WebView webView;
+  @FXML private Button backPageButton;
+  @FXML private Button nextPageButton;
+  @FXML private Button reloadPageButton;
+  @FXML private Button homePageButton;
+  @FXML private TextField urlField;
+  @FXML private WebView webView;
 
   @FXML
   protected void initialize() {
@@ -35,11 +28,12 @@ public class WebBrowserController {
     reloadPageButton.setGraphic(new Glyph("FontAwesome", "REFRESH"));
     homePageButton.setGraphic(new Glyph("FontAwesome", "HOME"));
 
-    //Update the url field when a new page gets loaded
-    webView.getEngine().locationProperty().addListener((observable, oldValue, newValue) ->
-        urlField.setText(newValue));
+    // Update the url field when a new page gets loaded
+    webView
+        .getEngine()
+        .locationProperty()
+        .addListener((observable, oldValue, newValue) -> urlField.setText(newValue));
   }
-
 
   @FXML
   private void onBackPage(final ActionEvent actionEvent) {
@@ -75,5 +69,4 @@ public class WebBrowserController {
   public void loadPage(final String url) {
     webView.getEngine().load(url);
   }
-
 }

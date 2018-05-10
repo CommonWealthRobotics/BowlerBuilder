@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
@@ -18,11 +17,13 @@ public class AddFileToGistDialog extends Dialog<String> {
 
   private final ValidatedTextField nameField;
 
+  /** A {@link Dialog} to upload a file to a GitHub Gist. */
   public AddFileToGistDialog() {
     super();
 
-    nameField = new ValidatedTextField("Invalid File Name", name ->
-        GistUtilities.isValidCodeFileName(name).isPresent());
+    nameField =
+        new ValidatedTextField(
+            "Invalid File Name", name -> GistUtilities.isValidCodeFileName(name).isPresent());
     nameField.setId("nameField");
 
     setTitle("New File");
@@ -39,19 +40,20 @@ public class AddFileToGistDialog extends Dialog<String> {
     getDialogPane().setContent(pane);
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-    //FxUtil.runFX(nameField::requestFocus);
+    // FxUtil.runFX(nameField::requestFocus);
 
     final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
     addButton.disableProperty().bind(nameField.invalidProperty());
     addButton.setDefaultButton(true);
 
-    setResultConverter(buttonType -> {
-      if (buttonType.equals(ButtonType.OK)) {
-        return nameField.getText();
-      }
+    setResultConverter(
+        buttonType -> {
+          if (buttonType.equals(ButtonType.OK)) {
+            return nameField.getText();
+          }
 
-      return null;
-    });
+          return null;
+        });
   }
 
   public String getName() {
@@ -65,5 +67,4 @@ public class AddFileToGistDialog extends Dialog<String> {
   public ReadOnlyBooleanProperty invalidNameProperty() {
     return nameField.invalidProperty();
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.cadengine;
 
 import javafx.application.Platform;
@@ -18,6 +17,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import javax.annotation.Nonnull;
 
+// From BowlerStudio
 public class EngineeringUnitsSliderWidget extends GridPane implements ChangeListener<Number> {
 
   private final TextField setpointValue;
@@ -26,9 +26,14 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   private boolean intCast;
   private boolean allowResize = true;
 
-  public EngineeringUnitsSliderWidget(@Nonnull final EngineeringUnitsChangeListener listener,
+  // CHECKSTYLE:OFF
+  public EngineeringUnitsSliderWidget(
+      @Nonnull final EngineeringUnitsChangeListener listener,
       final double min,
-      final double max, final double current, final double width, final String units,
+      final double max,
+      final double current,
+      final double width,
+      final String units,
       final boolean intCast) {
     this(listener, min, max, current, width, units);
     this.intCast = intCast;
@@ -78,20 +83,26 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     setpoint.setMinorTickCount(5);
 
     setpointValue = new TextField(getFormatted(current));
-    setpointValue.setOnAction(event -> Platform.runLater(() -> {
-      final double val = Double.parseDouble(setpointValue.getText());
-      setValue(val);
-      getListener().onSliderMoving(this, val);
-      getListener().onSliderDoneMoving(this, val);
-    }));
+    setpointValue.setOnAction(
+        event ->
+            Platform.runLater(
+                () -> {
+                  final double val = Double.parseDouble(setpointValue.getText());
+                  setValue(val);
+                  getListener().onSliderMoving(this, val);
+                  getListener().onSliderDoneMoving(this, val);
+                }));
 
     setpoint.setMaxWidth(width);
-    setpoint.valueChangingProperty().addListener((observable, oldValue, newValue) -> {
-      final double val = Double.parseDouble(setpointValue.getText());
-      if (!newValue) {
-        getListener().onSliderDoneMoving(this, val);
-      }
-    });
+    setpoint
+        .valueChangingProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              final double val = Double.parseDouble(setpointValue.getText());
+              if (!newValue) {
+                getListener().onSliderDoneMoving(this, val);
+              }
+            });
     setpoint.valueProperty().addListener(this);
 
     setAlignment(Pos.CENTER_LEFT);
@@ -104,7 +115,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     add(setpoint, 0, 0);
     add(setpointValue, 1, 0);
     final Text unitText = new Text(unitsString);
-    final HBox unitTextWrapper = new HBox(unitText); //Wrapper so we get padding
+    final HBox unitTextWrapper = new HBox(unitText); // Wrapper so we get padding
     unitTextWrapper.setPadding(new Insets(0, 0, 0, 5));
     unitTextWrapper.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(unitTextWrapper, Priority.NEVER);
@@ -120,17 +131,19 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   }
 
   @Override
-  public void changed(final ObservableValue<? extends Number> observable,
+  public void changed(
+      final ObservableValue<? extends Number> observable,
       final Number oldValue,
       final Number newValue) {
     updateValue();
   }
 
   private void updateValue() {
-    Platform.runLater(() -> {
-      setpointValue.setText(getFormatted(setpoint.getValue()));
-      getListener().onSliderMoving(this, setpoint.getValue());
-    });
+    Platform.runLater(
+        () -> {
+          setpointValue.setText(getFormatted(setpoint.getValue()));
+          getListener().onSliderMoving(this, setpoint.getValue());
+        });
   }
 
   /**
@@ -139,31 +152,32 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
    * @param value new value
    */
   public void setValue(final double value) {
-    Platform.runLater(() -> {
-      setpoint.valueProperty().removeListener(this);
-      double val = value;
-      if (val > setpoint.getMax()) {
-        if (isAllowResize()) {
-          setpoint.setMax(val);
-        } else {
-          val = setpoint.getMax();
-        }
-      }
+    Platform.runLater(
+        () -> {
+          setpoint.valueProperty().removeListener(this);
+          double val = value;
+          if (val > setpoint.getMax()) {
+            if (isAllowResize()) {
+              setpoint.setMax(val);
+            } else {
+              val = setpoint.getMax();
+            }
+          }
 
-      if (val < setpoint.getMin()) {
-        if (isAllowResize()) {
-          setpoint.setMin(val);
-        } else {
-          val = setpoint.getMin();
-        }
-      }
+          if (val < setpoint.getMin()) {
+            if (isAllowResize()) {
+              setpoint.setMin(val);
+            } else {
+              val = setpoint.getMin();
+            }
+          }
 
-      final double range = Math.abs(setpoint.getMax() - setpoint.getMin());
-      setpoint.setMajorTickUnit(range);
-      setpoint.setValue(val);
-      setpointValue.setText(getFormatted(setpoint.getValue()));
-      setpoint.valueProperty().addListener(this);
-    });
+          final double range = Math.abs(setpoint.getMax() - setpoint.getMin());
+          setpoint.setMajorTickUnit(range);
+          setpoint.setValue(val);
+          setpointValue.setText(getFormatted(setpoint.getValue()));
+          setpoint.valueProperty().addListener(this);
+        });
   }
 
   public double getValue() {
@@ -193,15 +207,15 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
     if (listener == null) {
       return new EngineeringUnitsChangeListener() {
         @Override
-        public void onSliderMoving(final EngineeringUnitsSliderWidget source,
-            final double newAngleDegrees) {
-          //Default is nothing
+        public void onSliderMoving(
+            final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+          // Default is nothing
         }
 
         @Override
-        public void onSliderDoneMoving(final EngineeringUnitsSliderWidget source,
-            final double newAngleDegrees) {
-          //Default is nothing
+        public void onSliderDoneMoving(
+            final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+          // Default is nothing
         }
       };
     }
@@ -220,5 +234,5 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
   public void setAllowResize(final boolean allowResize) {
     this.allowResize = allowResize;
   }
-
+  // CHECKSTYLE:ON
 }

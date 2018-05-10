@@ -12,7 +12,7 @@ val kotlin_version: String by extra
 
 buildscript {
     var kotlin_version: String by extra
-    kotlin_version = "1.2.31"
+    kotlin_version = "1.2.41"
     repositories {
         mavenCentral()
     }
@@ -31,7 +31,7 @@ plugins {
     pmd
     maven
     id("com.github.johnrengelman.shadow") version "2.0.1"
-    id("com.diffplug.gradle.spotless") version "3.5.1"
+    id("com.diffplug.gradle.spotless") version "3.10.0"
 }
 
 apply {
@@ -43,28 +43,6 @@ apply {
 }
 
 group = "com.neuronrobotics.bowlerbuilder"
-
-// Spotless is used to lint and reformat source files.
-spotless {
-    kotlinGradle {
-        // Configure the formatting of the Gradle Kotlin DSL files (*.gradle.kts)
-        ktlint("0.9.1")
-        trimTrailingWhitespace()
-        indentWithSpaces()
-        endWithNewline()
-    }
-    freshmark {
-        trimTrailingWhitespace()
-        indentWithSpaces()
-        endWithNewline()
-    }
-    format("extraneous") {
-        target("src/**/*.fxml")
-        trimTrailingWhitespace()
-        indentWithSpaces()
-        endWithNewline()
-    }
-}
 
 repositories {
     mavenCentral()
@@ -104,6 +82,42 @@ dependencies {
 
 application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
+}
+
+// Spotless is used to lint and reformat source files.
+spotless {
+    java {
+        licenseHeaderFile("${project.rootDir}/spotless.license", "(package|import)")
+        removeUnusedImports()
+        googleJavaFormat()
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    kotlin {
+        licenseHeaderFile("${project.rootDir}/spotless.license", "(package|import)")
+        ktlint("0.23.1")
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    kotlinGradle {
+        ktlint("0.23.1")
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    freshmark {
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format("extraneous") {
+        target("src/**/*.fxml")
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
 }
 
 checkstyle {
@@ -212,7 +226,7 @@ publishing {
 }
 
 task<Wrapper>("wrapper") {
-    gradleVersion = "4.6"
+    gradleVersion = "4.7"
 }
 
 /**

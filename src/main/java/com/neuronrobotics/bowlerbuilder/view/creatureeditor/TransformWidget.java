@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.google.common.base.Throwables;
@@ -23,8 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javax.annotation.Nonnull;
 
-public class TransformWidget implements EngineeringUnitsChangeListener,
-    EventHandler<ActionEvent> {
+public class TransformWidget implements EngineeringUnitsChangeListener, EventHandler<ActionEvent> {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(TransformWidget.class.getSimpleName());
@@ -37,7 +35,16 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
   private final EngineeringUnitsSliderWidget yPos;
   private final EngineeringUnitsSliderWidget zPos;
 
-  public TransformWidget(@Nonnull final String title, @Nonnull final TransformNR initialState,
+  /**
+   * From BowlerStudio.
+   *
+   * @param title widget title
+   * @param initialState initial state
+   * @param onChange change listener
+   */
+  public TransformWidget(
+      @Nonnull final String title,
+      @Nonnull final TransformNR initialState,
       @Nonnull final TransformChangeListener onChange) {
     this.onChange = onChange;
 
@@ -56,29 +63,32 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
     try {
       tilt = Math.toDegrees(rot.getRotationTilt());
     } catch (final Exception e) {
-      LOGGER.log(Level.WARNING, "Could not convert tilt to degrees.\n"
-          + Throwables.getStackTraceAsString(e));
+      LOGGER.log(
+          Level.WARNING,
+          "Could not convert tilt to degrees.\n" + Throwables.getStackTraceAsString(e));
     }
 
     double elevation = 0;
     try {
       elevation = Math.toDegrees(rot.getRotationElevation());
     } catch (final Exception ex) {
-      LOGGER.log(Level.WARNING, "Could not convert elevation to degrees.\n"
-          + Throwables.getStackTraceAsString(ex));
+      LOGGER.log(
+          Level.WARNING,
+          "Could not convert elevation to degrees.\n" + Throwables.getStackTraceAsString(ex));
     }
 
     double azimuth = 0;
     try {
       azimuth = Math.toDegrees(rot.getRotationAzimuth());
     } catch (final Exception ex) {
-      LOGGER.log(Level.WARNING, "Could not convert azimuth to degrees.\n"
-          + Throwables.getStackTraceAsString(ex));
+      LOGGER.log(
+          Level.WARNING,
+          "Could not convert azimuth to degrees.\n" + Throwables.getStackTraceAsString(ex));
     }
 
     this.tilt = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, tilt, 100, "degrees");
-    this.elevation = new EngineeringUnitsSliderWidget(this, -89.99, 89.99, elevation, 100,
-        "degrees");
+    this.elevation =
+        new EngineeringUnitsSliderWidget(this, -89.99, 89.99, elevation, 100, "degrees");
     this.azimuth = new EngineeringUnitsSliderWidget(this, -179.99, 179.99, azimuth, 100, "degrees");
 
     this.tilt.setAllowResize(false);
@@ -122,22 +132,18 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
         xPos.getValue(),
         yPos.getValue(),
         zPos.getValue(),
-        new RotationNR(
-            tilt.getValue(),
-            azimuth.getValue(),
-            elevation.getValue()
-        ));
+        new RotationNR(tilt.getValue(), azimuth.getValue(), elevation.getValue()));
   }
 
   @Override
-  public void onSliderMoving(@Nonnull final EngineeringUnitsSliderWidget source,
-      final double newAngleDegrees) {
+  public void onSliderMoving(
+      @Nonnull final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     onChange.onTransformChanging(getCurrent());
   }
 
   @Override
-  public void onSliderDoneMoving(@Nonnull final EngineeringUnitsSliderWidget source,
-      final double newAngleDegrees) {
+  public void onSliderDoneMoving(
+      @Nonnull final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     handle(null);
   }
 
@@ -150,5 +156,4 @@ public class TransformWidget implements EngineeringUnitsChangeListener,
   public Node getView() {
     return view;
   }
-
 }

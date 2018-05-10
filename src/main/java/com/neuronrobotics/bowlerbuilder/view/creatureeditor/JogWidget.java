@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.google.common.base.Throwables;
@@ -33,14 +32,18 @@ import javax.annotation.Nonnull;
 
 public class JogWidget {
 
-  private static final Logger LOGGER =
-      LoggerUtilities.getLogger(JogWidget.class.getSimpleName());
+  private static final Logger LOGGER = LoggerUtilities.getLogger(JogWidget.class.getSimpleName());
   private final VBox view;
   private final GridPane controlPane;
   private final DHParameterKinematics limb;
   private final JogThread jogThread;
   private final BooleanProperty jogThreadRunning;
 
+  /**
+   * A widget to move a limb around.
+   *
+   * @param limb the limb to move
+   */
   public JogWidget(@Nonnull final DHParameterKinematics limb) {
     view = new VBox(5);
     controlPane = new GridPane();
@@ -48,15 +51,16 @@ public class JogWidget {
     jogThread = new JogThread();
 
     jogThreadRunning = new SimpleBooleanProperty(false);
-    jogThreadRunning.addListener((observable, oldValue, newValue) -> {
-      if (newValue) {
-        try {
-          jogThread.start();
-        } catch (final IllegalThreadStateException ignored) {
-          LOGGER.finer("Tried to start jog thread which is already started.");
-        }
-      }
-    });
+    jogThreadRunning.addListener(
+        (observable, oldValue, newValue) -> {
+          if (newValue) {
+            try {
+              jogThread.start();
+            } catch (final IllegalThreadStateException ignored) {
+              LOGGER.finer("Tried to start jog thread which is already started.");
+            }
+          }
+        });
 
     view.setPadding(new Insets(5));
     controlPane.setHgap(5);
@@ -80,71 +84,85 @@ public class JogWidget {
     HBox.setHgrow(timeBox, Priority.NEVER);
 
     final Button plusX = addButton(AssetFactory.loadIcon("Plus-X.png"), "", 1, 0);
-    plusX.setOnMousePressed(event -> {
-      jogThread.setxStep(Double.parseDouble(increment.getText()));
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
-    plusX.setOnMouseReleased(event -> {
-      jogThread.setxStep(0);
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
+    plusX.setOnMousePressed(
+        event -> {
+          jogThread.setxStep(Double.parseDouble(increment.getText()));
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
+    plusX.setOnMouseReleased(
+        event -> {
+          jogThread.setxStep(0);
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
     final Button minusX = addButton(AssetFactory.loadIcon("Minus-X.png"), "", 1, 2);
-    minusX.setOnMousePressed(event -> {
-      jogThread.setxStep(-Double.parseDouble(increment.getText()));
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
-    minusX.setOnMouseReleased(event -> {
-      jogThread.setxStep(0);
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
+    minusX.setOnMousePressed(
+        event -> {
+          jogThread.setxStep(-Double.parseDouble(increment.getText()));
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
+    minusX.setOnMouseReleased(
+        event -> {
+          jogThread.setxStep(0);
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
 
     final Button plusY = addButton(AssetFactory.loadIcon("Plus-Y.png"), "", 0, 1);
-    plusY.setOnMousePressed(event -> {
-      jogThread.setyStep(Double.parseDouble(increment.getText()));
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
-    plusY.setOnMouseReleased(event -> {
-      jogThread.setyStep(0);
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
+    plusY.setOnMousePressed(
+        event -> {
+          jogThread.setyStep(Double.parseDouble(increment.getText()));
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
+    plusY.setOnMouseReleased(
+        event -> {
+          jogThread.setyStep(0);
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
     final Button minusY = addButton(AssetFactory.loadIcon("Minus-Y.png"), "", 2, 1);
-    minusY.setOnMousePressed(event -> {
-      jogThread.setyStep(-Double.parseDouble(increment.getText()));
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
-    minusY.setOnMouseReleased(event -> {
-      jogThread.setyStep(0);
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
+    minusY.setOnMousePressed(
+        event -> {
+          jogThread.setyStep(-Double.parseDouble(increment.getText()));
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
+    minusY.setOnMouseReleased(
+        event -> {
+          jogThread.setyStep(0);
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
 
     final Button plusZ = addButton(AssetFactory.loadIcon("Plus-Z.png"), "", 0, 0);
-    plusZ.setOnMousePressed(event -> {
-      jogThread.setzStep(Double.parseDouble(increment.getText()));
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
-    plusZ.setOnMouseReleased(event -> {
-      jogThread.setzStep(0);
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
+    plusZ.setOnMousePressed(
+        event -> {
+          jogThread.setzStep(Double.parseDouble(increment.getText()));
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
+    plusZ.setOnMouseReleased(
+        event -> {
+          jogThread.setzStep(0);
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
     final Button minusZ = addButton(AssetFactory.loadIcon("Minus-Z.png"), "", 2, 0);
-    minusZ.setOnMousePressed(event -> {
-      jogThread.setzStep(-Double.parseDouble(increment.getText()));
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
-    minusZ.setOnMouseReleased(event -> {
-      jogThread.setzStep(0);
-      jogThread.setTimeStep(Double.parseDouble(time.getText()));
-    });
+    minusZ.setOnMousePressed(
+        event -> {
+          jogThread.setzStep(-Double.parseDouble(increment.getText()));
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
+    minusZ.setOnMouseReleased(
+        event -> {
+          jogThread.setzStep(0);
+          jogThread.setTimeStep(Double.parseDouble(time.getText()));
+        });
 
     final Button home = addButton(AssetFactory.loadIcon("Home.png"), "", 1, 1);
-    home.setOnAction(event -> {
-      try {
-        limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
-      } catch (final Exception e) {
-        LOGGER.log(Level.WARNING, "Could not set task space transform.\n"
-            + Throwables.getStackTraceAsString(e));
-      }
-    });
+    home.setOnAction(
+        event -> {
+          try {
+            limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
+          } catch (final Exception e) {
+            LOGGER.log(
+                Level.WARNING,
+                "Could not set task space transform.\n" + Throwables.getStackTraceAsString(e));
+          }
+        });
 
     /*Button addJoystick = addButton(AssetFactory.loadIcon("Add-Game-Controller.png"), "", 3, 0);
     Button configureJoystick = addButton(AssetFactory.loadIcon("Configure-Game-Controller.png"),
@@ -156,7 +174,7 @@ public class JogWidget {
     HBox.setHgrow(controlsBox, Priority.NEVER);
     view.getChildren().add(controlsBox);
 
-    //Home so the limb is in the position it appears to be in when it first generates
+    // Home so the limb is in the position it appears to be in when it first generates
     jogThread.setHome(true);
   }
 
@@ -169,8 +187,11 @@ public class JogWidget {
    * @param yCol GridPane y coordinate
    * @return Button
    */
-  private Button addButton(@Nonnull final ImageView icon, @Nonnull final String text,
-      @Nonnull final Integer xCol, @Nonnull final Integer yCol) {
+  private Button addButton(
+      @Nonnull final ImageView icon,
+      @Nonnull final String text,
+      @Nonnull final Integer xCol,
+      @Nonnull final Integer yCol) {
     final Button out = new Button(text);
     out.setGraphic(icon);
     controlPane.add(out, xCol, yCol);
@@ -217,8 +238,9 @@ public class JogWidget {
               home = false;
               limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
             } catch (final Exception e) {
-              LOGGER.log(Level.WARNING, "Could not set task space transform.\n"
-                  + Throwables.getStackTraceAsString(e));
+              LOGGER.log(
+                  Level.WARNING,
+                  "Could not set task space transform.\n" + Throwables.getStackTraceAsString(e));
             }
           } else {
             final TransformNR current = limb.getCurrentPoseTarget().copy();
@@ -230,8 +252,9 @@ public class JogWidget {
             try {
               limb.setDesiredTaskSpaceTransform(current, timeStep);
             } catch (final Exception e) {
-              LOGGER.log(Level.WARNING, "Could not set task space transform.\n"
-                  + Throwables.getStackTraceAsString(e));
+              LOGGER.log(
+                  Level.WARNING,
+                  "Could not set task space transform.\n" + Throwables.getStackTraceAsString(e));
             }
           }
 
@@ -261,7 +284,5 @@ public class JogWidget {
     public void setHome(final boolean home) {
       this.home = home;
     }
-
   }
-
 }

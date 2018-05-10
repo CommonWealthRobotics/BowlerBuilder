@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
@@ -24,34 +23,47 @@ public class AceCadEditorTab extends AbstractCadEditorTab<AceCadEditorTabControl
   private final AceCadEditorTabController controller;
   private final SplitPane pane;
 
+  /**
+   * A {@link AbstractCadEditorTab} that uses an {@link AceCadEditorTabController} and a {@link
+   * BowlerCadEngine}.
+   *
+   * @param title tab title
+   * @throws IOException when loading FXML resources
+   */
   public AceCadEditorTab(@Nonnull final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),
         BowlerBuilder.getInjector().getInstance(BowlerCadEngine.class));
 
-    final FXMLLoader scriptEditorLoader = new FXMLLoader(AceCadEditorTab.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/AceScriptEditor.fxml"),
-        null,
-        null,
-        BowlerBuilder.getInjector().createChildInjector(
-            new AceCadEditorControllerModule(getScriptEditorView()))::getInstance);
+    final FXMLLoader scriptEditorLoader =
+        new FXMLLoader(
+            AceCadEditorTab.class.getResource(
+                "/com/neuronrobotics/bowlerbuilder/view/AceScriptEditor.fxml"),
+            null,
+            null,
+            BowlerBuilder.getInjector()
+                    .createChildInjector(new AceCadEditorControllerModule(getScriptEditorView()))
+                ::getInstance);
 
     final Node scriptEditor = scriptEditorLoader.load();
 
-    final FXMLLoader cadViewerLoader = new FXMLLoader(AceCadEditorTab.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
-        null,
-        null,
-        BowlerBuilder.getInjector().createChildInjector(
-            new CADModelViewerControllerModule())::getInstance);
+    final FXMLLoader cadViewerLoader =
+        new FXMLLoader(
+            AceCadEditorTab.class.getResource(
+                "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
+            null,
+            null,
+            BowlerBuilder.getInjector().createChildInjector(new CADModelViewerControllerModule())
+                ::getInstance);
 
     final Node cadViewer = cadViewerLoader.load();
 
     pane = new SplitPane(scriptEditor, cadViewer);
 
-    controller = new AceCadEditorTabController(scriptEditorLoader.getController(),
-        cadViewerLoader.getController());
+    controller =
+        new AceCadEditorTabController(
+            scriptEditorLoader.getController(), cadViewerLoader.getController());
     this.setContent(pane);
   }
 
@@ -64,5 +76,4 @@ public class AceCadEditorTab extends AbstractCadEditorTab<AceCadEditorTabControl
   public AceCadEditorTabController getController() {
     return controller;
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace;
 
 import com.google.common.base.Throwables;
@@ -15,9 +14,7 @@ import java.util.logging.Logger;
 import javafx.concurrent.Worker;
 import javax.annotation.Nonnull;
 
-/**
- * Editor for Cloud9 Ace.
- */
+/** Editor for Cloud9 Ace. */
 public final class AceEditor implements ScriptEditor {
 
   private static final Logger LOGGER = LoggerUtilities.getLogger(AceEditor.class.getSimpleName());
@@ -35,11 +32,12 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to insert
    */
   public void insertAtCursor(@Nonnull final String text) {
-    runAfterEngine(() -> {
-      final String escaped = escape(text);
-      LOGGER.fine("Inserting: " + escaped);
-      engine.executeScript("editor.insert(\"" + escaped + "\");");
-    });
+    runAfterEngine(
+        () -> {
+          final String escaped = escape(text);
+          LOGGER.fine("Inserting: " + escaped);
+          engine.executeScript("editor.insert(\"" + escaped + "\");");
+        });
   }
 
   /**
@@ -48,11 +46,12 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to insert
    */
   public void setText(@Nonnull final String text) {
-    runAfterEngine(() -> {
-      final String escaped = escape(text);
-      LOGGER.fine("Setting: " + escaped);
-      engine.executeScript("editor.setValue(\"" + escaped + "\");");
-    });
+    runAfterEngine(
+        () -> {
+          final String escaped = escape(text);
+          LOGGER.fine("Setting: " + escaped);
+          engine.executeScript("editor.setValue(\"" + escaped + "\");");
+        });
   }
 
   /**
@@ -77,11 +76,10 @@ public final class AceEditor implements ScriptEditor {
    * @param fontSize Font size
    */
   public void setFontSize(final int fontSize) {
-    runAfterEngine(() ->
-        engine.executeScript(
-            "document.getElementById('editor').style.fontSize='"
-                + fontSize
-                + "px';"));
+    runAfterEngine(
+        () ->
+            engine.executeScript(
+                "document.getElementById('editor').style.fontSize='" + fontSize + "px';"));
   }
 
   /**
@@ -93,8 +91,8 @@ public final class AceEditor implements ScriptEditor {
     try {
       return returnAfterEngine(() -> (String) engine.executeScript("editor.getValue();"));
     } catch (final Exception e) {
-      LOGGER.log(Level.SEVERE,
-          "Could not get editor text.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.log(
+          Level.SEVERE, "Could not get editor text.\n" + Throwables.getStackTraceAsString(e));
       return "";
     }
   }
@@ -106,11 +104,13 @@ public final class AceEditor implements ScriptEditor {
    */
   public String getSelectedText() {
     try {
-      return returnAfterEngine(() -> (String)
-          engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());"));
+      return returnAfterEngine(
+          () ->
+              (String)
+                  engine.executeScript("editor.session.getTextRange(editor.getSelectionRange());"));
     } catch (final Exception e) {
-      LOGGER.log(Level.SEVERE,
-          "Could not get selected text.\n" + Throwables.getStackTraceAsString(e));
+      LOGGER.log(
+          Level.SEVERE, "Could not get selected text.\n" + Throwables.getStackTraceAsString(e));
       return "";
     }
   }
@@ -132,10 +132,14 @@ public final class AceEditor implements ScriptEditor {
    */
   public int getCursorPosition() {
     try {
-      return returnAfterEngine(() -> (int) engine.executeScript(
-          "editor.session.doc.positionToIndex(editor.selection.getCursor());"));
+      return returnAfterEngine(
+          () ->
+              (int)
+                  engine.executeScript(
+                      "editor.session.doc.positionToIndex(editor.selection.getCursor());"));
     } catch (final Exception e) {
-      LOGGER.log(Level.SEVERE,
+      LOGGER.log(
+          Level.SEVERE,
           "Could not get editor cursor position.\n" + Throwables.getStackTraceAsString(e));
       return 1;
     }
@@ -159,11 +163,15 @@ public final class AceEditor implements ScriptEditor {
     if (checkEngine()) {
       runnable.run();
     } else {
-      engine.getLoadWorker().stateProperty().addListener((observableValue, oldState, newState) -> {
-        if (newState.equals(Worker.State.SUCCEEDED)) {
-          runnable.run();
-        }
-      });
+      engine
+          .getLoadWorker()
+          .stateProperty()
+          .addListener(
+              (observableValue, oldState, newState) -> {
+                if (newState.equals(Worker.State.SUCCEEDED)) {
+                  runnable.run();
+                }
+              });
     }
   }
 
@@ -176,11 +184,10 @@ public final class AceEditor implements ScriptEditor {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  private <T> T returnAfterEngine(@Nonnull final Callable<T> callable) throws ExecutionException,
-      InterruptedException {
+  private <T> T returnAfterEngine(@Nonnull final Callable<T> callable)
+      throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
     runAfterEngine(query);
     return query.get();
   }
-
 }

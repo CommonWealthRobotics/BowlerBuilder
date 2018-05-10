@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 
 import com.neuronrobotics.bowlerbuilder.model.LinkData;
@@ -16,8 +15,11 @@ public class MovementTabLinkSelection extends AbstractLinkSelection {
 
   private final LinkSliderWidget slider;
 
-  public MovementTabLinkSelection(final int linkIndex, @Nonnull final DHLink dhLink,
-      @Nonnull final LinkConfiguration configuration, @Nonnull final AbstractKinematicsNR device) {
+  public MovementTabLinkSelection(
+      final int linkIndex,
+      @Nonnull final DHLink dhLink,
+      @Nonnull final LinkConfiguration configuration,
+      @Nonnull final AbstractKinematicsNR device) {
     super(dhLink, configuration);
 
     slider = new LinkSliderWidget(linkIndex, dhLink, device);
@@ -31,5 +33,4 @@ public class MovementTabLinkSelection extends AbstractLinkSelection {
   public Node getWidget() {
     return slider;
   }
-
 }

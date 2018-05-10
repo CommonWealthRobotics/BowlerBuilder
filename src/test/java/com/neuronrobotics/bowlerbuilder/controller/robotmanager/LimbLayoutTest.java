@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
@@ -20,12 +19,15 @@ public class LimbLayoutTest extends AbstractAutoClosingApplicationTest {
 
   @Override
   public void start(final Stage stage) throws IOException {
-    final FXMLLoader loader = new FXMLLoader(CreatureEditorController.class.getResource(
-        "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
-        null,
-        null,
-        BowlerBuilder.getInjector().createChildInjector(
-            new LimbLayoutControllerModule(new MockMobileBase()))::getInstance);
+    final FXMLLoader loader =
+        new FXMLLoader(
+            CreatureEditorController.class.getResource(
+                "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
+            null,
+            null,
+            BowlerBuilder.getInjector()
+                    .createChildInjector(new LimbLayoutControllerModule(new MockMobileBase()))
+                ::getInstance);
 
     final Node node = loader.load();
     stage.setScene(node.getScene());
@@ -40,7 +42,7 @@ public class LimbLayoutTest extends AbstractAutoClosingApplicationTest {
   private static class MockMobileBase extends MobileBase {
 
     MockMobileBase() {
-      //Empty mock ctor
+      // Empty mock ctor
     }
 
     private DHParameterKinematics getDH(final String name) {
@@ -80,7 +82,5 @@ public class LimbLayoutTest extends AbstractAutoClosingApplicationTest {
       out.add(getDH("fixed2"));
       return out;
     }
-
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller;
 
 import com.google.inject.Inject;
@@ -15,18 +14,18 @@ import javafx.scene.SubScene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.MeshView;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class CADModelViewerController {
 
-  @FXML
-  private BorderPane root;
+  @FXML private BorderPane root;
   private final CadEngine engine;
   private boolean axisShowing = true;
   private boolean handShowing = true;
 
   @Inject
-  public CADModelViewerController(@Nonnull final CadEngine engine) {
+  public CADModelViewerController(final CadEngine engine) {
     this.engine = engine;
   }
 
@@ -50,7 +49,7 @@ public class CADModelViewerController {
    *
    * @param csg CSG to add
    */
-  public void addCSG(@Nonnull final CSG csg) {
+  public void addCSG(final CSG csg) {
     engine.addCSG(csg);
   }
 
@@ -59,7 +58,7 @@ public class CADModelViewerController {
    *
    * @param csgs CSGs to add
    */
-  public void addAllCSGs(@Nonnull final CSG... csgs) {
+  public void addAllCSGs(final CSG... csgs) {
     engine.addAllCSGs(csgs);
   }
 
@@ -68,13 +67,11 @@ public class CADModelViewerController {
    *
    * @param csgs List of CSGs to add
    */
-  public void addAllCSGs(@Nonnull final Collection<CSG> csgs) {
+  public void addAllCSGs(final Collection<CSG> csgs) {
     engine.addAllCSGs(csgs);
   }
 
-  /**
-   * Removes all meshes except for the background.
-   */
+  /** Removes all meshes except for the background. */
   public void clearMeshes() {
     engine.clearMeshes();
   }
@@ -108,5 +105,4 @@ public class CADModelViewerController {
   public CadEngine getEngine() {
     return engine;
   }
-
 }

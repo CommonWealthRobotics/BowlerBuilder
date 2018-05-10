@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder;
 
 import com.google.common.base.Throwables;
@@ -22,27 +21,25 @@ import org.apache.commons.io.FileUtils;
 
 public final class LoggerUtilities {
 
-  //Log file parent directory path
+  // Log file parent directory path
   private static final String LOG_FILE_DIR_PATH;
 
-  //Log file path
+  // Log file path
   private static final String LOG_FILE_PATH;
 
-  //FileHandler that saves to the log file
+  // FileHandler that saves to the log file
   private static FileHandler fileHandler;
 
-  //Previous logger names
+  // Previous logger names
   private static final Collection<String> LOGGER_NAMES;
 
   static {
-    LOG_FILE_DIR_PATH = getBowlerDirectory()
-        + File.separator
-        + "logs"
-        + File.separator;
+    LOG_FILE_DIR_PATH = getBowlerDirectory() + File.separator + "logs" + File.separator;
 
-    LOG_FILE_PATH = LOG_FILE_DIR_PATH
-        + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
-        .format(new Date());
+    LOG_FILE_PATH =
+        LOG_FILE_DIR_PATH
+            + new SimpleDateFormat("yyyyMMddHHmmss'.txt'", new Locale("en", "US"))
+                .format(new Date());
 
     final File testFile = new File(LOG_FILE_DIR_PATH);
     try {
@@ -54,8 +51,8 @@ public final class LoggerUtilities {
             "LoggerUtilities could not create the logging file: " + LOG_FILE_PATH);
       }
     } catch (final IOException e) {
-      //We can'translate call a logger here instead because we are the logger!
-      e.printStackTrace(); //NOPMD
+      // We can'translate call a logger here instead because we are the logger!
+      e.printStackTrace(); // NOPMD
     }
 
     LOGGER_NAMES = new ArrayList<>();
@@ -83,23 +80,27 @@ public final class LoggerUtilities {
    * @return path to BowlerBuilder directory
    */
   public static String getBowlerDirectory() {
-    return FileUtils.getUserDirectoryPath()
-        + File.separator
-        + "BowlerBuilder";
+    return FileUtils.getUserDirectoryPath() + File.separator + "BowlerBuilder";
   }
 
   /**
    * Return a new thread that logs uncaught exceptions.
    *
+   * @param logger logger to log uncaught exceptions with
    * @param runnable thread runnable
    * @return logging thread
    */
-  public static Thread newLoggingThread(@Nonnull final Logger logger,
-      @Nonnull final Runnable runnable) {
+  public static Thread newLoggingThread(
+      @Nonnull final Logger logger, @Nonnull final Runnable runnable) {
     final Thread thread = new Thread(runnable);
-    thread.setUncaughtExceptionHandler((exceptionThread, exception) ->
-        logger.log(Level.SEVERE, "Uncaught exception in thread: " + exceptionThread.getName()
-            + "\n" + Throwables.getStackTraceAsString(exception)));
+    thread.setUncaughtExceptionHandler(
+        (exceptionThread, exception) ->
+            logger.log(
+                Level.SEVERE,
+                "Uncaught exception in thread: "
+                    + exceptionThread.getName()
+                    + "\n"
+                    + Throwables.getStackTraceAsString(exception)));
     thread.setDaemon(true);
     return thread;
   }
@@ -122,5 +123,4 @@ public final class LoggerUtilities {
     logger.setLevel(Level.ALL);
     return logger;
   }
-
 }

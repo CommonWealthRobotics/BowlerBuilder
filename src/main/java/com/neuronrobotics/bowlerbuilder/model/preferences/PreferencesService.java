@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.model.preferences;
 
 import com.google.common.base.Throwables;
@@ -22,13 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
-/**
- * Loads/saves preferences from/to a file.
- */
+/** Loads/saves preferences from/to a file. */
 public class PreferencesService {
 
-  private static final Logger LOGGER
-      = LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
+  private static final Logger LOGGER =
+      LoggerUtilities.getLogger(PreferencesService.class.getSimpleName());
   private final String prefsSaveDirPath;
   private final String prefsSaveFilePath;
   private final Map<String, List<PreferenceListener>> listeners;
@@ -44,15 +41,14 @@ public class PreferencesService {
     data = new ConcurrentHashMap<>();
     listeners = new ConcurrentHashMap<>();
 
-    prefsSaveDirPath = LoggerUtilities.getBowlerDirectory()
-        + File.separator
-        + "preferences"
-        + File.separator
-        + folderName;
+    prefsSaveDirPath =
+        LoggerUtilities.getBowlerDirectory()
+            + File.separator
+            + "preferences"
+            + File.separator
+            + folderName;
 
-    prefsSaveFilePath = prefsSaveDirPath
-        + File.separator
-        + "preferences.ser";
+    prefsSaveFilePath = prefsSaveDirPath + File.separator + "preferences.ser";
   }
 
   /**
@@ -63,8 +59,7 @@ public class PreferencesService {
    * @param <T> type of entry
    * @return entry if present, else default value
    */
-  public <T extends Serializable> T get(@Nonnull final String name,
-      @Nonnull final T defaultValue) {
+  public <T extends Serializable> T get(@Nonnull final String name, @Nonnull final T defaultValue) {
     if (data.containsKey(name)) {
       final Serializable value = data.get(name);
       if (value.getClass().isInstance(defaultValue)) {
@@ -80,15 +75,14 @@ public class PreferencesService {
   }
 
   /**
-   * Attach a listener to the entry. The listener will be notified when a value is set to the
-   * entry.
+   * Attach a listener to the entry. The listener will be notified when a value is set to the entry.
    *
    * @param name entry key
    * @param listener listener to notify
    * @param <T> type of entry
    */
-  public <T extends Serializable> void addListener(@Nonnull final String name,
-      @Nonnull final PreferenceListener<T> listener) {
+  public <T extends Serializable> void addListener(
+      @Nonnull final String name, @Nonnull final PreferenceListener<T> listener) {
     if (listeners.containsKey(name)) {
       listeners.get(name).add(listener);
     } else {
@@ -113,47 +107,43 @@ public class PreferencesService {
     }
   }
 
-  /**
-   * Load in preferences from the save file.
-   */
+  /** Load in preferences from the save file. */
   public void load() {
     LOGGER.fine("Trying to load preferences from: " + prefsSaveFilePath);
     final File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
-      try (ObjectInputStream stream
-          = new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
+      try (ObjectInputStream stream =
+          new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (final IOException e) {
-        LOGGER.severe("Could not open preferences save file.\n"
-            + Throwables.getStackTraceAsString(e));
+        LOGGER.severe(
+            "Could not open preferences save file.\n" + Throwables.getStackTraceAsString(e));
       } catch (final ClassNotFoundException e) {
         LOGGER.severe("Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
     } else {
-      LOGGER.warning("Preferences save file does not exist or is a directory: "
-          + prefsSaveFilePath);
+      LOGGER.warning(
+          "Preferences save file does not exist or is a directory: " + prefsSaveFilePath);
     }
   }
 
-  /**
-   * Overwrite the preferences file with the current preferences.
-   */
+  /** Overwrite the preferences file with the current preferences. */
   public void save() {
     LOGGER.fine("Trying to save preferences to: " + prefsSaveDirPath);
     final File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
-      try (ObjectOutputStream stream
-          = new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
+      try (ObjectOutputStream stream =
+          new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
         stream.writeObject(data);
       } catch (final FileNotFoundException e) {
-        LOGGER.severe("Could not find preferences save file.\n"
-            + Throwables.getStackTraceAsString(e));
+        LOGGER.severe(
+            "Could not find preferences save file.\n" + Throwables.getStackTraceAsString(e));
       } catch (final IOException e) {
         LOGGER.severe("Could not load preferences.\n" + Throwables.getStackTraceAsString(e));
       }
     } else {
-      LOGGER.severe("Could not create file to save preferences for save file: "
-          + prefsSaveFilePath);
+      LOGGER.severe(
+          "Could not create file to save preferences for save file: " + prefsSaveFilePath);
     }
   }
 
@@ -164,5 +154,4 @@ public class PreferencesService {
   public Map<String, Serializable> getAll() {
     return data;
   }
-
 }

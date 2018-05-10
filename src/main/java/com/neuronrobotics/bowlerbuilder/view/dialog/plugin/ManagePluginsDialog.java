@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog.plugin;
 
 import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
@@ -20,6 +19,11 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
 
   private final ListView<Plugin> pluginListView;
 
+  /**
+   * A {@link Dialog} to manage the installed plugins.
+   *
+   * @param plugins list of plugins
+   */
   public ManagePluginsDialog(@Nonnull final ObservableList<Plugin> plugins) {
     super();
 
@@ -28,19 +32,23 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
 
     final Button addWidgetButton = new Button("Add Plugin");
     addWidgetButton.setId("addPlugin");
-    addWidgetButton.setOnAction(event -> {
-      final AddPluginDialog dialog = new AddPluginDialog();
-      final Optional<Boolean> result = dialog.showAndWait();
-      if (result.isPresent() && result.get()) {
-        plugins.add(new Plugin(dialog.getSource(), dialog.getDisplayName()));
-      }
-    });
+    addWidgetButton.setOnAction(
+        event -> {
+          final AddPluginDialog dialog = new AddPluginDialog();
+          final Optional<Boolean> result = dialog.showAndWait();
+          if (result.isPresent() && result.get()) {
+            plugins.add(new Plugin(dialog.getSource(), dialog.getDisplayName()));
+          }
+        });
 
     final Button removeWidgetButton = new Button("Remove Plugin");
     removeWidgetButton.setId("removePlugin");
-    removeWidgetButton.setOnAction(event ->
-        pluginListView.getSelectionModel().getSelectedItems()
-            .forEach(pluginListView.getItems()::remove));
+    removeWidgetButton.setOnAction(
+        event ->
+            pluginListView
+                .getSelectionModel()
+                .getSelectedItems()
+                .forEach(pluginListView.getItems()::remove));
 
     final HBox controlBox = new HBox(5, addWidgetButton, removeWidgetButton);
 
@@ -57,5 +65,4 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
   public void setPlugins(@Nonnull final ObservableList<Plugin> plugins) {
     pluginListView.setItems(plugins);
   }
-
 }

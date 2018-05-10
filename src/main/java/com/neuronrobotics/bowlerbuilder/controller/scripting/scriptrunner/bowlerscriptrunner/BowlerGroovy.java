@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner;
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
@@ -25,13 +24,11 @@ import javax.annotation.Nonnull;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
-/**
- * Simple copy of {@link GroovyHelper} that keeps a flag for when it is compiling or running.
- */
+/** Simple copy of {@link GroovyHelper} that keeps a flag for when it is compiling or running. */
 public class BowlerGroovy implements IScriptingLanguage {
 
-  private static final Logger LOGGER
-      = LoggerUtilities.getLogger(BowlerGroovy.class.getSimpleName());
+  private static final Logger LOGGER =
+      LoggerUtilities.getLogger(BowlerGroovy.class.getSimpleName());
   private final BooleanProperty compiling;
   private final BooleanProperty running;
 
@@ -47,13 +44,13 @@ public class BowlerGroovy implements IScriptingLanguage {
 
   @Override
   public Object inlineScriptRun(@Nonnull final File code, @Nonnull final ArrayList<Object> args)
-      throws Exception { //NOPMD
+      throws Exception { // NOPMD
     return this.inline(code, args);
   }
 
   @Override
   public Object inlineScriptRun(@Nonnull final String code, @Nonnull final ArrayList<Object> args)
-      throws Exception { //NOPMD
+      throws Exception { // NOPMD
     return this.inline(code, args);
   }
 
@@ -67,21 +64,22 @@ public class BowlerGroovy implements IScriptingLanguage {
     return new ArrayList<>(Arrays.asList("java", "groovy"));
   }
 
-  private Object inline(@Nonnull final Object code,
-      @Nonnull final List<Object> args) throws Exception { //NOPMD
+  private Object inline(@Nonnull final Object code, @Nonnull final List<Object> args)
+      throws Exception { // NOPMD
     compiling.setValue(true);
 
     final CompilerConfiguration configuration = new CompilerConfiguration();
-    configuration.addCompilationCustomizers(new ImportCustomizer()
-        .addStarImports(ScriptingEngine.getImports())
-        .addStarImports(
-            "com.neuronrobotics.bowlerbuilder",
-            "com.neuronrobotics.bowlerbuilder.controller",
-            "com.neuronrobotics.bowlerbuilder.view.tab")
-        .addStaticStars(
-            "com.neuronrobotics.sdk.util.ThreadUtil",
-            "eu.mihosoft.vrl.v3d.Transform",
-            "com.neuronrobotics.bowlerstudio.vitamins.Vitamins"));
+    configuration.addCompilationCustomizers(
+        new ImportCustomizer()
+            .addStarImports(ScriptingEngine.getImports())
+            .addStarImports(
+                "com.neuronrobotics.bowlerbuilder",
+                "com.neuronrobotics.bowlerbuilder.controller",
+                "com.neuronrobotics.bowlerbuilder.view.tab")
+            .addStaticStars(
+                "com.neuronrobotics.sdk.util.ThreadUtil",
+                "eu.mihosoft.vrl.v3d.Transform",
+                "com.neuronrobotics.bowlerstudio.vitamins.Vitamins"));
 
     final Binding binding = new Binding();
 
@@ -89,14 +87,13 @@ public class BowlerGroovy implements IScriptingLanguage {
       final BowlerAbstractDevice device = DeviceManager.getSpecificDevice(null, pm);
 
       binding.setVariable(
-          device.getScriptingName(),
-          Class.forName(device.getClass().getName()).cast(device));
+          device.getScriptingName(), Class.forName(device.getClass().getName()).cast(device));
     }
 
     binding.setVariable("args", args);
 
-    final GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding,
-        configuration);
+    final GroovyShell shell =
+        new GroovyShell(GroovyHelper.class.getClassLoader(), binding, configuration);
     final Script script;
 
     if (String.class.isInstance(code)) {
@@ -125,5 +122,4 @@ public class BowlerGroovy implements IScriptingLanguage {
   public ReadOnlyBooleanProperty runningProperty() {
     return running;
   }
-
 }

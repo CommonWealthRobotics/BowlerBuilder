@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.controller.view;
 
 import static org.junit.Assert.assertTrue;
@@ -30,17 +29,26 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
 
   @Test
   void basicTest() throws ExecutionException, InterruptedException {
-    FxHelper.runAndWait(() ->
-        tab.getController().getAceScriptEditorController().getScriptEditor()
-            .insertAtCursor("return new Cube(1,1,1).toCSG();"));
-    final Object result = FxUtil.returnFX(() ->
-        tab.getController().getAceScriptEditorController().getScriptRunner().runScript(
-            tab.getController().getAceScriptEditorController().getScriptEditor().getText(),
-            new ArrayList<>(),
-            "BowlerGroovy"
-        ));
+    FxHelper.runAndWait(
+        () ->
+            tab.getController()
+                .getAceScriptEditorController()
+                .getScriptEditor()
+                .insertAtCursor("return new Cube(1,1,1).toCSG();"));
+    final Object result =
+        FxUtil.returnFX(
+            () ->
+                tab.getController()
+                    .getAceScriptEditorController()
+                    .getScriptRunner()
+                    .runScript(
+                        tab.getController()
+                            .getAceScriptEditorController()
+                            .getScriptEditor()
+                            .getText(),
+                        new ArrayList<>(),
+                        "BowlerGroovy"));
 
     assertTrue(result instanceof CSG);
   }
-
 }

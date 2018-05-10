@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog.plugin;
 
 import javafx.beans.binding.Bindings;
@@ -37,11 +36,13 @@ public class AddPluginDialog extends Dialog<Boolean> {
     getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
     final Button addButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    addButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
-            !(!sourceField.getText().isEmpty()
-                && !displayNameField.getText().isEmpty()),
-        sourceField.textProperty(),
-        displayNameField.textProperty()));
+    addButton
+        .disableProperty()
+        .bind(
+            Bindings.createBooleanBinding(
+                () -> !(!sourceField.getText().isEmpty() && !displayNameField.getText().isEmpty()),
+                sourceField.textProperty(),
+                displayNameField.textProperty()));
     addButton.setDefaultButton(true);
 
     setResultConverter(buttonType -> !buttonType.getButtonData().isCancelButton());
@@ -54,5 +55,4 @@ public class AddPluginDialog extends Dialog<Boolean> {
   public String getDisplayName() {
     return displayNameField.getText();
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import javafx.application.Platform;
@@ -16,6 +15,7 @@ public class PublishDialog extends Dialog<String> {
 
   private final TextArea commitMessage;
 
+  /** A {@link Dialog} to write a commit. */
   public PublishDialog() {
     super();
 
@@ -39,17 +39,17 @@ public class PublishDialog extends Dialog<String> {
 
     Platform.runLater(commitMessage::requestFocus);
 
-    setResultConverter(buttonType -> {
-      if (buttonType == ButtonType.OK) {
-        return commitMessage.getText();
-      }
+    setResultConverter(
+        buttonType -> {
+          if (buttonType == ButtonType.OK) {
+            return commitMessage.getText();
+          }
 
-      return null;
-    });
+          return null;
+        });
   }
 
   public String getCommitMessage() {
     return commitMessage.getText();
   }
-
 }

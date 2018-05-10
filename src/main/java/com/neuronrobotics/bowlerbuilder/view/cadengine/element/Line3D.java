@@ -1,3 +1,6 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.view.cadengine.element;
 
 import eu.mihosoft.vrl.v3d.Vector3d;
@@ -17,7 +20,7 @@ public class Line3D extends Cylinder {
     this(start.pos, end.pos);
   }
 
-  public Line3D(final double[] start, final double[] end) { //NOPMD
+  public Line3D(final double[] start, final double[] end) { // NOPMD
     this(start[0], start[1], start[2], end[0], end[1], end[2]);
   }
 
@@ -29,14 +32,18 @@ public class Line3D extends Cylinder {
     this(0, 0, 0, endX, endY, endZ);
   }
 
-  public Line3D(final double startX, final double startY, final double startZ,
-      final double endX, final double endY, final double endZ) {
+  // CHECKSTYLE:OFF
+  public Line3D(
+      final double startX,
+      final double startY,
+      final double startZ,
+      final double endX,
+      final double endY,
+      final double endZ) {
     super(
         0.1,
-        Math.sqrt(Math.pow(endX - startX, 2)
-            + Math.pow(endY - startY, 2)
-            + Math.pow(endZ - startZ, 2))
-    );
+        Math.sqrt(
+            Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2) + Math.pow(endZ - startZ, 2)));
 
     final double xDiff = endX - startX;
     final double yDiff = endY - startY;
@@ -70,6 +77,7 @@ public class Line3D extends Cylinder {
     final Affine orent2 = new Affine();
     getTransforms().add(orent2);
   }
+  // CHECKSTYLE:ON
 
   public double getEndZ() {
     return endZ;
@@ -94,5 +102,4 @@ public class Line3D extends Cylinder {
   public void setStroke(final Color color) {
     Platform.runLater(() -> setMaterial(new PhongMaterial(color)));
   }
-
 }

@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 package com.neuronrobotics.bowlerbuilder;
 
 import java.util.concurrent.CountDownLatch;
@@ -38,23 +37,28 @@ public final class FxHelper {
    * @return True if a matching exception was thrown from the JavaFX thread, false otherwise
    * @throws InterruptedException If the current thread is interrupted while waiting
    */
-  public static boolean catchInJavaFXThread(final Runnable runnable,
+  public static boolean catchInJavaFXThread(
+      final Runnable runnable,
       final Class<?> exceptionClass,
       final long timeout,
-      final TimeUnit timeoutUnit) throws InterruptedException {
+      final TimeUnit timeoutUnit)
+      throws InterruptedException {
     final CountDownLatch latch = new CountDownLatch(1);
     final boolean[] exceptionWasThrown = new boolean[1];
     exceptionWasThrown[0] = false;
 
-    runAndWait(() -> Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
-      if (throwable.getClass().equals(exceptionClass)) {
-        exceptionWasThrown[0] = true;
-        latch.countDown();
-      }
-    }));
+    runAndWait(
+        () ->
+            Thread.currentThread()
+                .setUncaughtExceptionHandler(
+                    (thread, throwable) -> {
+                      if (throwable.getClass().equals(exceptionClass)) {
+                        exceptionWasThrown[0] = true;
+                        latch.countDown();
+                      }
+                    }));
 
     runnable.run();
     return latch.await(timeout, timeoutUnit) && exceptionWasThrown[0];
   }
-
 }
