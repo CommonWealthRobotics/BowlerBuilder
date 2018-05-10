@@ -73,7 +73,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
@@ -91,6 +91,7 @@ import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 
 @Singleton
+@ParametersAreNonnullByDefault
 public class MainWindowController {
 
   private static final Logger LOGGER =
@@ -297,7 +298,7 @@ public class MainWindowController {
    *
    * @param url URL to load
    */
-  public void loadPage(@Nonnull final String url) {
+  public void loadPage(final String url) {
     Platform.runLater(() -> webBrowserController.loadPage(url));
   }
 
@@ -307,7 +308,7 @@ public class MainWindowController {
    * @param tabName name for new tab
    * @param url URL to load
    */
-  public void loadPageIntoNewTab(@Nonnull final String tabName, @Nonnull final String url) {
+  public void loadPageIntoNewTab(final String tabName, final String url) {
     Platform.runLater(
         () -> {
           final FXMLLoader loader =
@@ -334,7 +335,7 @@ public class MainWindowController {
    * @param gist Gist containing file
    * @param gistFile File
    */
-  public void openGistFileInEditor(@Nonnull final GHGist gist, @Nonnull final GHGistFile gistFile) {
+  public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(
         () -> {
           try {
@@ -359,7 +360,7 @@ public class MainWindowController {
    * @param gist gist clone URL
    * @param fileName file name (with .xml extension)
    */
-  public void loadCreatureLab(@Nonnull final String gist, @Nonnull final String fileName) {
+  public void loadCreatureLab(final String gist, final String fileName) {
     loadCreatureLab(new String[] {gist, fileName});
   }
 
@@ -368,7 +369,7 @@ public class MainWindowController {
    *
    * @param file xml file in gist
    */
-  public void loadCreatureLab(@Nonnull final String[] file) { // NOPMD
+  public void loadCreatureLab(final String[] file) { // NOPMD
     Platform.runLater(
         () -> {
           try {
@@ -611,7 +612,7 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param gists list of gists
    */
-  private void loadGistsIntoMenus(@Nonnull final Menu menu, @Nonnull final Iterable<GHGist> gists) {
+  private void loadGistsIntoMenus(final Menu menu, final Iterable<GHGist> gists) {
     gists.forEach(
         gist -> {
           final MenuItem showWebGist = new MenuItem("Show Gist on Web");
@@ -771,8 +772,7 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param orgs organizations
    */
-  private void loadOrgsIntoMenus(
-      @Nonnull final Menu menu, @Nonnull final GHPersonSet<GHOrganization> orgs) {
+  private void loadOrgsIntoMenus(final Menu menu, final GHPersonSet<GHOrganization> orgs) {
     final Function<GHOrganization, String> getName =
         org -> {
           try {
@@ -841,8 +841,7 @@ public class MainWindowController {
    * @param menu menu to put submenus into
    * @param repos repositories
    */
-  private void loadReposIntoMenus(
-      @Nonnull final Menu menu, @Nonnull final PagedIterable<GHRepository> repos) {
+  private void loadReposIntoMenus(final Menu menu, final PagedIterable<GHRepository> repos) {
     repos
         .asList()
         .stream()
@@ -859,7 +858,7 @@ public class MainWindowController {
             });
   }
 
-  private void loadFavoritesIntoMenus(@Nonnull final Menu menu) {
+  private void loadFavoritesIntoMenus(final Menu menu) {
     final HashSet<String> gistIDs = preferencesService.get("Favorite Gists", new HashSet<String>());
     final GitHub gitHub = ScriptingEngine.getGithub();
 
@@ -883,7 +882,7 @@ public class MainWindowController {
     loadGistsIntoMenus(menu, gists);
   }
 
-  private void loadCreaturesIntoMenus(@Nonnull final Menu menu) {
+  private void loadCreaturesIntoMenus(final Menu menu) {
     try {
       final String gistURL =
           preferencesService.get(
@@ -915,7 +914,7 @@ public class MainWindowController {
     }
   }
 
-  private void reloadPlugins(@Nonnull final Collection<Plugin> plugins) {
+  private void reloadPlugins(final Collection<Plugin> plugins) {
     installedPlugins.getItems().clear();
     installedPlugins
         .getItems()
@@ -981,7 +980,7 @@ public class MainWindowController {
    *
    * @param tab tab to add
    */
-  public void addTab(@Nonnull final Tab tab) {
+  public void addTab(final Tab tab) {
     Platform.runLater(() -> tabPane.getTabs().add(tab));
   }
 
@@ -1002,6 +1001,7 @@ public class MainWindowController {
   }
 
   // Simple stream to append input characters to a text area
+  @ParametersAreNonnullByDefault
   private static class TextAreaPrintStream extends OutputStream {
 
     private final TextArea textArea;

@@ -4,13 +4,14 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace;
 
 import javafx.scene.web.WebEngine;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AceWebEngineFactory {
 
   public AceWebEngineFactory() {}
 
-  public AceWebEngine create(@Nonnull final WebEngine webEngine) {
+  public AceWebEngine create(final WebEngine webEngine) {
     return new AceWebEngine(webEngine);
   }
 }

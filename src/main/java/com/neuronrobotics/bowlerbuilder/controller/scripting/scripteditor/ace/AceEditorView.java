@@ -11,17 +11,17 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** View to an {@link AceEditor} through a {@link WebView}. */
+@ParametersAreNonnullByDefault
 public class AceEditorView implements ScriptEditorView {
 
   private final WebView webView;
   private final AceEditor scriptEditor;
 
   @Inject
-  public AceEditorView(
-      @Nonnull final WebView webView, @Nonnull final AceWebEngineFactory aceWebEngineFactory) {
+  public AceEditorView(final WebView webView, final AceWebEngineFactory aceWebEngineFactory) {
     this.webView = webView;
 
     final WebEngine webEngine = webView.getEngine();

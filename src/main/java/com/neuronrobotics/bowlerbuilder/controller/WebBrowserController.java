@@ -10,8 +10,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.web.WebView;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.controlsfx.glyphfont.Glyph;
 
+@ParametersAreNonnullByDefault
 public class WebBrowserController {
 
   @FXML private Button backPageButton;

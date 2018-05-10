@@ -18,11 +18,12 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 /** Simple copy of {@link GroovyHelper} that keeps a flag for when it is compiling or running. */
+@ParametersAreNonnullByDefault
 public class BowlerGroovy implements IScriptingLanguage {
 
   private final BooleanProperty compiling;
@@ -39,13 +40,13 @@ public class BowlerGroovy implements IScriptingLanguage {
   }
 
   @Override
-  public Object inlineScriptRun(@Nonnull final File code, @Nonnull final ArrayList<Object> args)
+  public Object inlineScriptRun(final File code, final ArrayList<Object> args)
       throws Exception { // NOPMD
     return this.inline(code, args);
   }
 
   @Override
-  public Object inlineScriptRun(@Nonnull final String code, @Nonnull final ArrayList<Object> args)
+  public Object inlineScriptRun(final String code, final ArrayList<Object> args)
       throws Exception { // NOPMD
     return this.inline(code, args);
   }
@@ -60,8 +61,7 @@ public class BowlerGroovy implements IScriptingLanguage {
     return new ArrayList<>(Arrays.asList("java", "groovy"));
   }
 
-  private Object inline(@Nonnull final Object code, @Nonnull final List<Object> args)
-      throws Exception { // NOPMD
+  private Object inline(final Object code, final List<Object> args) throws Exception { // NOPMD
     compiling.setValue(true);
 
     final CompilerConfiguration configuration = new CompilerConfiguration();

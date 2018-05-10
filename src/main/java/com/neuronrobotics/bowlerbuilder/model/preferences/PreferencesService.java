@@ -117,8 +117,7 @@ public class PreferencesService {
     final File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
       try (ObjectInputStream stream =
-          new ObjectInputStream(
-              Files.newInputStream(Paths.get(prefsSaveFilePath), READ))) {
+          new ObjectInputStream(Files.newInputStream(Paths.get(prefsSaveFilePath), READ))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (final IOException e) {
         LOGGER.severe(

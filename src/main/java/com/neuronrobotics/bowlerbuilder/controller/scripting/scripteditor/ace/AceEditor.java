@@ -12,16 +12,17 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Worker;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Editor for Cloud9 Ace. */
+@ParametersAreNonnullByDefault
 public final class AceEditor implements ScriptEditor {
 
   private static final Logger LOGGER = LoggerUtilities.getLogger(AceEditor.class.getSimpleName());
 
   private final WebEngineAdapter engine;
 
-  public AceEditor(@Nonnull final WebEngineAdapter webEngine) {
+  public AceEditor(final WebEngineAdapter webEngine) {
     this.engine = webEngine;
     LOGGER.log(Level.FINEST, "engine: " + webEngine);
   }
@@ -32,7 +33,7 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to insert
    */
   @Override
-  public void insertAtCursor(@Nonnull final String text) {
+  public void insertAtCursor(final String text) {
     runAfterEngine(
         () -> {
           final String escaped = escape(text);
@@ -47,7 +48,7 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to insert
    */
   @Override
-  public void setText(@Nonnull final String text) {
+  public void setText(final String text) {
     runAfterEngine(
         () -> {
           final String escaped = escape(text);
@@ -62,7 +63,7 @@ public final class AceEditor implements ScriptEditor {
    * @param text Text to escape
    * @return Escaped version
    */
-  private String escape(@Nonnull final String text) {
+  private String escape(final String text) {
     String escaped = text;
     escaped = escaped.replace("\"", "\\\"");
     escaped = escaped.replace("'", "\\'");
@@ -166,7 +167,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param runnable runnable to run
    */
-  private void runAfterEngine(@Nonnull final Runnable runnable) {
+  private void runAfterEngine(final Runnable runnable) {
     if (checkEngine()) {
       runnable.run();
     } else {
@@ -191,7 +192,7 @@ public final class AceEditor implements ScriptEditor {
    * @throws ExecutionException when running callable
    * @throws InterruptedException when running callable
    */
-  private <T> T returnAfterEngine(@Nonnull final Callable<T> callable)
+  private <T> T returnAfterEngine(final Callable<T> callable)
       throws ExecutionException, InterruptedException {
     final FutureTask<T> query = new FutureTask<>(callable);
     runAfterEngine(query);
