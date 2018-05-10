@@ -26,6 +26,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   private final Group manipulationFrame;
 
   public VirtualCameraDevice(@Nonnull final Camera camera, @Nonnull final Group hand) {
+    super();
     setCamera(camera);
     setScriptingName("virtualCameraDevice");
 
@@ -59,6 +60,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
     return false;
   }
 
+  @Override
   public BufferedImage captureNewImage() {
     return null;
   }

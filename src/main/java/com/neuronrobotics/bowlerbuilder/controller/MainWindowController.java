@@ -682,46 +682,7 @@ public class MainWindowController {
                 }
               });
 
-          final HashSet<String> favoriteGists =
-              preferencesService.get("Favorite Gists", new HashSet<String>());
-          MenuItem favoriteGist = null;
           final String gistID = ScriptingEngine.urlToGist(gist.getGitPushUrl());
-
-          try {
-            final GHMyself myself = ScriptingEngine.getGithub().getMyself();
-            final Iterable<GHGist> reloadGists = myself.listGists();
-
-            final Runnable reloadFavorites =
-                () -> {
-                  favorites.getItems().clear();
-                  myGists.getItems().clear();
-
-                  loadFavoritesIntoMenus(favorites);
-                  loadGistsIntoMenus(myGists, reloadGists);
-                };
-
-            if (favoriteGists.contains(gistID)) {
-              favoriteGist = new MenuItem("Unfavorite");
-              favoriteGist.setOnAction(
-                  event -> {
-                    favoriteGists.remove(gistID);
-
-                    // Reload gists and favorites
-                    LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
-                  });
-            } else {
-              favoriteGist = new MenuItem("Favorite");
-              favoriteGist.setOnAction(
-                  event -> {
-                    favoriteGists.add(gistID);
-
-                    // Reload gists and favorites
-                    LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
-                  });
-            }
-          } catch (IOException e) {
-            LOGGER.warning("Could not get user's gists.\n" + Throwables.getStackTraceAsString(e));
-          }
 
           String gistMenuText = gist.getDescription();
           if (gistMenuText == null || gistMenuText.length() == 0) {
@@ -738,8 +699,46 @@ public class MainWindowController {
 
           final Menu gistMenu = new Menu(gistMenuText);
           gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
-          if (favoriteGist != null) {
-            gistMenu.getItems().add(favoriteGist);
+
+          try {
+            final GHMyself myself = ScriptingEngine.getGithub().getMyself();
+            final Iterable<GHGist> reloadGists = myself.listGists();
+
+            final Runnable reloadFavorites =
+                () -> {
+                  favorites.getItems().clear();
+                  myGists.getItems().clear();
+
+                  loadFavoritesIntoMenus(favorites);
+                  loadGistsIntoMenus(myGists, reloadGists);
+                };
+
+            final HashSet<String> favoriteGists =
+                preferencesService.get("Favorite Gists", new HashSet<>());
+            if (favoriteGists.contains(gistID)) {
+              final MenuItem favoriteGist = new MenuItem("Unfavorite");
+              favoriteGist.setOnAction(
+                  event -> {
+                    favoriteGists.remove(gistID);
+
+                    // Reload gists and favorites
+                    LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
+                  });
+              gistMenu.getItems().add(favoriteGist);
+            } else {
+              final MenuItem favoriteGist = new MenuItem("Favorite");
+              favoriteGist.setOnAction(
+                  event -> {
+                    favoriteGists.add(gistID);
+
+                    // Reload gists and favorites
+                    LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
+                  });
+              gistMenu.getItems().add(favoriteGist);
+            }
+
+          } catch (IOException e) {
+            LOGGER.warning("Could not get user's gists.\n" + Throwables.getStackTraceAsString(e));
           }
 
           gist.getFiles()
@@ -960,7 +959,7 @@ public class MainWindowController {
     timer.schedule(
         new TimerTask() {
           @Override
-          @SuppressFBWarnings(value = "DM_RUN_FINALIZERS_ON_EXIT")
+          @SuppressFBWarnings(value = "DM_RUN_FINALIZERS_ON_EXIT") // NOPMD
           public void run() {
             LOGGER.log(
                 Level.SEVERE,
@@ -1008,6 +1007,7 @@ public class MainWindowController {
     private final TextArea textArea;
 
     public TextAreaPrintStream(final TextArea textArea) {
+      super();
       this.textArea = textArea;
     }
 

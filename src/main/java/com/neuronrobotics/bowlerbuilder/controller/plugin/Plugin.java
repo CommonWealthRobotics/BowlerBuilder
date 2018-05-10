@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 
 public class Plugin implements Serializable {
 
+  private static final long serialVersionUID = -4350419926001196348L;
   private final String gitSource;
   private final String displayName;
 

@@ -5,8 +5,8 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.JogWidget;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
@@ -16,7 +16,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MovementTabLimbSelection extends AbstractLimbSelection {
 
   // Need static store so only one thread controls a limb at a time
-  private static final Map<DHParameterKinematics, JogWidget> JOG_WIDGET_MAP = new HashMap<>();
+  private static final Map<DHParameterKinematics, JogWidget> JOG_WIDGET_MAP =
+      new ConcurrentHashMap<>();
   private final VBox view;
 
   /**

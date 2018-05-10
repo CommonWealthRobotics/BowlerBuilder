@@ -15,6 +15,7 @@ public class AceCadEditorControllerModule extends AbstractModule {
   private final ScriptEditorView scriptEditorView;
 
   public AceCadEditorControllerModule(@Nonnull final ScriptEditorView scriptEditorView) {
+    super();
     this.scriptEditorView = scriptEditorView;
   }
 

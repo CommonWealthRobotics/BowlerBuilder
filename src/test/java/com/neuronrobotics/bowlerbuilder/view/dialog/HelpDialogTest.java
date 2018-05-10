@@ -11,6 +11,10 @@ import org.junit.jupiter.api.Test;
 
 public class HelpDialogTest extends AbstractAutoClosingApplicationTest {
 
+  public HelpDialogTest() {
+    super();
+  }
+
   @Override
   public void start(final Stage stage) {
     final HelpDialog dialog = new HelpDialog();

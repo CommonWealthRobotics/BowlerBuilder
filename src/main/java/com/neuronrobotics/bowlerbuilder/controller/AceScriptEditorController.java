@@ -144,28 +144,28 @@ public class AceScriptEditorController {
         .ifPresent(
             commitMessage -> {
               try {
-                final String remote;
-                final String relativePath;
-
                 if (gist == null) {
-                  remote = manualRemote;
-                  relativePath = manualFile;
+                  ScriptingEngine.pushCodeToGit(
+                      manualRemote,
+                      ScriptingEngine.getFullBranch(manualRemote),
+                      manualFile,
+                      scriptEditor.getText(),
+                      commitMessage);
                 } else {
                   final File currentFile =
                       ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
 
                   final Git git = ScriptingEngine.locateGit(currentFile);
-                  remote = git.getRepository().getConfig().getString("remote", "origin", "url");
-                  relativePath = ScriptingEngine.findLocalPath(currentFile, git);
-                }
+                  final String remote =
+                      git.getRepository().getConfig().getString("remote", "origin", "url");
 
-                // Push to existing gist
-                ScriptingEngine.pushCodeToGit(
-                    remote,
-                    ScriptingEngine.getFullBranch(remote),
-                    relativePath,
-                    scriptEditor.getText(),
-                    commitMessage);
+                  ScriptingEngine.pushCodeToGit(
+                      git.getRepository().getConfig().getString("remote", "origin", "url"),
+                      ScriptingEngine.getFullBranch(remote),
+                      ScriptingEngine.findLocalPath(currentFile, git),
+                      scriptEditor.getText(),
+                      commitMessage);
+                }
               } catch (final Exception e) {
                 LOGGER.log(
                     Level.SEVERE, "Could not commit.\n" + Throwables.getStackTraceAsString(e));

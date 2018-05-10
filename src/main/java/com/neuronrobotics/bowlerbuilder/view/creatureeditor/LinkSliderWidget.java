@@ -13,7 +13,6 @@ import com.neuronrobotics.sdk.addons.gamepad.IJInputEventListener;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractLink;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.DhLinkType;
 import com.neuronrobotics.sdk.addons.kinematics.ILinkListener;
 import com.neuronrobotics.sdk.pid.PIDLimitEvent;
@@ -42,7 +41,6 @@ public class LinkSliderWidget extends Group
   private final int linkIndex;
   private final AbstractLink abstractLink;
 
-  private DHParameterKinematics dhdevice;
   private EngineeringUnitsSliderWidget setpoint;
   private BowlerJInputDevice controller;
   private JogThread jogTHreadHandle;
@@ -60,11 +58,9 @@ public class LinkSliderWidget extends Group
    */
   public LinkSliderWidget(
       final int linkIndex, final DHLink dhlink, final AbstractKinematicsNR abstractKinematicsNR) {
+    super();
     this.linkIndex = linkIndex;
     this.device = abstractKinematicsNR;
-    if (DHParameterKinematics.class.isInstance(device)) {
-      dhdevice = (DHParameterKinematics) device;
-    }
 
     abstractLink = device.getAbstractLink(linkIndex);
 
@@ -203,6 +199,10 @@ public class LinkSliderWidget extends Group
     private boolean controlThreadRunning;
     private double toSeconds = seconds;
     private double newValue;
+
+    JogThread() {
+      super();
+    }
 
     @Override
     public void run() {

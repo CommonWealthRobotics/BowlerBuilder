@@ -9,6 +9,10 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 
 public class CADModelViewerControllerModule extends AbstractModule {
 
+  public CADModelViewerControllerModule() {
+    super();
+  }
+
   @Override
   protected void configure() {
     bind(CadEngine.class).to(BowlerCadEngine.class);

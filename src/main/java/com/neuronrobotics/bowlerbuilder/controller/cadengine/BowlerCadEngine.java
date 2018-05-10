@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -94,8 +94,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private final Group focusGroup = new Group();
   private final Group meshViewGroup = new Group();
   private final Group hand = new Group();
-  private final Map<String, MeshView> csgNameMap = new WeakHashMap<>();
-  private final Map<MeshView, Axis3D> axisMap = new WeakHashMap<>();
+  private final Map<String, MeshView> csgNameMap = new ConcurrentHashMap<>();
+  private final Map<MeshView, Axis3D> axisMap = new ConcurrentHashMap<>();
   private double mousePosX;
   private double mousePosY;
   private double mouseOldX;
@@ -107,7 +107,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
-  private Map<CSG, MeshView> csgMap = new WeakHashMap<>();
+  private Map<CSG, MeshView> csgMap = new ConcurrentHashMap<>();
   private CSG selectedCsg;
   private long lastMouseMovementTime = System.currentTimeMillis();
 
@@ -128,6 +128,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   public BowlerCadEngine(
       @Nonnull final CsgParser csgParser,
       @Nonnull final PreferencesServiceFactory preferencesServiceFactory) {
+    super();
     this.csgParser = csgParser;
 
     axisShowing = new SimpleBooleanProperty(true);
@@ -400,13 +401,13 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private void handleMouse(@Nonnull final SubScene scene) {
     scene.setOnMouseClicked(
         new EventHandler<MouseEvent>() {
-          long lastClickedTimeLocal;
-          static final long OFFSET = 500;
+          private long lastClickedTimeLocal;
+          private static final long OFFSET = 500;
 
           @Override
           public void handle(final MouseEvent event) {
             resetMouseTime(); // NOPMD
-            final long lastClickedDifference = (System.currentTimeMillis() - lastClickedTimeLocal);
+            final long lastClickedDifference = System.currentTimeMillis() - lastClickedTimeLocal;
             FxTimer.runLater(
                 Duration.ofMillis(100),
                 () -> {
@@ -437,8 +438,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
           mouseOldY = mousePosY;
           mousePosX = mouseEvent.getSceneX();
           mousePosY = mouseEvent.getSceneY();
-          mouseDeltaX = (mousePosX - mouseOldX);
-          mouseDeltaY = (mousePosY - mouseOldY);
+          mouseDeltaX = mousePosX - mouseOldX;
+          mouseDeltaY = mousePosY - mouseOldY;
 
           double modifier = 1.0;
           final double modifierFactor = 0.1;
@@ -497,6 +498,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   /** Home the camera to its default view. */
+  @Override
   public void homeCamera() {
     flyingCamera.setGlobalToFiducialTransform(defaultCameraView);
     virtualCam.setZoomDepth(VirtualCameraDevice.getDefaultZoomDepth());
@@ -510,7 +512,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
           () -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); // NOPMD
     }
 
-    this.selectedCsg = null;
+    this.selectedCsg = null; // NOPMD
     final TransformNR startSelectNr = previousTarget.copy();
     final TransformNR targetNR = new TransformNR();
     final Affine interpolator = new Affine();
@@ -570,6 +572,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     Arrays.stream(toRemove).forEach(allTrans::remove);
   }
 
+  @Override
   public Map<CSG, MeshView> getCsgMap() {
     return csgMap;
   }

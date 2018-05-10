@@ -3,16 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.model.preferences;
 
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+
 import com.google.common.base.Throwables;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +69,7 @@ public class PreferencesService {
       if (value.getClass().isInstance(defaultValue)) {
         return (T) value;
       } else {
-        throw new RuntimeException(
+        throw new IllegalArgumentException(
             "Preferences map entry type is different than default value type.");
       }
     } else {
@@ -113,7 +117,8 @@ public class PreferencesService {
     final File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
       try (ObjectInputStream stream =
-          new ObjectInputStream(new FileInputStream(prefsSaveFilePath))) {
+          new ObjectInputStream(
+              Files.newInputStream(Paths.get(prefsSaveFilePath), READ))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (final IOException e) {
         LOGGER.severe(
@@ -133,7 +138,8 @@ public class PreferencesService {
     final File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
       try (ObjectOutputStream stream =
-          new ObjectOutputStream(new FileOutputStream(prefsSaveFilePath))) {
+          new ObjectOutputStream(
+              Files.newOutputStream(Paths.get(prefsSaveFilePath), CREATE, APPEND))) {
         stream.writeObject(data);
       } catch (final FileNotFoundException e) {
         LOGGER.severe(

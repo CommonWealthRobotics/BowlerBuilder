@@ -45,11 +45,7 @@ public class VirtualCameraMobileBase extends MobileBase { // NOPMD
 
   private static final class IDriveEngineImplementation implements IDriveEngine {
 
-    double azOffset;
-    double elOffset;
-    double tlOffset;
-
-    final TransformNR pureTrans = new TransformNR();
+    private final TransformNR pureTrans = new TransformNR();
 
     /** Not used. */
     @Override
@@ -80,20 +76,17 @@ public class VirtualCameraMobileBase extends MobileBase { // NOPMD
       final TransformNR global = source.getFiducialToGlobalTransform().times(pureTrans);
       global.setRotation(
           new RotationNR(
-              tlOffset
-                  + (Math.toDegrees(
-                          newPose.getRotation().getRotationTilt()
-                              + global.getRotation().getRotationTilt())
-                      % 360),
-              azOffset
-                  + (Math.toDegrees(
-                          newPose.getRotation().getRotationAzimuth()
-                              + global.getRotation().getRotationAzimuth())
-                      % 360),
-              elOffset
-                  + Math.toDegrees(
-                      newPose.getRotation().getRotationElevation()
-                          + global.getRotation().getRotationElevation())));
+              Math.toDegrees(
+                      newPose.getRotation().getRotationTilt()
+                          + global.getRotation().getRotationTilt())
+                  % 360,
+              Math.toDegrees(
+                      newPose.getRotation().getRotationAzimuth()
+                          + global.getRotation().getRotationAzimuth())
+                  % 360,
+              Math.toDegrees(
+                  newPose.getRotation().getRotationElevation()
+                      + global.getRotation().getRotationElevation())));
 
       source.setGlobalToFiducialTransform(global);
     }

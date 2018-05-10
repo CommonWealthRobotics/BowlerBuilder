@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -58,6 +59,7 @@ public class LinkConfigurationWidget extends GridPane {
       @Nonnull final LinkConfiguration configuration,
       @Nonnull final LinkFactory factory,
       @Nullable final EngineeringUnitsSliderWidget setpointSlider) {
+    super();
     conf = configuration;
     activeLink = factory.getLink(conf);
     getColumnConstraints().add(new ColumnConstraints(150)); // column 1 is 75 wide
@@ -499,7 +501,7 @@ public class LinkConfigurationWidget extends GridPane {
           grid.setVgap(10);
           grid.setPadding(new Insets(20, 150, 10, 10));
 
-          final Map<String, TextField> valueFields = new HashMap<>();
+          final Map<String, TextField> valueFields = new ConcurrentHashMap<>();
 
           int row = 0;
           for (final Map.Entry<String, Object> entry : startingConf.entrySet()) {

@@ -166,14 +166,15 @@ public class CreatureEditorController {
           }
         });
 
+    final String padding = "-fx-padding: 5px;";
     limbTab.setGraphic(AssetFactory.loadIcon("creature.png"));
-    limbTab.setStyle("-fx-padding: 5px;");
+    limbTab.setStyle(padding);
     movementTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
-    movementTab.setStyle("-fx-padding: 5px;");
+    movementTab.setStyle(padding);
     configTab.setGraphic(AssetFactory.loadIcon("Advanced-Configuration.png"));
-    configTab.setStyle("-fx-padding: 5px;");
+    configTab.setStyle(padding);
     scriptTab.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
-    scriptTab.setStyle("-fx-padding: 5px;");
+    scriptTab.setStyle(padding);
 
     regenCADButton.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
     regenCADButton.setText("Regenerate CAD");

@@ -42,7 +42,6 @@ public class ConnectionManager implements IDeviceAddedListener {
         __ -> {
           final ImmutableList<BowlerAbstractDevice> devicesCopy = ImmutableList.copyOf(devices);
           devicesCopy.forEach(device -> disconnectDevice(accordion, device));
-          System.out.println("remove all done");
         });
 
     Platform.runLater(
@@ -103,6 +102,5 @@ public class ConnectionManager implements IDeviceAddedListener {
     Platform.runLater(() -> accordion.getPanes().remove(devicePane));
     devices.remove(device);
     paneMap.remove(device);
-    System.out.println("disconnect done for:" + device.getScriptingName());
   }
 }

@@ -41,7 +41,7 @@ public class LimbLayoutTest extends AbstractAutoClosingApplicationTest {
 
   private static class MockMobileBase extends MobileBase {
 
-    MockMobileBase() {
+    MockMobileBase() { // NOPMD
       // Empty mock ctor
     }
 

@@ -8,6 +8,8 @@ import javax.annotation.Nonnull;
 
 public class AceWebEngineFactory {
 
+  public AceWebEngineFactory() {}
+
   public AceWebEngine create(@Nonnull final WebEngine webEngine) {
     return new AceWebEngine(webEngine);
   }

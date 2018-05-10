@@ -31,6 +31,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param text Text to insert
    */
+  @Override
   public void insertAtCursor(@Nonnull final String text) {
     runAfterEngine(
         () -> {
@@ -45,6 +46,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param text Text to insert
    */
+  @Override
   public void setText(@Nonnull final String text) {
     runAfterEngine(
         () -> {
@@ -75,6 +77,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param fontSize Font size
    */
+  @Override
   public void setFontSize(final int fontSize) {
     runAfterEngine(
         () ->
@@ -87,6 +90,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @return All text in the editor
    */
+  @Override
   public String getText() {
     try {
       return returnAfterEngine(() -> (String) engine.executeScript("editor.getValue();"));
@@ -102,6 +106,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @return The selected text
    */
+  @Override
   public String getSelectedText() {
     try {
       return returnAfterEngine(
@@ -120,6 +125,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @param lineNumber Line number
    */
+  @Override
   public void gotoLine(final int lineNumber) {
     runAfterEngine(() -> engine.executeScript("editor.gotoLine(" + lineNumber + ");"));
   }
@@ -130,6 +136,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @return Cursor position
    */
+  @Override
   public int getCursorPosition() {
     try {
       return returnAfterEngine(

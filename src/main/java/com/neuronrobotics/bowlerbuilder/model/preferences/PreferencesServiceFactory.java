@@ -14,6 +14,8 @@ public class PreferencesServiceFactory {
 
   private static final Map<String, PreferencesService> PREFERENCES_MAP = new ConcurrentHashMap<>();
 
+  public PreferencesServiceFactory() {}
+
   /**
    * Make a new {@link PreferencesService}, or use the previous one if it is in the map.
    *

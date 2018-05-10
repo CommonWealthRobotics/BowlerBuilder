@@ -54,6 +54,7 @@ public class EngineeringUnitsSliderWidget extends GridPane implements ChangeList
       final double current,
       final double width,
       final String units) {
+    super();
     this.listener = listener;
     setpoint = new Slider();
 

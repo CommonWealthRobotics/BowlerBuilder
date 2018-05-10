@@ -81,7 +81,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
                 .getChildren()
                 .setAll(
                     new LimbTabLinkSelection(null, newValue, limb, this, creatureEditorController)
-                        .getWidget());
+                        .getWidget()); // NOPMD
           }
         });
 

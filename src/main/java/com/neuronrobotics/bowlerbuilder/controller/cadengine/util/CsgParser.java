@@ -20,6 +20,8 @@ public class CsgParser {
 
   private static final Logger LOGGER = LoggerUtilities.getLogger(CsgParser.class.getSimpleName());
 
+  public CsgParser() {}
+
   /**
    * Find the CSG object in the map from the source code.
    *

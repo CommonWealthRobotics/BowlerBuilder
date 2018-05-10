@@ -21,6 +21,8 @@ public class WebBrowserController {
   @FXML private TextField urlField;
   @FXML private WebView webView;
 
+  public WebBrowserController() {}
+
   @FXML
   protected void initialize() {
     backPageButton.setGraphic(new Glyph("FontAwesome", "ARROW_LEFT"));

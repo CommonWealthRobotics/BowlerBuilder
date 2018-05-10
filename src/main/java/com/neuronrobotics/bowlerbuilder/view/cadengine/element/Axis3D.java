@@ -53,7 +53,7 @@ public class Axis3D extends Group {
   }
 
   // CHECKSTYLE:OFF
-  public Axis3D(final int increment) {
+  public Axis3D(final int increment) { // NOPMD
     final Affine plusX = new Affine();
     plusX.setTx(increment / 2.0);
     xText = new Label("+X");

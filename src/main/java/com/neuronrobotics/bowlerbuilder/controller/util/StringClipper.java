@@ -7,6 +7,8 @@ import javax.annotation.Nonnull;
 
 public class StringClipper {
 
+  public StringClipper() {}
+
   /**
    * Clip a String to a maximum number of lines.
    *

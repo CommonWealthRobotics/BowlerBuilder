@@ -9,6 +9,8 @@ import javax.annotation.Nonnull;
 
 public class ConnectionManagerFactory {
 
+  public ConnectionManagerFactory() {}
+
   public ConnectionManager get(
       @Nonnull final HBox connectionsHeader, @Nonnull final Accordion accordion) {
     return new ConnectionManager(connectionsHeader, accordion);

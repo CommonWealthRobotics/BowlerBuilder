@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner;
 
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerstudio.scripting.GroovyHelper;
 import com.neuronrobotics.bowlerstudio.scripting.IScriptingLanguage;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -27,8 +25,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 /** Simple copy of {@link GroovyHelper} that keeps a flag for when it is compiling or running. */
 public class BowlerGroovy implements IScriptingLanguage {
 
-  private static final Logger LOGGER =
-      LoggerUtilities.getLogger(BowlerGroovy.class.getSimpleName());
   private final BooleanProperty compiling;
   private final BooleanProperty running;
 
@@ -93,7 +89,7 @@ public class BowlerGroovy implements IScriptingLanguage {
     binding.setVariable("args", args);
 
     final GroovyShell shell =
-        new GroovyShell(GroovyHelper.class.getClassLoader(), binding, configuration);
+        new GroovyShell(Thread.currentThread().getContextClassLoader(), binding, configuration);
     final Script script;
 
     if (String.class.isInstance(code)) {
