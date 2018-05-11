@@ -20,8 +20,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class TransformWidget implements EngineeringUnitsChangeListener, EventHandler<ActionEvent> {
 
   private static final Logger LOGGER =
@@ -43,9 +44,7 @@ public class TransformWidget implements EngineeringUnitsChangeListener, EventHan
    * @param onChange change listener
    */
   public TransformWidget(
-      @Nonnull final String title,
-      @Nonnull final TransformNR initialState,
-      @Nonnull final TransformChangeListener onChange) {
+      final String title, final TransformNR initialState, final TransformChangeListener onChange) {
     this.onChange = onChange;
 
     view = new VBox(5);
@@ -120,7 +119,7 @@ public class TransformWidget implements EngineeringUnitsChangeListener, EventHan
     view.getChildren().add(gridPane);
   }
 
-  private Label getSliderLabel(@Nonnull final String text) {
+  private Label getSliderLabel(final String text) {
     final Label out = new Label(text);
     out.setPadding(new Insets(5));
     GridPane.setHalignment(out, HPos.RIGHT);
@@ -137,13 +136,13 @@ public class TransformWidget implements EngineeringUnitsChangeListener, EventHan
 
   @Override
   public void onSliderMoving(
-      @Nonnull final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+      final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     onChange.onTransformChanging(getCurrent());
   }
 
   @Override
   public void onSliderDoneMoving(
-      @Nonnull final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
+      final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
     handle(null);
   }
 

@@ -4,7 +4,9 @@
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface TransformChangeListener {
 
   void onTransformChanging(TransformNR newTrans);

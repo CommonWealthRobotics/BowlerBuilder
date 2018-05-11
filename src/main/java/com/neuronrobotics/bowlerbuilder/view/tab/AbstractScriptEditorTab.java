@@ -5,19 +5,19 @@ package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
 import javafx.scene.Node;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Tab used for editing scripts.
  *
  * @param <T> controller type
  */
+@ParametersAreNonnullByDefault
 public abstract class AbstractScriptEditorTab<T> extends AbstractTab<T> {
 
   private final ScriptEditorView scriptEditorView;
 
-  public AbstractScriptEditorTab(
-      @Nonnull final String title, @Nonnull final ScriptEditorView scriptEditorView) {
+  public AbstractScriptEditorTab(final String title, final ScriptEditorView scriptEditorView) {
     super(title);
     this.scriptEditorView = scriptEditorView;
   }

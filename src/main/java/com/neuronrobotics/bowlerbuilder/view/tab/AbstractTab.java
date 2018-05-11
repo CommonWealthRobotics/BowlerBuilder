@@ -5,16 +5,17 @@ package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * A generic tab.
  *
  * @param <T> controller type for the content
  */
+@ParametersAreNonnullByDefault
 public abstract class AbstractTab<T> extends Tab {
 
-  public AbstractTab(@Nonnull final String title) {
+  public AbstractTab(final String title) {
     super(title);
   }
 

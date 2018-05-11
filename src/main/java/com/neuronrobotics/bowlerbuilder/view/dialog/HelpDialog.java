@@ -12,7 +12,9 @@ import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class HelpDialog extends Dialog {
 
   private static final Logger LOGGER = LoggerUtilities.getLogger(HelpDialog.class.getSimpleName());

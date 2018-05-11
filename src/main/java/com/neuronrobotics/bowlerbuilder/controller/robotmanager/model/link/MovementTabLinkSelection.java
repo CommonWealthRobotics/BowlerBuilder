@@ -9,24 +9,29 @@ import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class MovementTabLinkSelection extends AbstractLinkSelection {
 
   private final LinkSliderWidget slider;
 
   public MovementTabLinkSelection(
       final int linkIndex,
-      @Nonnull final DHLink dhLink,
-      @Nonnull final LinkConfiguration configuration,
-      @Nonnull final AbstractKinematicsNR device) {
+      final DHLink dhLink,
+      final LinkConfiguration configuration,
+      final AbstractKinematicsNR device) {
     super(dhLink, configuration);
 
     slider = new LinkSliderWidget(linkIndex, dhLink, device);
   }
 
-  public MovementTabLinkSelection(@Nonnull final LinkData newValue) {
-    this(newValue.index, newValue.dhLink, newValue.linkConfiguration, newValue.device);
+  public MovementTabLinkSelection(final LinkData newValue) {
+    this(
+        newValue.getIndex(),
+        newValue.getDhLink(),
+        newValue.getLinkConfiguration(),
+        newValue.getDevice());
   }
 
   @Override

@@ -14,7 +14,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class ManageWidgetsDialog extends Dialog<List<Plugin>> {
 
   private final ListView<Plugin> widgetListView;

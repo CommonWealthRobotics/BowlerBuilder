@@ -16,9 +16,10 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
 
+@ParametersAreNonnullByDefault
 public final class LoggerUtilities {
 
   // Log file parent directory path
@@ -90,8 +91,7 @@ public final class LoggerUtilities {
    * @param runnable thread runnable
    * @return logging thread
    */
-  public static Thread newLoggingThread(
-      @Nonnull final Logger logger, @Nonnull final Runnable runnable) {
+  public static Thread newLoggingThread(final Logger logger, final Runnable runnable) {
     final Thread thread = new Thread(runnable);
     thread.setUncaughtExceptionHandler(
         (exceptionThread, exception) ->
@@ -111,7 +111,7 @@ public final class LoggerUtilities {
    * @param name logger name
    * @return new logger
    */
-  public static Logger getLogger(@Nonnull final String name) {
+  public static Logger getLogger(final String name) {
     if (LOGGER_NAMES.contains(name)) {
       throw new UnsupportedOperationException(
           "Cannot add logger of name: " + name + ". A logger with the same name already exists.");

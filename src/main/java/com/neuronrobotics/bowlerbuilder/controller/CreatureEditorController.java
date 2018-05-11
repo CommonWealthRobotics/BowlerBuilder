@@ -379,9 +379,9 @@ public class CreatureEditorController {
                       linkData ->
                           selectionProperty.set(
                               new ConfigTabLinkSelection(
-                                  linkData.dhLink,
-                                  linkData.linkConfiguration,
-                                  linkData.parentLimb,
+                                  linkData.getDhLink(),
+                                  linkData.getLinkConfiguration(),
+                                  linkData.getParentLimb(),
                                   cadManager))));
     } catch (final IOException e) {
       LOGGER.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
@@ -725,11 +725,11 @@ public class CreatureEditorController {
           .showAndWait()
           .ifPresent(
               result -> {
-                newLeg.setScriptingName(result.name);
+                newLeg.setScriptingName(result.getName());
 
                 for (int i = 0; i < linkConfigurations.size(); i++) {
                   final LinkConfiguration conf = linkConfigurations.get(i);
-                  conf.setHardwareIndex(result.indices.get(i));
+                  conf.setHardwareIndex(result.getIndices().get(i));
                   newLeg.getFactory().refreshHardwareLayer(conf);
                 }
 

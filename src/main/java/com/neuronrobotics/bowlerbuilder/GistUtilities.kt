@@ -11,7 +11,9 @@ import org.kohsuke.github.GHGistBuilder
 import java.io.IOException
 import java.util.Optional
 import java.util.logging.Level
+import javax.annotation.ParametersAreNonnullByDefault
 
+@ParametersAreNonnullByDefault
 object GistUtilities {
 
     private val LOGGER = LoggerUtilities.getLogger(GistUtilities::class.java.simpleName)
@@ -46,7 +48,6 @@ object GistUtilities {
      * @param filename Gist file filename
      * @return New gist
      */
-    @JvmStatic
     @Throws(IOException::class)
     private fun createGistFromBuilder(builder: GHGistBuilder, filename: String): GHGist {
         val gist = builder.create()

@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.transform.Affine;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class VirtualCameraDevice extends AbstractImageProvider {
 
   private static final int DEFAULT_ZOOM_DEPTH = -1500;
@@ -25,7 +26,7 @@ public class VirtualCameraDevice extends AbstractImageProvider {
   private final Affine zoomAffine = new Affine();
   private final Group manipulationFrame;
 
-  public VirtualCameraDevice(@Nonnull final Camera camera, @Nonnull final Group hand) {
+  public VirtualCameraDevice(final Camera camera, final Group hand) {
     super();
     setCamera(camera);
     setScriptingName("virtualCameraDevice");

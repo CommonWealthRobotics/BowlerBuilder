@@ -6,18 +6,18 @@ package com.neuronrobotics.bowlerbuilder.view.dialog.util;
 import java.util.function.Function;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.control.TextField;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.decoration.StyleClassValidationDecoration;
 
+@ParametersAreNonnullByDefault
 public class ValidatedTextField extends TextField {
 
   private final ValidationSupport validator;
 
-  public ValidatedTextField(
-      @Nonnull final String invalidMessage, @Nonnull final Function<String, Boolean> isValid) {
+  public ValidatedTextField(final String invalidMessage, final Function<String, Boolean> isValid) {
     super();
 
     validator = new ValidationSupport();

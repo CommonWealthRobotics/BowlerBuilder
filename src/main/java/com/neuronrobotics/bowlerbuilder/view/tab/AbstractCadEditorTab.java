@@ -5,21 +5,20 @@ package com.neuronrobotics.bowlerbuilder.view.tab;
 
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Tab used for editing CAD scripts.
  *
  * @param <T> controller type
  */
+@ParametersAreNonnullByDefault
 public abstract class AbstractCadEditorTab<T> extends AbstractScriptEditorTab<T> {
 
   private final CadEngine cadEngine;
 
   public AbstractCadEditorTab(
-      @Nonnull final String title,
-      @Nonnull final ScriptEditorView scriptEditorView,
-      @Nonnull final CadEngine cadEngine) {
+      final String title, final ScriptEditorView scriptEditorView, final CadEngine cadEngine) {
     super(title, scriptEditorView);
     this.cadEngine = cadEngine;
   }

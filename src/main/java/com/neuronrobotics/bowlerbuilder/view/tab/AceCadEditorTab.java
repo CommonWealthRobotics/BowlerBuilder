@@ -13,11 +13,12 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * {@link AbstractCadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
  */
+@ParametersAreNonnullByDefault
 public class AceCadEditorTab extends AbstractCadEditorTab<AceCadEditorTabController> {
 
   private final AceCadEditorTabController controller;
@@ -30,7 +31,7 @@ public class AceCadEditorTab extends AbstractCadEditorTab<AceCadEditorTabControl
    * @param title tab title
    * @throws IOException when loading FXML resources
    */
-  public AceCadEditorTab(@Nonnull final String title) throws IOException {
+  public AceCadEditorTab(final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),

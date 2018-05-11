@@ -26,12 +26,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javax.annotation.ParametersAreNonnullByDefault;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.Event;
 import org.reactfx.util.FxTimer;
 
 @SuppressWarnings("restriction")
+@ParametersAreNonnullByDefault
 public class LinkSliderWidget extends Group
     implements IJInputEventListener, EngineeringUnitsChangeListener, ILinkListener {
 
@@ -119,18 +121,16 @@ public class LinkSliderWidget extends Group
   public void setGameController(final BowlerJInputDevice controller) {
     this.controller = controller;
 
-    if (controller != null && jogTHreadHandle == null) {
+    if (jogTHreadHandle == null) {
       jogTHreadHandle = new JogThread();
       jogTHreadHandle.start();
     }
 
-    if (controller != null) {
-      final Controller hwController = controller.getController();
-      paramsKey = hwController.getName();
-      getGameController().clearListeners();
-      getGameController().addListeners(this);
-      controllerLoop();
-    }
+    final Controller hwController = controller.getController();
+    paramsKey = hwController.getName();
+    getGameController().clearListeners();
+    getGameController().addListeners(this);
+    controllerLoop();
   }
 
   public BowlerJInputDevice getGameController() {
@@ -194,6 +194,7 @@ public class LinkSliderWidget extends Group
     this.setpoint = setpoint;
   }
 
+  @ParametersAreNonnullByDefault
   private class JogThread extends Thread {
 
     private boolean controlThreadRunning;

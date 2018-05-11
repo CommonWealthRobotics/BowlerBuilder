@@ -19,8 +19,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AddLimbDialog extends Dialog<LimbData> {
 
   private final Set<Integer> takenChannels;
@@ -34,9 +35,7 @@ public class AddLimbDialog extends Dialog<LimbData> {
    * @param takenChannels the hardware channels in use
    */
   public AddLimbDialog(
-      @Nonnull final String name,
-      @Nonnull final Integer numberOfHWIndices,
-      @Nonnull final Set<Integer> takenChannels) {
+      final String name, final Integer numberOfHWIndices, final Set<Integer> takenChannels) {
     super();
     this.takenChannels = takenChannels;
     hwIndexFields = FXCollections.observableArrayList();
@@ -102,7 +101,7 @@ public class AddLimbDialog extends Dialog<LimbData> {
         });
   }
 
-  private Pair<Label, ValidatedTextField> getField(@Nonnull final String fieldID) {
+  private Pair<Label, ValidatedTextField> getField(final String fieldID) {
     final Label hwIndexLabel = new Label("Hardware index");
     GridPane.setHalignment(hwIndexLabel, HPos.RIGHT);
 

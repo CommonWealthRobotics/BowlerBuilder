@@ -17,11 +17,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * {@link AbstractCadEditorTab} that uses an {@link AceEditorView} and a {@link BowlerCadEngine}.
  */
+@ParametersAreNonnullByDefault
 public class CreatureLabTab extends AbstractCadEditorTab<AceCreatureLabController> {
 
   private static final Logger LOGGER =
@@ -36,7 +37,7 @@ public class CreatureLabTab extends AbstractCadEditorTab<AceCreatureLabControlle
    * @param title tab title
    * @throws IOException when loading the FXML resources
    */
-  public CreatureLabTab(@Nonnull final String title) throws IOException {
+  public CreatureLabTab(final String title) throws IOException {
     super(
         title,
         BowlerBuilder.getInjector().getInstance(AceEditorView.class),

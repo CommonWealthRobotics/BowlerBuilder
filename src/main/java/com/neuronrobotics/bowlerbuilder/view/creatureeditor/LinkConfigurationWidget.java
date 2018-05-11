@@ -35,12 +35,13 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
+@ParametersAreNonnullByDefault
 public class LinkConfigurationWidget extends GridPane {
 
   private static final Logger LOGGER =
@@ -56,8 +57,8 @@ public class LinkConfigurationWidget extends GridPane {
    * @param setpointSlider link position slider
    */
   public LinkConfigurationWidget(
-      @Nonnull final LinkConfiguration configuration,
-      @Nonnull final LinkFactory factory,
+      final LinkConfiguration configuration,
+      final LinkFactory factory,
       @Nullable final EngineeringUnitsSliderWidget setpointSlider) {
     super();
     conf = configuration;
@@ -461,7 +462,7 @@ public class LinkConfigurationWidget extends GridPane {
     add(newShaft, 1, 16);
   }
 
-  private void test(@Nonnull final String type) throws IOException {
+  private void test(final String type) throws IOException {
     LOGGER.log(Level.FINEST, "Running test with: " + type);
 
     try {
@@ -480,9 +481,7 @@ public class LinkConfigurationWidget extends GridPane {
   }
 
   private void edit(
-      @Nonnull final String type,
-      @Nonnull final String vitaminID,
-      @Nonnull final Map<String, Object> startingConf)
+      final String type, final String vitaminID, final Map<String, Object> startingConf)
       throws IOException {
     LOGGER.log(Level.INFO, "Configuration for " + conf.getElectroMechanicalSize());
     LOGGER.log(Level.INFO, "Saving " + vitaminID);

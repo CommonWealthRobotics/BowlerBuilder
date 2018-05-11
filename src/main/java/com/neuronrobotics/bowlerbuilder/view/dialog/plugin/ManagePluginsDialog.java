@@ -13,8 +13,9 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class ManagePluginsDialog extends Dialog<List<Plugin>> {
 
   private final ListView<Plugin> pluginListView;
@@ -24,7 +25,7 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
    *
    * @param plugins list of plugins
    */
-  public ManagePluginsDialog(@Nonnull final ObservableList<Plugin> plugins) {
+  public ManagePluginsDialog(final ObservableList<Plugin> plugins) {
     super();
 
     pluginListView = new ListView<>(plugins);
@@ -62,7 +63,7 @@ public class ManagePluginsDialog extends Dialog<List<Plugin>> {
     setResultConverter(buttonType -> pluginListView.getItems());
   }
 
-  public void setPlugins(@Nonnull final ObservableList<Plugin> plugins) {
+  public void setPlugins(final ObservableList<Plugin> plugins) {
     pluginListView.setItems(plugins);
   }
 }
