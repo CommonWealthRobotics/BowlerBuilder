@@ -7,9 +7,10 @@ import com.google.inject.Singleton;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @Singleton
+@ParametersAreNonnullByDefault
 public class PreferencesServiceFactory {
 
   private static final Map<String, PreferencesService> PREFERENCES_MAP = new ConcurrentHashMap<>();
@@ -22,7 +23,7 @@ public class PreferencesServiceFactory {
    * @param folderName preferences service folder name
    * @return service
    */
-  public PreferencesService create(@Nonnull final String folderName) {
+  public PreferencesService create(final String folderName) {
     if (PREFERENCES_MAP.containsKey(folderName)) {
       return PREFERENCES_MAP.get(folderName);
     } else {

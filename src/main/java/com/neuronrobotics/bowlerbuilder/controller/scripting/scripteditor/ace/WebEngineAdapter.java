@@ -4,8 +4,10 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace;
 
 import javafx.concurrent.Worker;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Adapter to a {@link javafx.scene.web.WebEngine} since that class is final. */
+@ParametersAreNonnullByDefault
 public interface WebEngineAdapter {
 
   /**

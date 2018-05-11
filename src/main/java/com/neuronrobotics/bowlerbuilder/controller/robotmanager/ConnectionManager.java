@@ -21,17 +21,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 @Singleton
+@ParametersAreNonnullByDefault
 public class ConnectionManager implements IDeviceAddedListener {
 
   private final List<BowlerAbstractDevice> devices;
   private final Accordion accordion;
   private final Map<BowlerAbstractDevice, TitledPane> paneMap;
 
-  public ConnectionManager(
-      @Nonnull final HBox connectionsHeader, @Nonnull final Accordion accordion) {
+  public ConnectionManager(final HBox connectionsHeader, final Accordion accordion) {
     devices = new ArrayList<>();
     this.accordion = accordion;
     paneMap = new HashMap<>();
@@ -60,7 +60,7 @@ public class ConnectionManager implements IDeviceAddedListener {
   }
 
   @Override
-  public void onNewDeviceAdded(@Nonnull final BowlerAbstractDevice device) {
+  public void onNewDeviceAdded(final BowlerAbstractDevice device) {
     // Don't add Camera devices
     if (device instanceof VirtualCameraDevice) {
       return;
@@ -83,12 +83,11 @@ public class ConnectionManager implements IDeviceAddedListener {
   }
 
   @Override
-  public void onDeviceRemoved(@Nonnull final BowlerAbstractDevice device) {
+  public void onDeviceRemoved(final BowlerAbstractDevice device) {
     disconnectDevice(accordion, device);
   }
 
-  protected void disconnectDevice(
-      @Nonnull final Accordion accordion, @Nonnull final BowlerAbstractDevice device) {
+  protected void disconnectDevice(final Accordion accordion, final BowlerAbstractDevice device) {
     if (device.isAvailable()) {
       device.disconnect();
     }

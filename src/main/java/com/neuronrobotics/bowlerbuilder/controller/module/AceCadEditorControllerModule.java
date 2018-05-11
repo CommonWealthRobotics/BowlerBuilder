@@ -8,13 +8,14 @@ import com.google.inject.name.Names;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowlerscriptrunner.BowlerScriptRunner;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class AceCadEditorControllerModule extends AbstractModule {
 
   private final ScriptEditorView scriptEditorView;
 
-  public AceCadEditorControllerModule(@Nonnull final ScriptEditorView scriptEditorView) {
+  public AceCadEditorControllerModule(final ScriptEditorView scriptEditorView) {
     super();
     this.scriptEditorView = scriptEditorView;
   }

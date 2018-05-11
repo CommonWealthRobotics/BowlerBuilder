@@ -37,6 +37,11 @@ public class AddLimbDialog extends Dialog<LimbData> {
   public AddLimbDialog(
       final String name, final Integer numberOfHWIndices, final Set<Integer> takenChannels) {
     super();
+
+    if (numberOfHWIndices <= 0) {
+      throw new IllegalArgumentException("Must have at least one hardware index available.");
+    }
+
     this.takenChannels = takenChannels;
     hwIndexFields = FXCollections.observableArrayList();
 

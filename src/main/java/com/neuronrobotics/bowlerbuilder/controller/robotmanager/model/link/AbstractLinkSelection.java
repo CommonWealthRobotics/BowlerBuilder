@@ -6,7 +6,10 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.Selection;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public abstract class AbstractLinkSelection implements Selection {
 
   protected final DHLink dhLink;
@@ -18,7 +21,8 @@ public abstract class AbstractLinkSelection implements Selection {
    * @param dhLink link
    * @param configuration configuration
    */
-  public AbstractLinkSelection(final DHLink dhLink, final LinkConfiguration configuration) {
+  public AbstractLinkSelection(
+      @Nullable final DHLink dhLink, final LinkConfiguration configuration) {
     this.dhLink = dhLink;
     this.configuration = configuration;
   }

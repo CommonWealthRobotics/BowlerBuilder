@@ -72,10 +72,11 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
 import org.reactfx.util.FxTimer;
 
+@ParametersAreNonnullByDefault
 public class BowlerCadEngine extends Pane implements CadEngine {
 
   private static final Logger LOGGER =
@@ -126,8 +127,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   @Inject
   public BowlerCadEngine(
-      @Nonnull final CsgParser csgParser,
-      @Nonnull final PreferencesServiceFactory preferencesServiceFactory) {
+      final CsgParser csgParser, final PreferencesServiceFactory preferencesServiceFactory) {
     super();
     this.csgParser = csgParser;
 
@@ -398,7 +398,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    *
    * @param scene the scene
    */
-  private void handleMouse(@Nonnull final SubScene scene) {
+  private void handleMouse(final SubScene scene) {
     scene.setOnMouseClicked(
         new EventHandler<MouseEvent>() {
           private long lastClickedTimeLocal;
@@ -493,7 +493,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param newPose transform to move by
    * @param seconds seconds to move over
    */
-  private void moveCamera(@Nonnull final TransformNR newPose, final double seconds) {
+  private void moveCamera(final TransformNR newPose, final double seconds) {
     flyingCamera.DriveArc(newPose, seconds);
   }
 
@@ -533,11 +533,11 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   private void focusInterpolate(
-      @Nonnull final TransformNR start,
-      @Nonnull final TransformNR target,
+      final TransformNR start,
+      final TransformNR target,
       final int depth,
       final int targetDepth,
-      @Nonnull final Affine interpolator) {
+      final Affine interpolator) {
 
     final double depthScale = 1 - (double) depth / (double) targetDepth;
     final double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
@@ -577,7 +577,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return csgMap;
   }
 
-  private void setCsgMap(@Nonnull final Map<CSG, MeshView> csgMap) {
+  private void setCsgMap(final Map<CSG, MeshView> csgMap) {
     this.csgMap = csgMap;
   }
 
@@ -602,7 +602,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return virtualCam;
   }
 
-  private void setVirtualCam(@Nonnull final VirtualCameraDevice virtualCam) {
+  private void setVirtualCam(final VirtualCameraDevice virtualCam) {
     this.virtualCam = virtualCam;
   }
 
@@ -610,7 +610,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return flyingCamera;
   }
 
-  private void setFlyingCamera(@Nonnull final VirtualCameraMobileBase flyingCamera) {
+  private void setFlyingCamera(final VirtualCameraMobileBase flyingCamera) {
     this.flyingCamera = flyingCamera;
   }
 
@@ -625,7 +625,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param lineNumber line number in script
    */
   @Override
-  public void setSelectedCsg(@Nonnull final File script, final int lineNumber) {
+  public void setSelectedCsg(final File script, final int lineNumber) {
     Platform.runLater(
         () -> {
           final Collection<CSG> csgs =
@@ -649,7 +649,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param selection CSGs to select
    */
   @Override
-  public void selectCSGs(@Nonnull final Collection<CSG> selection) {
+  public void selectCSGs(final Collection<CSG> selection) {
     selection.forEach(
         csg -> {
           final MeshView meshView = csgMap.get(csg);
@@ -666,7 +666,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param selection CSG to select
    * @param csgMap map containing CSGs MeshViews
    */
-  private void selectCSG(@Nonnull final CSG selection, @Nonnull final Map<CSG, MeshView> csgMap) {
+  private void selectCSG(final CSG selection, final Map<CSG, MeshView> csgMap) {
     if (selection.equals(selectedCsg)) {
       return;
     }
@@ -753,7 +753,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param csg CSG to add
    */
   @Override
-  public void addCSG(@Nonnull final CSG csg) {
+  public void addCSG(final CSG csg) {
     final MeshView mesh = csg.getMesh();
     mesh.setMaterial(new PhongMaterial(csg.getColor()));
     mesh.setDepthTest(DepthTest.ENABLE);
@@ -944,12 +944,12 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   @Override
-  public void addAllCSGs(@Nonnull final CSG... csgs) {
+  public void addAllCSGs(final CSG... csgs) {
     Arrays.stream(csgs).forEach(this::addCSG);
   }
 
   @Override
-  public void addAllCSGs(@Nonnull final Collection<CSG> csgs) {
+  public void addAllCSGs(final Collection<CSG> csgs) {
     csgs.forEach(this::addCSG);
   }
 
@@ -979,8 +979,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     return scene;
   }
 
-  private void fireRegenerate(
-      @Nonnull final String key, @Nonnull final Set<CSG> currentObjectsToCheck) {
+  private void fireRegenerate(final String key, final Set<CSG> currentObjectsToCheck) {
     final Thread thread =
         LoggerUtilities.newLoggingThread(
             LOGGER,

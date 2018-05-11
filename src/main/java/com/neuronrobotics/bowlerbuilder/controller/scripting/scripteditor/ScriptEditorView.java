@@ -4,8 +4,10 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor;
 
 import javafx.scene.Node;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Interface to interact with a {@link ScriptEditor} through some {@link Node}. */
+@ParametersAreNonnullByDefault
 public interface ScriptEditorView {
 
   /**

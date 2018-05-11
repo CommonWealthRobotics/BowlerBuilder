@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor;
 
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Interface to edit a text-based script. */
+@ParametersAreNonnullByDefault
 public interface ScriptEditor {
 
   /**
@@ -13,14 +14,14 @@ public interface ScriptEditor {
    *
    * @param text Text to insert
    */
-  void insertAtCursor(@Nonnull String text);
+  void insertAtCursor(String text);
 
   /**
    * Set the text in the editor, overwriting current content.
    *
    * @param text Text to insert
    */
-  void setText(@Nonnull String text);
+  void setText(String text);
 
   /**
    * Set the font size for the editor.

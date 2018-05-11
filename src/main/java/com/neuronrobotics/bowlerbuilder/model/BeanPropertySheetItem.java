@@ -6,9 +6,11 @@ package com.neuronrobotics.bowlerbuilder.model;
 import java.util.Optional;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.controlsfx.control.PropertySheet;
 
 /** PropertySheet.Item that reads/writes from/to a bean. */
+@ParametersAreNonnullByDefault
 public class BeanPropertySheetItem implements PropertySheet.Item {
 
   private final Property prop;
@@ -48,7 +50,7 @@ public class BeanPropertySheetItem implements PropertySheet.Item {
   }
 
   @Override
-  public Optional<ObservableValue<? extends Object>> getObservableValue() {
+  public Optional<ObservableValue<?>> getObservableValue() {
     return Optional.empty();
   }
 }

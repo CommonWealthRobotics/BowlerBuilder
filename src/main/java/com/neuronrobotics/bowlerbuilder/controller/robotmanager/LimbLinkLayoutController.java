@@ -18,21 +18,21 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class LimbLinkLayoutController extends LimbLayoutController {
 
   protected final ObjectProperty<Optional<LinkData>> linkSelection;
 
   @Inject
-  public LimbLinkLayoutController(@Nonnull final MobileBase device) {
+  public LimbLinkLayoutController(final MobileBase device) {
     super(device);
     linkSelection = new SimpleObjectProperty<>();
   }
 
   @Override
-  protected void addButtons(
-      @Nonnull final HBox hBox, @Nonnull final List<DHParameterKinematics> limbs) {
+  protected void addButtons(final HBox hBox, final List<DHParameterKinematics> limbs) {
     hBox.getChildren()
         .addAll(
             limbs

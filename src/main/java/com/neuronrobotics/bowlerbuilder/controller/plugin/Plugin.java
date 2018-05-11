@@ -6,15 +6,16 @@ package com.neuronrobotics.bowlerbuilder.controller.plugin;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.io.Serializable;
 import java.util.ArrayList;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class Plugin implements Serializable {
 
   private static final long serialVersionUID = -4350419926001196348L;
   private final String gitSource;
   private final String displayName;
 
-  public Plugin(@Nonnull final String gitSource, @Nonnull final String displayName) {
+  public Plugin(final String gitSource, final String displayName) {
     this.gitSource = gitSource;
     this.displayName = displayName;
   }

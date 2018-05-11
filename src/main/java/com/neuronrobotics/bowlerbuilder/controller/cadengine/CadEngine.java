@@ -11,9 +11,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.SubScene;
 import javafx.scene.shape.MeshView;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Interface to a CAD engine to display and interact with CSGs. */
+@ParametersAreNonnullByDefault
 public interface CadEngine {
 
   /**
@@ -21,21 +22,21 @@ public interface CadEngine {
    *
    * @param csg CSG to add
    */
-  void addCSG(@Nonnull CSG csg);
+  void addCSG(CSG csg);
 
   /**
    * Add MeshViews from all CSGs.
    *
    * @param csgs CSGs to add
    */
-  void addAllCSGs(@Nonnull CSG... csgs);
+  void addAllCSGs(CSG... csgs);
 
   /**
    * Add MeshViews from all CSGs.
    *
    * @param csgs List of CSGs to add
    */
-  void addAllCSGs(@Nonnull Collection<CSG> csgs);
+  void addAllCSGs(Collection<CSG> csgs);
 
   /**
    * Select all CSGs from the line in the script.
@@ -43,14 +44,14 @@ public interface CadEngine {
    * @param script script containing CSG source
    * @param lineNumber line number in script
    */
-  void setSelectedCsg(@Nonnull File script, int lineNumber);
+  void setSelectedCsg(File script, int lineNumber);
 
   /**
    * Select all CSGs in the collection.
    *
    * @param selection CSGs to select
    */
-  void selectCSGs(@Nonnull Collection<CSG> selection);
+  void selectCSGs(Collection<CSG> selection);
 
   /** Removes all meshes except for the background. */
   void clearMeshes();

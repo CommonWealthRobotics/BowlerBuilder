@@ -13,9 +13,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.shape.MeshView;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Simple class to hold CSG parsing logic. */
+@ParametersAreNonnullByDefault
 public class CsgParser {
 
   private static final Logger LOGGER = LoggerUtilities.getLogger(CsgParser.class.getSimpleName());
@@ -31,9 +32,7 @@ public class CsgParser {
    * @return CSG objects from the script
    */
   public Collection<CSG> parseCsgFromSource(
-      @Nonnull final String scriptName,
-      final int lineNumber,
-      @Nonnull final Map<CSG, MeshView> csgMap) {
+      final String scriptName, final int lineNumber, final Map<CSG, MeshView> csgMap) {
     final Collection<CSG> objsFromScriptLine = new ArrayList<>();
 
     csgMap

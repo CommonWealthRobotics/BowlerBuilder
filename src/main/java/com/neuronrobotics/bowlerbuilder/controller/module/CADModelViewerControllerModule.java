@@ -6,7 +6,9 @@ package com.neuronrobotics.bowlerbuilder.controller.module;
 import com.google.inject.AbstractModule;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class CADModelViewerControllerModule extends AbstractModule {
 
   public CADModelViewerControllerModule() {

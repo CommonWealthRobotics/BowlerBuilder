@@ -21,8 +21,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class LimbLayoutController {
 
   private static final Logger LOGGER =
@@ -43,7 +44,7 @@ public class LimbLayoutController {
   @FXML private HBox fixedPaneHBox;
 
   @Inject
-  public LimbLayoutController(@Nonnull final MobileBase device) {
+  public LimbLayoutController(final MobileBase device) {
     this.device = device;
     limbSelection = new SimpleObjectProperty<>();
   }
@@ -71,8 +72,7 @@ public class LimbLayoutController {
    * @param hBox HBox to add buttons to
    * @param limbs limbs to generate buttons from
    */
-  protected void addButtons(
-      @Nonnull final HBox hBox, @Nonnull final List<DHParameterKinematics> limbs) {
+  protected void addButtons(final HBox hBox, final List<DHParameterKinematics> limbs) {
     hBox.getChildren()
         .addAll(
             limbs

@@ -5,14 +5,14 @@ package com.neuronrobotics.bowlerbuilder.controller.robotmanager;
 
 import javafx.scene.control.Accordion;
 import javafx.scene.layout.HBox;
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class ConnectionManagerFactory {
 
   public ConnectionManagerFactory() {}
 
-  public ConnectionManager get(
-      @Nonnull final HBox connectionsHeader, @Nonnull final Accordion accordion) {
+  public ConnectionManager get(final HBox connectionsHeader, final Accordion accordion) {
     return new ConnectionManager(connectionsHeader, accordion);
   }
 }

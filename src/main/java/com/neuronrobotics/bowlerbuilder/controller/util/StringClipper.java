@@ -3,8 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.controller.util;
 
-import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class StringClipper {
 
   public StringClipper() {}
@@ -16,7 +17,7 @@ public class StringClipper {
    * @param lines max line count
    * @return clipped string
    */
-  public String clipStringToLines(@Nonnull final String input, @Nonnull final Integer lines) {
+  public String clipStringToLines(final String input, final Integer lines) {
     final String[] allLines = input.split("[\n|\r]");
 
     final StringBuilder out = new StringBuilder();
