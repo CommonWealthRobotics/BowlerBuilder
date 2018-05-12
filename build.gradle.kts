@@ -136,6 +136,7 @@ pmd {
 
 findbugs {
     sourceSets = setOf(java.sourceSets["main"], java.sourceSets["test"])
+    excludeFilter = file("$rootDir/findbugs-excludeFilter.xml")
     effort = "max"
 }
 

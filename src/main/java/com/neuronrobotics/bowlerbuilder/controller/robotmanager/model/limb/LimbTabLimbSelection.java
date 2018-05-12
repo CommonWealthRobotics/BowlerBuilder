@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb;
 
+import com.neuronrobotics.bowlerbuilder.BowlerKernelUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.CreatureEditorController;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.LimbTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLinkDialog;
@@ -90,7 +91,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
     addLink.setOnAction(
         event -> {
           final AddLinkDialog dialog =
-              new AddLinkDialog(CreatureEditorController.getTakenChannels(device));
+              new AddLinkDialog(BowlerKernelUtilities.getTakenHardwareChannels(device));
           dialog
               .showAndWait()
               .ifPresent(

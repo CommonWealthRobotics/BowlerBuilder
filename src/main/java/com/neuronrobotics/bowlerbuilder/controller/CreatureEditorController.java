@@ -6,6 +6,7 @@ package com.neuronrobotics.bowlerbuilder.controller; // NOPMD
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
+import com.neuronrobotics.bowlerbuilder.BowlerKernelUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.module.LimbLayoutControllerModule;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.LimbLayoutController;
@@ -27,7 +28,6 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -37,13 +37,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -65,6 +63,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
@@ -184,23 +183,6 @@ public class CreatureEditorController {
 
     genKinSTL.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
     genKinSTL.setText("Kinematic STL");
-  }
-
-  /**
-   * Calculate the taken ("occupied") hardware channels on the device based on the config saved to
-   * the device.
-   *
-   * @param device device to check
-   * @return all taken channels
-   */
-  public static Set<Integer> getTakenChannels(final MobileBase device) {
-    return device
-        .getAllDHChains()
-        .stream()
-        .map(AbstractKinematicsNR::getLinkConfigurations)
-        .flatMap(Collection::stream)
-        .map(LinkConfiguration::getHardwareIndex)
-        .collect(Collectors.toSet());
   }
 
   /**
@@ -404,8 +386,7 @@ public class CreatureEditorController {
                   final Optional<String> result = dialog.showAndWait();
                   result.ifPresent(
                       name ->
-                          new Thread(
-                                  () -> cloneCreature(mainWindowController, device, oldName, name))
+                          new Thread(() -> cloneCreature(mainWindowController, device, name))
                               .start());
                 }));
 
@@ -414,23 +395,54 @@ public class CreatureEditorController {
     topLevelControls.setPadding(new Insets(5));
     topLevelControls.add(makeCopy, 0, 0);
 
-    final String[] gitSelfSource = device.getGitSelfSource();
-    final String[] gitWalkingEngine = device.getGitWalkingEngine();
-    final String[] gitCADEngine = device.getGitCadEngine();
-    final File deviceXMLFile;
-    final File deviceWalkingEngineFile;
-    final File deviceCADEngineFile;
+    final String[] gitXMLSource = device.getGitSelfSource();
     try {
-      deviceXMLFile = ScriptingEngine.fileFromGit(gitSelfSource[0], gitSelfSource[1]);
-      deviceWalkingEngineFile =
-          ScriptingEngine.fileFromGit(gitWalkingEngine[0], gitWalkingEngine[1]);
-      deviceCADEngineFile = ScriptingEngine.fileFromGit(gitCADEngine[0], gitCADEngine[1]);
+      final File deviceXMLFile = ScriptingEngine.fileFromGit(gitXMLSource[0], gitXMLSource[1]);
+
+      if (ScriptingEngine.checkOwner(deviceXMLFile)) {
+        final FXMLLoader loader =
+            new FXMLLoader(
+                CreatureEditorController.class.getResource(
+                    "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
+                null,
+                null,
+                BowlerBuilder.getInjector()
+                        .createChildInjector(new LimbLayoutControllerModule(device))
+                    ::getInstance);
+
+        final GridPane tabContent =
+            getScriptTabContentAsDeviceOwner(makeCopy, deviceXMLFile, device, controller);
+
+        try {
+          final Node content = loader.load();
+          final LimbLayoutController controller = loader.getController();
+
+          controller
+              .limbSelectionProperty()
+              .addListener(
+                  (observable, oldValue, newValue) ->
+                      newValue.ifPresent(
+                          limb -> {
+                            selectionProperty.set(
+                                new ScriptTabLimbSelection(limb, this.controller));
+                          }));
+
+          Platform.runLater(
+              () ->
+                  scriptTab.setContent(
+                      getScrollPane(new VBox(5, tabContent, content, scriptWidget))));
+        } catch (final IOException e) {
+          LOGGER.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
+
+          Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, tabContent))));
+        }
+      } else {
+        Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
+      }
     } catch (GitAPIException | IOException e) {
       LOGGER.severe(
           "Could not parse creature file from source: "
-              + Arrays.toString(gitSelfSource)
-              + "\n"
-              + Arrays.toString(gitWalkingEngine)
+              + Arrays.toString(gitXMLSource)
               + "\n"
               + Throwables.getStackTraceAsString(e));
 
@@ -440,141 +452,180 @@ public class CreatureEditorController {
                   .title("Error")
                   .text("Could not parse file from git source. Creature loading stopped.")
                   .showError());
-
-      return;
-    }
-
-    if (ScriptingEngine.checkOwner(deviceXMLFile)) {
-      final Button publish = new Button("Publish");
-      publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
-      publish.setOnAction(
-          event ->
-              new PublishDialog()
-                  .showAndWait()
-                  .ifPresent(
-                      commitMessage -> publishCreature(device, deviceXMLFile, commitMessage)));
-
-      // Load walking and cad engine code into two tabs
-      Platform.runLater(
-          () -> {
-            controller.loadFileIntoNewTab(
-                "Walking Engine",
-                AssetFactory.loadIcon("Edit-Walking-Engine.png"),
-                gitWalkingEngine[0],
-                gitWalkingEngine[1],
-                deviceWalkingEngineFile);
-
-            controller.loadFileIntoNewTab(
-                "CAD Engine",
-                AssetFactory.loadIcon("Edit-CAD-Engine.png"),
-                gitCADEngine[0],
-                gitCADEngine[1],
-                deviceCADEngineFile);
-          });
-
-      final Button editWalkingEngine = new Button("Edit Walking Engine");
-      editWalkingEngine.setGraphic(AssetFactory.loadIcon("Edit-Walking-Engine.png"));
-      editWalkingEngine.setOnAction(
-          event ->
-              controller.loadFileIntoNewTab(
-                  "Walking Engine",
-                  AssetFactory.loadIcon("Edit-Walking-Engine.png"),
-                  gitWalkingEngine[0],
-                  gitWalkingEngine[1],
-                  deviceWalkingEngineFile));
-
-      final Button editCADEngine = new Button("Edit CAD Engine");
-      editCADEngine.setGraphic(AssetFactory.loadIcon("Edit-CAD-Engine.png"));
-      editCADEngine.setOnAction(
-          event ->
-              controller.loadFileIntoNewTab(
-                  "CAD Engine",
-                  AssetFactory.loadIcon("Edit-CAD-Engine.png"),
-                  gitCADEngine[0],
-                  gitCADEngine[1],
-                  deviceCADEngineFile));
-
-      final Button setWalkingEngine = new Button("Set Walking Engine");
-      setWalkingEngine.setGraphic(AssetFactory.loadIcon("Set-Walking-Engine.png"));
-      setWalkingEngine.setOnAction(
-          event ->
-              new GistFileSelectionDialog("Select Walking Engine", file -> !file.endsWith(".xml"))
-                  .showAndWait()
-                  .ifPresent(result -> device.setGitWalkingEngine(result)));
-
-      final Button setCADEngine = new Button("Set CAD Engine");
-      setCADEngine.setGraphic(AssetFactory.loadIcon("Set-CAD-Engine.png"));
-      setCADEngine.setOnAction(
-          event ->
-              new GistFileSelectionDialog("Select CAD Engine", file -> !file.endsWith(".xml"))
-                  .showAndWait()
-                  .ifPresent(result -> device.setGitCadEngine(result)));
-
-      GridPane.setHalignment(makeCopy, HPos.RIGHT);
-
-      topLevelControls.add(publish, 1, 0);
-
-      topLevelControls.add(editWalkingEngine, 0, 1);
-      GridPane.setHalignment(editWalkingEngine, HPos.RIGHT);
-
-      topLevelControls.add(editCADEngine, 1, 1);
-
-      topLevelControls.add(setWalkingEngine, 0, 2);
-      GridPane.setHalignment(setWalkingEngine, HPos.RIGHT);
-
-      topLevelControls.add(setCADEngine, 1, 2);
-
-      topLevelControls.setVgap(5);
-      topLevelControls.setHgap(5);
-
-      final FXMLLoader loader =
-          new FXMLLoader(
-              CreatureEditorController.class.getResource(
-                  "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"),
-              null,
-              null,
-              BowlerBuilder.getInjector()
-                      .createChildInjector(new LimbLayoutControllerModule(device))
-                  ::getInstance);
-
-      try {
-        final Node content = loader.load();
-        final LimbLayoutController controller = loader.getController();
-
-        controller
-            .limbSelectionProperty()
-            .addListener(
-                (observable, oldValue, newValue) ->
-                    newValue.ifPresent(
-                        limb -> {
-                          selectionProperty.set(new ScriptTabLimbSelection(limb, this.controller));
-                        }));
-
-        Platform.runLater(
-            () ->
-                scriptTab.setContent(
-                    getScrollPane(new VBox(5, topLevelControls, content, scriptWidget))));
-      } catch (final IOException e) {
-        LOGGER.severe("Could not load LimbLayout.\n" + Throwables.getStackTraceAsString(e));
-
-        Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
-      }
-    } else {
-      Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
     }
   }
 
-  private static void cloneCreature(
-      final MainWindowController mainWindowController,
+  @Nonnull
+  private static GridPane getScriptTabContentAsDeviceOwner(
+      final Button makeCopy,
+      final File deviceXMLFile,
       final MobileBase device,
-      final String oldName,
-      final String name) {
+      final AceCreatureLabController controller) {
+    final Button publish = new Button("Publish");
+    publish.setGraphic(AssetFactory.loadIcon("Publish.png"));
+    publish.setOnAction(
+        event ->
+            new PublishDialog()
+                .showAndWait()
+                .ifPresent(commitMessage -> publishCreature(device, deviceXMLFile, commitMessage)));
+
+    final Button editWalkingEngine =
+        createEditScriptButton(
+            "Edit Walking Engine",
+            "Edit-Walking-Engine.png",
+            "Walking Engine",
+            device.getGitWalkingEngine(),
+            controller);
+
+    final Button editCADEngine =
+        createEditScriptButton(
+            "Edit CAD Engine",
+            "Edit-CAD-Engine.png",
+            "CAD Engine",
+            device.getGitCadEngine(),
+            controller);
+
+    final Button setWalkingEngine =
+        createSetEngineButton(
+            "Set Walking Engine",
+            "Set-Walking-Engine.png",
+            "Select Walking Engine",
+            device::setGitWalkingEngine);
+
+    final Button setCADEngine =
+        createSetEngineButton(
+            "Set CAD Engine", "Set-CAD-Engine.png", "Select CAD Engine", device::setGitCadEngine);
+
+    GridPane.setHalignment(makeCopy, HPos.RIGHT);
+
+    final GridPane tabContent = new GridPane();
+    tabContent.setPadding(new Insets(5));
+    tabContent.add(makeCopy, 0, 0);
+    tabContent.add(publish, 1, 0);
+
+    tabContent.add(editWalkingEngine, 0, 1);
+    GridPane.setHalignment(editWalkingEngine, HPos.RIGHT);
+
+    tabContent.add(editCADEngine, 1, 1);
+
+    tabContent.add(setWalkingEngine, 0, 2);
+    GridPane.setHalignment(setWalkingEngine, HPos.RIGHT);
+
+    tabContent.add(setCADEngine, 1, 2);
+
+    tabContent.setVgap(5);
+    tabContent.setHgap(5);
+
+    return tabContent;
+  }
+
+  /**
+   * Create a Button to edit a script.
+   *
+   * @param buttonTitle button text
+   * @param scriptIconName button icon file name
+   * @param scriptFileName script file name
+   * @param fileInGit file URL and name for {@link ScriptingEngine}
+   * @param controller controller to load the script
+   * @return the Button
+   */
+  @Nonnull
+  private static Button createEditScriptButton(
+      final String buttonTitle,
+      final String scriptIconName,
+      final String scriptFileName,
+      final String[] fileInGit,
+      final AceCreatureLabController controller) {
+    final Button editWalkingEngine = new Button(buttonTitle);
+    editWalkingEngine.setGraphic(AssetFactory.loadIcon(scriptIconName));
+    editWalkingEngine.setOnAction(
+        event ->
+            tryParseCreatureFile(fileInGit[0], fileInGit[1])
+                .ifPresent(
+                    file1 ->
+                        controller.loadFileIntoNewTab(
+                            scriptFileName,
+                            AssetFactory.loadIcon(scriptIconName),
+                            fileInGit[0],
+                            fileInGit[1],
+                            file1)));
+    return editWalkingEngine;
+  }
+
+  /**
+   * Create a Button to set an engine script.
+   *
+   * @param buttonTitle button text
+   * @param scriptIconName button icon file name
+   * @param dialogTitle {@link GistFileSelectionDialog} title
+   * @param setEngine {@link GistFileSelectionDialog} result consumer to set the engine script
+   * @return the Button
+   */
+  @Nonnull
+  private static Button createSetEngineButton(
+      final String buttonTitle,
+      final String scriptIconName,
+      final String dialogTitle,
+      final Consumer<? super String[]> setEngine) {
+    final Button setCADEngine = new Button(buttonTitle);
+    setCADEngine.setGraphic(AssetFactory.loadIcon(scriptIconName));
+    setCADEngine.setOnAction(
+        event ->
+            new GistFileSelectionDialog(dialogTitle, file -> !file.endsWith(".xml"))
+                .showAndWait()
+                .ifPresent(setEngine));
+    return setCADEngine;
+  }
+
+  /**
+   * Try to get a {@link File} from a "file in git".
+   *
+   * @param remoteURI file URL
+   * @param fileInRepo file name
+   * @return the file
+   */
+  private static Optional<File> tryParseCreatureFile(
+      final String remoteURI, final String fileInRepo) {
+    try {
+      return Optional.of(ScriptingEngine.fileFromGit(remoteURI, fileInRepo));
+    } catch (GitAPIException | IOException e) {
+      LOGGER.severe(
+          "Could not parse creature file from source."
+              + "\n"
+              + "URL: "
+              + remoteURI
+              + "\n"
+              + "Filename: "
+              + fileInRepo
+              + "\n"
+              + Throwables.getStackTraceAsString(e));
+
+      Platform.runLater(
+          () ->
+              Notifications.create()
+                  .title("Error")
+                  .text("Could not parse file from git source. Creature loading stopped.")
+                  .showError());
+    }
+
+    return Optional.empty();
+  }
+
+  /**
+   * Make a clone of a creature. Loads the new creature in a new tab and refreshes git menus.
+   *
+   * @param mainWindowController controller to load the creature in
+   * @param device creature
+   * @param name new (clone) creature name
+   */
+  private static void cloneCreature(
+      final MainWindowController mainWindowController, final MobileBase device, final String name) {
     LOGGER.log(Level.INFO, "Your new creature: " + name);
     device.setScriptingName(name);
 
     final GitHub github = ScriptingEngine.getGithub();
     final GHGistBuilder builder = github.createGist();
-    builder.description(name + " copy of " + oldName);
+    builder.description(name);
     final String filename = name + ".xml";
     builder.file(filename, "<none>");
     builder.public_(true);
@@ -665,6 +716,13 @@ public class CreatureEditorController {
     }
   }
 
+  /**
+   * Publish the current creature XML file.
+   *
+   * @param device creature
+   * @param deviceXMLFile creature XML file
+   * @param commitMessage commit message
+   */
   private static void publishCreature(
       final MobileBase device, final File deviceXMLFile, final String commitMessage) {
     try {
@@ -691,6 +749,12 @@ public class CreatureEditorController {
     }
   }
 
+  /**
+   * Wrap a {@link Node} in a {@link ScrollPane}.
+   *
+   * @param node node to wrap
+   * @return scroll pane with node
+   */
   private ScrollPane getScrollPane(final Node node) {
     final ScrollPane pane = new ScrollPane(node);
     pane.setFitToWidth(true);
@@ -719,7 +783,9 @@ public class CreatureEditorController {
       final List<LinkConfiguration> linkConfigurations = newLeg.getLinkConfigurations();
       final AddLimbDialog dialog =
           new AddLimbDialog(
-              newLeg.getScriptingName(), linkConfigurations.size(), getTakenChannels(device));
+              newLeg.getScriptingName(),
+              linkConfigurations.size(),
+              BowlerKernelUtilities.getTakenHardwareChannels(device));
 
       dialog
           .showAndWait()

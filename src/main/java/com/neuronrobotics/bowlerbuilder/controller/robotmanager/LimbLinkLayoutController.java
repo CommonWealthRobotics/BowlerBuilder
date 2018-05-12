@@ -23,7 +23,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class LimbLinkLayoutController extends LimbLayoutController {
 
-  protected final ObjectProperty<Optional<LinkData>> linkSelection;
+  private final ObjectProperty<Optional<LinkData>> linkSelection;
 
   @Inject
   public LimbLinkLayoutController(final MobileBase device) {
