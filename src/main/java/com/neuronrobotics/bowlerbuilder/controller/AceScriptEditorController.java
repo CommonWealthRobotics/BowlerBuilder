@@ -350,7 +350,7 @@ public class AceScriptEditorController {
       // Run the code
       LOGGER.log(Level.FINE, "Running script.");
       final Object result = scriptRunner.runScript(script, arguments, languageName);
-      LOGGER.log(Level.FINER, "Result is: " + result);
+      LOGGER.log(Level.FINE, "Result is: " + result);
       return result;
     } catch (final IOException e) {
       LOGGER.log(

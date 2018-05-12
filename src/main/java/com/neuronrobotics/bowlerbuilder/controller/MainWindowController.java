@@ -23,6 +23,7 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
+import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
@@ -73,6 +74,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -563,47 +565,79 @@ public class MainWindowController {
           LoggerUtilities.newLoggingThread(
                   LOGGER,
                   () ->
-                      Vitamins.listVitaminTypes()
-                          .stream()
-                          .sorted()
-                          .forEach(
-                              vitamin -> {
-                                final Menu vitaminMenu = new Menu(vitamin);
-
-                                Vitamins.listVitaminSizes(vitamin)
-                                    .stream()
-                                    .sorted()
-                                    .forEach(
-                                        size -> {
-                                          final MenuItem sizeMenu = new MenuItem(size);
-
-                                          sizeMenu.setOnAction(
-                                              event1 -> {
-                                                final Tab selection =
-                                                    tabPane.getSelectionModel().getSelectedItem();
-                                                if (selection instanceof AceCadEditorTab) {
-                                                  final AceCadEditorTab editorTab =
-                                                      (AceCadEditorTab) selection;
-                                                  final String insertion =
-                                                      "CSG foo = Vitamins.get(\""
-                                                          + vitamin
-                                                          + "\", \""
-                                                          + size
-                                                          + "\");";
-                                                  editorTab
-                                                      .getController()
-                                                      .getAceScriptEditorController()
-                                                      .insertAtCursor(insertion);
-                                                }
-                                              });
-
-                                          vitaminMenu.getItems().add(sizeMenu);
-                                        });
-
-                                cadVitamins.getItems().add(vitaminMenu);
-                              }))
+                      cadVitamins
+                          .getItems()
+                          .addAll(getAllVitaminMenus(Vitamins.listVitaminTypes(), tabPane)))
               .start();
         });
+  }
+
+  /**
+   * Creates Vitamin menus for the given types.
+   *
+   * @param vitaminTypes vitamin types
+   * @param tabPane tab pane to check for an {@link AbstractScriptEditorTab} in to insert the
+   *     selection
+   * @return the vitamin menus
+   */
+  @Nonnull
+  private static Collection<Menu> getAllVitaminMenus(
+      final Collection<String> vitaminTypes, final TabPane tabPane) {
+    return vitaminTypes
+        .stream()
+        .sorted()
+        .map(type -> getVitaminMenu(type, tabPane))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Creates one Vitamin menu. Lists all the sizes for a given type.
+   *
+   * @param vitaminType vitamin type
+   * @param tabPane tab pane to check for an {@link AbstractScriptEditorTab} in to insert the
+   *     selection
+   * @return the vitamin menu
+   */
+  @Nonnull
+  private static Menu getVitaminMenu(final String vitaminType, final TabPane tabPane) {
+    final Menu vitaminMenu = new Menu(vitaminType);
+
+    vitaminMenu
+        .getItems()
+        .addAll(
+            Vitamins.listVitaminSizes(vitaminType)
+                .stream()
+                .sorted()
+                .map(
+                    size -> {
+                      final MenuItem sizeMenu = new MenuItem(size);
+
+                      sizeMenu.setOnAction(
+                          __ -> {
+                            final Tab selection = tabPane.getSelectionModel().getSelectedItem();
+                            if (selection instanceof AbstractScriptEditorTab) {
+                              final AbstractScriptEditorTab editorTab =
+                                  (AbstractScriptEditorTab) selection;
+
+                              final String vitaminInsertionString =
+                                  "CSG foo = Vitamins.get(\""
+                                      + vitaminType
+                                      + "\", \""
+                                      + size
+                                      + "\");";
+
+                              editorTab
+                                  .getScriptEditorView()
+                                  .getScriptEditor()
+                                  .insertAtCursor(vitaminInsertionString);
+                            }
+                          });
+
+                      return sizeMenu;
+                    })
+                .collect(Collectors.toList()));
+
+    return vitaminMenu;
   }
 
   /**

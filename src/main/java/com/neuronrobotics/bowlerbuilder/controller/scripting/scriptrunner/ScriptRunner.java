@@ -6,6 +6,7 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner;
 import java.util.ArrayList;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Interface for compiling and running a script. */
@@ -21,7 +22,8 @@ public interface ScriptRunner {
    * @return result
    * @throws Exception a script could throw an exception
    */
-  Object runScript(String script, ArrayList<Object> arguments, String languageName) // NOPMD
+  Object runScript(
+      String script, @Nullable ArrayList<Object> arguments, String languageName) // NOPMD
       throws Exception; // NOPMD
 
   /**
