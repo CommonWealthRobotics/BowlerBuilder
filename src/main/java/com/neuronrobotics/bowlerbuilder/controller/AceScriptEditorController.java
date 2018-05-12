@@ -332,7 +332,7 @@ public class AceScriptEditorController {
     try {
       final String content = FxUtil.returnFX(scriptEditor::getFullText);
 
-      final Validation<Throwable, Object> result = runStringScript(content, null, scriptLangName);
+      final Validation<Exception, Object> result = runStringScript(content, null, scriptLangName);
       if (result.isSuccess()) {
         return Optional.of(result.success());
       } else {
@@ -352,7 +352,7 @@ public class AceScriptEditorController {
     return Optional.empty();
   }
 
-  private void logScriptFailure(Throwable failure) {
+  private void logScriptFailure(final Throwable failure) {
     if (failure instanceof IOException) {
       LOGGER.log(
           Level.SEVERE,
@@ -383,7 +383,7 @@ public class AceScriptEditorController {
    * @param languageName scripting language name
    * @return script result
    */
-  public Validation<Throwable, Object> runStringScript(
+  public Validation<Exception, Object> runStringScript(
       final String script, @Nullable final ArrayList<Object> arguments, final String languageName) {
     LOGGER.log(Level.INFO, "Running script.");
     return scriptRunner.runScript(script, arguments, languageName);

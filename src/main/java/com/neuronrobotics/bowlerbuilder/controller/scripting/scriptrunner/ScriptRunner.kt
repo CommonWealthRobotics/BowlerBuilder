@@ -17,7 +17,7 @@ interface ScriptRunner {
      * @param languageName language name
      * @return result
      */
-    fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String): Validation<Throwable, Any>
+    fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String): Validation<Exception, Any>
 
     /**
      * Get whether the script is currently compiling.
@@ -52,5 +52,5 @@ interface ScriptRunner {
      *
      * @return return value from the script
      */
-    fun resultProperty(): ReadOnlyObjectProperty<Validation<Throwable, Any>>
+    fun resultProperty(): ReadOnlyObjectProperty<Validation<Exception, Any>>
 }
