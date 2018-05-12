@@ -566,7 +566,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param selection CSGs to select
    */
   @Override
-  public void selectCSGs(Iterable<? extends CSG> selection) {
+  public void selectCSGs(final Iterable<? extends CSG> selection) {
     selection.forEach(
         csg -> {
           final MeshView meshView = csgMap.get(csg);
@@ -866,7 +866,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   @Override
-  public void addAllCSGs(Iterable<? extends CSG> csgs) {
+  public void addAllCSGs(final Iterable<? extends CSG> csgs) {
     csgs.forEach(this::addCSG);
   }
 
