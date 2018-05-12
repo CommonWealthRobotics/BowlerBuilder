@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import eu.mihosoft.vrl.v3d.CSG;
+import fj.data.Validation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -49,6 +50,6 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
                         new ArrayList<>(),
                         "BowlerGroovy"));
 
-    assertTrue(result instanceof CSG);
+    assertTrue(((Validation) result).success() instanceof CSG);
   }
 }

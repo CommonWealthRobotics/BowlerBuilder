@@ -62,13 +62,17 @@ dependencies {
     compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.31.3")
     compile(group = "org.functionaljava", name = "functionaljava_1.8", version = "4.7")
     compile(group = "org.functionaljava", name = "functionaljava-java8", version = "4.7")
+    compile(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
+    compile(kotlin("reflect"))
 
-    fun junitJupiter(name: String, version: String = "5.0.0") =
+    fun junitJupiter(name: String, version: String = "5.2.0") =
             create(group = "org.junit.jupiter", name = name, version = version)
 
     fun testFx(name: String, version: String = "4.0.+") =
             create(group = "org.testfx", name = name, version = version)
 
+    testCompile(kotlin("test"))
+    testCompile(kotlin("test-junit"))
     testCompile(junitJupiter(name = "junit-jupiter-api"))
     testCompile(junitJupiter(name = "junit-jupiter-engine"))
     testCompile(junitJupiter(name = "junit-jupiter-params"))
@@ -77,8 +81,8 @@ dependencies {
     testCompile(group = "com.google.guava", name = "guava-testlib", version = "23.0")
     testCompile(group = "org.mockito", name = "mockito-core", version = "2.12.0")
 
-    testRuntime(testFx(name = "openjfx-monocle", version = "8u76-b04"))
     testRuntime(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.0.0")
+    testRuntime(testFx(name = "openjfx-monocle", version = "8u76-b04"))
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
 }
 

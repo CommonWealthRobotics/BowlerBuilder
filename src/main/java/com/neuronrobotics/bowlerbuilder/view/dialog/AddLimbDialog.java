@@ -18,8 +18,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.util.Pair;
 import javax.annotation.ParametersAreNonnullByDefault;
+import kotlin.Pair;
 
 @ParametersAreNonnullByDefault
 public class AddLimbDialog extends Dialog<LimbData> {
@@ -64,10 +64,10 @@ public class AddLimbDialog extends Dialog<LimbData> {
     content.add(linkNameField, 1, 0);
     for (int i = 1; i <= numberOfHWIndices; i++) {
       final Pair<Label, ValidatedTextField> pair = getField("hwIndexField" + i);
-      hwIndexFields.add(pair.getValue());
+      hwIndexFields.add(pair.getSecond());
 
-      content.add(pair.getKey(), 0, i);
-      content.add(pair.getValue(), 1, i);
+      content.add(pair.getFirst(), 0, i);
+      content.add(pair.getSecond(), 1, i);
     }
 
     getDialogPane().setContent(content);

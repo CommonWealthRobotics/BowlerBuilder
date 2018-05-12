@@ -32,10 +32,10 @@ class BowlerGroovy : IScriptingLanguage {
     override fun getShellType(): String = "BowlerGroovy"
 
     @Throws(Exception::class)
-    override fun inlineScriptRun(code: File, args: ArrayList<Any>): Any? = this.inline(code, args)
+    override fun inlineScriptRun(code: File, args: ArrayList<Any>?): Any? = this.inline(code, args)
 
     @Throws(Exception::class)
-    override fun inlineScriptRun(code: String, args: ArrayList<Any>): Any? =
+    override fun inlineScriptRun(code: String, args: ArrayList<Any>?): Any? =
             this.inline(code, args)
 
     override fun getIsTextFile(): Boolean = true
@@ -44,7 +44,7 @@ class BowlerGroovy : IScriptingLanguage {
             ArrayList(Arrays.asList("java", "groovy"))
 
     @Throws(Exception::class)
-    private fun inline(code: Any, args: List<Any>): Any? {
+    private fun inline(code: Any, args: List<Any>?): Any? {
         compiling.value = true
 
         val configuration = CompilerConfiguration().also {

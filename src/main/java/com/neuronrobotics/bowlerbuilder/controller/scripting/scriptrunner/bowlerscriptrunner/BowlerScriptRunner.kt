@@ -13,7 +13,7 @@ import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 
 class BowlerScriptRunner @Inject constructor(private val language: BowlerGroovy) : ScriptRunner {
-    private val result: ObjectProperty<Validation<Exception, Any>>
+    private val result: ObjectProperty<Validation<Exception, Any?>>
 
     init {
         result = SimpleObjectProperty()
@@ -21,11 +21,10 @@ class BowlerScriptRunner @Inject constructor(private val language: BowlerGroovy)
     }
 
     override fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String):
-            Validation<Exception, Any> {
+            Validation<Exception, Any?> {
         return try {
-            result.value = Validation.success(ScriptingEngine.inlineScriptStringRun(
-                    script, arguments, languageName
-            ))
+            val output = ScriptingEngine.inlineScriptStringRun(script, arguments, languageName)
+            result.value = Validation.success(output)
             result.value
         } catch (e: Exception) {
             result.value = Validation.fail(e)
@@ -41,5 +40,5 @@ class BowlerScriptRunner @Inject constructor(private val language: BowlerGroovy)
 
     override fun scriptRunningProperty(): ReadOnlyBooleanProperty = language.runningProperty()
 
-    override fun resultProperty(): ReadOnlyObjectProperty<Validation<Exception, Any>> = result
+    override fun resultProperty(): ReadOnlyObjectProperty<Validation<Exception, Any?>> = result
 }

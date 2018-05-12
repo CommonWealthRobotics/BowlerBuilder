@@ -13,41 +13,41 @@ class AceInterfaceTest {
     private val aceEditor = AceEditor(mockAdapter)
 
     @Test
-    internal fun insertTextTest() {
+    fun insertTextTest() {
         aceEditor.insertAtCursor("test")
         assertEquals("editor.insert(\"test\");", mockAdapter.lastExecutedScript)
     }
 
     @Test
-    internal fun insertTextTest2() {
+    fun insertTextTest2() {
         aceEditor.insertAtCursor("CSG foo = new Cube(1,1,1).toCSG();")
         assertEquals("editor.insert(\"CSG foo = new Cube(1,1,1).toCSG();\");",
                 mockAdapter.lastExecutedScript)
     }
 
     @Test
-    internal fun insertTextTest3() {
+    fun insertTextTest3() {
         aceEditor.insertAtCursor("\n\t")
         assertEquals("editor.insert(\"\\n\t\");",
                 mockAdapter.lastExecutedScript)
     }
 
     @Test
-    internal fun insertTextTest4() {
+    fun insertTextTest4() {
         aceEditor.insertAtCursor("\\'\"")
         assertEquals("editor.insert(\"\\\\'\\\"\");",
                 mockAdapter.lastExecutedScript)
     }
 
     @Test
-    internal fun fontSizeTest() {
+    fun fontSizeTest() {
         aceEditor.setFontSize(1)
         assertEquals("document.getElementById('editor').style.fontSize='1px';",
                 mockAdapter.lastExecutedScript)
     }
 
     @Test
-    internal fun gotoLineTest() {
+    fun gotoLineTest() {
         aceEditor.gotoLine(1)
         assertEquals("editor.gotoLine(1);",
                 mockAdapter.lastExecutedScript)

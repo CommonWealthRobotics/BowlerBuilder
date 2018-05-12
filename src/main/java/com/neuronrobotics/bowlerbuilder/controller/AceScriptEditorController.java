@@ -334,6 +334,10 @@ public class AceScriptEditorController {
 
       final Validation<Exception, Object> result = runStringScript(content, null, scriptLangName);
       if (result.isSuccess()) {
+        if (result.success() == null) {
+          return Optional.empty();
+        }
+
         return Optional.of(result.success());
       } else {
         logScriptFailure(result.fail());

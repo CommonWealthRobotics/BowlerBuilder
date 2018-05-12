@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -30,7 +31,7 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   }
 
   @Override
-  public void setAllCSG(final Collection<CSG> collection, final File file) {
+  public void setAllCSG(final Collection<CSG> collection, @Nullable final File file) {
     Platform.runLater(
         () -> {
           cadEngine.clearMeshes();
@@ -39,7 +40,7 @@ public class BowlerMobileBaseUI implements IMobileBaseUI {
   }
 
   @Override
-  public void addCSG(final Collection<CSG> collection, final File file) {
+  public void addCSG(final Collection<CSG> collection, @Nullable final File file) {
     Platform.runLater(() -> cadEngine.addAllCSGs(collection));
   }
 
