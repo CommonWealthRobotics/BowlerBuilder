@@ -7,6 +7,7 @@ import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.VirtualCameraMobileBaseFactory;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
@@ -72,6 +73,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
 import org.reactfx.util.FxTimer;
@@ -152,7 +154,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     handleMouse(scene);
     getChildren().add(scene);
 
-    // Clip view so it doesn'translate overlap with anything
+    // Clip view so it doesn't overlap with anything
     final Rectangle engineClip = new Rectangle();
     setClip(engineClip);
     layoutBoundsProperty()
@@ -211,93 +213,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     virtualCam = new VirtualCameraDevice(camera, hand);
     VirtualCameraFactory.setFactory(() -> virtualCam);
 
-    try {
-      flyingCamera =
-          new VirtualCameraMobileBase(
-              "<root>\n"
-                  + "<mobilebase>\n"
-                  + "<driveType>none</driveType>\n"
-                  + "<name>FlyingCamera</name>\n"
-                  + "<appendage>\n"
-                  + "<name>BoomArm</name>\n"
-                  + "<link>\n"
-                  + "\t<name>boom</name>\n"
-                  + "\t<deviceName>"
-                  + virtualCam.hashCode()
-                  + "</deviceName>\n"
-                  + "\t<type>camera</type>\n"
-                  + "\t<index>0</index>\n"
-                  + "\t\n"
-                  + "\t<scale>1</scale>\n"
-                  + "\t<upperLimit>255.0</upperLimit>\n"
-                  + "\t<lowerLimit>0.0</lowerLimit>\n"
-                  + "\t<upperVelocity>1.0E8</upperVelocity>\n"
-                  + "\t<lowerVelocity>-1.0E8</lowerVelocity>\n"
-                  + "\t<staticOffset>0</staticOffset>\n"
-                  + "\t<isLatch>false</isLatch>\n"
-                  + "\t<indexLatch>0</indexLatch>\n"
-                  + "\t<isStopOnLatch>false</isStopOnLatch>\n"
-                  + "\t<homingTPS>10000000</homingTPS>\n"
-                  + "\t\n"
-                  + "\t<DHParameters>\n"
-                  + "\t\t<Delta>0</Delta>\n"
-                  + "\t\t<Theta>0.0</Theta>\n"
-                  + "\t\t<Radius>0</Radius>\n"
-                  + "\t\t<Alpha>0</Alpha>\n"
-                  + "\t</DHParameters>\n"
-                  + "\n"
-                  + "</link>\n"
-                  + "\n"
-                  + "<ZframeToRAS>\t\n"
-                  + "<x>0.0</x>\n"
-                  + "\t<y>0.0</y>\n"
-                  + "\t<z>0.0</z>\n"
-                  + "\t<rotw>1.0</rotw>\n"
-                  + "\t<rotx>0.0</rotx>\n"
-                  + "\t<roty>0.0</roty>\n"
-                  + "\t<rotz>0.0</rotz>\n"
-                  + "</ZframeToRAS>\n"
-                  + "\n"
-                  + "<baseToZframe>\n"
-                  + "\t<x>0.0</x>\n"
-                  + "\t<y>0.0</y>\n"
-                  + "\t<z>0.0</z>\n"
-                  + "\t<rotw>1.0</rotw>\n"
-                  + "\t<rotx>0.0</rotx>\n"
-                  + "\t<roty>0.0</roty>\n"
-                  + "\t<rotz>0.0</rotz>\n"
-                  + "</baseToZframe>\n"
-                  + "\n"
-                  + "</appendage>\n"
-                  + "\n"
-                  + "<ZframeToRAS>\n"
-                  + "\t<x>0.0</x>\n"
-                  + "\t<y>0.0</y>\n"
-                  + "\t<z>0.0</z>\n"
-                  + "\t<rotw>1.0</rotw>\n"
-                  + "\t<rotx>0.0</rotx>\n"
-                  + "\t<roty>0.0</roty>\n"
-                  + "\t<rotz>0.0</rotz>\n"
-                  + "</ZframeToRAS>\n"
-                  + "\n"
-                  + "<baseToZframe>\n"
-                  + "\t<x>0.0</x>\n"
-                  + "\t<y>0.0</y>\n"
-                  + "\t<z>0.0</z>\n"
-                  + "\t<rotw>1.0</rotw>\n"
-                  + "\t<rotx>0.0</rotx>\n"
-                  + "\t<roty>0.0</roty>\n"
-                  + "\t<rotz>0.0</rotz>\n"
-                  + "</baseToZframe>\n"
-                  + "\n"
-                  + "</mobilebase>\n"
-                  + "\n"
-                  + "</root>");
-    } catch (final Exception e) {
-      LOGGER.log(
-          Level.SEVERE,
-          "Could not load VirtualCameraMobileBase.\n" + Throwables.getStackTraceAsString(e));
-    }
+    flyingCamera = VirtualCameraMobileBaseFactory.create(virtualCam);
 
     moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
 
@@ -337,21 +253,21 @@ public class BowlerCadEngine extends Pane implements CadEngine {
       xRuler.appendScale(scale, scale, scale);
       xRuler.appendRotation(180, 0, 0, 0, 1, 0, 0);
 
+      final ImageView groundView = new ImageView(groundLocal);
+      groundView.getTransforms().addAll(groundMove, downset);
+      groundView.setOpacity(0.3);
+
+      final ImageView zrulerImage = new ImageView(ruler);
+      zrulerImage.getTransforms().addAll(zRuler, downset);
+
+      final ImageView rulerImage = new ImageView(ruler);
+      rulerImage.getTransforms().addAll(xRuler, downset);
+
+      final ImageView yrulerImage = new ImageView(ruler);
+      yrulerImage.getTransforms().addAll(yRuler, downset);
+
       Platform.runLater(
           () -> {
-            final ImageView groundView = new ImageView(groundLocal);
-            groundView.getTransforms().addAll(groundMove, downset);
-            groundView.setOpacity(0.3);
-
-            final ImageView zrulerImage = new ImageView(ruler);
-            zrulerImage.getTransforms().addAll(zRuler, downset);
-
-            final ImageView rulerImage = new ImageView(ruler);
-            rulerImage.getTransforms().addAll(xRuler, downset);
-
-            final ImageView yrulerImage = new ImageView(ruler);
-            yrulerImage.getTransforms().addAll(yRuler, downset);
-
             gridGroup.getChildren().addAll(zrulerImage, rulerImage, yrulerImage, groundView);
 
             final Affine groundPlacement = new Affine();
@@ -572,6 +488,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     Arrays.stream(toRemove).forEach(allTrans::remove);
   }
 
+  @Nonnull
   @Override
   public Map<CSG, MeshView> getCsgMap() {
     return csgMap;
@@ -625,7 +542,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param lineNumber line number in script
    */
   @Override
-  public void setSelectedCsg(final File script, final int lineNumber) {
+  public void setSelectedCSG(final File script, final int lineNumber) {
     Platform.runLater(
         () -> {
           final Collection<CSG> csgs =
@@ -649,7 +566,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    * @param selection CSGs to select
    */
   @Override
-  public void selectCSGs(final Collection<CSG> selection) {
+  public void selectCSGs(Iterable<? extends CSG> selection) {
     selection.forEach(
         csg -> {
           final MeshView meshView = csgMap.get(csg);
@@ -949,7 +866,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   @Override
-  public void addAllCSGs(final Collection<CSG> csgs) {
+  public void addAllCSGs(Iterable<? extends CSG> csgs) {
     csgs.forEach(this::addCSG);
   }
 
@@ -959,21 +876,25 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     csgMap.clear();
   }
 
+  @Nonnull
   @Override
   public BooleanProperty axisShowingProperty() {
     return axisShowing;
   }
 
+  @Nonnull
   @Override
   public BooleanProperty handShowingProperty() {
     return handShowing;
   }
 
+  @Nonnull
   @Override
   public Node getView() {
     return this;
   }
 
+  @Nonnull
   @Override
   public SubScene getSubScene() {
     return scene;
