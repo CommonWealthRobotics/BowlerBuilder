@@ -20,11 +20,13 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFact
 import com.neuronrobotics.bowlerbuilder.view.dialog.NewGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import fj.data.Validation;
 import groovy.lang.GroovyRuntimeException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -315,61 +317,65 @@ public class AceScriptEditorController {
    *
    * @return result from the script
    */
-  public Object runEditorContent() {
+  public Optional<Object> runEditorContent() {
     try {
-      try {
-        return runStringScript(FxUtil.returnFX(scriptEditor::getFullText), null, scriptLangName);
-      } catch (final ExecutionException e) {
-        LOGGER.log(
-            Level.SEVERE,
-            "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
+      final String content = FxUtil.returnFX(scriptEditor::getFullText);
+
+      final Validation<Throwable, Object> result = runStringScript(content, null, scriptLangName);
+      if (result.isSuccess()) {
+        return Optional.of(result.success());
+      } else {
+        logScriptFailure(result.fail());
+        return Optional.empty();
       }
-    } catch (final InterruptedException e) {
+    } catch (ExecutionException e) {
+      LOGGER.log(
+          Level.SEVERE, "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
+    } catch (InterruptedException e) {
       LOGGER.log(
           Level.WARNING,
           "CountDownLatch interrupted while waiting to get editor content.\n"
               + Throwables.getStackTraceAsString(e));
     }
 
-    return null;
+    return Optional.empty();
+  }
+
+  private void logScriptFailure(Throwable failure) {
+    if (failure instanceof IOException) {
+      LOGGER.log(
+          Level.SEVERE,
+          "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(failure));
+    } else if (failure instanceof GroovyRuntimeException) {
+      LOGGER.log(Level.WARNING, "Error in CAD script: " + failure.getMessage());
+      Platform.runLater(
+          () ->
+              Notifications.create()
+                  .title("Error in CAD Script")
+                  .text(
+                      stringClipper.clipStringToLines(
+                          failure.getMessage(), maxToastLength.getValue()))
+                  .owner(fileEditorRoot)
+                  .position(Pos.BOTTOM_RIGHT)
+                  .showInformation());
+    } else {
+      LOGGER.log(
+          Level.SEVERE, "Could not run CAD script.\n" + Throwables.getStackTraceAsString(failure));
+    }
   }
 
   /**
-   * Run a script from a string in the editor'scale environment.
+   * Run a script from a string in the editor's environment.
    *
    * @param script script content
    * @param arguments script arguments
    * @param languageName scripting language name
    * @return script result
    */
-  public Object runStringScript(
-      final String script,
-      @Nullable final ArrayList<Object> arguments, // NOPMD
-      final String languageName) {
-    try {
-      // Run the code
-      LOGGER.log(Level.FINE, "Running script.");
-      final Object result = scriptRunner.runScript(script, arguments, languageName);
-      LOGGER.log(Level.FINE, "Result is: " + result);
-      return result;
-    } catch (final IOException e) {
-      LOGGER.log(
-          Level.SEVERE, "Could not load CADModelViewer.\n" + Throwables.getStackTraceAsString(e));
-    } catch (final GroovyRuntimeException e) {
-      LOGGER.log(Level.WARNING, "Error in CAD script: " + e.getMessage());
-      Platform.runLater(
-          () ->
-              Notifications.create()
-                  .title("Error in CAD Script")
-                  .text(stringClipper.clipStringToLines(e.getMessage(), maxToastLength.getValue()))
-                  .owner(fileEditorRoot)
-                  .position(Pos.BOTTOM_RIGHT)
-                  .showInformation());
-    } catch (final Exception e) {
-      LOGGER.log(Level.SEVERE, "Could not run CAD script.\n" + Throwables.getStackTraceAsString(e));
-    }
-
-    return null;
+  public Validation<Throwable, Object> runStringScript(
+      final String script, @Nullable final ArrayList<Object> arguments, final String languageName) {
+    LOGGER.log(Level.INFO, "Running script.");
+    return scriptRunner.runScript(script, arguments, languageName);
   }
 
   /**

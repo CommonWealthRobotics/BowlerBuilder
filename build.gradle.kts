@@ -60,6 +60,8 @@ dependencies {
     compile(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     compile(group = "io.reactivex.rxjava2", name = "rxjava", version = "2.1.9")
     compile(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.31.3")
+    compile(group = "org.functionaljava", name = "functionaljava_1.8", version = "4.7")
+    compile(group = "org.functionaljava", name = "functionaljava-java8", version = "4.7")
 
     fun junitJupiter(name: String, version: String = "5.0.0") =
             create(group = "org.junit.jupiter", name = name, version = version)

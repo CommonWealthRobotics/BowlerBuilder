@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner
 
+import fj.data.Validation
 import javafx.beans.property.ReadOnlyBooleanProperty
 import javafx.beans.property.ReadOnlyObjectProperty
-import java.lang.Exception
 
 interface ScriptRunner {
 
@@ -16,10 +16,8 @@ interface ScriptRunner {
      * @param arguments arguments
      * @param languageName language name
      * @return result
-     * @throws Exception a script could throw an exception
      */
-    @Throws(Exception::class)
-    fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String): Any
+    fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String): Validation<Throwable, Any>
 
     /**
      * Get whether the script is currently compiling.
@@ -54,5 +52,5 @@ interface ScriptRunner {
      *
      * @return return value from the script
      */
-    fun resultProperty(): ReadOnlyObjectProperty<Any>
+    fun resultProperty(): ReadOnlyObjectProperty<Validation<Throwable, Any>>
 }

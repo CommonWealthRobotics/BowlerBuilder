@@ -6,11 +6,13 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.bowle
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
+import fj.data.Validation;
 import java.util.ArrayList;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -19,7 +21,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class BowlerScriptRunner implements ScriptRunner {
 
   private final BowlerGroovy language;
-  private final ObjectProperty<Object> result;
+  private final ObjectProperty<Validation<Throwable, Object>> result;
 
   @Inject
   public BowlerScriptRunner(final BowlerGroovy language) {
@@ -28,12 +30,19 @@ public class BowlerScriptRunner implements ScriptRunner {
     ScriptingEngine.addScriptingLanguage(language);
   }
 
+  @Nonnull
   @Override
-  public Object runScript(
-      final String script, @Nullable final ArrayList<Object> arguments, final String languageName)
-      throws Exception { // NOPMD
-    result.set(ScriptingEngine.inlineScriptStringRun(script, arguments, languageName));
-    return result.get();
+  public Validation<Throwable, Object> runScript(
+      final String script, @Nullable final ArrayList<Object> arguments, final String languageName) {
+    try {
+      result.setValue(
+          Validation.success(
+              ScriptingEngine.inlineScriptStringRun(script, arguments, languageName)));
+      return result.get();
+    } catch (Throwable e) {
+      result.setValue(Validation.fail(e));
+      return result.getValue();
+    }
   }
 
   @Override
@@ -41,6 +50,7 @@ public class BowlerScriptRunner implements ScriptRunner {
     return language.compilingProperty().getValue();
   }
 
+  @Nonnull
   @Override
   public ReadOnlyBooleanProperty scriptCompilingProperty() {
     return language.compilingProperty();
@@ -51,13 +61,15 @@ public class BowlerScriptRunner implements ScriptRunner {
     return language.runningProperty().getValue();
   }
 
+  @Nonnull
   @Override
   public ReadOnlyBooleanProperty scriptRunningProperty() {
     return language.runningProperty();
   }
 
+  @Nonnull
   @Override
-  public ReadOnlyObjectProperty<Object> resultProperty() {
+  public ReadOnlyObjectProperty<Validation<Throwable, Object>> resultProperty() {
     return result;
   }
 }
