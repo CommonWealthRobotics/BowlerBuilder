@@ -69,6 +69,7 @@ public class CreatureLabTab extends AbstractCadEditorTab<AceCreatureLabControlle
     final Node creatureEditor = creatureEditorLoader.load();
 
     pane = new SplitPane(tabPane, creatureEditor, cadViewer);
+    pane.setDividerPositions(0.2, 0.7);
 
     controller =
         new AceCreatureLabController(

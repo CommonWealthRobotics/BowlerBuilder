@@ -47,7 +47,7 @@ public class ScriptTabLimbSelection extends AbstractLimbSelection {
       editCADEngine.setOnAction(
           event ->
               controller.loadFileIntoNewTab(
-                  limb.getScriptingName() + " CAD Engine",
+                  cadEngineFile.getName(),
                   AssetFactory.loadIcon("Edit-CAD-Engine.png"),
                   cadEngineSource[0],
                   cadEngineSource[1],
@@ -65,7 +65,7 @@ public class ScriptTabLimbSelection extends AbstractLimbSelection {
       editDHEngine.setOnAction(
           event ->
               controller.loadFileIntoNewTab(
-                  limb.getScriptingName() + " DH Engine",
+                  dhEngineFile.getName(),
                   AssetFactory.loadIcon("Edit-Walking-Engine.png"),
                   dhEngineSource[0],
                   dhEngineSource[1],
