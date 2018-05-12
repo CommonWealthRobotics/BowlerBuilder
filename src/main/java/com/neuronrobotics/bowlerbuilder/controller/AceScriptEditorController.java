@@ -181,52 +181,63 @@ public class AceScriptEditorController {
             });
   }
 
-  /** Publish the editor contents during scratchpad mode. */
+  /** Publish the editor contents during scratchpad mode. Disables scratchpad mode. */
   private void publishScratchpad() {
     final NewGistDialog dialog = new NewGistDialog();
     dialog
         .showAndWait()
         .ifPresent(
             result -> {
-              try {
-                // Make a new gist
-                final GHGist newGist =
-                    GistUtilities.createNewGist(
-                        dialog.getName(), dialog.getDescription(), dialog.isPublic());
+              // Make a new gist
+              final Validation<IOException, GHGist> newGist =
+                  GistUtilities.createNewGist(
+                      dialog.getName(), dialog.getDescription(), dialog.isPublic());
 
+              if (newGist.isSuccess()) {
+                final GHGist gist = newGist.success();
                 final PublishDialog publishDialog = new PublishDialog();
                 publishDialog
                     .showAndWait()
                     .ifPresent(
-                        commitMessage -> {
-                          try {
-                            // Push the new gist
-                            ScriptingEngine.pushCodeToGit(
-                                newGist.getGitPushUrl(),
-                                ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
-                                dialog.getName(),
-                                scriptEditor.getFullText(),
-                                commitMessage);
-
-                            isScratchpad = false;
-                            gistURLField.setText(newGist.getGitPushUrl());
-                            fileNameField.setText(dialog.getName());
-                            gist = newGist;
-                            gistFile = newGist.getFiles().get(dialog.getName());
-                            tab.setText(dialog.getName());
-                            reloadMenus.run();
-                          } catch (final Exception e) {
-                            LOGGER.log(
-                                Level.SEVERE,
-                                "Could not push code.\n" + Throwables.getStackTraceAsString(e));
-                          }
-                        });
-              } catch (final IOException e) {
+                        commitMessage ->
+                            commitAndPushScratchpad(dialog.getName(), gist, commitMessage));
+              } else {
                 LOGGER.log(
                     Level.SEVERE,
-                    "Could not create new gist.\n" + Throwables.getStackTraceAsString(e));
+                    "Could not create new gist.\n"
+                        + Throwables.getStackTraceAsString(newGist.fail()));
               }
             });
+  }
+
+  /**
+   * Commit the scratchpad code and push. Disables scratchpad mode.
+   *
+   * @param newFileName file name for the script
+   * @param gist gist to push to
+   * @param commitMessage commit message
+   */
+  private void commitAndPushScratchpad(
+      final String newFileName, final GHGist gist, final String commitMessage) {
+    try {
+      // Push the new gist
+      ScriptingEngine.pushCodeToGit(
+          gist.getGitPushUrl(),
+          ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
+          newFileName,
+          scriptEditor.getFullText(),
+          commitMessage);
+
+      isScratchpad = false;
+      gistURLField.setText(gist.getGitPushUrl());
+      fileNameField.setText(newFileName);
+      this.gist = gist;
+      gistFile = gist.getFiles().get(newFileName);
+      tab.setText(newFileName);
+      reloadMenus.run();
+    } catch (final Exception e) {
+      LOGGER.log(Level.SEVERE, "Could not push code.\n" + Throwables.getStackTraceAsString(e));
+    }
   }
 
   @FXML

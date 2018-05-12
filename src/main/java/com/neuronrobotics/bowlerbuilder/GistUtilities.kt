@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerbuilder
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.sdk.util.ThreadUtil
+import fj.data.Validation
 import org.eclipse.jgit.api.errors.GitAPIException
 import org.kohsuke.github.GHGist
 import org.kohsuke.github.GHGistBuilder
@@ -27,8 +28,7 @@ object GistUtilities {
      * @return New gist
      */
     @JvmStatic
-    @Throws(IOException::class)
-    fun createNewGist(filename: String, description: String, isPublic: Boolean): GHGist {
+    fun createNewGist(filename: String, description: String, isPublic: Boolean): Validation<IOException, GHGist> {
         // Setup gist
         val gitHub = ScriptingEngine.getGithub()
         val builder = gitHub.createGist()
@@ -48,8 +48,7 @@ object GistUtilities {
      * @param filename Gist file filename
      * @return New gist
      */
-    @Throws(IOException::class)
-    private fun createGistFromBuilder(builder: GHGistBuilder, filename: String): GHGist {
+    private fun createGistFromBuilder(builder: GHGistBuilder, filename: String): Validation<IOException, GHGist> {
         val gist = builder.create()
 
         while (true) {
@@ -58,12 +57,14 @@ object GistUtilities {
                 break
             } catch (e: GitAPIException) {
                 LOGGER.log(Level.INFO, "Waiting on Git API.")
+            } catch (e: IOException) {
+                return Validation.fail(e)
             }
 
             ThreadUtil.wait(500)
         }
 
-        return gist
+        return Validation.success(gist)
     }
 
     /**
