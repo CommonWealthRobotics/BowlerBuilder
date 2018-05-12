@@ -92,7 +92,7 @@ public final class AceEditor implements ScriptEditor {
    * @return All text in the editor
    */
   @Override
-  public String getText() {
+  public String getFullText() {
     try {
       return returnAfterEngine(() -> (String) engine.executeScript("editor.getValue();"));
     } catch (final Exception e) {

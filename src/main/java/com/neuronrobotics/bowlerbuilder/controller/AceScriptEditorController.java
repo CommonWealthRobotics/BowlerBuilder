@@ -149,7 +149,7 @@ public class AceScriptEditorController {
                       manualRemote,
                       ScriptingEngine.getFullBranch(manualRemote),
                       manualFile,
-                      scriptEditor.getText(),
+                      scriptEditor.getFullText(),
                       commitMessage);
                 } else {
                   final File currentFile =
@@ -163,7 +163,7 @@ public class AceScriptEditorController {
                       git.getRepository().getConfig().getString("remote", "origin", "url"),
                       ScriptingEngine.getFullBranch(remote),
                       ScriptingEngine.findLocalPath(currentFile, git),
-                      scriptEditor.getText(),
+                      scriptEditor.getFullText(),
                       commitMessage);
                 }
               } catch (final Exception e) {
@@ -203,7 +203,7 @@ public class AceScriptEditorController {
                                 newGist.getGitPushUrl(),
                                 ScriptingEngine.getFullBranch(newGist.getGitPushUrl()),
                                 dialog.getName(),
-                                scriptEditor.getText(),
+                                scriptEditor.getFullText(),
                                 commitMessage);
 
                             isScratchpad = false;
@@ -318,7 +318,7 @@ public class AceScriptEditorController {
   public Object runEditorContent() {
     try {
       try {
-        return runStringScript(FxUtil.returnFX(scriptEditor::getText), null, scriptLangName);
+        return runStringScript(FxUtil.returnFX(scriptEditor::getFullText), null, scriptLangName);
       } catch (final ExecutionException e) {
         LOGGER.log(
             Level.SEVERE,

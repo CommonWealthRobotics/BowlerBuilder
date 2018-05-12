@@ -45,7 +45,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
                         tab.getController()
                             .getAceScriptEditorController()
                             .getScriptEditor()
-                            .getText(),
+                            .getFullText(),
                         new ArrayList<>(),
                         "BowlerGroovy"));
 

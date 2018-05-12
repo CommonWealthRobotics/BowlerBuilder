@@ -79,6 +79,6 @@ public class AceCadEditorTest extends AbstractAutoClosingApplicationTest {
   void getTextTest() throws ExecutionException, InterruptedException {
     FxHelper.runAndWait(() -> controller.getScriptEditor().insertAtCursor("foo\nbar"));
 
-    assertEquals("foo\nbar", FxUtil.returnFX(() -> controller.getScriptEditor().getText()));
+    assertEquals("foo\nbar", FxUtil.returnFX(() -> controller.getScriptEditor().getFullText()));
   }
 }
