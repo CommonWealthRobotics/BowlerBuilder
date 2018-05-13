@@ -76,7 +76,6 @@ object FxHelper {
      * @param timeoutUnit Timeout units
      * @return True if a matching exception was thrown from the JavaFX thread, false otherwise
      */
-    @JvmStatic
     inline fun <reified T : Any> catchInJavaFXThread(
         noinline runnable: () -> Unit,
         exceptionClass: Class<T>,
