@@ -10,9 +10,8 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.Serializable
-import java.util.Arrays
 
-internal class PreferencesServiceTest {
+class PreferencesServiceTest {
 
     @Test
     fun get() {
@@ -21,37 +20,43 @@ internal class PreferencesServiceTest {
     }
 
     @Test
-    fun prefixListenerTest() {
+    fun `attaching a listener after setting the preference does not fire the listener`() {
         val preferencesService = PreferencesService("")
-        val test = SimpleBooleanProperty(false)
         preferencesService.set("foo", "a")
-        preferencesService.addListener("foo") { _: String, _: String -> test.value = true }
+
+        val test = SimpleBooleanProperty(false)
+        preferencesService.addListener<String>("foo") { _, _ -> test.value = true }
+
         assertFalse(test.value)
     }
 
     @Test
-    fun postfixListenerTest() {
+    fun `attaching a listener before setting the preference fires the listener`() {
         val preferencesService = PreferencesService("")
+
         val test = SimpleBooleanProperty(false)
         preferencesService.addListener<Serializable>("foo") { _, _ -> test.value = true }
         preferencesService.set("foo", "a")
+
         assertTrue(test.value)
     }
 
     @Test
-    fun set() {
+    fun `simple set test`() {
         val preferencesService = PreferencesService("")
         preferencesService.set("foo", "b")
+
         assertEquals("b", preferencesService.get("foo", "a"))
     }
 
     @Test
-    fun getAllValues() {
+    fun `simple set multiple test`() {
         val preferencesService = PreferencesService("")
         preferencesService.set("foo", "a")
         preferencesService.set("bar", "b")
+
         assertTrue(CollectionUtils.isEqualCollection(
-                Arrays.asList("a", "b"),
+                listOf("a", "b"),
                 preferencesService.allValues))
     }
 
@@ -60,9 +65,11 @@ internal class PreferencesServiceTest {
         val preferencesService = PreferencesService("")
         preferencesService.set("foo", "a")
         preferencesService.set("bar", "b")
+
         val test = HashMap<String, String>()
         test["foo"] = "a"
         test["bar"] = "b"
+
         assertEquals(test, preferencesService.all)
     }
 }

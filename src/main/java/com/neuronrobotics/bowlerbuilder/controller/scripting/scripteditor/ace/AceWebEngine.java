@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace;
 
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Simple passthrough to the real {@link WebEngine}. */
@@ -22,6 +23,7 @@ public class AceWebEngine implements WebEngineAdapter {
     return webEngine.executeScript(script);
   }
 
+  @Nonnull
   @Override
   public Worker<Void> getLoadWorker() {
     return webEngine.getLoadWorker();

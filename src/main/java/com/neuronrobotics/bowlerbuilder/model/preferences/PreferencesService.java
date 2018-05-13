@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Loads/saves preferences from/to a file. */
@@ -153,10 +154,12 @@ public class PreferencesService {
     }
   }
 
+  @Nonnull
   public Collection<Serializable> getAllValues() {
     return data.values();
   }
 
+  @Nonnull
   public Map<String, Serializable> getAll() {
     return data;
   }

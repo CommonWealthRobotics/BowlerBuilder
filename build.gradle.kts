@@ -90,6 +90,16 @@ application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 }
 
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+    freeCompilerArgs = listOf("-Xenable-jvm-default")
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+
 // Spotless is used to lint and reformat source files.
 spotless {
     java {
@@ -295,12 +305,3 @@ val Project.`junitPlatform`: org.junit.platform.gradle.plugin.JUnitPlatformExten
  */
 fun Project.`junitPlatform`(configure: org.junit.platform.gradle.plugin.JUnitPlatformExtension.() -> Unit) =
         extensions.configure("junitPlatform", configure)
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}

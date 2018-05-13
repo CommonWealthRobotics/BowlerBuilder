@@ -14,6 +14,7 @@ import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -53,6 +54,7 @@ public class ConfigTabLinkSelection extends AbstractLinkSelection
     widget.getChildren().add(linkConfig);
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return widget;
