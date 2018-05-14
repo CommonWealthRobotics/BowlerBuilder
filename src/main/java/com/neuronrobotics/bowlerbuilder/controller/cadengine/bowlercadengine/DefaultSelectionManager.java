@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.input.MouseEvent;
@@ -30,6 +29,7 @@ import org.reactfx.util.FxTimer;
 
 @ParametersAreNonnullByDefault
 public class DefaultSelectionManager implements SelectionManager {
+
   private final CSGManager csgManager;
   private final Group focusGroup;
   private final VirtualCameraDevice virtualCam;
@@ -42,7 +42,6 @@ public class DefaultSelectionManager implements SelectionManager {
   private double mouseDeltaX;
   private double mouseDeltaY;
   private TransformNR previousTarget = new TransformNR();
-  private long lastSelectedTime = System.currentTimeMillis();
   private CSG selectedCSG;
 
   /**
@@ -79,8 +78,6 @@ public class DefaultSelectionManager implements SelectionManager {
                   .getCsgParser()
                   .parseCsgFromSource(script.getName(), lineNumber, csgManager.getCsgMap());
 
-          lastSelectedTime = System.currentTimeMillis();
-
           if (csgs.size() == 1) {
             selectCSG(csgs.iterator().next());
           } else {
@@ -112,7 +109,6 @@ public class DefaultSelectionManager implements SelectionManager {
                             .get(key)
                             .setMaterial(new PhongMaterial(key.getColor()))));
 
-    lastSelectedTime = System.currentTimeMillis();
     selectedCSG = selection;
 
     FxTimer.runLater(
@@ -191,6 +187,32 @@ public class DefaultSelectionManager implements SelectionManager {
         });
   }
 
+  /** De-select the selection. */
+  @Override
+  public void cancelSelection() {
+    for (final CSG key : csgManager.getCsgMap().keySet()) {
+      Platform.runLater(
+          () ->
+              csgManager
+                  .getCsgMap()
+                  .get(key)
+                  .setMaterial(new PhongMaterial(key.getColor()))); // NOPMD
+    }
+
+    selectedCSG = null; // NOPMD
+    final TransformNR startSelectNr = previousTarget.copy();
+    final TransformNR targetNR = new TransformNR();
+    final Affine interpolator = new Affine();
+    TransformFactory.nrToAffine(startSelectNr, interpolator);
+
+    Platform.runLater(
+        () -> {
+          removeAllFocusTransforms();
+          focusGroup.getTransforms().add(interpolator);
+          focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator);
+        });
+  }
+
   /**
    * Handle a mouse event from the 3D window.
    *
@@ -199,9 +221,7 @@ public class DefaultSelectionManager implements SelectionManager {
    */
   @Override
   public void mouseEvent(final MouseEvent mouseEvent, final CSG csg) {
-    if (mouseOldX == mouseEvent.getSceneX() && mouseOldY == mouseEvent.getSceneY()) {
-      selectCSG(csg);
-    }
+    selectCSG(csg);
 
     mouseOldX = mousePosX;
     mouseOldY = mousePosY;
@@ -216,28 +236,6 @@ public class DefaultSelectionManager implements SelectionManager {
    */
   @Override
   public void attachMouseListenersToScene(final SubScene scene) {
-    scene.setOnMouseClicked(
-        new EventHandler<MouseEvent>() {
-          private long lastClickedTimeLocal;
-          private static final long OFFSET = 500;
-
-          @Override
-          public void handle(final MouseEvent event) {
-            final long lastClickedDifference = System.currentTimeMillis() - lastClickedTimeLocal;
-            FxTimer.runLater(
-                Duration.ofMillis(100),
-                () -> {
-                  final long diff = System.currentTimeMillis() - lastSelectedTime; // NOPMD
-                  // reset only if an object is not being selected
-                  if (diff > 2000 && lastClickedDifference < OFFSET) {
-                    cancelSelection(); // NOPMD
-                  }
-                });
-
-            lastClickedTimeLocal = System.currentTimeMillis();
-          }
-        });
-
     scene.setOnMousePressed(
         mouseEvent -> {
           mouseOldX = mousePosX;
@@ -298,31 +296,6 @@ public class DefaultSelectionManager implements SelectionManager {
             virtualCam.setZoomDepth(virtualCam.getZoomDepth() + zoomFactor);
           }
           event.consume();
-        });
-  }
-
-  /** De-select the selection. */
-  private void cancelSelection() {
-    for (final CSG key : csgManager.getCsgMap().keySet()) {
-      Platform.runLater(
-          () ->
-              csgManager
-                  .getCsgMap()
-                  .get(key)
-                  .setMaterial(new PhongMaterial(key.getColor()))); // NOPMD
-    }
-
-    selectedCSG = null;
-    final TransformNR startSelectNr = previousTarget.copy();
-    final TransformNR targetNR = new TransformNR();
-    final Affine interpolator = new Affine();
-    TransformFactory.nrToAffine(startSelectNr, interpolator);
-
-    Platform.runLater(
-        () -> {
-          removeAllFocusTransforms();
-          focusGroup.getTransforms().add(interpolator);
-          focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator);
         });
   }
 

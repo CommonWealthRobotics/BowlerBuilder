@@ -50,6 +50,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -511,6 +513,17 @@ public class BowlerCadEngine extends Pane implements CadEngine {
             mesh.setOnContextMenuRequested(
                 event ->
                     menu.show(mesh.getScene().getWindow(), event.getScreenX(), event.getScreenY()));
+          }
+        });
+
+    // TODO: Figure out how to cancel selection on a key press
+    mesh.addEventFilter(
+        KeyEvent.KEY_PRESSED,
+        keyEvent -> {
+          LOGGER.info("key event: " + keyEvent.getCode().getName());
+          if (KeyCode.ESCAPE.equals(keyEvent.getCode())) {
+            LOGGER.info("hit escape");
+            selectionManager.cancelSelection();
           }
         });
 

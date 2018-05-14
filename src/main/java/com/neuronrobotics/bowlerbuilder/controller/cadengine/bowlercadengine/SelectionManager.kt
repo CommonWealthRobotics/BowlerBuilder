@@ -32,6 +32,9 @@ interface SelectionManager {
      */
     fun selectCSGs(selection: Iterable<CSG>)
 
+    /** De-select the selection. */
+    fun cancelSelection()
+
     /**
      * Handle a mouse event from the 3D window.
      *
