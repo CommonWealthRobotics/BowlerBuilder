@@ -4,8 +4,8 @@
 package com.neuronrobotics.bowlerbuilder.controller.module;
 
 import com.google.inject.AbstractModule;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.BowlerCadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine.BowlerCadEngine;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault

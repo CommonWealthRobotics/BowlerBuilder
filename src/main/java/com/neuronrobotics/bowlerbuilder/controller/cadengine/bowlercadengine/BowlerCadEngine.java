@@ -1,12 +1,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package com.neuronrobotics.bowlerbuilder.controller.cadengine; // NOPMD
+package com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine; // NOPMD
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser;
+import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.VirtualCameraMobileBaseFactory;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
@@ -17,7 +17,6 @@ import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraMobil
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.XForm;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.element.Axis3D;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.bowlerstudio.physics.TransformFactory;
 import com.neuronrobotics.imageprovider.VirtualCameraFactory;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
@@ -28,10 +27,8 @@ import eu.mihosoft.vrl.v3d.parametrics.LengthParameter;
 import eu.mihosoft.vrl.v3d.parametrics.Parameter;
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,10 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -57,8 +51,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -71,12 +63,10 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
-import org.reactfx.util.FxTimer;
 
 @ParametersAreNonnullByDefault
 public class BowlerCadEngine extends Pane implements CadEngine {
@@ -84,39 +74,26 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(BowlerCadEngine.class.getSimpleName());
 
-  private final Group axisGroup = new Group();
-  private final Group gridGroup = new Group();
-
+  private final SubScene scene;
   private final XForm world = new XForm();
   private final PerspectiveCamera camera = new PerspectiveCamera(true);
-
-  private final CsgParser csgParser;
 
   private final Group root = new Group();
   private final Group lookGroup = new Group();
   private final Group focusGroup = new Group();
   private final Group meshViewGroup = new Group();
+  private final Group ground = new Group();
+  private final Group axisGroup = new Group();
+  private final Group gridGroup = new Group();
   private final Group hand = new Group();
-  private final Map<String, MeshView> csgNameMap = new ConcurrentHashMap<>();
+
   private final Map<MeshView, Axis3D> axisMap = new ConcurrentHashMap<>();
-  private double mousePosX;
-  private double mousePosY;
-  private double mouseOldX;
-  private double mouseOldY;
-  private double mouseDeltaX;
-  private double mouseDeltaY;
-  private SubScene scene;
-  private Group ground;
   private VirtualCameraDevice virtualCam;
   private VirtualCameraMobileBase flyingCamera;
   private TransformNR defaultCameraView;
-  private Map<CSG, MeshView> csgMap = new ConcurrentHashMap<>();
-  private CSG selectedCsg;
-  private long lastMouseMovementTime = System.currentTimeMillis();
 
-  private TransformNR previousTarget = new TransformNR();
-
-  private long lastSelectedTime = System.currentTimeMillis();
+  private final CSGManager csgManager;
+  private final SelectionManager selectionManager;
 
   private final BooleanProperty axisShowing;
   private final BooleanProperty handShowing;
@@ -124,14 +101,15 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   /**
    * CAD Engine from BowlerStudio.
    *
-   * @param csgParser {@link CsgParser}
    * @param preferencesServiceFactory {@link PreferencesServiceFactory}
    */
   @Inject
   public BowlerCadEngine(
-      final CsgParser csgParser, final PreferencesServiceFactory preferencesServiceFactory) {
+      final CSGManager csgManager,
+      final SelectionManagerFactory selectionManagerFactory,
+      final PreferencesServiceFactory preferencesServiceFactory) {
     super();
-    this.csgParser = csgParser;
+    this.csgManager = csgManager;
 
     axisShowing = new SimpleBooleanProperty(true);
     handShowing = new SimpleBooleanProperty(true);
@@ -142,16 +120,20 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     final Boolean shouldAA = preferencesService.get("CAD Engine Antialiasing", true);
 
     if (shouldAA) {
-      setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED));
+      scene = new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED);
     } else {
-      setSubScene(new SubScene(root, 1024, 1024, true, SceneAntialiasing.DISABLED));
+      scene = new SubScene(root, 1024, 1024, true, SceneAntialiasing.DISABLED);
     }
+
     buildScene();
-    buildCamera();
+    buildCamera(); // Initializes virtualCam which we need for selectionManager
     buildAxes();
 
+    this.selectionManager =
+        selectionManagerFactory.create(csgManager, focusGroup, virtualCam, this::moveCamera);
+
     scene.setFill(new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, (Stop[]) null));
-    handleMouse(scene);
+    selectionManager.attachMouseListenersToScene(scene);
     getChildren().add(scene);
 
     // Clip view so it doesn't overlap with anything
@@ -190,8 +172,19 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     root.getChildren().add(world);
   }
 
-  /** Build the camera. Setup the pointer, clips, rotation, and position. */
   private void buildCamera() {
+    buildCameraStatic(camera, hand, scene);
+
+    virtualCam = new VirtualCameraDevice(camera, hand);
+    VirtualCameraFactory.setFactory(() -> virtualCam);
+    flyingCamera = VirtualCameraMobileBaseFactory.create(virtualCam);
+    defaultCameraView = flyingCamera.getFiducialToGlobalTransform();
+
+    moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
+  }
+
+  private static void buildCameraStatic(
+      final PerspectiveCamera camera, final Group hand, final SubScene scene) {
     camera.setNearClip(.1);
     camera.setFarClip(100000.0);
     scene.setCamera(camera);
@@ -199,25 +192,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     camera.setRotationAxis(Rotate.Z_AXIS);
     camera.setRotate(180);
 
-    final CSG cylinder =
-        new Cylinder(
-                0, // Radius at the top
-                5, // Radius at the bottom
-                20, // Height
-                20 // resolution
-                )
-            .toCSG()
-            .roty(90)
-            .setColor(Color.BLACK);
+    final CSG cylinder = new Cylinder(0, 5, 20, 20).toCSG().roty(90).setColor(Color.BLACK);
     hand.getChildren().add(cylinder.getMesh());
-    virtualCam = new VirtualCameraDevice(camera, hand);
-    VirtualCameraFactory.setFactory(() -> virtualCam);
-
-    flyingCamera = VirtualCameraMobileBaseFactory.create(virtualCam);
-
-    moveCamera(new TransformNR(0, 0, 0, new RotationNR(90 - 127, 24, 0)), 0);
-
-    defaultCameraView = flyingCamera.getFiducialToGlobalTransform();
   }
 
   /** Builds the axes. */
@@ -272,9 +248,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
             final Affine groundPlacement = new Affine();
             groundPlacement.setTz(-1);
-            ground = new Group();
             ground.getTransforms().add(groundPlacement);
-            focusGroup.getChildren().add(getVirtualCam().getCameraFrame());
+            focusGroup.getChildren().add(virtualCam.getCameraFrame());
 
             gridGroup.getChildren().addAll(new Axis3D(), ground);
             showAxis();
@@ -310,100 +285,6 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   }
 
   /**
-   * Attach mouse listeners to the scene.
-   *
-   * @param scene the scene
-   */
-  private void handleMouse(final SubScene scene) {
-    scene.setOnMouseClicked(
-        new EventHandler<MouseEvent>() {
-          private long lastClickedTimeLocal;
-          private static final long OFFSET = 500;
-
-          @Override
-          public void handle(final MouseEvent event) {
-            resetMouseTime(); // NOPMD
-            final long lastClickedDifference = System.currentTimeMillis() - lastClickedTimeLocal;
-            FxTimer.runLater(
-                Duration.ofMillis(100),
-                () -> {
-                  final long diff = System.currentTimeMillis() - lastSelectedTime; // NOPMD
-                  // reset only if an object is not being selected
-                  if (diff > 2000 && lastClickedDifference < OFFSET) {
-                    cancelSelection(); // NOPMD
-                  }
-                });
-
-            lastClickedTimeLocal = System.currentTimeMillis();
-          }
-        });
-
-    scene.setOnMousePressed(
-        mouseEvent -> {
-          mouseOldX = mousePosX;
-          mouseOldY = mousePosY;
-          mousePosX = mouseEvent.getSceneX();
-          mousePosY = mouseEvent.getSceneY();
-          resetMouseTime();
-        });
-
-    scene.setOnMouseDragged(
-        mouseEvent -> {
-          resetMouseTime();
-          mouseOldX = mousePosX;
-          mouseOldY = mousePosY;
-          mousePosX = mouseEvent.getSceneX();
-          mousePosY = mouseEvent.getSceneY();
-          mouseDeltaX = mousePosX - mouseOldX;
-          mouseDeltaY = mousePosY - mouseOldY;
-
-          double modifier = 1.0;
-          final double modifierFactor = 0.1;
-
-          if (mouseEvent.isControlDown()) {
-            modifier = 0.1;
-          } else if (mouseEvent.isShiftDown()) {
-            modifier = 10.0;
-          }
-
-          if (mouseEvent.isPrimaryButtonDown()) {
-            final TransformNR trans =
-                new TransformNR(
-                    0,
-                    0,
-                    0,
-                    new RotationNR(
-                        mouseDeltaY * modifierFactor * modifier * 2.0,
-                        mouseDeltaX * modifierFactor * modifier * 2.0,
-                        0));
-
-            if (mouseEvent.isPrimaryButtonDown()) {
-              moveCamera(trans, 0);
-            }
-          } else if (mouseEvent.isSecondaryButtonDown()) {
-            final double depth = -100 / getVirtualCam().getZoomDepth();
-            moveCamera(
-                new TransformNR(
-                    mouseDeltaX * modifierFactor * modifier * 1 / depth,
-                    mouseDeltaY * modifierFactor * modifier * 1 / depth,
-                    0,
-                    new RotationNR()),
-                0);
-          }
-        });
-
-    scene.addEventHandler(
-        ScrollEvent.ANY,
-        event -> {
-          if (ScrollEvent.SCROLL == event.getEventType()) {
-            final double zoomFactor = -(event.getDeltaY()) * getVirtualCam().getZoomDepth() / 500;
-            virtualCam.setZoomDepth(getVirtualCam().getZoomDepth() + zoomFactor);
-          }
-          event.consume();
-        });
-  }
-
-  /**
    * Move the camera.
    *
    * @param newPose transform to move by
@@ -421,118 +302,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     flyingCamera.updatePositions();
   }
 
-  /** De-select the selection. */
-  private void cancelSelection() {
-    for (final CSG key : getCsgMap().keySet()) {
-      Platform.runLater(
-          () -> getCsgMap().get(key).setMaterial(new PhongMaterial(key.getColor()))); // NOPMD
-    }
-
-    this.selectedCsg = null; // NOPMD
-    final TransformNR startSelectNr = previousTarget.copy();
-    final TransformNR targetNR = new TransformNR();
-    final Affine interpolator = new Affine();
-    TransformFactory.nrToAffine(startSelectNr, interpolator);
-
-    Platform.runLater(
-        () -> {
-          removeAllFocusTransforms();
-          focusGroup.getTransforms().add(interpolator);
-          focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator);
-        });
-
-    resetMouseTime();
-  }
-
-  private void resetMouseTime() {
-    this.lastMouseMovementTime = System.currentTimeMillis();
-  }
-
-  private void focusInterpolate(
-      final TransformNR start,
-      final TransformNR target,
-      final int depth,
-      final int targetDepth,
-      final Affine interpolator) {
-
-    final double depthScale = 1 - (double) depth / (double) targetDepth;
-    final double sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2));
-
-    final double difference = start.getX() - target.getX();
-
-    final double xIncrement = difference * sinunsoidalScale;
-    final double yIncrement = (start.getY() - target.getY()) * sinunsoidalScale;
-    final double zIncrement = (start.getZ() - target.getZ()) * sinunsoidalScale;
-
-    Platform.runLater(
-        () -> {
-          interpolator.setTx(xIncrement);
-          interpolator.setTy(yIncrement);
-          interpolator.setTz(zIncrement);
-        });
-
-    if (depth < targetDepth) {
-      FxTimer.runLater(
-          Duration.ofMillis(16),
-          () -> focusInterpolate(start, target, depth + 1, targetDepth, interpolator));
-    } else {
-      Platform.runLater(() -> focusGroup.getTransforms().remove(interpolator));
-      previousTarget = target.copy();
-      previousTarget.setRotation(new RotationNR());
-    }
-  }
-
-  private void removeAllFocusTransforms() {
-    final ObservableList<Transform> allTrans = focusGroup.getTransforms();
-    final Transform[] toRemove = allTrans.toArray(new Transform[0]);
-    Arrays.stream(toRemove).forEach(allTrans::remove);
-  }
-
   @Nonnull
   @Override
   public Map<CSG, MeshView> getCsgMap() {
-    return csgMap;
-  }
-
-  private void setCsgMap(final Map<CSG, MeshView> csgMap) {
-    this.csgMap = csgMap;
-  }
-
-  public long getLastMouseMoveTime() {
-    return lastMouseMovementTime;
-  }
-
-  /**
-   * Gets the camera field of view property.
-   *
-   * @return the camera field of view property
-   */
-  public DoubleProperty getCameraFieldOfViewProperty() {
-    return camera.fieldOfViewProperty();
-  }
-
-  private void setSubScene(final SubScene scene) {
-    this.scene = scene;
-  }
-
-  public VirtualCameraDevice getVirtualCam() {
-    return virtualCam;
-  }
-
-  private void setVirtualCam(final VirtualCameraDevice virtualCam) {
-    this.virtualCam = virtualCam;
-  }
-
-  public VirtualCameraMobileBase getFlyingCamera() {
-    return flyingCamera;
-  }
-
-  private void setFlyingCamera(final VirtualCameraMobileBase flyingCamera) {
-    this.flyingCamera = flyingCamera;
-  }
-
-  public CSG getSelectedCsg() {
-    return selectedCsg;
+    return csgManager.getCsgMap();
   }
 
   /**
@@ -543,21 +316,17 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   @Override
   public void setSelectedCSG(final File script, final int lineNumber) {
-    Platform.runLater(
-        () -> {
-          final Collection<CSG> csgs =
-              csgParser.parseCsgFromSource(script.getName(), lineNumber, csgMap);
+    selectionManager.setSelectedCSG(script, lineNumber);
+  }
 
-          lastSelectedTime = System.currentTimeMillis();
-
-          if (csgs.size() == 1) {
-            selectCSG(csgs.iterator().next(), csgMap);
-          } else {
-            selectCSGs(csgs);
-          }
-
-          resetMouseTime();
-        });
+  /**
+   * Select a CSG.
+   *
+   * @param selection CSG to select
+   */
+  @Override
+  public void selectCSG(final CSG selection) {
+    selectionManager.selectCSG(selection);
   }
 
   /**
@@ -567,101 +336,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   @Override
   public void selectCSGs(final Iterable<? extends CSG> selection) {
-    selection.forEach(
-        csg -> {
-          final MeshView meshView = csgMap.get(csg);
-          if (meshView != null) {
-            FxTimer.runLater(
-                Duration.ofMillis(20), () -> meshView.setMaterial(new PhongMaterial(Color.GOLD)));
-          }
-        });
-  }
-
-  /**
-   * Select a CSG and pan the camera to that CSG.
-   *
-   * @param selection CSG to select
-   * @param csgMap map containing CSGs MeshViews
-   */
-  private void selectCSG(final CSG selection, final Map<CSG, MeshView> csgMap) {
-    if (selection.equals(selectedCsg)) {
-      return;
-    }
-
-    csgMap
-        .keySet()
-        .forEach(
-            key ->
-                Platform.runLater(
-                    () -> csgMap.get(key).setMaterial(new PhongMaterial(key.getColor()))));
-
-    lastSelectedTime = System.currentTimeMillis();
-    selectedCsg = selection;
-
-    FxTimer.runLater(
-        Duration.ofMillis(20),
-        () -> getCsgMap().get(selectedCsg).setMaterial(new PhongMaterial(Color.GOLD)));
-
-    final double xCenter = selectedCsg.getCenterX();
-    final double yCenter = selectedCsg.getCenterY();
-    final double zCenter = selectedCsg.getCenterZ();
-
-    final TransformNR poseToMove = new TransformNR();
-
-    if (selectedCsg.getMaxX() < 1 || selectedCsg.getMinX() > -1) {
-      poseToMove.translateX(xCenter);
-    }
-
-    if (selectedCsg.getMaxY() < 1 || selectedCsg.getMinY() > -1) {
-      poseToMove.translateY(yCenter);
-    }
-
-    if (selectedCsg.getMaxZ() < 1 || selectedCsg.getMinZ() > -1) {
-      poseToMove.translateZ(zCenter);
-    }
-
-    final Affine centering = TransformFactory.nrToAffine(poseToMove);
-    // this section keeps the camera oriented the same way to avoid whipping around
-    final TransformNR rotationOnlyCOmponentOfManipulator =
-        TransformFactory.affineToNr(selectedCsg.getManipulator());
-    rotationOnlyCOmponentOfManipulator.setX(0);
-    rotationOnlyCOmponentOfManipulator.setY(0);
-    rotationOnlyCOmponentOfManipulator.setZ(0);
-    final TransformNR reverseRotation = rotationOnlyCOmponentOfManipulator.inverse();
-
-    final TransformNR startSelectNr = previousTarget.copy();
-    final TransformNR targetNR;
-
-    if (checkManipulator()) {
-      targetNR = TransformFactory.affineToNr(selectedCsg.getManipulator());
-    } else {
-      targetNR = TransformFactory.affineToNr(centering);
-    }
-
-    final Affine interpolator = new Affine();
-    final Affine correction = TransformFactory.nrToAffine(reverseRotation);
-
-    Platform.runLater(
-        () -> {
-          interpolator.setTx(startSelectNr.getX() - targetNR.getX());
-          interpolator.setTy(startSelectNr.getY() - targetNR.getY());
-          interpolator.setTz(startSelectNr.getZ() - targetNR.getZ());
-          removeAllFocusTransforms();
-          focusGroup.getTransforms().add(interpolator);
-          if (checkManipulator()) {
-            focusGroup.getTransforms().add(selectedCsg.getManipulator());
-            focusGroup.getTransforms().add(correction);
-          } else {
-            focusGroup.getTransforms().add(centering);
-          }
-          focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator);
-        });
-  }
-
-  private boolean checkManipulator() {
-    return Math.abs(selectedCsg.getManipulator().getTx()) > 0.1
-        || Math.abs(selectedCsg.getManipulator().getTy()) > 0.1
-        || Math.abs(selectedCsg.getManipulator().getTz()) > 0.1;
+    selectionManager.selectCSGs(selection);
   }
 
   /**
@@ -678,8 +353,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
     if (csg.getName() != null
         && !"".equals(csg.getName())
-        && csgNameMap.containsKey(csg.getName())) {
-      mesh.setDrawMode(csgNameMap.get(csg.getName()).getDrawMode());
+        && csgManager.getCsgNameMap().containsKey(csg.getName())) {
+      mesh.setDrawMode(csgManager.getCsgNameMap().get(csg.getName()).getDrawMode());
     } else {
       mesh.setDrawMode(DrawMode.FILL);
     }
@@ -687,13 +362,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     mesh.setOnMouseClicked(
         mouseEvent -> {
           if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-            if (mouseOldX == mouseEvent.getSceneX() && mouseOldY == mouseEvent.getSceneY()) {
-              selectCSG(csg, csgMap);
-            }
-            mouseOldX = mousePosX;
-            mouseOldY = mousePosY;
-            mousePosX = mouseEvent.getSceneX();
-            mousePosY = mouseEvent.getSceneY();
+            selectionManager.mouseEvent(mouseEvent, csg);
           } else if (mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
             final ContextMenu menu = new ContextMenu();
             menu.setAutoHide(true);
@@ -739,7 +408,6 @@ public class BowlerCadEngine extends Pane implements CadEngine {
                           menu.hide();
 
                           fireRegenerate(key, objects);
-                          resetMouseTime();
                         };
 
                     final Parameter param = CSGDatabase.get(key);
@@ -855,8 +523,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
             LOGGER.fine(Throwables.getStackTraceAsString(e));
           }
         });
-    csgMap.put(csg, mesh);
-    csgNameMap.put(csg.getName(), mesh);
+    csgManager.getCsgMap().put(csg, mesh);
+    csgManager.getCsgNameMap().put(csg.getName(), mesh);
     LOGGER.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
@@ -873,7 +541,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   @Override
   public void clearMeshes() {
     meshViewGroup.getChildren().clear();
-    csgMap.clear();
+    csgManager.getCsgMap().clear();
   }
 
   @Nonnull

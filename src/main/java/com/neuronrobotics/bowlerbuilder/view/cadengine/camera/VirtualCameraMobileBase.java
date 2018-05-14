@@ -8,8 +8,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -20,9 +19,8 @@ public class VirtualCameraMobileBase extends MobileBase { // NOPMD
   private IDriveEngine driveEngine = new IDriveEngineImplementation();
   private final List<VirtualCameraMobileBase> bases = new ArrayList<>();
 
-  public VirtualCameraMobileBase(final String text) throws UnsupportedEncodingException {
-    // super(new FileInputStream(AssetFactory.loadFile("layout/flyingCamera.xml")));
-    super(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8.name())));
+  public VirtualCameraMobileBase(final String text) {
+    super(new ByteArrayInputStream(text.getBytes(Charset.forName("UTF-8"))));
 
     setWalkingDriveEngine(driveEngine);
     bases.add(this);

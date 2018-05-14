@@ -39,7 +39,14 @@ interface CadEngine {
      * @param script script containing CSG source
      * @param lineNumber line number in script
      */
-    fun setSelectedCSG(script: File, linenumber: Int)
+    fun setSelectedCSG(script: File, lineNumber: Int)
+
+    /**
+     * Select a CSG.
+     *
+     * @param selection CSG to select
+     */
+    fun selectCSG(selection: CSG)
 
     /**
      * Select all CSGs in the collection.
