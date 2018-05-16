@@ -138,7 +138,7 @@ spotless {
 
 checkstyle {
     configFile = file("$rootDir/checkstyle.xml")
-    toolVersion = "8.1"
+    toolVersion = "8.10"
 }
 
 pmd {
@@ -250,58 +250,58 @@ task<Wrapper>("wrapper") {
 /**
  * Retrieves the [java][org.gradle.api.plugins.JavaPluginConvention] project convention.
  */
-val Project.`java`: org.gradle.api.plugins.JavaPluginConvention
+val Project.java: org.gradle.api.plugins.JavaPluginConvention
     get() =
         convention.getPluginByName("java")
 
 /**
  * Retrieves the [checkstyle][org.gradle.api.plugins.quality.CheckstyleExtension] project extension.
  */
-val Project.`checkstyle`: org.gradle.api.plugins.quality.CheckstyleExtension
+val Project.checkstyle: org.gradle.api.plugins.quality.CheckstyleExtension
     get() =
         extensions.getByName("checkstyle") as org.gradle.api.plugins.quality.CheckstyleExtension
 
 /**
  * Configures the [checkstyle][org.gradle.api.plugins.quality.CheckstyleExtension] project extension.
  */
-fun Project.`checkstyle`(configure: org.gradle.api.plugins.quality.CheckstyleExtension.() -> Unit) =
+fun Project.checkstyle(configure: org.gradle.api.plugins.quality.CheckstyleExtension.() -> Unit) =
         extensions.configure("checkstyle", configure)
 
 /**
  * Retrieves the [pmd][org.gradle.api.plugins.quality.PmdExtension] project extension.
  */
-val Project.`pmd`: org.gradle.api.plugins.quality.PmdExtension
+val Project.pmd: org.gradle.api.plugins.quality.PmdExtension
     get() =
         extensions.getByName("pmd") as org.gradle.api.plugins.quality.PmdExtension
 
 /**
  * Configures the [pmd][org.gradle.api.plugins.quality.PmdExtension] project extension.
  */
-fun Project.`pmd`(configure: org.gradle.api.plugins.quality.PmdExtension.() -> Unit) =
+fun Project.pmd(configure: org.gradle.api.plugins.quality.PmdExtension.() -> Unit) =
         extensions.configure("pmd", configure)
 
 /**
  * Retrieves the [findbugs][org.gradle.api.plugins.quality.FindBugsExtension] project extension.
  */
-val Project.`findbugs`: org.gradle.api.plugins.quality.FindBugsExtension
+val Project.findbugs: org.gradle.api.plugins.quality.FindBugsExtension
     get() =
         extensions.getByName("findbugs") as org.gradle.api.plugins.quality.FindBugsExtension
 
 /**
  * Configures the [findbugs][org.gradle.api.plugins.quality.FindBugsExtension] project extension.
  */
-fun Project.`findbugs`(configure: org.gradle.api.plugins.quality.FindBugsExtension.() -> Unit) =
+fun Project.findbugs(configure: org.gradle.api.plugins.quality.FindBugsExtension.() -> Unit) =
         extensions.configure("findbugs", configure)
 
 /**
  * Retrieves the [junitPlatform][org.junit.platform.gradle.plugin.JUnitPlatformExtension] project extension.
  */
-val Project.`junitPlatform`: org.junit.platform.gradle.plugin.JUnitPlatformExtension
+val Project.junitPlatform: org.junit.platform.gradle.plugin.JUnitPlatformExtension
     get() =
         extensions.getByName("junitPlatform") as org.junit.platform.gradle.plugin.JUnitPlatformExtension
 
 /**
  * Configures the [junitPlatform][org.junit.platform.gradle.plugin.JUnitPlatformExtension] project extension.
  */
-fun Project.`junitPlatform`(configure: org.junit.platform.gradle.plugin.JUnitPlatformExtension.() -> Unit) =
+fun Project.junitPlatform(configure: org.junit.platform.gradle.plugin.JUnitPlatformExtension.() -> Unit) =
         extensions.configure("junitPlatform", configure)
