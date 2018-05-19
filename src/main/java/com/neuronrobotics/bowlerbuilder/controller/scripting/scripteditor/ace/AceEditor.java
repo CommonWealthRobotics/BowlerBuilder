@@ -12,6 +12,7 @@ import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Worker;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /** Editor for Cloud9 Ace. */
@@ -91,6 +92,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @return All text in the editor
    */
+  @Nonnull
   @Override
   public String getFullText() {
     try {
@@ -107,6 +109,7 @@ public final class AceEditor implements ScriptEditor {
    *
    * @return The selected text
    */
+  @Nonnull
   @Override
   public String getSelectedText() {
     try {
