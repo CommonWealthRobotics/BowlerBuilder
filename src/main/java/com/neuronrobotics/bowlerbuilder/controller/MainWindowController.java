@@ -7,6 +7,8 @@ import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwo
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -876,24 +878,74 @@ public class MainWindowController {
    * @param repos repositories
    */
   private void loadReposIntoMenus(final Menu menu, final PagedIterable<GHRepository> repos) {
-    repos
-        .asList()
-        .stream()
-        .sorted(Comparator.comparing(GHRepository::getName))
-        .forEach(
-            repo -> {
-              final MenuItem menuItem = new MenuItem(repo.getName());
-              menuItem.setOnAction(
-                  event ->
-                      loadPageIntoNewTab(
-                          repo.getName().substring(0, Math.min(15, repo.getName().length())),
-                          repo.gitHttpTransportUrl()));
-              menu.getItems().add(menuItem);
-            });
+    // Map the repo owner's name to the repos it falls under to group similar repos together
+    final Multimap<String, GHRepository> repoMap =
+        MultimapBuilder.treeKeys().arrayListValues().build();
+    repos.forEach(repo -> repoMap.put(repo.getOwnerName(), repo));
+
+    menu.getItems()
+        .addAll(
+            // One Menu per owner
+            repoMap
+                .keySet()
+                .stream()
+                .sorted()
+                .sequential()
+                .map(repoOwner -> createRepoOwnerMenu(repoOwner, repoMap.get(repoOwner)))
+                .collect(Collectors.toList()));
   }
 
+  /**
+   * Create a Menu for a repository owner containing all the repos under that owner.
+   *
+   * @param repoOwner the repo owner
+   * @param repos the repos the owner owns
+   * @return the Menu
+   */
+  @Nonnull
+  private Menu createRepoOwnerMenu(final String repoOwner, final Collection<GHRepository> repos) {
+    final Menu repoOwnerMenu = new Menu(repoOwner);
+
+    // One MenuItem per repo
+    repoOwnerMenu
+        .getItems()
+        .addAll(
+            repos
+                .stream()
+                .sorted(Comparator.comparing(GHRepository::getName))
+                .sequential()
+                .map(this::createRepoMenuItem)
+                .collect(Collectors.toList()));
+
+    return repoOwnerMenu;
+  }
+
+  /**
+   * Create a MenuItem for a repo.
+   *
+   * @param repo the repo
+   * @return the MenuItem
+   */
+  @Nonnull
+  private MenuItem createRepoMenuItem(final GHRepository repo) {
+    final MenuItem menuItem = new MenuItem(repo.getName());
+
+    menuItem.setOnAction(
+        event ->
+            loadPageIntoNewTab(
+                repo.getName().substring(0, Math.min(15, repo.getName().length())),
+                repo.gitHttpTransportUrl()));
+
+    return menuItem;
+  }
+
+  /**
+   * Loads the saved favorite gists into MenuItems and adds one Menu to the input Menu.
+   *
+   * @param menu the Menu to side-effect
+   */
   private void loadFavoritesIntoMenus(final Menu menu) {
-    final HashSet<String> gistIDs = preferencesService.get("Favorite Gists", new HashSet<String>());
+    final HashSet<String> gistIDs = preferencesService.get("Favorite Gists", new HashSet<>());
     final GitHub gitHub = ScriptingEngine.getGithub();
 
     final List<GHGist> gists =
