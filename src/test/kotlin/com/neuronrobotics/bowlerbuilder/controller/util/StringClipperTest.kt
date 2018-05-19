@@ -12,42 +12,42 @@ class StringClipperTest {
     private val stringClipper = StringClipper()
 
     @Test
-    internal fun emptyInputTest() {
+    fun emptyInputTest() {
         assertEquals("", stringClipper.clipStringToLines("", 1))
     }
 
     @Test
-    internal fun emptyInput0Test() {
+    fun emptyInput0Test() {
         assertEquals("", stringClipper.clipStringToLines("", 0))
     }
 
     @Test
-    internal fun simpleInputTest() {
+    fun simpleInputTest() {
         assertEquals("test", stringClipper.clipStringToLines("test", 1))
     }
 
     @Test
-    internal fun simpleInput0Test() {
+    fun simpleInput0Test() {
         assertEquals("", stringClipper.clipStringToLines("test", 0))
     }
 
     @Test
-    internal fun negativeLinesTest() {
+    fun negativeLinesTest() {
         assertEquals("", stringClipper.clipStringToLines("test", -1))
     }
 
     @Test
-    internal fun oneLineTest() {
+    fun oneLineTest() {
         assertEquals("a", stringClipper.clipStringToLines("a\nb", 1))
     }
 
     @Test
-    internal fun twoLineTest() {
+    fun twoLineTest() {
         assertEquals("a\nb", stringClipper.clipStringToLines("a\nb", 2))
     }
 
     @Test
-    internal fun lineOOBTest() {
+    fun lineOOBTest() {
         assertEquals("a", stringClipper.clipStringToLines("a", 2))
     }
 }
