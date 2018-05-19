@@ -257,19 +257,13 @@ public class MainWindowController {
 
   @FXML
   private void onOpenScratchpad(final ActionEvent actionEvent) {
-    try {
-      final AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-      final AceCadEditorTabController controller = tab.getController();
+    final AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
+    final AceCadEditorTabController controller = tab.getController();
 
-      controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
+    controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
-      tabPane.getTabs().add(tab);
-      tabPane.getSelectionModel().select(tab);
-    } catch (final IOException e) {
-      LOGGER.log(
-          Level.SEVERE,
-          "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
-    }
+    tabPane.getTabs().add(tab);
+    tabPane.getSelectionModel().select(tab);
   }
 
   @FXML
@@ -349,19 +343,13 @@ public class MainWindowController {
   public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(
         () -> {
-          try {
-            final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
-            final AceCadEditorTabController controller = tab.getController();
+          final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
+          final AceCadEditorTabController controller = tab.getController();
 
-            controller.getAceScriptEditorController().loadGist(gist, gistFile);
+          controller.getAceScriptEditorController().loadGist(gist, gistFile);
 
-            tabPane.getTabs().add(tab);
-            tabPane.getSelectionModel().select(tab);
-          } catch (final IOException e) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Could not load AceCadEditor.fxml.\n" + Throwables.getStackTraceAsString(e));
-          }
+          tabPane.getTabs().add(tab);
+          tabPane.getSelectionModel().select(tab);
         });
   }
 

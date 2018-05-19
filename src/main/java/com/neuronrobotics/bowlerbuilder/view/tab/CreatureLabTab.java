@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -90,11 +91,13 @@ public class CreatureLabTab extends AbstractCadEditorTab<AceCreatureLabControlle
     this.setContent(pane);
   }
 
+  @Nonnull
   @Override
   public Node getView() {
     return pane;
   }
 
+  @Nonnull
   @Override
   public ScriptEditorView getScriptEditorView() {
     throw new UnsupportedOperationException(
