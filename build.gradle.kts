@@ -67,6 +67,7 @@ dependencies {
     compile(kotlin("stdlib-jdk8", kotlin_version))
     compile(kotlin("reflect"))
     compile(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.5")
+    compile(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-javafx", version = "0.22.5")
 
     fun junitJupiter(name: String, version: String = "5.2.0") =
             create(group = "org.junit.jupiter", name = name, version = version)

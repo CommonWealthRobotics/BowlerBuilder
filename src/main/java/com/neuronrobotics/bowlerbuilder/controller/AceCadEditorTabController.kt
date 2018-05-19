@@ -22,6 +22,8 @@ class AceCadEditorTabController(
         aceScriptEditorController
                 .scriptRunner
                 .resultProperty()
-                .addListener({ _, _, newValue -> parseCSG(newValue) })
+                .addListener({ _, _, newValue ->
+                    cadModelViewerController.clearMeshes()
+                    parseCSG(newValue) })
     }
 }

@@ -18,12 +18,14 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.transform.Affine
+import kotlinx.coroutines.experimental.launch
 import org.reactfx.util.FxTimer
 import java.io.File
 import java.time.Duration
 import java.util.Arrays
 import java.util.Optional
 import java.util.function.BiConsumer
+import kotlinx.coroutines.experimental.javafx.JavaFx as UI
 
 class DefaultSelectionManager
 /**
@@ -56,10 +58,10 @@ class DefaultSelectionManager
      * @param lineNumber line number in script
      */
     override fun setSelectedCSG(script: File, lineNumber: Int) {
-        Platform.runLater {
+        launch(context = UI) {
             val csgs = csgManager
                     .csgParser
-                    .parseCsgFromSource(script.name, lineNumber, csgManager.csgMap.keys)
+                    .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
 
             if (csgs.size == 1) {
                 selectCSG(csgs.iterator().next())
@@ -75,26 +77,20 @@ class DefaultSelectionManager
      * @param selection CSG to select
      */
     override fun selectCSG(selection: CSG) {
-        if (selection == selectedCSG.value.get()) {
+        if (selectedCSG.value.isPresent && selection == selectedCSG.value.get()) {
             return
         }
 
         csgManager
-                .csgMap
-                .keys
+                .getCSGs()
                 .forEach { key ->
                     Platform.runLater {
-                        csgManager.csgMap[key]?.material = PhongMaterial(key.color)
+                        csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
                     }
                 }
 
         selectedCSG.value = Optional.of(selection)
-
-        FxTimer.runLater(Duration.ofMillis(20)) {
-            selectedCSG.value.ifPresent {
-                csgManager.csgMap[it]?.material = PhongMaterial(Color.GOLD)
-            }
-        }
+        csgManager.getMeshView(selection)?.material = PhongMaterial(Color.GOLD)
 
         val xCenter = selection.centerX
         val yCenter = selection.centerY
@@ -115,7 +111,8 @@ class DefaultSelectionManager
         }
 
         val centering = TransformFactory.nrToAffine(poseToMove)
-// this section keeps the camera oriented the same way to avoid whipping around
+
+        // this section keeps the camera oriented the same way to avoid whipping around
         val rotationOnlyComponentOfManipulator = TransformFactory.affineToNr(selection.manipulator)
         rotationOnlyComponentOfManipulator.x = 0.0
         rotationOnlyComponentOfManipulator.y = 0.0
@@ -132,7 +129,7 @@ class DefaultSelectionManager
         val interpolator = Affine()
         val correction = TransformFactory.nrToAffine(reverseRotation)
 
-        Platform.runLater {
+        launch(context = UI) {
             interpolator.tx = startSelectNr.x - targetNR.x
             interpolator.ty = startSelectNr.y - targetNR.y
             interpolator.tz = startSelectNr.z - targetNR.z
@@ -155,7 +152,7 @@ class DefaultSelectionManager
      */
     override fun selectCSGs(selection: Iterable<CSG>) {
         selection.forEach { csg ->
-            val meshView = csgManager.csgMap[csg]
+            val meshView = csgManager.getMeshView(csg)
             if (meshView != null) {
                 FxTimer.runLater(
                         Duration.ofMillis(20)) { meshView.material = PhongMaterial(Color.GOLD) }
@@ -165,9 +162,9 @@ class DefaultSelectionManager
 
     /** De-select the selection.  */
     override fun cancelSelection() {
-        for (key in csgManager.csgMap.keys) {
-            Platform.runLater {
-                csgManager.csgMap[key]?.material = PhongMaterial(key.color)
+        for (key in csgManager.getCSGs()) {
+            launch(context = UI) {
+                csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
             }
         }
 
@@ -177,7 +174,7 @@ class DefaultSelectionManager
         val interpolator = Affine()
         TransformFactory.nrToAffine(startSelectNr, interpolator)
 
-        Platform.runLater {
+        launch(context = UI) {
             removeAllFocusTransforms()
             focusGroup.transforms.add(interpolator)
             focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator)
@@ -282,7 +279,7 @@ class DefaultSelectionManager
         val yIncrement = (start.y - target.y) * sinunsoidalScale
         val zIncrement = (start.z - target.z) * sinunsoidalScale
 
-        Platform.runLater {
+        launch(context = UI) {
             interpolator.tx = xIncrement
             interpolator.ty = yIncrement
             interpolator.tz = zIncrement
@@ -293,7 +290,7 @@ class DefaultSelectionManager
                     Duration.ofMillis(16)
             ) { focusInterpolate(start, target, depth + 1, targetDepth, interpolator) }
         } else {
-            Platform.runLater { focusGroup.transforms.remove(interpolator) }
+            launch(context = UI) { focusGroup.transforms.remove(interpolator) }
             previousTarget = target.copy()
             previousTarget.rotation = RotationNR()
         }

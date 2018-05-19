@@ -5,6 +5,7 @@ package com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine; /
 
 import com.google.common.base.Throwables;
 import com.google.inject.Inject;
+import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.VirtualCameraMobileBaseFactory;
@@ -309,7 +310,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   @Nonnull
   @Override
   public Map<CSG, MeshView> getCsgMap() {
-    return csgManager.getCsgMap();
+    return csgManager.getCsgToMeshView();
   }
 
   /**
@@ -355,10 +356,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     mesh.setDepthTest(DepthTest.ENABLE);
     mesh.setCullFace(CullFace.BACK);
 
-    if (csg.getName() != null
-        && !"".equals(csg.getName())
-        && csgManager.getCsgNameMap().containsKey(csg.getName())) {
-      mesh.setDrawMode(csgManager.getCsgNameMap().get(csg.getName()).getDrawMode());
+    if (csg.getName() != null && !"".equals(csg.getName()) && csgManager.has(csg.getName())) {
+      mesh.setDrawMode(csgManager.getMeshView(csg.getName()).getDrawMode());
     } else {
       mesh.setDrawMode(DrawMode.FILL);
     }
@@ -538,8 +537,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
             LOGGER.fine(Throwables.getStackTraceAsString(e));
           }
         });
-    csgManager.getCsgMap().put(csg, mesh);
-    csgManager.getCsgNameMap().put(csg.getName(), mesh);
+
+    csgManager.addCSG(csg, mesh);
     LOGGER.log(Level.FINE, "Added CSG with name: " + csg.getName());
   }
 
@@ -555,8 +554,12 @@ public class BowlerCadEngine extends Pane implements CadEngine {
 
   @Override
   public void clearMeshes() {
-    meshViewGroup.getChildren().clear();
-    csgManager.getCsgMap().clear();
+    try {
+      FxUtil.runFXAndWait(() -> meshViewGroup.getChildren().clear());
+    } catch (InterruptedException ignored) {
+    }
+
+    csgManager.getCsgToMeshView().clear();
   }
 
   @Nonnull
