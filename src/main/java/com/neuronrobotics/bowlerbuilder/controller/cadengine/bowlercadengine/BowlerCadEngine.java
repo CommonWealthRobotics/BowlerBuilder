@@ -357,7 +357,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     mesh.setCullFace(CullFace.BACK);
 
     if (csg.getName() != null && !"".equals(csg.getName()) && csgManager.has(csg.getName())) {
-      mesh.setDrawMode(csgManager.getMeshView(csg.getName()).getDrawMode());
+      final MeshView meshView = csgManager.getMeshView(csg.getName());
+      if (meshView != null) {
+        mesh.setDrawMode(meshView.getDrawMode());
+      }
     } else {
       mesh.setDrawMode(DrawMode.FILL);
     }
