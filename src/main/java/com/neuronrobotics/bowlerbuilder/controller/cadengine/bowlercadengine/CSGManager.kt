@@ -7,10 +7,8 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.shape.MeshView
 import java.util.concurrent.ConcurrentHashMap
-import javax.annotation.ParametersAreNonnullByDefault
 import javax.inject.Inject
 
-@ParametersAreNonnullByDefault
 class CSGManager @Inject constructor(val csgParser: CsgParser) {
     val csgMap: Map<CSG, MeshView>
     val csgNameMap: Map<String, MeshView>
