@@ -59,7 +59,7 @@ class DefaultSelectionManager
         Platform.runLater {
             val csgs = csgManager
                     .csgParser
-                    .parseCsgFromSource(script.name, lineNumber, csgManager.csgMap)
+                    .parseCsgFromSource(script.name, lineNumber, csgManager.csgMap.keys)
 
             if (csgs.size == 1) {
                 selectCSG(csgs.iterator().next())
