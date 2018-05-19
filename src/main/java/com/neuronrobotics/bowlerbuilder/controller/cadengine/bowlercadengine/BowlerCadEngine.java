@@ -103,6 +103,8 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   /**
    * CAD Engine from BowlerStudio.
    *
+   * @param csgManager {@link CSGManager}
+   * @param selectionManagerFactory {@link SelectionManager}
    * @param preferencesServiceFactory {@link PreferencesServiceFactory}
    */
   @Inject
