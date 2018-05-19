@@ -119,6 +119,7 @@ class DefaultSelectionManager
         rotationOnlyComponentOfManipulator.z = 0.0
         val reverseRotation = rotationOnlyComponentOfManipulator.inverse()
 
+        // TODO: Issue #32
         val startSelectNr = previousTarget.copy()
         val targetNR = if (checkManipulator(selection)) {
             TransformFactory.affineToNr(selection.manipulator)
@@ -135,12 +136,14 @@ class DefaultSelectionManager
             interpolator.tz = startSelectNr.z - targetNR.z
             removeAllFocusTransforms()
             focusGroup.transforms.add(interpolator)
+
             if (checkManipulator(selection)) {
                 focusGroup.transforms.add(selection.manipulator)
                 focusGroup.transforms.add(correction)
             } else {
                 focusGroup.transforms.add(centering)
             }
+
             focusInterpolate(startSelectNr, targetNR, 0, 30, interpolator)
         }
     }
@@ -271,13 +274,13 @@ class DefaultSelectionManager
     ) {
 
         val depthScale = 1 - depth.toDouble() / targetDepth.toDouble()
-        val sinunsoidalScale = Math.sin(depthScale * (Math.PI / 2))
+        val sinusoidalScale = Math.sin(depthScale * (Math.PI / 2))
 
         val difference = start.x - target.x
 
-        val xIncrement = difference * sinunsoidalScale
-        val yIncrement = (start.y - target.y) * sinunsoidalScale
-        val zIncrement = (start.z - target.z) * sinunsoidalScale
+        val xIncrement = difference * sinusoidalScale
+        val yIncrement = (start.y - target.y) * sinusoidalScale
+        val zIncrement = (start.z - target.z) * sinusoidalScale
 
         launch(context = UI) {
             interpolator.tx = xIncrement
