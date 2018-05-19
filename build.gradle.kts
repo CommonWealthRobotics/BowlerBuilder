@@ -4,6 +4,7 @@ import org.gradle.api.tasks.wrapper.Wrapper
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.junit.platform.console.options.Details
 import java.util.Collections.emptyList
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -32,6 +33,7 @@ plugins {
     maven
     id("com.github.johnrengelman.shadow") version "2.0.1"
     id("com.diffplug.gradle.spotless") version "3.10.0"
+    kotlin("jvm") version "1.2.41"
 }
 
 apply {
@@ -39,7 +41,6 @@ apply {
     plugin("findbugs")
     plugin("jacoco")
     plugin("org.junit.platform.gradle.plugin")
-    plugin("kotlin")
 }
 
 group = "com.neuronrobotics.bowlerbuilder"
@@ -65,6 +66,7 @@ dependencies {
     compile(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
     compile(kotlin("stdlib-jdk8", kotlin_version))
     compile(kotlin("reflect"))
+    compile(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.5")
 
     fun junitJupiter(name: String, version: String = "5.2.0") =
             create(group = "org.junit.jupiter", name = name, version = version)
@@ -88,6 +90,10 @@ dependencies {
 
 application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
+}
+
+kotlin {
+    experimental.coroutines = Coroutines.ENABLE
 }
 
 val compileKotlin: KotlinCompile by tasks

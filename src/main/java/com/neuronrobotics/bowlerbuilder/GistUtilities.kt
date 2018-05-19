@@ -12,9 +12,7 @@ import org.kohsuke.github.GHGistBuilder
 import java.io.IOException
 import java.util.Optional
 import java.util.logging.Level
-import javax.annotation.ParametersAreNonnullByDefault
 
-@ParametersAreNonnullByDefault
 object GistUtilities {
 
     private val LOGGER = LoggerUtilities.getLogger(GistUtilities::class.java.simpleName)
