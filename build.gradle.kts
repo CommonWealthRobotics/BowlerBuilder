@@ -18,7 +18,7 @@ buildscript {
     }
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.0")
-        classpath(kotlinModule("gradle-plugin", kotlin_version))
+        classpath(kotlin("gradle-plugin", kotlin_version))
     }
 }
 
@@ -63,6 +63,7 @@ dependencies {
     compile(group = "org.functionaljava", name = "functionaljava_1.8", version = "4.7")
     compile(group = "org.functionaljava", name = "functionaljava-java8", version = "4.7")
     compile(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
+    compile(kotlin("stdlib-jdk8", kotlin_version))
     compile(kotlin("reflect"))
 
     fun junitJupiter(name: String, version: String = "5.2.0") =
@@ -83,7 +84,6 @@ dependencies {
 
     testRuntime(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.0.0")
     testRuntime(testFx(name = "openjfx-monocle", version = "8u76-b04"))
-    compile(kotlinModule("stdlib-jdk8", kotlin_version))
 }
 
 application {
@@ -95,6 +95,7 @@ compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
     freeCompilerArgs = listOf("-Xenable-jvm-default")
 }
+
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
@@ -186,6 +187,7 @@ tasks.withType<JacocoReport> {
         html.isEnabled = true
     }
 }
+
 afterEvaluate {
     val junitPlatformTest: JavaExec by tasks
     jacoco {
