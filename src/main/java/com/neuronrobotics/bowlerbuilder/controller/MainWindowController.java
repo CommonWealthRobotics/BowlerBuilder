@@ -169,14 +169,21 @@ public class MainWindowController {
       if (ScriptingEngine.isLoginSuccess() && hasNetwork()) {
         setupMenusOnLogin();
 
-        try {
-          ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
-        } catch (final Exception e) {
-          LOGGER.warning("Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
-        }
+        LoggerUtilities.newLoggingThread(
+                LOGGER,
+                () -> {
+                  Thread.currentThread().setName("ScriptingEngine Asset Preloader Thread");
+                  try {
+                    ScriptingEngine.filesInGit(AssetFactory.getGitSource(), "0.25.1", null);
+                  } catch (final Exception e) {
+                    LOGGER.warning(
+                        "Could not preload assets.\n" + Throwables.getStackTraceAsString(e));
+                  }
+                })
+            .start();
       }
     } catch (final IOException e) {
-      LOGGER.warning("Could not automatically log in.");
+      LOGGER.info("Could not automatically log in.");
       logOut.setDisable(true); // Can't log out when not logged in
       logIn.setDisable(false);
     }
