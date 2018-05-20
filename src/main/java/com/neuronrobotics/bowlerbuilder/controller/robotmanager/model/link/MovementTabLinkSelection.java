@@ -9,6 +9,7 @@ import com.neuronrobotics.sdk.addons.kinematics.AbstractKinematicsNR;
 import com.neuronrobotics.sdk.addons.kinematics.DHLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -34,6 +35,7 @@ public class MovementTabLinkSelection extends AbstractLinkSelection {
         newValue.getDevice());
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return slider;

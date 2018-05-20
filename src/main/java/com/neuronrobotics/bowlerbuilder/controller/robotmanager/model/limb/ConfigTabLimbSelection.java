@@ -10,6 +10,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -50,6 +51,7 @@ public class ConfigTabLimbSelection extends AbstractLimbSelection {
             });
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return widget.getView();

@@ -11,7 +11,9 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -31,6 +33,7 @@ public class LimbTabLinkSelection extends AbstractLinkSelection {
 
     final Button removeLink = new Button();
     removeLink.setGraphic(AssetFactory.loadIcon("Remove-Link.png"));
+    removeLink.setTooltip(new Tooltip("Remove Link"));
     removeLink.setOnAction(
         event -> {
           limb.removeLink(configuration.getLinkIndex());
@@ -42,6 +45,7 @@ public class LimbTabLinkSelection extends AbstractLinkSelection {
     vBox.getChildren().addAll(getTitleLabel(configuration.getName()), new VBox(5, removeLink));
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return vBox;

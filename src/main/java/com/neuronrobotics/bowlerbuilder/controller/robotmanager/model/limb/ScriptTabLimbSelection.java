@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -79,6 +80,7 @@ public class ScriptTabLimbSelection extends AbstractLimbSelection {
     widget.getChildren().add(controlsBox);
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return widget;

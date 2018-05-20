@@ -63,7 +63,7 @@ public class ConfigTabLinkSelection extends AbstractLinkSelection
   @Override
   public void onSliderMoving(
       final EngineeringUnitsSliderWidget source, final double newAngleDegrees) {
-    // Don'translate need to implement
+    // Don't need to implement
   }
 
   @Override

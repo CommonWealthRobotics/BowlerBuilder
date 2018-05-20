@@ -58,6 +58,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -166,14 +167,22 @@ public class CreatureEditorController {
         });
 
     final String padding = "-fx-padding: 5px;";
+
     limbTab.setGraphic(AssetFactory.loadIcon("creature.png"));
     limbTab.setStyle(padding);
+    limbTab.setTooltip(new Tooltip("Limb Configuration"));
+
     movementTab.setGraphic(AssetFactory.loadIcon("Move-Limb.png"));
     movementTab.setStyle(padding);
+    movementTab.setTooltip(new Tooltip("Movement"));
+
     configTab.setGraphic(AssetFactory.loadIcon("Advanced-Configuration.png"));
     configTab.setStyle(padding);
+    configTab.setTooltip(new Tooltip("Hardware Configuration"));
+
     scriptTab.setGraphic(AssetFactory.loadIcon("Edit-Script.png"));
     scriptTab.setStyle(padding);
+    scriptTab.setTooltip(new Tooltip("Scripting"));
 
     regenCADButton.setGraphic(AssetFactory.loadIcon("Generate-Cad.png"));
     regenCADButton.setText("Regenerate CAD");
@@ -264,6 +273,7 @@ public class CreatureEditorController {
   private Button getAddLinkButton(final ImageView icon, final LimbType limbType) {
     final Button button = new Button();
     button.setGraphic(icon);
+    button.setTooltip(new Tooltip("Add Link"));
     button.setOnAction(
         event -> {
           switch (limbType) {

@@ -23,10 +23,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -88,6 +90,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
 
     final Button addLink = new Button();
     addLink.setGraphic(AssetFactory.loadIcon("Add-Link.png"));
+    addLink.setTooltip(new Tooltip("Add Link"));
     addLink.setOnAction(
         event -> {
           final AddLinkDialog dialog =
@@ -103,6 +106,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
 
     final Button removeLimbButton = new Button();
     removeLimbButton.setGraphic(AssetFactory.loadIcon("Remove-Limb.png"));
+    removeLimbButton.setTooltip(new Tooltip("Remove Limb"));
     removeLimbButton.setOnAction(
         event -> {
           device.getLegs().remove(limb);
@@ -149,9 +153,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
 
     limb.addNewLink(newLink, new DHLink(0, 0, 100, 0));
 
-    // Add the new link to the ScrollPane for continuity, the
-    // rest of the updating
-    // is done by
+    // Add the new link to the ScrollPane for continuity, the rest of the updating is done by
     // regenerating the menus
     scrollPaneContent.getChildren().setAll(getLinkButtons(limb.getLinkConfigurations()));
   }
@@ -178,6 +180,7 @@ public class LimbTabLimbSelection extends AbstractLimbSelection {
     scrollPaneContent.getChildren().setAll(getLinkButtons(limb.getLinkConfigurations()));
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return view;

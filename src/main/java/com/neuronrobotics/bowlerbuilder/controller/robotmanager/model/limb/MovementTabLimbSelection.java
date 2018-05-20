@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -42,6 +43,7 @@ public class MovementTabLimbSelection extends AbstractLimbSelection {
     }
   }
 
+  @Nonnull
   @Override
   public Node getWidget() {
     return view;
