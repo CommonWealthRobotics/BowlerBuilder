@@ -371,66 +371,60 @@ public class MainWindowController {
   public void loadCreatureLab(final String[] file) { // NOPMD
     Platform.runLater(
         () -> {
-          try {
-            final CreatureLabTab tab = new CreatureLabTab("Creature Lab");
-            LoggerUtilities.newLoggingThread(
-                    LOGGER,
-                    () -> {
-                      final AceCreatureLabController controller = tab.getController();
+          final CreatureLabTab tab = new CreatureLabTab("Creature Lab");
+          LoggerUtilities.newLoggingThread(
+                  LOGGER,
+                  () -> {
+                    final AceCreatureLabController controller = tab.getController();
 
-                      try {
-                        final String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
+                    try {
+                      final String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
 
-                        final MobileBase mobileBase =
-                            new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-                        mobileBase.setGitSelfSource(file);
-                        mobileBase.connect();
+                      final MobileBase mobileBase =
+                          new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
+                      mobileBase.setGitSelfSource(file);
+                      mobileBase.connect();
 
-                        final MobileBaseCadManager mobileBaseCadManager =
-                            new MobileBaseCadManager(
-                                mobileBase,
-                                new BowlerMobileBaseUI(
-                                    controller.getCadModelViewerController().getEngine()));
-                        mobileBase.updatePositions();
+                      final MobileBaseCadManager mobileBaseCadManager =
+                          new MobileBaseCadManager(
+                              mobileBase,
+                              new BowlerMobileBaseUI(
+                                  controller.getCadModelViewerController().getEngine()));
+                      mobileBase.updatePositions();
 
-                        DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
-                        controller
-                            .getCreatureEditorController()
-                            .generateMenus(mobileBase, mobileBaseCadManager, controller);
+                      DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());
+                      controller
+                          .getCreatureEditorController()
+                          .generateMenus(mobileBase, mobileBaseCadManager, controller);
 
-                        mobileBaseCadManager.generateCad();
-                        LOGGER.log(Level.INFO, "Waiting for cad to generate.");
+                      mobileBaseCadManager.generateCad();
+                      LOGGER.log(Level.INFO, "Waiting for cad to generate.");
 
-                        controller
-                            .getCreatureEditorController()
-                            .getCadProgress()
-                            .progressProperty()
-                            .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
+                      controller
+                          .getCreatureEditorController()
+                          .getCadProgress()
+                          .progressProperty()
+                          .bind(MobileBaseCadManager.get(mobileBase).getProcesIndictor());
+                      ThreadUtil.wait(1000);
+                      while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
                         ThreadUtil.wait(1000);
-                        while (MobileBaseCadManager.get(mobileBase).getProcesIndictor().get() < 1) {
-                          ThreadUtil.wait(1000);
-                        }
-                      } catch (final IOException e) {
-                        LOGGER.log(
-                            Level.SEVERE,
-                            "Could not load assets for robot.\n"
-                                + Throwables.getStackTraceAsString(e));
-                      } catch (final Exception e) {
-                        LOGGER.log(
-                            Level.SEVERE,
-                            "Could not start building robot.\n"
-                                + Throwables.getStackTraceAsString(e));
                       }
-                    })
-                .start();
+                    } catch (final IOException e) {
+                      LOGGER.log(
+                          Level.SEVERE,
+                          "Could not load assets for robot.\n"
+                              + Throwables.getStackTraceAsString(e));
+                    } catch (final Exception e) {
+                      LOGGER.log(
+                          Level.SEVERE,
+                          "Could not start building robot.\n"
+                              + Throwables.getStackTraceAsString(e));
+                    }
+                  })
+              .start();
 
-            tabPane.getTabs().add(tab);
-            tabPane.getSelectionModel().select(tab);
-          } catch (final IOException e) {
-            LOGGER.log(
-                Level.SEVERE,
-                "Could not load AceCreatureEditor.\n" + Throwables.getStackTraceAsString(e));
-          }
+          tabPane.getTabs().add(tab);
+          tabPane.getSelectionModel().select(tab);
         });
   }
 
