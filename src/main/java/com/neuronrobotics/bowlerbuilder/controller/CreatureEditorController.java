@@ -83,7 +83,7 @@ public class CreatureEditorController {
   private final AnchorPane movementWidget;
   private final AnchorPane configWidget;
   private final AnchorPane scriptWidget;
-  private final ObjectProperty<Selection> selectionProperty;
+  private final ObjectProperty<Selection> widgetSelectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
   private final MainWindowController mainWindowController;
   private final PreferencesService preferencesService;
@@ -111,7 +111,7 @@ public class CreatureEditorController {
     movementWidget = new AnchorPane();
     configWidget = new AnchorPane();
     scriptWidget = new AnchorPane();
-    selectionProperty = new SimpleObjectProperty<>();
+    widgetSelectionProperty = new SimpleObjectProperty<>();
     selectedWidgetPane = new SimpleObjectProperty<>();
 
     preferencesService = preferencesServiceFactory.create("CreatureEditorController");
@@ -156,7 +156,7 @@ public class CreatureEditorController {
             });
 
     // Fill the widget pane with the widget for the selection
-    selectionProperty.addListener(
+    widgetSelectionProperty.addListener(
         (observable, oldValue, newValue) -> {
           if (newValue != null) {
             final AnchorPane widgetPane = selectedWidgetPane.get();
@@ -225,7 +225,7 @@ public class CreatureEditorController {
 
   /** Clear the selected widget. */
   public void clearWidget() {
-    selectionProperty.setValue(null);
+    widgetSelectionProperty.setValue(null);
     selectedWidgetPane.get().getChildren().clear();
   }
 
@@ -250,7 +250,9 @@ public class CreatureEditorController {
           .addListener(
               (observable, oldValue, newValue) ->
                   newValue.ifPresent(
-                      limb -> selectionProperty.set(new LimbTabLimbSelection(device, limb, this))));
+                      limb ->
+                          widgetSelectionProperty.set(
+                              new LimbTabLimbSelection(device, limb, this))));
 
       Platform.runLater(
           () -> {
@@ -320,16 +322,19 @@ public class CreatureEditorController {
       controller
           .limbSelectionProperty()
           .addListener(
-              (observable, oldValue, newValue) ->
-                  newValue.ifPresent(
-                      limb -> selectionProperty.set(new MovementTabLimbSelection(limb))));
+              (observable, oldValue, newValue) -> {
+                newValue.ifPresent(
+                    limb -> widgetSelectionProperty.set(new MovementTabLimbSelection(limb)));
+                controller.linkSelectionProperty().setValue(Optional.empty());
+              });
 
       controller
           .linkSelectionProperty()
           .addListener(
               (observable, oldValue, newValue) ->
                   newValue.ifPresent(
-                      linkData -> selectionProperty.set(new MovementTabLinkSelection(linkData))));
+                      linkData ->
+                          widgetSelectionProperty.set(new MovementTabLinkSelection(linkData))));
     } catch (final IOException e) {
       LOGGER.severe("Could not load LimbLinkLayout.\n" + Throwables.getStackTraceAsString(e));
     }
@@ -357,11 +362,12 @@ public class CreatureEditorController {
       controller
           .limbSelectionProperty()
           .addListener(
-              (observable, oldValue, newValue) ->
-                  newValue.ifPresent(
-                      limb -> {
-                        selectionProperty.set(new ConfigTabLimbSelection(limb, cadManager));
-                      }));
+              (observable, oldValue, newValue) -> {
+                newValue.ifPresent(
+                    limb ->
+                        widgetSelectionProperty.set(new ConfigTabLimbSelection(limb, cadManager)));
+                controller.linkSelectionProperty().setValue(Optional.empty());
+              });
 
       controller
           .linkSelectionProperty()
@@ -369,7 +375,7 @@ public class CreatureEditorController {
               (observable, oldValue, newValue) ->
                   newValue.ifPresent(
                       linkData ->
-                          selectionProperty.set(
+                          widgetSelectionProperty.set(
                               new ConfigTabLinkSelection(
                                   linkData.getDhLink(),
                                   linkData.getLinkConfiguration(),
@@ -433,7 +439,7 @@ public class CreatureEditorController {
                   (observable, oldValue, newValue) ->
                       newValue.ifPresent(
                           limb -> {
-                            selectionProperty.set(
+                            widgetSelectionProperty.set(
                                 new ScriptTabLimbSelection(limb, this.controller));
                           }));
 
