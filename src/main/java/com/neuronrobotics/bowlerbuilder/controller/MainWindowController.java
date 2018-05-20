@@ -267,6 +267,23 @@ public class MainWindowController {
   }
 
   @FXML
+  private void onLoadFileFromGit(final ActionEvent actionEvent) {
+    final GistFileSelectionDialog dialog = new GistFileSelectionDialog("Select File", file -> true);
+    dialog
+        .showAndWait()
+        .ifPresent(
+            result -> {
+              try {
+                openManualGistFileInEditor(
+                    result[0], result[1], ScriptingEngine.fileFromGit(result[0], result[1]));
+              } catch (GitAPIException | IOException e) {
+                LOGGER.warning(
+                    "Exception opening git file:\n" + Throwables.getStackTraceAsString(e));
+              }
+            });
+  }
+
+  @FXML
   private void onLoadCreature(final ActionEvent actionEvent) {
     final GistFileSelectionDialog dialog =
         new GistFileSelectionDialog("Select Creature File", file -> file.endsWith(".xml"));
@@ -347,6 +364,27 @@ public class MainWindowController {
           final AceCadEditorTabController controller = tab.getController();
 
           controller.getAceScriptEditorController().loadGist(gist, gistFile);
+
+          tabPane.getTabs().add(tab);
+          tabPane.getSelectionModel().select(tab);
+        });
+  }
+
+  /**
+   * Open a git file in the file editor.
+   *
+   * @param pushURL gist push URL
+   * @param fileName filename in gist
+   * @param file file on disk
+   */
+  public void openManualGistFileInEditor(
+      final String pushURL, final String fileName, final File file) {
+    Platform.runLater(
+        () -> {
+          final AceCadEditorTab tab = new AceCadEditorTab(fileName);
+          final AceCadEditorTabController controller = tab.getController();
+
+          controller.getAceScriptEditorController().loadManualGist(pushURL, fileName, file);
 
           tabPane.getTabs().add(tab);
           tabPane.getSelectionModel().select(tab);
