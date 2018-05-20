@@ -16,7 +16,6 @@ import javafx.scene.control.Dialog
 import javafx.scene.control.Label
 import javafx.scene.layout.GridPane
 import javafx.util.Callback
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.Callable
 import java.util.function.Function
@@ -51,12 +50,10 @@ class GistFileSelectionDialog(
                 .addListener { _, _, newValue ->
                     launch {
                         if (!newValue) {
-                            val files = async {
-                                ScriptingEngine
-                                        .filesInGit(gistField.text)
-                                        .filter { extensionFilter.test(it) }
-                                        .toList()
-                            }.await()
+                            val files = ScriptingEngine
+                                    .filesInGit(gistField.text)
+                                    .filter { extensionFilter.test(it) }
+                                    .toSet()
 
                             launch(context = UI) {
                                 fileChooser.items = FXCollections.observableArrayList(files)
@@ -112,95 +109,3 @@ class GistFileSelectionDialog(
         }
     }
 }
-
-/*
-public class GistFileSelectionDialog extends Dialog<String[]> {
-
-  private static final Logger LOGGER =
-      LoggerUtilities.getLogger(GistFileSelectionDialog.class.getSimpleName());
-  private final ValidatedTextField gistField;
-  private final ComboBox<String> fileChooser;
-
-  /**
-   * A {@link Dialog} to select files from a GitHub Gist.
-   *
-   * @param title dialog title
-   * @param extensionFilter file extension filter
-   */
-  public GistFileSelectionDialog(final String title, final Predicate<String> extensionFilter) {
-    super();
-
-    gistField =
-        new ValidatedTextField(
-            "Invalid Gist URL", url -> GistUtilities.isValidGitURL(url).isPresent());
-    gistField.setId("gistField");
-
-    fileChooser = new ComboBox<>();
-    fileChooser.setId("gistFileChooser");
-
-    fileChooser.disableProperty().bind(gistField.invalidProperty());
-    gistField
-        .invalidProperty()
-        .addListener(
-            (observable, oldValue, newValue) -> {
-              if (!newValue) {
-                try {
-                  List<String> files = ScriptingEngine.filesInGit(gistField.getText());
-                  files = files.stream().filter(extensionFilter).collect(Collectors.toList());
-                  fileChooser.setItems(FXCollections.observableArrayList(files));
-                } catch (final Exception e) {
-                  LOGGER.warning(
-                      "Could not fetch files in the gist: "
-                          + gistField.getText()
-                          + "\n"
-                          + Throwables.getStackTraceAsString(e));
-                }
-              }
-            });
-
-    setTitle(title);
-
-    final GridPane pane = new GridPane();
-    pane.setId("root");
-    pane.setAlignment(Pos.CENTER);
-    pane.setHgap(5);
-    pane.setVgap(5);
-
-    pane.add(new Label("Gist URL"), 0, 0);
-    pane.add(gistField, 1, 0);
-    pane.add(new Label("File name"), 0, 1);
-    pane.add(fileChooser, 1, 1);
-
-    getDialogPane().setContent(pane);
-    getDialogPane().setMinWidth(300);
-    setResizable(true);
-    getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-    Platform.runLater(gistField::requestFocus);
-
-    final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-    okButton.disableProperty().bind(gistField.invalidProperty());
-    okButton
-        .disableProperty()
-        .bind(
-            Bindings.createBooleanBinding(
-                () ->
-                    fileChooser.getSelectionModel().getSelectedItem() == null
-                        || gistField.getText().isEmpty(),
-                gistField.textProperty(),
-                fileChooser.getSelectionModel().selectedItemProperty()));
-    okButton.setDefaultButton(true);
-
-    setResultConverter(
-        buttonType -> {
-          if (buttonType.equals(ButtonType.OK)) {
-            return new String[] {
-              gistField.getText(), fileChooser.getSelectionModel().getSelectedItem()
-            };
-          }
-
-          return null;
-        });
-  }
-}
- */
