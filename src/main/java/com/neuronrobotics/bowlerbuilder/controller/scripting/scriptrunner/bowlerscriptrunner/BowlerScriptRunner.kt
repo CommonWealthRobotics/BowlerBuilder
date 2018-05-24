@@ -32,10 +32,6 @@ class BowlerScriptRunner @Inject constructor(private val language: BowlerGroovy)
         }
     }
 
-    override fun isScriptCompiling(): Boolean = language.compilingProperty().value
-
-    override fun scriptCompilingProperty(): ReadOnlyBooleanProperty = language.compilingProperty()
-
     override fun isScriptRunning(): Boolean = language.runningProperty().value
 
     override fun scriptRunningProperty(): ReadOnlyBooleanProperty = language.runningProperty()

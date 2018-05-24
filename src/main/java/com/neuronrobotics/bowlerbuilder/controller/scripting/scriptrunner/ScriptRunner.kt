@@ -20,20 +20,6 @@ interface ScriptRunner {
     fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String): Validation<Exception, Any?>
 
     /**
-     * Get whether the script is currently compiling.
-     *
-     * @return whether the script it compiling
-     */
-    fun isScriptCompiling(): Boolean
-
-    /**
-     * Get whether the script is currently compiling.
-     *
-     * @return whether the script it compiling
-     */
-    fun scriptCompilingProperty(): ReadOnlyBooleanProperty
-
-    /**
      * Get whether the script is currently running.
      *
      * @return whether the script is currently running
