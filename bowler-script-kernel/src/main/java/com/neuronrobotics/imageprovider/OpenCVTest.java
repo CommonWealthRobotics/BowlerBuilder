@@ -99,11 +99,11 @@ public class OpenCVTest {
     // Provides the static file to the processors
     imageProviders.add(new StaticFileProvider(new File("image.png")));
 
-    //		mainFilter = new RGBColorDetector(inputImage,
-    //				lower,
-    //				upper,
-    //				lower1,
-    //				upper1);
+    //        mainFilter = new RGBColorDetector(inputImage,
+    //                lower,
+    //                upper,
+    //                lower1,
+    //                upper1);
 
     // add human detector later
     // detectors.add(faceDetectorObject);

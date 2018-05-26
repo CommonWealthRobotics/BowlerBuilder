@@ -98,7 +98,8 @@ public class GitHub {
         System.out.println("Branches # " + call.size());
         if (call.size() > 0) {
           for (Ref ref : call) {
-            System.out.println("Branch: Ref= " + ref + " name= " + ref.getName() + " ID = " + ref.getObjectId().getName());			}
+            System.out.println("Branch: Ref= " + ref + " name= " + ref.getName()
+            + " ID = " + ref.getObjectId().getName());            }
         } else {
           fail();
         }
@@ -108,18 +109,19 @@ public class GitHub {
         System.out.println("Local Branches # " + call.size());
         if (call.size() > 0) {
           for (Ref ref : call) {
-            System.out.println("Branch: Ref= " + ref + " name= " + ref.getName() + " ID = " + ref.getObjectId().getName());
+            System.out.println("Branch: Ref= " + ref + " name= " + ref.getName()
+            + " ID = " + ref.getObjectId().getName());
           }
         } else {
           fail();
         }
         //System.out.println("Creating branch # " );
-    //		ScriptingEngine.newBranch(asstsRepo, "0.20.0");
-    //		try{
-    //			ScriptingEngine.deleteBranch(asstsRepo, "0.20.0");
-    //		}catch(Exception e){
-    //			e.printStackTrace();
-    //		}
+    //        ScriptingEngine.newBranch(asstsRepo, "0.20.0");
+    //        try{
+    //            ScriptingEngine.deleteBranch(asstsRepo, "0.20.0");
+    //        }catch(Exception e){
+    //            e.printStackTrace();
+    //        }
         System.out.println("Current Branch # " +  ScriptingEngine.getFullBranch(asstsRepo));
         */
   }

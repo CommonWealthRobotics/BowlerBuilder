@@ -48,10 +48,10 @@ public class RGBColorDetector implements IObjectDetector {
 
   private Mat circles = new Mat(); // No need (and don't know how) to initialize it.
   // The function later will do it... (to a 1*N*CV_32FC3)
-  //	Scalar rgb_min = new Scalar(200, 200, 200, 0);
-  //	Scalar rgb_max = new Scalar(255, 255, 255, 0);
-  //	Scalar rgb_min2 = new Scalar(50, 50, 50, 0);
-  //	Scalar rgb_max2 = new Scalar(255, 255, 255, 0);
+  //    Scalar rgb_min = new Scalar(200, 200, 200, 0);
+  //    Scalar rgb_max = new Scalar(255, 255, 255, 0);
+  //    Scalar rgb_min2 = new Scalar(50, 50, 50, 0);
+  //    Scalar rgb_max2 = new Scalar(255, 255, 255, 0);
   private double[] data = new double[3];
   private List<Mat> lrgb;
   private Mat array255;

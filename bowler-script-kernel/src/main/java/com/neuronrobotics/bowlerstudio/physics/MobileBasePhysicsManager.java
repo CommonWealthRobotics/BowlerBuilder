@@ -300,11 +300,12 @@ public class MobileBasePhysicsManager {
                     // value="+engineeringUnitsValue);
                     hingePhysicsManager.setTarget(Math.toRadians(-engineeringUnitsValue));
 
-                    //									 joint6DOF.setLimit( (float)
-                    //									 (Math.toRadians(-engineeringUnitsValue )-
-                    //									 LIFT_EPS),
-                    //									 (float) (Math.toRadians(-engineeringUnitsValue )+
-                    //									 LIFT_EPS));
+                    //                                     joint6DOF.setLimit( (float)
+                    //                                     (Math.toRadians(-engineeringUnitsValue )-
+                    //                                     LIFT_EPS),
+                    //                                     (float)
+                    // (Math.toRadians(-engineeringUnitsValue )+
+                    //                                     LIFT_EPS));
                   }
 
                   @Override

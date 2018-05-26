@@ -324,14 +324,14 @@ public class Vitamins {
     return types;
   }
 
-  //	@Deprecated
-  //	public static String getGitRpoDatabase() throws IOException {
-  //		return getGitRepoDatabase();
-  //	}
-  //	@Deprecated
-  //	public static void setGitRpoDatabase(String gitRpoDatabase) {
-  //		setGitRepoDatabase(gitRpoDatabase);
-  //	}
+  //    @Deprecated
+  //    public static String getGitRpoDatabase() throws IOException {
+  //        return getGitRepoDatabase();
+  //    }
+  //    @Deprecated
+  //    public static void setGitRpoDatabase(String gitRpoDatabase) {
+  //        setGitRepoDatabase(gitRpoDatabase);
+  //    }
   //
   public static String getGitRepoDatabase() throws IOException {
     if (!checked) {

@@ -51,7 +51,7 @@ public class JsonTester {
     for(String menuTitle:map.keySet()){
       HashMap<String,Object> script = map.get(menuTitle);
       System.out.println((String)script.get("scriptGit"));
-      System.out.println((String)script.get("scriptFile"));						;
+      System.out.println((String)script.get("scriptFile"));                        ;
 
     }
     */

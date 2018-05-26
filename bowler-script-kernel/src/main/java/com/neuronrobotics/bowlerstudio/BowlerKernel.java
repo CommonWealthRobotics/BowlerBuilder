@@ -105,13 +105,13 @@ public class BowlerKernel {
       fail();
     }
     OpenCVJNILoader.load(); // Loads the OpenCV JNI (java native interface)
-    //		File servo =
+    //        File servo =
     // ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git",
-    //							"BowlerStudioVitamins/stl/servo/smallservo.stl");
+    //                            "BowlerStudioVitamins/stl/servo/smallservo.stl");
     //
-    //		ArrayList<CSG>  cad = (ArrayList<CSG>
+    //        ArrayList<CSG>  cad = (ArrayList<CSG>
     // )ScriptingEngine.inlineGistScriptRun("4814b39ee72e9f590757", "javaCad.groovy" , null);
-    //		System.out.println(servo.exists()+" exists: "+servo);
+    //        System.out.println(servo.exists()+" exists: "+servo);
 
     boolean startLoadingScripts = false;
     Object ret = null;
