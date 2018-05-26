@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 
-public class CadFileExporter {
+class CadFileExporter {
 
-  IMobileBaseUI ui;
+  private IMobileBaseUI ui;
 
-  public CadFileExporter(IMobileBaseUI myUI) {
+  public CadFileExporter(final IMobileBaseUI myUI) {
     ui = myUI;
   }
 
@@ -53,48 +53,39 @@ public class CadFileExporter {
         new IMobileBaseUI() {
 
           @Override
-          public void setSelectedCsg(Collection<CSG> selectedCsg) {
-            // TODO Auto-generated method stub
-
+          public void setSelectedCsg(final Collection<CSG> selectedCsg) {
           }
 
           @Override
-          public void setAllCSG(Collection<CSG> toAdd, File source) {
-            // TODO Auto-generated method stub
-
+          public void setAllCSG(final Collection<CSG> toAdd, final File source) {
           }
 
           @Override
-          public void highlightException(File fileEngineRunByName, Exception ex) {
-            // TODO Auto-generated method stub
-
+          public void highlightException(final File fileEngineRunByName, final Exception ex) {
           }
 
           @Override
           public Set<CSG> getVisibleCSGs() {
-            // TODO Auto-generated method stub
             return null;
           }
 
           @Override
-          public void addCSG(Collection<CSG> toAdd, File source) {
-            // TODO Auto-generated method stub
-
+          public void addCSG(final Collection<CSG> toAdd, final File source) {
           }
         };
   }
 
-  public ArrayList<File> generateManufacturingParts(List<CSG> totalAssembly, File baseDirForFiles)
+  public ArrayList<File> generateManufacturingParts(final List<CSG> totalAssembly, File baseDirForFiles)
       throws IOException {
-    ArrayList<File> allCadStl = new ArrayList<>();
+    final ArrayList<File> allCadStl = new ArrayList<>();
     if (!baseDirForFiles.isDirectory()) {
-      String fileNameWithOutExt = FilenameUtils.removeExtension(baseDirForFiles.getAbsolutePath());
+      final String fileNameWithOutExt = FilenameUtils.removeExtension(baseDirForFiles.getAbsolutePath());
       baseDirForFiles = new File(fileNameWithOutExt);
       if (!baseDirForFiles.exists()) {
         baseDirForFiles.mkdirs();
       }
     }
-    File dir;
+    final File dir;
     if (!baseDirForFiles.getName().contentEquals("manufacturing")) {
       dir = new File(baseDirForFiles.getAbsolutePath() + "/manufacturing/");
       if (!dir.exists()) {
@@ -104,12 +95,12 @@ public class CadFileExporter {
       dir = baseDirForFiles;
     }
     int index = 0;
-    ArrayList<CSG> svgParts = new ArrayList<>();
+    final ArrayList<CSG> svgParts = new ArrayList<>();
     String svgName = null;
     String nameBase = "";
-    for (CSG part : totalAssembly) {
-      String name = part.getName();
-      CSG manufactured = part.prepForManufacturing();
+    for (final CSG part : totalAssembly) {
+      final String name = part.getName();
+      final CSG manufactured = part.prepForManufacturing();
       if (manufactured == null) {
         continue;
       }
@@ -120,7 +111,7 @@ public class CadFileExporter {
         allCadStl.add(makeStl(nameBase, manufactured)); // default to stl
       } else {
 
-        for (String format : part.getExportFormats()) {
+        for (final String format : part.getExportFormats()) {
 
           if (format.toLowerCase().contains("stl")) {
             allCadStl.add(makeStl(nameBase, manufactured)); // default to stl
@@ -143,28 +134,28 @@ public class CadFileExporter {
     return allCadStl;
   }
 
-  private File makeStl(String nameBase, CSG tmp) throws IOException {
-    File stl = new File(nameBase + ".stl");
+  private File makeStl(final String nameBase, final CSG tmp) throws IOException {
+    final File stl = new File(nameBase + ".stl");
 
     FileUtil.write(Paths.get(stl.getAbsolutePath()), tmp.toStlString());
     System.out.println("Writing " + stl.getAbsolutePath());
     return stl;
   }
 
-  private File makeSvg(String nameBase, List<CSG> currentCsg) throws IOException {
-    File stl = new File(nameBase + ".svg");
+  private File makeSvg(final String nameBase, final List<CSG> currentCsg) throws IOException {
+    final File stl = new File(nameBase + ".svg");
 
-    for (CSG csg : currentCsg) {
+    for (final CSG csg : currentCsg) {
       if (csg.getSlicePlanes() == null) {
         csg.addSlicePlane(new Transform());
       }
     }
     try {
       SVGExporter.export(currentCsg, stl);
-    } catch (Exception e) {
-      ArrayList<CSG> movedDown = new ArrayList<>();
-      for (CSG csg : currentCsg) {
-        CSG movez = csg.toZMin().movez(-0.01);
+    } catch (final Exception e) {
+      final ArrayList<CSG> movedDown = new ArrayList<>();
+      for (final CSG csg : currentCsg) {
+        final CSG movez = csg.toZMin().movez(-0.01);
         if (movez.getSlicePlanes() == null) {
           movez.addSlicePlane(new Transform());
         }

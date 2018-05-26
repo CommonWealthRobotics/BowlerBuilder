@@ -280,7 +280,7 @@ public class MainWindowController {
               try {
                 openManualGistFileInEditor(
                     result[0], result[1], ScriptingEngine.fileFromGit(result[0], result[1]));
-              } catch (GitAPIException | IOException e) {
+              } catch (final GitAPIException | IOException e) {
                 LOGGER.warning(
                     "Exception opening git file:\n" + Throwables.getStackTraceAsString(e));
               }
@@ -805,7 +805,7 @@ public class MainWindowController {
               gistMenu.getItems().add(favoriteGist);
             }
 
-          } catch (IOException e) {
+          } catch (final IOException e) {
             LOGGER.warning("Could not get user's gists.\n" + Throwables.getStackTraceAsString(e));
           }
 
@@ -1026,7 +1026,7 @@ public class MainWindowController {
           menu.getItems().add(menuItem);
         }
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.warning("Could not load default creatures.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -1109,7 +1109,7 @@ public class MainWindowController {
   public Optional<Tab> getSelectedTab() {
     try {
       return Optional.of(FxUtil.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
-    } catch (ExecutionException | InterruptedException e) {
+    } catch (final ExecutionException | InterruptedException e) {
       LOGGER.log(
           Level.SEVERE, "Could not get selected tab.\n" + Throwables.getStackTraceAsString(e));
     }

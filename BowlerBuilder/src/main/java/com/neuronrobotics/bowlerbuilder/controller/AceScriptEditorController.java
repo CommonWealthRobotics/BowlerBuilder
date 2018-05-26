@@ -295,7 +295,7 @@ public class AceScriptEditorController {
       fileNameField.setText(gistFile.getFileName());
 
       loadFile(file);
-    } catch (GitAPIException | IOException e) {
+    } catch (final GitAPIException | IOException e) {
       LOGGER.log(Level.SEVERE, "Could get file from git.\n" + Throwables.getStackTraceAsString(e));
     }
   }
@@ -347,10 +347,10 @@ public class AceScriptEditorController {
         logScriptFailure(result.fail());
         return Optional.empty();
       }
-    } catch (ExecutionException e) {
+    } catch (final ExecutionException e) {
       LOGGER.log(
           Level.SEVERE, "Could not get text from editor.\n" + Throwables.getStackTraceAsString(e));
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       LOGGER.log(
           Level.WARNING,
           "CountDownLatch interrupted while waiting to get editor content.\n"

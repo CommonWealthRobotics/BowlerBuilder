@@ -563,7 +563,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   public void clearMeshes() {
     try {
       FxUtil.runFXAndWait(() -> meshViewGroup.getChildren().clear());
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       LOGGER.fine(Throwables.getStackTraceAsString(e));
     }
 

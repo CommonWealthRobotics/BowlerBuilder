@@ -34,30 +34,28 @@ import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
-// import com.neuronrobotics.bowlerstudio.BowlerStudio;
-
 public class HingeCSGPhysicsManager extends CSGPhysicsManager {
 
   private HingeConstraint constraint = null;
   private IClosedLoopController controller = null;
   private double target = 0;
   private static float muscleStrength = (float) 1000;
-  boolean flagBroken = false;
+  private boolean flagBroken = false;
   private double velocity;
 
   public HingeCSGPhysicsManager(
-      ArrayList<CSG> baseCSG, Transform pose, double mass, PhysicsCore c) {
+      final ArrayList<CSG> baseCSG, final Transform pose, final double mass, final PhysicsCore c) {
     super(baseCSG, pose, mass, false, c);
   }
 
   @Override
-  public void update(float timeStep) {
+  public void update(final float timeStep) {
     super.update(timeStep);
     if (constraint != null && getController() != null && !flagBroken) {
       velocity = getController().compute(constraint.getHingeAngle(), getTarget(), timeStep);
       constraint.enableAngularMotor(true, (float) velocity, getMuscleStrength());
       if (constraint.getAppliedImpulse() > getMuscleStrength()) {
-        for (CSG c1 : baseCSG) {
+        for (final CSG c1 : baseCSG) {
           c1.setColor(Color.WHITE);
         }
         flagBroken = true;
@@ -73,43 +71,41 @@ public class HingeCSGPhysicsManager extends CSGPhysicsManager {
     } else if (constraint != null && flagBroken) {
       constraint.enableAngularMotor(false, 0, 0);
     }
-    // System.out.println("Constraint = "+constraint+" controller= "+getController()+" broken=
-    // "+flagBroken);
   }
 
   public HingeConstraint getConstraint() {
     return constraint;
   }
 
-  public void setConstraint(HingeConstraint constraint) {
+  public void setConstraint(final HingeConstraint constraint) {
     this.constraint = constraint;
   }
 
-  public double getTarget() {
+  private double getTarget() {
     return target;
   }
 
-  public void setTarget(double target) {
+  public void setTarget(final double target) {
     this.target = target;
   }
 
-  public static float getMuscleStrength() {
+  private static float getMuscleStrength() {
     return muscleStrength;
   }
 
-  public static void setMuscleStrength(float ms) {
+  public static void setMuscleStrength(final float ms) {
     muscleStrength = ms;
   }
 
-  public void setMuscleStrength(double muscleStrength) {
+  public void setMuscleStrength(final double muscleStrength) {
     setMuscleStrength((float) muscleStrength);
   }
 
-  public IClosedLoopController getController() {
+  private IClosedLoopController getController() {
     return controller;
   }
 
-  public void setController(IClosedLoopController controller) {
+  public void setController(final IClosedLoopController controller) {
     this.controller = controller;
   }
 }

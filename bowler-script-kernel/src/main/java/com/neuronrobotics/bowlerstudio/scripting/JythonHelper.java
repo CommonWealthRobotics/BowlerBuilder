@@ -43,11 +43,11 @@ import org.python.util.PythonInterpreter;
 
 public class JythonHelper implements IScriptingLanguage {
 
-  PythonInterpreter interp;
+  private PythonInterpreter interp;
 
   @Override
-  public Object inlineScriptRun(String code, ArrayList<Object> args) {
-    Properties props = new Properties();
+  public Object inlineScriptRun(final String code, final ArrayList<Object> args) {
+    final Properties props = new Properties();
     PythonInterpreter.initialize(System.getProperties(), props, new String[] {""});
     if (interp == null) {
       interp = new PythonInterpreter();
@@ -55,12 +55,12 @@ public class JythonHelper implements IScriptingLanguage {
       interp.exec("import sys");
     }
 
-    for (String pm : DeviceManager.listConnectedDevice(null)) {
-      BowlerAbstractDevice bad = DeviceManager.getSpecificDevice(null, pm);
+    for (final String pm : DeviceManager.listConnectedDevice(null)) {
+      final BowlerAbstractDevice bad = DeviceManager.getSpecificDevice(null, pm);
       // passing into the scipt
       try {
         interp.set(bad.getScriptingName(), Class.forName(bad.getClass().getName()).cast(bad));
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
@@ -68,23 +68,23 @@ public class JythonHelper implements IScriptingLanguage {
     }
     interp.set("args", args);
     interp.exec(code);
-    ArrayList<Object> results = new ArrayList<>();
+    final ArrayList<Object> results = new ArrayList<>();
 
-    PyObject localVariables = interp.getLocals();
+    final PyObject localVariables = interp.getLocals();
 
     try {
       results.add(interp.get("csg", CSG.class));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
     try {
       results.add(interp.get("tab", Tab.class));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
     try {
       results.add(interp.get("device", BowlerAbstractDevice.class));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
 
@@ -93,14 +93,13 @@ public class JythonHelper implements IScriptingLanguage {
   }
 
   @Override
-  public Object inlineScriptRun(File code, ArrayList<Object> args) {
-    byte[] bytes;
+  public Object inlineScriptRun(final File code, final ArrayList<Object> args) {
+    final byte[] bytes;
     try {
       bytes = Files.readAllBytes(code.toPath());
-      String s = new String(bytes, "UTF-8");
+      final String s = new String(bytes, "UTF-8");
       return inlineScriptRun(s, args);
-    } catch (IOException e1) {
-      // TODO Auto-generated catch block
+    } catch (final IOException e1) {
       e1.printStackTrace();
     }
     return null;
@@ -113,13 +112,11 @@ public class JythonHelper implements IScriptingLanguage {
 
   @Override
   public boolean getIsTextFile() {
-    // TODO Auto-generated method stub
     return true;
   }
 
   @Override
   public ArrayList<String> getFileExtenetion() {
-    // TODO Auto-generated method stub
     return new ArrayList<>(Arrays.asList("py", "jy"));
   }
 }

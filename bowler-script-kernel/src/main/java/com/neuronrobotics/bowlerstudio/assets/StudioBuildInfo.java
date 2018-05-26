@@ -33,12 +33,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class StudioBuildInfo {
+class StudioBuildInfo {
 
   private static Class baseBuildInfoClass = BowlerKernel.class;
 
   public static String getVersion() {
-    String s = getTag("app.version");
+    final String s = getTag("app.version");
 
     if (s == null) {
       throw new RuntimeException("Failed to load version number");
@@ -46,54 +46,54 @@ public class StudioBuildInfo {
     return s;
   }
 
-  public static int getProtocolVersion() {
+  private static int getProtocolVersion() {
     return getBuildInfo()[0];
   }
 
-  public static int getSDKVersion() {
+  private static int getSDKVersion() {
     return getBuildInfo()[1];
   }
 
-  public static int getBuildVersion() {
+  private static int getBuildVersion() {
     return getBuildInfo()[2];
   }
 
-  public static int[] getBuildInfo() {
+  private static int[] getBuildInfo() {
     try {
-      String s = getVersion();
-      String[] splits = s.split("[.]+");
-      int[] rev = new int[3];
+      final String s = getVersion();
+      final String[] splits = s.split("[.]+");
+      final int[] rev = new int[3];
       for (int i = 0; i < 3; i++) {
         rev[i] = new Integer(splits[i]);
       }
       return rev;
-    } catch (NumberFormatException e) {
+    } catch (final NumberFormatException e) {
       return new int[] {0, 0, 0};
     }
   }
 
-  private static String getTag(String target) {
+  private static String getTag(final String target) {
     try {
-      StringBuilder s = new StringBuilder();
-      InputStream is = getBuildPropertiesStream();
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      final StringBuilder s = new StringBuilder();
+      final InputStream is = getBuildPropertiesStream();
+      final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
       String line;
       try {
         while (null != (line = br.readLine())) {
           s.append(line).append("\n");
         }
-      } catch (IOException ignored) {
+      } catch (final IOException ignored) {
       }
 
-      String[] splitAll = s.toString().split("[\n]+");
-      for (String aSplitAll : splitAll) {
+      final String[] splitAll = s.toString().split("[\n]+");
+      for (final String aSplitAll : splitAll) {
         if (aSplitAll.contains(target)) {
-          String[] split = aSplitAll.split("[=]+");
+          final String[] split = aSplitAll.split("[=]+");
           return split[1];
         }
       }
-    } catch (NullPointerException e) {
+    } catch (final NullPointerException e) {
       return null;
     }
     return null;
@@ -101,14 +101,14 @@ public class StudioBuildInfo {
 
   public static String getBuildDate() {
     String s = "";
-    InputStream is = StudioBuildInfo.class.getResourceAsStream("/META-INF/MANIFEST.MF");
-    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+    final InputStream is = StudioBuildInfo.class.getResourceAsStream("/META-INF/MANIFEST.MF");
+    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
     String line;
     try {
       while (null != (line = br.readLine())) {
         s += line + "\n";
       }
-    } catch (IOException ignored) {
+    } catch (final IOException ignored) {
     }
     // System.out.println("Manifest:\n"+s);
     return "";
@@ -130,7 +130,7 @@ public class StudioBuildInfo {
     return (System.getProperty("os.arch").toLowerCase().contains("arm"));
   }
 
-  public static boolean isLinux() {
+  private static boolean isLinux() {
     return (System.getProperty("os.name").toLowerCase().contains("linux"));
   }
 
@@ -138,7 +138,7 @@ public class StudioBuildInfo {
     return (System.getProperty("os.name").toLowerCase().contains("win"));
   }
 
-  public static boolean isMac() {
+  private static boolean isMac() {
     return (System.getProperty("os.name").toLowerCase().contains("mac"));
   }
 
@@ -150,11 +150,11 @@ public class StudioBuildInfo {
     return baseBuildInfoClass;
   }
 
-  public static void setBaseBuildInfoClass(Class c) {
+  public static void setBaseBuildInfoClass(final Class c) {
     baseBuildInfoClass = c;
   }
 
-  public static String getName() {
+  private static String getName() {
     return "Bowler Studio "
         + getProtocolVersion()
         + "."

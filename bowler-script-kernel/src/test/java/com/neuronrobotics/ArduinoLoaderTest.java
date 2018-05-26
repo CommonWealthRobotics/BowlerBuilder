@@ -32,20 +32,20 @@ import gnu.io.NRSerialPort;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
-public class ArduinoLoaderTest {
+class ArduinoLoaderTest {
 
   private static final String portname = "/dev/ttyACM0";
   private boolean hasPort;
 
   @Test
-  public void test() throws Exception {
+  void test() throws Exception {
     hasPort = false;
-    for (String s : NRSerialPort.getAvailableSerialPorts()) {
+    for (final String s : NRSerialPort.getAvailableSerialPorts()) {
       if (s.contentEquals(portname)) hasPort = true;
     }
     if (hasPort) {
-      String board = "uno";
-      ArrayList<Object> params = new ArrayList<>();
+      final String board = "uno";
+      final ArrayList<Object> params = new ArrayList<>();
       params.add(board);
       params.add(portname);
       ScriptingEngine.gitScriptRun(

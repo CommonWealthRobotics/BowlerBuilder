@@ -40,14 +40,14 @@ import javax.media.protocol.PullBufferStream;
  */
 class ImageDataSource extends PullBufferDataSource {
 
-  ImageSourceStream streams[];
+  private ImageSourceStream[] streams;
 
-  ImageDataSource(int width, int height, int frameRate, Vector images) {
+  ImageDataSource(final int width, final int height, final int frameRate, final Vector images) {
     streams = new ImageSourceStream[1];
     streams[0] = new ImageSourceStream(width, height, frameRate, images);
   }
 
-  public void setLocator(MediaLocator source) {}
+  public void setLocator(final MediaLocator source) {}
 
   public MediaLocator getLocator() {
     return null;
@@ -85,7 +85,7 @@ class ImageDataSource extends PullBufferDataSource {
     return new Object[0];
   }
 
-  public Object getControl(String type) {
+  public Object getControl(final String type) {
     return null;
   }
 }

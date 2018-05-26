@@ -47,17 +47,17 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHRepository;
-
-// import com.neuronrobotics.bowlerstudio.BowlerStudio;
+import org.kohsuke.github.GitHub;
 
 public class Vitamins {
 
   private static String jsonRootDir = "json/";
-  private static final Map<String, CSG> fileLastLoaded = new HashMap<String, CSG>();
+  private static final Map<String, CSG> fileLastLoaded = new HashMap<>();
   private static final Map<String, HashMap<String, HashMap<String, Object>>> databaseSet =
-      new HashMap<String, HashMap<String, HashMap<String, Object>>>();
+      new HashMap<>();
   private static final String defaultgitRpoDatabase =
       "https://github.com/madhephaestus/Hardware-Dimensions.git";
   private static String gitRpoDatabase = defaultgitRpoDatabase;
@@ -68,13 +68,13 @@ public class Vitamins {
   private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
   private static boolean checked;
 
-  public static CSG get(File resource) {
+  public static CSG get(final File resource) {
 
     if (fileLastLoaded.get(resource.getAbsolutePath()) == null) {
       // forces the first time the files is accessed by the application tou pull an update
       try {
         fileLastLoaded.put(resource.getAbsolutePath(), STL.file(resource.toPath()));
-      } catch (IOException e) {
+      } catch (final IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
@@ -82,20 +82,20 @@ public class Vitamins {
     return fileLastLoaded.get(resource.getAbsolutePath()).clone();
   }
 
-  public static CSG get(String type, String id, String purchasingVariant) throws Exception {
-    String key = type + id + purchasingVariant;
+  public static CSG get(final String type, final String id, final String purchasingVariant) {
+    final String key = type + id + purchasingVariant;
     if (fileLastLoaded.get(key) == null) {
-      PurchasingData purchasData = Purchasing.get(type, id, purchasingVariant);
-      for (String variable : purchasData.getVariantParameters().keySet()) {
-        double data = purchasData.getVariantParameters().get(variable);
-        LengthParameter parameter =
+      final PurchasingData purchasData = Purchasing.get(type, id, purchasingVariant);
+      for (final String variable : purchasData.getVariantParameters().keySet()) {
+        final double data = purchasData.getVariantParameters().get(variable);
+        final LengthParameter parameter =
             new LengthParameter(variable, data, (ArrayList<Double>) Arrays.asList(data, data));
         parameter.setMM(data);
       }
 
       try {
         fileLastLoaded.put(key, get(type, id));
-      } catch (Exception e) {
+      } catch (final Exception e) {
         e.printStackTrace();
 
         gitRpoDatabase = defaultgitRpoDatabase;
@@ -105,28 +105,26 @@ public class Vitamins {
       }
     }
 
-    CSG vitToGet = fileLastLoaded.get(type + id);
-    // System.err.println("Loading "+vitToGet);
-    return vitToGet;
+    return fileLastLoaded.get(type + id);
   }
 
-  public static CSG get(String type, String id) throws Exception {
+  private static CSG get(final String type, final String id) {
     return get(type, id, 0);
   }
 
-  public static CSG get(String type, String id, int depthGauge) throws Exception {
-    String key = type + id;
+  private static CSG get(final String type, final String id, final int depthGauge) {
+    final String key = type + id;
 
     try {
       CSG newVitamin = null;
-      HashMap<String, Object> script = getMeta(type);
-      StringParameter size =
+      final HashMap<String, Object> script = getMeta(type);
+      final StringParameter size =
           new StringParameter(type + " Default", id, Vitamins.listVitaminSizes(type));
       size.setStrValue(id);
-      Object file = script.get("scriptGit");
-      Object repo = script.get("scriptFile");
+      final Object file = script.get("scriptGit");
+      final Object repo = script.get("scriptFile");
       if (file != null && repo != null) {
-        ArrayList<Object> servoMeasurments = new ArrayList<Object>();
+        final ArrayList<Object> servoMeasurments = new ArrayList<>();
         servoMeasurments.add(id);
         newVitamin =
             (CSG)
@@ -139,7 +137,7 @@ public class Vitamins {
         Log.error(key + " Failed to load from script");
         return null;
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
       gitRpoDatabase = defaultgitRpoDatabase;
       databaseSet.clear();
@@ -152,31 +150,29 @@ public class Vitamins {
     }
   }
 
-  public static HashMap<String, Object> getMeta(String type) {
+  public static HashMap<String, Object> getMeta(final String type) {
     return getConfiguration(type, "meta");
   }
 
-  public static void setScript(String type, String git, String file) throws Exception {
+  public static void setScript(final String type, final String git, final String file) {
     setParameter(type, "meta", "scriptGit", git);
     setParameter(type, "meta", "scriptFile", file);
   }
 
-  public static HashMap<String, Object> getConfiguration(String type, String id) {
-    HashMap<String, HashMap<String, Object>> database = getDatabase(type);
-    if (database.get(id) == null) {
-      database.put(id, new HashMap<String, Object>());
-    }
+  public static HashMap<String, Object> getConfiguration(final String type, final String id) {
+    final HashMap<String, HashMap<String, Object>> database = getDatabase(type);
+    database.computeIfAbsent(id, k -> new HashMap<>());
     return database.get(id);
   }
 
-  public static String makeJson(String type) {
+  private static String makeJson(final String type) {
     return gson.toJson(getDatabase(type), TT_mapStringString);
   }
 
-  public static void saveDatabase(String type) throws Exception {
+  public static void saveDatabase(final String type) throws Exception {
 
     // Save contents and publish them
-    String jsonString = makeJson(type);
+    final String jsonString = makeJson(type);
     try {
       ScriptingEngine.pushCodeToGit(
           getGitRepoDatabase(), // git repo, change this if you fork this demo
@@ -185,7 +181,7 @@ public class Vitamins {
           jsonString, // content of the file
           "Pushing changed Database"); // commit message
 
-    } catch (org.eclipse.jgit.api.errors.TransportException ex) {
+    } catch (final TransportException ex) {
       System.out.println(
           "You need to fork " + defaultgitRpoDatabase + " to have permission to save");
       System.out.println(
@@ -194,20 +190,20 @@ public class Vitamins {
     }
   }
 
-  public static void newVitamin(String type, String id) throws Exception {
-    HashMap<String, HashMap<String, Object>> database = getDatabase(type);
+  public static void newVitamin(final String type, final String id) {
+    final HashMap<String, HashMap<String, Object>> database = getDatabase(type);
     if (database.keySet().size() > 0) {
       String exampleKey = null;
-      for (String key : database.keySet()) {
+      for (final String key : database.keySet()) {
         if (!key.contains("meta")) {
           exampleKey = key;
         }
       }
       if (exampleKey != null) {
         // this database has examples, load an example
-        HashMap<String, Object> exampleConfiguration = getConfiguration(type, exampleKey);
-        HashMap<String, Object> newConfig = getConfiguration(type, id);
-        for (String key : exampleConfiguration.keySet()) {
+        final HashMap<String, Object> exampleConfiguration = getConfiguration(type, exampleKey);
+        final HashMap<String, Object> newConfig = getConfiguration(type, id);
+        for (final String key : exampleConfiguration.keySet()) {
           newConfig.put(key, exampleConfiguration.get(key));
         }
       }
@@ -218,30 +214,29 @@ public class Vitamins {
 
   }
 
-  public static void setParameter(String type, String id, String parameterName, Object parameter)
-      throws Exception {
+  public static void setParameter(final String type, final String id, final String parameterName, final Object parameter) {
 
-    HashMap<String, Object> config = getConfiguration(type, id);
+    final HashMap<String, Object> config = getConfiguration(type, id);
     try {
       config.put(parameterName, Double.parseDouble(parameter.toString()));
-    } catch (NumberFormatException ex) {
+    } catch (final NumberFormatException ex) {
       config.put(parameterName, parameter);
     }
 
     // saveDatabase(type);
   }
 
-  public static HashMap<String, HashMap<String, Object>> getDatabase(String type) {
+  private static HashMap<String, HashMap<String, Object>> getDatabase(final String type) {
     if (databaseSet.get(type) == null) {
       // we are using the default vitamins configuration
       // https://github.com/madhephaestus/Hardware-Dimensions.git
 
       // create some variables, including our database
-      String jsonString;
-      InputStream inPut = null;
+      final String jsonString;
+      final InputStream inPut;
 
       // attempt to load the JSON file from the GIt Repo and pars the JSON string
-      File f;
+      final File f;
       try {
         f =
             ScriptingEngine.fileFromGit(
@@ -251,32 +246,30 @@ public class Vitamins {
         inPut = FileUtils.openInputStream(f);
 
         jsonString = IOUtils.toString(inPut);
-        // System.out.println("Loading "+jsonString);
-        // perfoem the GSON parse
-        HashMap<String, HashMap<String, Object>> database =
+        // perform the GSON parse
+        final HashMap<String, HashMap<String, Object>> database =
             gson.fromJson(jsonString, TT_mapStringString);
         if (database == null) {
           throw new RuntimeException("create a new one");
         }
         databaseSet.put(type, database);
 
-        for (String key : databaseSet.get(type).keySet()) {
-          HashMap<String, Object> conf = database.get(key);
-          for (String confKey : conf.keySet()) {
+        for (final String key : databaseSet.get(type).keySet()) {
+          final HashMap<String, Object> conf = database.get(key);
+          for (final String confKey : conf.keySet()) {
             try {
-              double num = Double.parseDouble(conf.get(confKey).toString());
+              final double num = Double.parseDouble(conf.get(confKey).toString());
               conf.put(confKey, num);
-            } catch (NumberFormatException ex) {
-              // ex.printStackTrace();
+            } catch (final NumberFormatException ex) {
               // leave as a string
               conf.put(confKey, conf.get(confKey).toString());
             }
           }
         }
 
-      } catch (Exception e) {
+      } catch (final Exception e) {
         e.printStackTrace();
-        databaseSet.put(type, new HashMap<String, HashMap<String, Object>>());
+        databaseSet.put(type, new HashMap<>());
       }
     }
     return databaseSet.get(type);
@@ -288,34 +281,34 @@ public class Vitamins {
 
   public static ArrayList<String> listVitaminTypes() {
 
-    ArrayList<String> types = new ArrayList<String>();
-    File folder;
+    final ArrayList<String> types = new ArrayList<>();
+    final File folder;
     try {
       folder =
           ScriptingEngine.fileFromGit(
               getGitRepoDatabase(), // git repo, change this if you fork this demo
               getRootFolder() + "hobbyServo.json");
-      File[] listOfFiles = folder.getParentFile().listFiles();
+      final File[] listOfFiles = folder.getParentFile().listFiles();
 
-      for (File f : listOfFiles) {
+      for (final File f : listOfFiles) {
         if (!f.isDirectory() && f.getName().endsWith(".json")) {
           types.add(f.getName().substring(0, f.getName().indexOf(".json")));
         }
       }
 
-    } catch (Exception e) {
+    } catch (final Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return types;
   }
 
-  public static ArrayList<String> listVitaminSizes(String type) {
+  public static ArrayList<String> listVitaminSizes(final String type) {
 
-    ArrayList<String> types = new ArrayList<String>();
-    HashMap<String, HashMap<String, Object>> database = getDatabase(type);
-    Set<String> keys = database.keySet();
-    for (String s : keys) {
+    final ArrayList<String> types = new ArrayList<>();
+    final HashMap<String, HashMap<String, Object>> database = getDatabase(type);
+    final Set<String> keys = database.keySet();
+    for (final String s : keys) {
       if (!s.contains("meta")) {
         types.add(s);
       }
@@ -324,53 +317,43 @@ public class Vitamins {
     return types;
   }
 
-  //    @Deprecated
-  //    public static String getGitRpoDatabase() throws IOException {
-  //        return getGitRepoDatabase();
-  //    }
-  //    @Deprecated
-  //    public static void setGitRpoDatabase(String gitRpoDatabase) {
-  //        setGitRepoDatabase(gitRpoDatabase);
-  //    }
-  //
-  public static String getGitRepoDatabase() throws IOException {
+  private static String getGitRepoDatabase() {
     if (!checked) {
       checked = true;
       try {
         if (ScriptingEngine.getLoginID() != null) {
           ScriptingEngine.setAutoupdate(true);
-          org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
-          GHMyself self = github.getMyself();
-          Map<String, GHRepository> myPublic = self.getAllRepositories();
-          for (String myRepo : myPublic.keySet()) {
-            GHRepository ghrepo = myPublic.get(myRepo);
+          final GitHub github = ScriptingEngine.getGithub();
+          final GHMyself self = github.getMyself();
+          final Map<String, GHRepository> myPublic = self.getAllRepositories();
+          for (final String myRepo : myPublic.keySet()) {
+            final GHRepository ghrepo = myPublic.get(myRepo);
             if (myRepo.contentEquals("Hardware-Dimensions")
                 && ghrepo.getOwnerName().contentEquals(self.getLogin())) {
 
-              String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
+              final String myAssets = ghrepo.getGitTransportUrl().replaceAll("git://", "https://");
               // System.out.println("Using my version of Viamins: "+myAssets);
               setGitRepoDatabase(myAssets);
             }
           }
         }
-      } catch (Exception ex) {
-        // ex.printStackTrace();
+      } catch (final Exception ex) {
       }
     }
     return gitRpoDatabase;
   }
 
-  public static void setGitRepoDatabase(String gitRpoDatabase) {
+  public static void setGitRepoDatabase(final String gitRpoDatabase) {
     Vitamins.gitRpoDatabase = gitRpoDatabase;
     databaseSet.clear();
     fileLastLoaded.clear();
   }
 
-  public static String getJsonRootDir() {
+  private static String getJsonRootDir() {
     return jsonRootDir;
   }
 
-  public static void setJsonRootDir(String jsonRootDir) throws IOException {
+  public static void setJsonRootDir(final String jsonRootDir) {
     Vitamins.jsonRootDir = jsonRootDir;
     setGitRepoDatabase(getGitRepoDatabase());
   }

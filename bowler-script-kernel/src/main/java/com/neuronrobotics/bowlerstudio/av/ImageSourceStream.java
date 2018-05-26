@@ -38,16 +38,17 @@ import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.PullBufferStream;
 
 /** The source stream to go along with ImageDataSource. */
-public class ImageSourceStream implements PullBufferStream {
+class ImageSourceStream implements PullBufferStream {
 
-  Vector images;
-  int width, height;
-  VideoFormat format;
+  private Vector images;
+  private int width;
+  private int height;
+  private VideoFormat format;
 
-  int nextImage = 0; // index of the next image to be read.
-  boolean ended = false;
+  private int nextImage = 0; // index of the next image to be read.
+  private boolean ended = false;
 
-  public ImageSourceStream(int width, int height, int frameRate, Vector images) {
+  public ImageSourceStream(final int width, final int height, final int frameRate, final Vector images) {
     this.width = width;
     this.height = height;
     this.images = images;
@@ -67,7 +68,7 @@ public class ImageSourceStream implements PullBufferStream {
   }
 
   /** This is called from the Processor to read a frame worth of video data. */
-  public void read(Buffer buf) throws IOException {
+  public void read(final Buffer buf) throws IOException {
 
     // Check if we've finished all the frames.
     if (nextImage >= images.size()) {
@@ -80,13 +81,13 @@ public class ImageSourceStream implements PullBufferStream {
       return;
     }
 
-    String imageFile = (String) images.elementAt(nextImage);
+    final String imageFile = (String) images.elementAt(nextImage);
     nextImage++;
 
     System.err.println("  - reading image file: " + imageFile);
 
     // Open a random access file for the next image.
-    RandomAccessFile raFile;
+    final RandomAccessFile raFile;
     raFile = new RandomAccessFile(imageFile, "r");
 
     byte data[] = null;
@@ -111,7 +112,7 @@ public class ImageSourceStream implements PullBufferStream {
     buf.setOffset(0);
     buf.setLength((int) raFile.length());
     buf.setFormat(format);
-    buf.setFlags(buf.getFlags() | buf.FLAG_KEY_FRAME);
+    buf.setFlags(buf.getFlags() | Buffer.FLAG_KEY_FRAME);
 
     // Close the random access file.
     raFile.close();
@@ -138,7 +139,7 @@ public class ImageSourceStream implements PullBufferStream {
     return new Object[0];
   }
 
-  public Object getControl(String type) {
+  public Object getControl(final String type) {
     return null;
   }
 }

@@ -27,7 +27,9 @@
  */
 package com.neuronrobotics.bowlerstudio.scripting;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +39,7 @@ public class ArduinoLoader implements IScriptingLanguage {
 
   private static String ARDUINO = "arduino";
 
-  HashMap<String, HashMap<String, Object>> database;
+  private HashMap<String, HashMap<String, Object>> database;
 
   private static String defaultPort = null;
   private static String defaultBoard = null;
@@ -45,7 +47,7 @@ public class ArduinoLoader implements IScriptingLanguage {
 
   @SuppressWarnings("unchecked")
   @Override
-  public Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(final File code, ArrayList<Object> args) throws Exception {
     if (args == null) {
       args = new ArrayList<>();
     }
@@ -69,16 +71,14 @@ public class ArduinoLoader implements IScriptingLanguage {
     if (getDefaultPort() != null) {
       execString += " --port " + getDefaultPort();
     }
-    HashMap<String, Object> configs = database.get(getDefaultBoard());
-    File ino = findIno(code);
+
+    final File ino = findIno(code);
     if (ino == null) {
-      // System.out.println("Error: no .ino file found!");
       return null;
     }
-    execString += " --upload " + ino.getAbsolutePath().replaceAll(" ", "\\ ");
-    ;
 
-    // System.out.println("Arduino Load: \n"+execString);
+    execString += " --upload " + ino.getAbsolutePath().replaceAll(" ", "\\ ");
+
     if (!loadedBowler) {
       loadedBowler = true;
       run(getARDUINOExec() + " --install-library BowlerCom");
@@ -88,27 +88,27 @@ public class ArduinoLoader implements IScriptingLanguage {
     return null;
   }
 
-  public static void installBoard(String product, String arch) throws Exception {
+  public static void installBoard(final String product, final String arch) throws Exception {
     run(getARDUINOExec() + " --install-boards " + product + ":" + arch);
   }
 
-  public static void installLibrary(String lib) throws Exception {
+  public static void installLibrary(final String lib) throws Exception {
     run(getARDUINOExec() + " --install-library " + lib);
   }
 
-  public static void run(String execString) throws Exception {
+  private static void run(final String execString) throws Exception {
     System.out.println("Running:\n" + execString);
     // Get runtime
-    java.lang.Runtime rt = java.lang.Runtime.getRuntime();
+    final Runtime rt = Runtime.getRuntime();
     // Start a new process
-    java.lang.Process p = rt.exec(execString);
+    final Process p = rt.exec(execString);
     // You can or maybe should wait for the process to complete
     p.waitFor();
     // Get process' output: its InputStream
-    java.io.InputStream is = p.getInputStream();
-    java.io.InputStream err = p.getInputStream();
-    java.io.BufferedReader reader = new java.io.BufferedReader(new InputStreamReader(is));
-    java.io.BufferedReader readerErr = new java.io.BufferedReader(new InputStreamReader(err));
+    final InputStream is = p.getInputStream();
+    final InputStream err = p.getInputStream();
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    final BufferedReader readerErr = new BufferedReader(new InputStreamReader(err));
 
     // And print each line
     String s = null;
@@ -124,16 +124,16 @@ public class ArduinoLoader implements IScriptingLanguage {
     err.close();
   }
 
-  private File findIno(File start) {
+  private File findIno(final File start) {
     if (start == null) {
       return null;
     }
     if (start.getName().endsWith(".ino")) {
       return start;
     } else {
-      File dir = start.getParentFile();
+      final File dir = start.getParentFile();
       if (dir != null) {
-        for (File f : dir.listFiles()) {
+        for (final File f : dir.listFiles()) {
           if (findIno(f) != null) {
             return f;
           }
@@ -144,8 +144,7 @@ public class ArduinoLoader implements IScriptingLanguage {
   }
 
   @Override
-  public Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception {
-    // TODO Auto-generated method stub
+  public Object inlineScriptRun(final String code, final ArrayList<Object> args) {
     return null;
   }
 
@@ -159,33 +158,32 @@ public class ArduinoLoader implements IScriptingLanguage {
     return true;
   }
 
-  public static String getDefaultPort() {
+  private static String getDefaultPort() {
     return defaultPort;
   }
 
-  public static void setDefaultPort(String defaultPort) {
+  private static void setDefaultPort(final String defaultPort) {
     ArduinoLoader.defaultPort = defaultPort;
   }
 
-  public static String getDefaultBoard() {
+  private static String getDefaultBoard() {
     return defaultBoard;
   }
 
-  public static void setDefaultBoard(String defaultBoard) {
+  private static void setDefaultBoard(final String defaultBoard) {
     ArduinoLoader.defaultBoard = defaultBoard;
   }
 
-  public static String getARDUINOExec() {
+  private static String getARDUINOExec() {
     return ARDUINO;
   }
 
-  public static void setARDUINOExec(String aRDUINO) {
+  public static void setARDUINOExec(final String aRDUINO) {
     ARDUINO = aRDUINO;
   }
 
   @Override
   public ArrayList<String> getFileExtenetion() {
-    // TODO Auto-generated method stub
     return new ArrayList<>(Arrays.asList("c", "ino", "h", "cpp", "hpp"));
   }
 }

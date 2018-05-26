@@ -36,27 +36,27 @@ import java.io.IOException;
 public class FileWatchDeviceWrapper {
 
   public static FileChangeWatcher watch(
-      BowlerAbstractDevice device, File code, IFileChangeListener cadWatcher) {
+      final BowlerAbstractDevice device, final File code, final IFileChangeListener cadWatcher) {
     try {
-      FileChangeWatcher watcher = FileChangeWatcher.watch(code);
+      final FileChangeWatcher watcher = FileChangeWatcher.watch(code);
       watcher.addIFileChangeListener(cadWatcher);
       device.addConnectionEventListener(
           new IDeviceConnectionEventListener() {
 
             @Override
-            public void onDisconnect(BowlerAbstractDevice arg0) {
+            public void onDisconnect(final BowlerAbstractDevice arg0) {
               // TODO Auto-generated method stub
               watcher.removeIFileChangeListener(cadWatcher);
             }
 
             @Override
-            public void onConnect(BowlerAbstractDevice arg0) {
+            public void onConnect(final BowlerAbstractDevice arg0) {
               // TODO Auto-generated method stub
 
             }
           });
       return watcher;
-    } catch (IOException e) {
+    } catch (final IOException e) {
       // TODO Auto-generated catch block
       // BowlerStudioController.highlightException(code, e);
     }

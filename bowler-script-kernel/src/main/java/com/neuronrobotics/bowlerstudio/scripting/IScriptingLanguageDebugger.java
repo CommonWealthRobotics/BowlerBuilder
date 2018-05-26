@@ -29,7 +29,7 @@ package com.neuronrobotics.bowlerstudio.scripting;
 
 import java.io.File;
 
-public interface IScriptingLanguageDebugger {
+interface IScriptingLanguageDebugger {
 
   /**
    * This interface defines a scripting langauge that supports debugging. A file can be compiled to

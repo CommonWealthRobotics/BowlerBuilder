@@ -29,11 +29,11 @@ package com.neuronrobotics;
 
 import org.junit.jupiter.api.Test;
 
-public class MobileBaseLoading {
+class MobileBaseLoading {
   int numCSG = 0;
 
   @Test
-  public void test() throws Exception {
+  void test() {
     /*
         ScriptingEngine.setupAnyonmous();
         numCSG =0;

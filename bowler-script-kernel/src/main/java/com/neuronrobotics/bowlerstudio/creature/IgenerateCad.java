@@ -31,7 +31,7 @@ import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 
-public interface IgenerateCad {
+interface IgenerateCad {
 
   /**
    * This function should use the D-H parameters to generate cad objects to build this configuration

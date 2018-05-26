@@ -82,28 +82,26 @@ public class MobileBaseCadManager {
       new IFileChangeListener() {
 
         @Override
-        public void onFileChange(File fileThatChanged, WatchEvent event) {
+        public void onFileChange(final File fileThatChanged, final WatchEvent event) {
 
           if (cadGenerating || !getAutoRegen()) {
             System.out.println("No Base reload, building currently");
             return;
           }
           try {
-            new Thread() {
-              public void run() {
-                ThreadUtil.wait((int) ((50 * Math.random()) + 50));
-                try {
+            new Thread(() -> {
+              ThreadUtil.wait((int) ((50 * Math.random()) + 50));
+              try {
 
-                  System.out.println("Re-loading Cad Base Engine");
-                  cadEngine = ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
-                } catch (Exception e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
-                }
-                generateCad();
+                System.out.println("Re-loading Cad Base Engine");
+                cadEngine = ScriptingEngine.inlineFileScriptRun(fileThatChanged, null);
+              } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
               }
-            }.start();
-          } catch (Exception e) {
+              generateCad();
+            }).start();
+          } catch (final Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
           }
@@ -112,13 +110,13 @@ public class MobileBaseCadManager {
   private boolean autoRegen = true;
   private DoubleProperty pi = new SimpleDoubleProperty(0);
 
-  public MobileBaseCadManager(MobileBase base, IMobileBaseUI myUI) {
+  public MobileBaseCadManager(final MobileBase base, final IMobileBaseUI myUI) {
     this.setUi(myUI);
     base.addConnectionEventListener(
         new IDeviceConnectionEventListener() {
 
           @Override
-          public void onDisconnect(BowlerAbstractDevice arg0) {
+          public void onDisconnect(final BowlerAbstractDevice arg0) {
             bail = true;
             dhCadGen.clear();
             DHtoCadMap.clear();
@@ -128,7 +126,7 @@ public class MobileBaseCadManager {
           }
 
           @Override
-          public void onConnect(BowlerAbstractDevice arg0) {
+          public void onConnect(final BowlerAbstractDevice arg0) {
             // TODO Auto-generated method stub
 
           }
@@ -138,11 +136,11 @@ public class MobileBaseCadManager {
     // new Exception().printStackTrace();
   }
 
-  public File getCadScript() {
+  private File getCadScript() {
     return cadScript;
   }
 
-  public void setCadScript(File cadScript) {
+  private void setCadScript(final File cadScript) {
     if (cadScript == null) {
       return;
     }
@@ -172,7 +170,7 @@ public class MobileBaseCadManager {
     return null;
   }
 
-  public ArrayList<CSG> generateBody(MobileBase base) {
+  private ArrayList<CSG> generateBody(final MobileBase base) {
 
     getProcesIndictor().set(0);
     setAllCad(new ArrayList<>());
@@ -180,21 +178,18 @@ public class MobileBaseCadManager {
     // private HashMap<MobileBase, ArrayList<CSG>> BasetoCadMap = new
     // HashMap<>();
 
-    MobileBase device = base;
-    if (getBasetoCadMap().get(device) == null) {
-      getBasetoCadMap().put(device, new ArrayList<CSG>());
-    }
+    getBasetoCadMap().computeIfAbsent(base, k -> new ArrayList<>());
 
     if (cadEngine == null) {
       try {
         setDefaultLinkLevelCadEngine();
-      } catch (Exception e) {
+      } catch (final Exception e) {
         getUi().highlightException(null, e);
       }
       if (getCadScript() != null) {
         try {
           cadEngine = ScriptingEngine.inlineFileScriptRun(getCadScript(), null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
           getUi().highlightException(getCadScript(), e);
         }
       }
@@ -204,62 +199,60 @@ public class MobileBaseCadManager {
       getAllCad().clear();
       if (showingStl) {
         // skip the regen
-        for (CSG c : getBasetoCadMap().get(device)) {
+        for (final CSG c : getBasetoCadMap().get(base)) {
           getAllCad().add(c);
         }
       } else {
         if (!bail) {
-          ArrayList<CSG> newcad = getIgenerateBody().generateBody(device);
-          for (CSG c : newcad) {
+          final ArrayList<CSG> newcad = getIgenerateBody().generateBody(base);
+          for (final CSG c : newcad) {
             getAllCad().add(c);
           }
           ui.addCSG(newcad, getCadScript());
         } else {
           new Exception().printStackTrace();
         }
-        ArrayList<CSG> arrayList = getBasetoCadMap().get(device);
+        final ArrayList<CSG> arrayList = getBasetoCadMap().get(base);
         arrayList.clear();
-        for (CSG c : getAllCad()) {
+        for (final CSG c : getAllCad()) {
           arrayList.add(c);
         }
         new Thread(
                 () -> {
-                  localGetBaseCad(device); // load the cad union in a thread to
+                  localGetBaseCad(base); // load the cad union in a thread to
                   // make it ready for physics
                 })
             .start();
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       getUi().highlightException(getCadScript(), e);
     }
     System.out.println("Displaying Body");
     getProcesIndictor().set(0.35);
     // clears old robot and places base
-    getUi().setAllCSG(getBasetoCadMap().get(device), getCadScript());
+    getUi().setAllCSG(getBasetoCadMap().get(base), getCadScript());
     System.out.println("Rendering limbs");
     getProcesIndictor().set(0.4);
-    ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
-    double numLimbs = limbs.size();
+    final ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+    final double numLimbs = limbs.size();
     int i = 0;
-    for (DHParameterKinematics l : limbs) {
-      if (getDHtoCadMap().get(l) == null) {
-        getDHtoCadMap().put(l, new ArrayList<CSG>());
-      }
-      ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
+    for (final DHParameterKinematics l : limbs) {
+      getDHtoCadMap().computeIfAbsent(l, k -> new ArrayList<>());
+      final ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
       int j = 0;
-      if (showingStl || !device.isAvailable()) {
-        for (CSG csg : arrayList) {
+      if (showingStl || !base.isAvailable()) {
+        for (final CSG csg : arrayList) {
           getAllCad().add(csg);
           getUi().addCsg(csg, getCadScript());
-          set(base, (int) i, (int) j);
+          set(base, i, j);
           j += 1;
         }
       } else {
 
         arrayList.clear();
-        ArrayList<CSG> linksCad = generateCad(l);
+        final ArrayList<CSG> linksCad = generateCad(l);
 
-        for (CSG csg : linksCad) {
+        for (final CSG csg : linksCad) {
 
           getAllCad().add(csg);
           arrayList.add(csg);
@@ -281,12 +274,12 @@ public class MobileBaseCadManager {
     return getAllCad();
   }
 
-  private void set(MobileBase base, int limb, int link) {
-    ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
-    double numLimbs = limbs.size();
-    DHParameterKinematics dh = limbs.get(limb);
-    double partsTotal = numLimbs * dh.getNumberOfLinks();
-    double progress = ((double) ((limb * dh.getNumberOfLinks()) + link)) / partsTotal;
+  private void set(final MobileBase base, final int limb, final int link) {
+    final ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+    final double numLimbs = limbs.size();
+    final DHParameterKinematics dh = limbs.get(limb);
+    final double partsTotal = numLimbs * dh.getNumberOfLinks();
+    final double progress = ((double) ((limb * dh.getNumberOfLinks()) + link)) / partsTotal;
     System.out.println(
         "Cad progress "
             + progress
@@ -299,10 +292,10 @@ public class MobileBaseCadManager {
     getProcesIndictor().set(0.333 + (2 * (progress / 3)));
   }
 
-  public LinkConfiguration getLinkConfiguration(CSG cad) {
+  private LinkConfiguration getLinkConfiguration(final CSG cad) {
     LinkConfiguration conf = null;
-    for (LinkConfiguration c : LinktoCadMap.keySet()) {
-      for (CSG cadTest : LinktoCadMap.get(c)) {
+    for (final LinkConfiguration c : LinktoCadMap.keySet()) {
+      for (final CSG cadTest : LinktoCadMap.get(c)) {
         if (cadTest == cad) {
           conf = c;
         }
@@ -311,16 +304,17 @@ public class MobileBaseCadManager {
     return conf;
   }
 
-  public ArrayList<File> generateStls(MobileBase base, File baseDirForFiles, boolean kinematic)
+  public ArrayList<File> generateStls(
+      final MobileBase base, final File baseDirForFiles, final boolean kinematic)
       throws IOException {
-    IgenerateBed bed = getIgenerateBed();
+    final IgenerateBed bed = getIgenerateBed();
     if (bed == null || kinematic) {
       return _generateStls(base, baseDirForFiles, kinematic);
     }
     System.out.println("Found arrangeBed API in CAD engine");
-    List<CSG> totalAssembly = bed.arrangeBed(base);
+    final List<CSG> totalAssembly = bed.arrangeBed(base);
     getUi().setAllCSG(totalAssembly, getCadScript());
-    File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName());
+    final File dir = new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName());
     if (!dir.exists()) {
       dir.mkdirs();
     }
@@ -328,27 +322,27 @@ public class MobileBaseCadManager {
     return new CadFileExporter(getUi()).generateManufacturingParts(totalAssembly, baseDirForFiles);
   }
 
-  private ArrayList<File> _generateStls(MobileBase base, File baseDirForFiles, boolean kinematic)
-      throws IOException {
-    ArrayList<File> allCadStl = new ArrayList<>();
-    ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
-    double numLimbs = limbs.size();
+  private ArrayList<File> _generateStls(
+      final MobileBase base, final File baseDirForFiles, final boolean kinematic) {
+    final ArrayList<File> allCadStl = new ArrayList<>();
+    final ArrayList<DHParameterKinematics> limbs = base.getAllDHChains();
+    final double numLimbs = limbs.size();
     int i;
     // Start by generating the legs using the DH link based generator
-    ArrayList<CSG> totalAssembly = new ArrayList<>();
-    double offset = 0;
+    final ArrayList<CSG> totalAssembly = new ArrayList<>();
+    final double offset = 0;
     for (i = 0; i < limbs.size(); i += 1) {
 
-      double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
+      final double progress = (1.0 - ((numLimbs - i) / numLimbs)) / 2;
       getProcesIndictor().set(progress);
 
-      DHParameterKinematics l = limbs.get(i);
-      ArrayList<CSG> parts = getDHtoCadMap().get(l);
+      final DHParameterKinematics l = limbs.get(i);
+      final ArrayList<CSG> parts = getDHtoCadMap().get(l);
       for (int j = 0; j < parts.size(); j++) {
         CSG csg = parts.get(j);
-        String name = csg.getName();
+        final String name = csg.getName();
         try {
-          CSG tmp;
+          final CSG tmp;
           if (!kinematic) {
             csg = csg.prepForManufacturing();
           }
@@ -367,11 +361,11 @@ public class MobileBaseCadManager {
             } else {
               totalAssembly.add(tmp);
             }
-            LinkConfiguration conf = getLinkConfiguration(parts.get(j));
+            final LinkConfiguration conf = getLinkConfiguration(parts.get(j));
 
-            String linkNum = conf.getLinkIndex() + "_Link_";
+            final String linkNum = conf.getLinkIndex() + "_Link_";
 
-            File dir =
+            final File dir =
                 new File(
                     baseDirForFiles.getAbsolutePath()
                         + "/"
@@ -382,7 +376,7 @@ public class MobileBaseCadManager {
               dir.mkdirs();
             }
             System.out.println("Making STL for " + name);
-            File stl =
+            final File stl =
                 new File(
                     dir.getAbsolutePath()
                         + "/"
@@ -399,7 +393,7 @@ public class MobileBaseCadManager {
             getUi().setAllCSG(totalAssembly, getCadScript());
             set(base, i, j);
           }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
           getUi().highlightException(getCadScript(), ex);
         }
         // legAssembly.setManufactuing(new PrepForManufacturing() {
@@ -417,7 +411,7 @@ public class MobileBaseCadManager {
     int link = 0;
     // now we genrate the base pieces
     for (CSG csg : getBasetoCadMap().get(base)) {
-      String name = csg.getName();
+      final String name = csg.getName();
       try {
         if (!kinematic) {
           csg = csg.prepForManufacturing();
@@ -426,19 +420,19 @@ public class MobileBaseCadManager {
           if (!kinematic) {
             csg = csg.toYMin().movex(-2 - csg.getMaxX() + offset);
           }
-          File dir =
+          final File dir =
               new File(baseDirForFiles.getAbsolutePath() + "/" + base.getScriptingName() + "/");
           if (!dir.exists()) {
             dir.mkdirs();
           }
-          File stl = new File(dir.getAbsolutePath() + "/" + name + "_Body_part_" + link + ".stl");
+          final File stl = new File(dir.getAbsolutePath() + "/" + name + "_Body_part_" + link + ".stl");
           FileUtil.write(Paths.get(stl.getAbsolutePath()), csg.toStlString());
           allCadStl.add(stl);
           totalAssembly.add(csg);
           getUi().setAllCSG(totalAssembly, getCadScript());
           link++;
         }
-      } catch (Exception ex) {
+      } catch (final Exception ex) {
         getUi().highlightException(getCadScript(), ex);
       }
     }
@@ -451,11 +445,11 @@ public class MobileBaseCadManager {
     return allCadStl;
   }
 
-  public MobileBase getMobileBase() {
+  private MobileBase getMobileBase() {
     return base;
   }
 
-  public void setMobileBase(MobileBase base) {
+  private void setMobileBase(final MobileBase base) {
     this.base = base;
     cadmap.put(base, this);
     MobileBaseLoader.get(base); // load the dependant scripts
@@ -463,13 +457,13 @@ public class MobileBaseCadManager {
   }
 
   /** This function iterates through the links generating them */
-  public ArrayList<CSG> generateCad(DHParameterKinematics dh) {
-    ArrayList<CSG> dhLinks = new ArrayList<>();
+  private ArrayList<CSG> generateCad(final DHParameterKinematics dh) {
+    final ArrayList<CSG> dhLinks = new ArrayList<>();
 
     if (cadEngine == null) {
       try {
         setDefaultLinkLevelCadEngine();
-      } catch (Exception e) {
+      } catch (final Exception e) {
         getUi().highlightException(getCadScript(), e);
       }
     }
@@ -477,88 +471,88 @@ public class MobileBaseCadManager {
     try {
       IgenerateCad generatorToUse = getIgenerateCad();
       if (dhCadGen.get(dh) != null) {
-        Object object = dhCadGen.get(dh);
+        final Object object = dhCadGen.get(dh);
         if (IgenerateCad.class.isInstance(object)) {
           generatorToUse = (IgenerateCad) object;
         }
       }
       int j = 0;
-      for (DHParameterKinematics dhtest : getMobileBase().getAllDHChains()) {
+      for (final DHParameterKinematics dhtest : getMobileBase().getAllDHChains()) {
         if (dhtest == dh) {
           break;
         }
         j++;
       }
       for (int i = 0; i < dh.getNumberOfLinks(); i++) {
-        set(base, (int) j, (int) i);
+        set(base, j, i);
 
         if (!bail) {
-          ArrayList<CSG> tmp = generatorToUse.generateCad(dh, i);
+          final ArrayList<CSG> tmp = generatorToUse.generateCad(dh, i);
           getUi().addCSG(tmp, getCadScript());
-          LinkConfiguration configuration = dh.getLinkConfiguration(i);
+          final LinkConfiguration configuration = dh.getLinkConfiguration(i);
           if (getLinktoCadMap().get(configuration) == null) {
             getLinktoCadMap().put(configuration, new ArrayList<>());
           } else {
             getLinktoCadMap().get(configuration).clear();
           }
-          for (CSG c : tmp) {
+          for (final CSG c : tmp) {
             dhLinks.add(c);
             getLinktoCadMap().get(configuration).add(c); // add to
             // the
             // regestration
             // storage
           }
-          AbstractLink link = dh.getFactory().getLink(configuration);
+          final AbstractLink link = dh.getFactory().getLink(configuration);
           link.addLinkListener(
               new ILinkListener() {
 
                 @Override
-                public void onLinkPositionUpdate(AbstractLink arg0, double arg1) {
+                public void onLinkPositionUpdate(final AbstractLink arg0, final double arg1) {
                   // TODO Auto-generated method stub
 
                 }
 
                 @Override
-                public void onLinkLimit(AbstractLink arg0, PIDLimitEvent arg1) {
+                public void onLinkLimit(final AbstractLink arg0, final PIDLimitEvent arg1) {
                   selectCsgByLink(base, configuration);
                 }
               });
         }
       }
       return dhLinks;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       getUi().highlightException(getCadScript(), e);
     }
     return null;
   }
 
-  public void selectCsgByMobileBase(MobileBase base) {
+  public void selectCsgByMobileBase(final MobileBase base) {
     try {
 
-      ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
+      final ArrayList<CSG> csg = MobileBaseCadManager.get(base).getBasetoCadMap().get(base);
       getUi().setSelectedCsg(csg);
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       System.err.println("Base not loaded yet");
     }
   }
 
-  public void selectCsgByLimb(MobileBase base, DHParameterKinematics limb) {
+  public void selectCsgByLimb(final MobileBase base, final DHParameterKinematics limb) {
     try {
 
-      ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
+      final ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getDHtoCadMap().get(limb);
 
       getUi().setSelectedCsg(limCad);
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       System.err.println("Limb not loaded yet");
     }
   }
 
-  public void selectCsgByLink(MobileBase base, LinkConfiguration limb) {
+  private void selectCsgByLink(final MobileBase base, final LinkConfiguration limb) {
     try {
 
-      ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
+      final ArrayList<CSG> limCad = MobileBaseCadManager.get(base).getLinktoCadMap().get(limb);
       getUi().setSelectedCsg(limCad);
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       System.err.println("Limb not loaded yet");
     }
   }
@@ -576,10 +570,10 @@ public class MobileBaseCadManager {
         System.out.print("\r\nGenerating CAD...\r\n");
         setName("MobileBaseCadManager Generating cad Thread ");
         // new Exception().printStackTrace();
-        MobileBase device = base;
+        final MobileBase device = base;
         try {
           setAllCad(generateBody(device));
-        } catch (Exception e) {
+        } catch (final Exception e) {
           getUi().highlightException(getCadScript(), e);
         }
         // System.out.print("\r\nDone Generating CAD!\r\n");
@@ -592,14 +586,14 @@ public class MobileBaseCadManager {
   }
 
   private void setDefaultLinkLevelCadEngine() throws Exception {
-    String[] cad;
+    final String[] cad;
     cad = base.getGitCadEngine();
 
     if (cadEngine == null) {
       setGitCadEngine(cad[0], cad[1], base);
     }
-    for (DHParameterKinematics kin : base.getAllDHChains()) {
-      String[] kinEng = kin.getGitCadEngine();
+    for (final DHParameterKinematics kin : base.getAllDHChains()) {
+      final String[] kinEng = kin.getGitCadEngine();
       if (!cad[0].contentEquals(kinEng[0]) || !cad[1].contentEquals(kinEng[1])) {
         setGitCadEngine(kinEng[0], kinEng[1], kin);
       }
@@ -608,14 +602,15 @@ public class MobileBaseCadManager {
 
   public void onTabClosing() {}
 
-  public void setGitCadEngine(String gitsId, String file, DHParameterKinematics dh)
-      throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+  private void setGitCadEngine(final String gitsId, final String file,
+      final DHParameterKinematics dh)
+      throws GitAPIException, IOException {
     dh.setGitCadEngine(new String[] {gitsId, file});
-    File code = ScriptingEngine.fileFromGit(gitsId, file);
+    final File code = ScriptingEngine.fileFromGit(gitsId, file);
     try {
-      Object defaultDHSolver = ScriptingEngine.inlineFileScriptRun(code, null);
+      final Object defaultDHSolver = ScriptingEngine.inlineFileScriptRun(code, null);
       dhCadGen.put(dh, defaultDHSolver);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       getUi().highlightException(code, e);
     }
 
@@ -626,17 +621,17 @@ public class MobileBaseCadManager {
           System.out.println("Re-loading Cad Limb Engine");
 
           try {
-            Object d = ScriptingEngine.inlineFileScriptRun(code, null);
+            final Object d = ScriptingEngine.inlineFileScriptRun(code, null);
             dhCadGen.put(dh, d);
             generateCad();
-          } catch (Exception ex) {
+          } catch (final Exception ex) {
             getUi().highlightException(code, ex);
           }
         });
   }
 
-  public void setGitCadEngine(String gitsId, String file, MobileBase device)
-      throws InvalidRemoteException, TransportException, GitAPIException, IOException {
+  private void setGitCadEngine(final String gitsId, final String file, final MobileBase device)
+      throws GitAPIException, IOException {
     setCadScript(ScriptingEngine.fileFromGit(gitsId, file));
     device.setGitCadEngine(new String[] {gitsId, file});
   }
@@ -645,9 +640,9 @@ public class MobileBaseCadManager {
     return allCad;
   }
 
-  public void setAllCad(ArrayList<CSG> allCad) {
-    for (CSG part : allCad) {
-      for (String p : part.getParameters()) {
+  private void setAllCad(final ArrayList<CSG> allCad) {
+    for (final CSG part : allCad) {
+      for (final String p : part.getParameters()) {
         CSGDatabase.addParameterListener(
             p,
             (arg0, arg1) -> {
@@ -658,10 +653,10 @@ public class MobileBaseCadManager {
     this.allCad = allCad;
   }
 
-  public static MobileBaseCadManager get(MobileBase device) {
+  public static MobileBaseCadManager get(final MobileBase device) {
     if (cadmap.get(device) == null) {
       // new RuntimeException("No Mobile Base Cad Manager UI specified").printStackTrace();
-      MobileBaseCadManager mbcm =
+      final MobileBaseCadManager mbcm =
           new MobileBaseCadManager(
               device,
               new IMobileBaseUI() {
@@ -669,12 +664,12 @@ public class MobileBaseCadManager {
                 private ArrayList<CSG> list = new ArrayList<>();
 
                 @Override
-                public void highlightException(File fileEngineRunByName, Exception ex) {
+                public void highlightException(final File fileEngineRunByName, final Exception ex) {
                   ex.printStackTrace();
                 }
 
                 @Override
-                public void setAllCSG(Collection<CSG> toAdd, File source) {
+                public void setAllCSG(final Collection<CSG> toAdd, final File source) {
                   // TODO Auto-generated method stub
                   // TODO Auto-generated method stub
                   list.clear();
@@ -682,7 +677,7 @@ public class MobileBaseCadManager {
                 }
 
                 @Override
-                public void addCSG(Collection<CSG> toAdd, File source) {
+                public void addCSG(final Collection<CSG> toAdd, final File source) {
                   // TODO Auto-generated method stub
                   list.addAll(toAdd);
                 }
@@ -690,11 +685,11 @@ public class MobileBaseCadManager {
                 @Override
                 public Set<CSG> getVisibleCSGs() {
                   // TODO Auto-generated method stub
-                  return new HashSet<CSG>(list);
+                  return new HashSet<>(list);
                 }
 
                 @Override
-                public void setSelectedCsg(Collection<CSG> selectedCsg) {
+                public void setSelectedCsg(final Collection<CSG> selectedCsg) {
                   // TODO Auto-generated method stub
 
                 }
@@ -704,16 +699,16 @@ public class MobileBaseCadManager {
     return cadmap.get(device);
   }
 
-  public static HashMap<LinkConfiguration, ArrayList<CSG>> getSimplecad(MobileBase device) {
+  public static HashMap<LinkConfiguration, ArrayList<CSG>> getSimplecad(final MobileBase device) {
     return get(device).LinktoCadMap;
   }
 
-  private ArrayList<CSG> localGetBaseCad(MobileBase device) {
+  private ArrayList<CSG> localGetBaseCad(final MobileBase device) {
 
     return BasetoCadMap.get(device);
   }
 
-  public static ArrayList<CSG> getBaseCad(MobileBase device) {
+  public static ArrayList<CSG> getBaseCad(final MobileBase device) {
     return get(device).localGetBaseCad(device);
   }
 
@@ -721,39 +716,39 @@ public class MobileBaseCadManager {
     return pi;
   }
 
-  public void setProcesIndictor(DoubleProperty pi) {
+  public void setProcesIndictor(final DoubleProperty pi) {
     this.pi = pi;
   }
 
-  public HashMap<MobileBase, ArrayList<CSG>> getBasetoCadMap() {
+  private HashMap<MobileBase, ArrayList<CSG>> getBasetoCadMap() {
     return BasetoCadMap;
   }
 
-  public void setBasetoCadMap(HashMap<MobileBase, ArrayList<CSG>> basetoCadMap) {
+  public void setBasetoCadMap(final HashMap<MobileBase, ArrayList<CSG>> basetoCadMap) {
     BasetoCadMap = basetoCadMap;
   }
 
-  public HashMap<DHParameterKinematics, ArrayList<CSG>> getDHtoCadMap() {
+  private HashMap<DHParameterKinematics, ArrayList<CSG>> getDHtoCadMap() {
     return DHtoCadMap;
   }
 
-  public void setDHtoCadMap(HashMap<DHParameterKinematics, ArrayList<CSG>> dHtoCadMap) {
+  public void setDHtoCadMap(final HashMap<DHParameterKinematics, ArrayList<CSG>> dHtoCadMap) {
     DHtoCadMap = dHtoCadMap;
   }
 
-  public HashMap<LinkConfiguration, ArrayList<CSG>> getLinktoCadMap() {
+  private HashMap<LinkConfiguration, ArrayList<CSG>> getLinktoCadMap() {
     return LinktoCadMap;
   }
 
-  public void setLinktoCadMap(HashMap<LinkConfiguration, ArrayList<CSG>> linktoCadMap) {
+  public void setLinktoCadMap(final HashMap<LinkConfiguration, ArrayList<CSG>> linktoCadMap) {
     LinktoCadMap = linktoCadMap;
   }
 
-  public boolean getAutoRegen() {
+  private boolean getAutoRegen() {
     return autoRegen;
   }
 
-  public void setAutoRegen(boolean autoRegen) {
+  public void setAutoRegen(final boolean autoRegen) {
     this.autoRegen = autoRegen;
   }
 
@@ -761,7 +756,7 @@ public class MobileBaseCadManager {
     return ui;
   }
 
-  public void setUi(IMobileBaseUI ui) {
+  private void setUi(final IMobileBaseUI ui) {
     this.ui = ui;
   }
 }

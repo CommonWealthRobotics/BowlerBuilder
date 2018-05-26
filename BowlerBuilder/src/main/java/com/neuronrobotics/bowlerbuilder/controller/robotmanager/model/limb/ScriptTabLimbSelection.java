@@ -57,7 +57,7 @@ public class ScriptTabLimbSelection extends AbstractLimbSelection {
                   cadEngineSource[0],
                   cadEngineSource[1],
                   cadEngineFile));
-    } catch (GitAPIException | IOException e) {
+    } catch (final GitAPIException | IOException e) {
       LOGGER.warning(
           "Could not parse file from CAD engine source.\n" + Throwables.getStackTraceAsString(e));
     }
@@ -75,7 +75,7 @@ public class ScriptTabLimbSelection extends AbstractLimbSelection {
                   dhEngineSource[0],
                   dhEngineSource[1],
                   dhEngineFile));
-    } catch (GitAPIException | IOException e) {
+    } catch (final GitAPIException | IOException e) {
       LOGGER.warning(
           "Could not parse file from DH engine source.\n" + Throwables.getStackTraceAsString(e));
     }

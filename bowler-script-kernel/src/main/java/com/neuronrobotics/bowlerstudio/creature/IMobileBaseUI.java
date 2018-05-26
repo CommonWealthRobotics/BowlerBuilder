@@ -75,15 +75,15 @@ public interface IMobileBaseUI {
    */
   void setSelectedCsg(Collection<CSG> selectedCsg);
 
-  default void selectCsgByFile(File script, int lineNumber) {
-    List<CSG> objsFromScriptLine = new ArrayList<>();
+  default void selectCsgByFile(final File script, final int lineNumber) {
+    final List<CSG> objsFromScriptLine = new ArrayList<>();
 
     // check all visible CSGs
-    for (CSG checker : getVisibleCSGs()) {
-      for (String trace : checker.getCreationEventStackTraceList()) {
-        String[] traceParts = trace.split(":");
+    for (final CSG checker : getVisibleCSGs()) {
+      for (final String trace : checker.getCreationEventStackTraceList()) {
+        final String[] traceParts = trace.split(":");
         if (traceParts[0].trim().toLowerCase().contains(script.getName().toLowerCase().trim())) {
-          int num = Integer.parseInt(traceParts[1].trim());
+          final int num = Integer.parseInt(traceParts[1].trim());
 
           if (num == lineNumber) {
             objsFromScriptLine.add(checker);
@@ -97,23 +97,23 @@ public interface IMobileBaseUI {
     }
   }
 
-  default void setCsg(CSG toAdd, File source) {
+  default void setCsg(final CSG toAdd, final File source) {
     setAllCSG(Collections.singletonList(toAdd), source);
   }
 
-  default void setCsg(List<CSG> toAdd) {
+  default void setCsg(final List<CSG> toAdd) {
     setAllCSG(toAdd, null);
   }
 
-  default void setCsg(CSG toAdd) {
+  default void setCsg(final CSG toAdd) {
     setAllCSG(Collections.singletonList(toAdd), null);
   }
 
-  default void setCsg(MobileBaseCadManager thread, File cadScript) {
+  default void setCsg(final MobileBaseCadManager thread, final File cadScript) {
     setAllCSG(thread.getAllCad(), cadScript);
   }
 
-  default void addCsg(CSG toAdd, File source) {
+  default void addCsg(final CSG toAdd, final File source) {
     addCSG(Collections.singletonList(toAdd), source);
   }
 }

@@ -31,7 +31,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 
-public interface IgenerateBody {
+interface IgenerateBody {
 
   /**
    * This function should generate the body and any limbs of a given base. the user should attach

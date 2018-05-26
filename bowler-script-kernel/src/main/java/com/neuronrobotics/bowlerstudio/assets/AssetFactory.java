@@ -42,7 +42,7 @@ import javax.imageio.ImageIO;
 
 public class AssetFactory {
 
-  public static final String repo = "BowlerStudioImageAssets";
+  private static final String repo = "BowlerStudioImageAssets";
   private static String gitSource = "https://github.com/madhephaestus/" + repo + ".git";
   private static HashMap<String, Image> cache = new HashMap<>();
   private static HashMap<String, FXMLLoader> loaders = new HashMap<>();
@@ -50,9 +50,9 @@ public class AssetFactory {
 
   private AssetFactory() {}
 
-  public static FXMLLoader loadLayout(String file, boolean refresh) throws Exception {
-    File fxmlFIle = loadFile(file);
-    URL fileURL = fxmlFIle.toURI().toURL();
+  private static FXMLLoader loadLayout(final String file, final boolean refresh) throws Exception {
+    final File fxmlFIle = loadFile(file);
+    final URL fileURL = fxmlFIle.toURI().toURL();
 
     if (loaders.get(file) == null || refresh) {
       loaders.put(file, new FXMLLoader(fileURL));
@@ -62,11 +62,11 @@ public class AssetFactory {
     return loaders.get(file);
   }
 
-  public static FXMLLoader loadLayout(String file) throws Exception {
+  private static FXMLLoader loadLayout(final String file) throws Exception {
     return loadLayout(file, false);
   }
 
-  public static File loadFile(String file) throws Exception {
+  private static File loadFile(final String file) throws Exception {
     return ScriptingEngine.fileFromGit(
         getGitSource(), // git repo, change this if you fork this demo
         getAssetRepoBranch(),
@@ -75,20 +75,20 @@ public class AssetFactory {
   }
 
   @SuppressWarnings("restriction")
-  public static Image loadAsset(String file) throws Exception {
+  public static Image loadAsset(final String file) throws Exception {
     if (cache.get(file) == null) {
-      File f = loadFile(file);
+      final File f = loadFile(file);
       if (f.getName().endsWith(".fxml")) {
         loadLayout(file);
         return null;
       } else if ((f == null || !f.exists()) && f.getName().endsWith(".png")) {
-        WritableImage obj_img = new WritableImage(30, 30);
-        byte alpha = (byte) 0;
+        final WritableImage obj_img = new WritableImage(30, 30);
+        final byte alpha = (byte) 0;
         for (int cx = 0; cx < obj_img.getWidth(); cx++) {
           for (int cy = 0; cy < obj_img.getHeight(); cy++) {
-            int color = obj_img.getPixelReader().getArgb(cx, cy);
-            int mc = (alpha << 24) | 0x00ffffff;
-            int newColor = color & mc;
+            final int color = obj_img.getPixelReader().getArgb(cx, cy);
+            final int mc = (alpha << 24) | 0x00ffffff;
+            final int newColor = color & mc;
             obj_img.getPixelWriter().setArgb(cx, cy, newColor);
           }
         }
@@ -97,18 +97,18 @@ public class AssetFactory {
         System.out.println("No image at " + file);
 
         try {
-          File imageFile = ScriptingEngine.createFile(getGitSource(), file, "create file");
+          final File imageFile = ScriptingEngine.createFile(getGitSource(), file, "create file");
           try {
-            String fileName = imageFile.getName();
+            final String fileName = imageFile.getName();
             ImageIO.write(
                 SwingFXUtils.fromFXImage(obj_img, null),
                 fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase(),
                 imageFile);
 
-          } catch (IOException ignored) {
+          } catch (final IOException ignored) {
           }
           ScriptingEngine.createFile(getGitSource(), file, "saving new content");
-        } catch (Exception e) {
+        } catch (final Exception e) {
           e.printStackTrace();
         }
       } else {
@@ -118,19 +118,19 @@ public class AssetFactory {
     return cache.get(file);
   }
 
-  public static ImageView loadIcon(String file) {
+  public static ImageView loadIcon(final String file) {
     try {
       return new ImageView(loadAsset(file));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       return new ImageView();
     }
   }
 
-  public static String getGitSource() throws Exception {
+  public static String getGitSource() {
     return gitSource;
   }
 
-  public static void setGitSource(String gitSource, String assetRepoBranch) throws Exception {
+  public static void setGitSource(final String gitSource, final String assetRepoBranch) throws Exception {
     System.err.println("Assets from: " + gitSource + "#" + assetRepoBranch);
     // new Exception().printStackTrace();
     setAssetRepoBranch(assetRepoBranch);
@@ -139,25 +139,25 @@ public class AssetFactory {
     loadAllAssets();
   }
 
-  public static void loadAllAssets() throws Exception {
-    List<String> files = ScriptingEngine.filesInGit(gitSource, StudioBuildInfo.getVersion(), null);
-    for (String file : files) {
+  private static void loadAllAssets() throws Exception {
+    final List<String> files = ScriptingEngine.filesInGit(gitSource, StudioBuildInfo.getVersion(), null);
+    for (final String file : files) {
       loadAsset(file);
     }
   }
 
-  public static String getAssetRepoBranch() {
+  private static String getAssetRepoBranch() {
     return assetRepoBranch;
   }
 
-  public static void setAssetRepoBranch(String assetRepoBranch) {
+  private static void setAssetRepoBranch(final String assetRepoBranch) {
     AssetFactory.assetRepoBranch = assetRepoBranch;
   }
 
-  public static void deleteFolder(File folder) {
-    File[] files = folder.listFiles();
+  private static void deleteFolder(final File folder) {
+    final File[] files = folder.listFiles();
     if (files != null) { // some JVMs return null for empty dirs
-      for (File f : files) {
+      for (final File f : files) {
         if (f.isDirectory()) {
           deleteFolder(f);
         } else {

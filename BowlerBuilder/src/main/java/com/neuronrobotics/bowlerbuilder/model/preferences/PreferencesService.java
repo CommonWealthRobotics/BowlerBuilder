@@ -122,7 +122,7 @@ public class PreferencesService {
     LOGGER.fine("Trying to load preferences from: " + prefsSaveFilePath);
     final File saveFile = new File(prefsSaveFilePath);
     if (saveFile.exists() && !saveFile.isDirectory()) {
-      try (ObjectInputStream stream =
+      try (final ObjectInputStream stream =
           new ObjectInputStream(Files.newInputStream(Paths.get(prefsSaveFilePath), READ))) {
         data = (Map<String, Serializable>) stream.readObject();
       } catch (final IOException e) {
@@ -142,7 +142,7 @@ public class PreferencesService {
     LOGGER.fine("Trying to save preferences to: " + prefsSaveDirPath);
     final File saveDirectory = new File(prefsSaveDirPath);
     if (saveDirectory.exists() || saveDirectory.mkdirs()) {
-      try (ObjectOutputStream stream =
+      try (final ObjectOutputStream stream =
           new ObjectOutputStream(
               Files.newOutputStream(Paths.get(prefsSaveFilePath), CREATE, APPEND))) {
         stream.writeObject(data);

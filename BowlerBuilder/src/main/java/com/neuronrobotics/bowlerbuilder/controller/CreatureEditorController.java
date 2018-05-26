@@ -459,7 +459,7 @@ public class CreatureEditorController {
       } else {
         Platform.runLater(() -> scriptTab.setContent(getScrollPane(new VBox(5, topLevelControls))));
       }
-    } catch (GitAPIException | IOException e) {
+    } catch (final GitAPIException | IOException e) {
       LOGGER.severe(
           "Could not parse creature file from source: "
               + Arrays.toString(gitXMLSource)
@@ -608,7 +608,7 @@ public class CreatureEditorController {
       final String remoteURI, final String fileInRepo) {
     try {
       return Optional.of(ScriptingEngine.fileFromGit(remoteURI, fileInRepo));
-    } catch (GitAPIException | IOException e) {
+    } catch (final GitAPIException | IOException e) {
       LOGGER.severe(
           "Could not parse creature file from source."
               + "\n"
@@ -660,7 +660,7 @@ public class CreatureEditorController {
         try {
           ScriptingEngine.fileFromGit(gitURL, filename);
           break;
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
           LOGGER.log(Level.INFO, "Waiting. " + gist + " not built yet.");
         }
         ThreadUtil.wait(500);
@@ -711,7 +711,7 @@ public class CreatureEditorController {
       final String[] selfSource = mobileBase.getGitSelfSource();
       mainWindowController.loadCreatureLab(selfSource);
       mainWindowController.reloadGitMenus();
-    } catch (MalformedURLException e) {
+    } catch (final MalformedURLException e) {
       LOGGER.log(
           Level.SEVERE,
           "Could not make copy of creature. Malformed url.\n"
@@ -723,7 +723,7 @@ public class CreatureEditorController {
                   .title("Error")
                   .text("Could not make copy of creature.")
                   .showError());
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.log(
           Level.SEVERE, "Could not make copy of creature." + Throwables.getStackTraceAsString(e));
 
