@@ -29,7 +29,7 @@ package com.neuronrobotics.bowlerstudio.vitamins;
 
 import eu.mihosoft.vrl.v3d.CSG;
 
-interface IVitamin {
+public interface IVitamin {
 
-  CSG toCSG();
+  public CSG toCSG();
 }

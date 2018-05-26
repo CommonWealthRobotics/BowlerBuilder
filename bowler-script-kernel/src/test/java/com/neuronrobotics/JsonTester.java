@@ -29,10 +29,10 @@ package com.neuronrobotics;
 
 import org.junit.jupiter.api.Test;
 
-class JsonTester {
+public class JsonTester {
 
   @Test
-  void test() {
+  public void test() throws Exception {
     /*
     try{
       ScriptingEngine.setupAnyonmous();

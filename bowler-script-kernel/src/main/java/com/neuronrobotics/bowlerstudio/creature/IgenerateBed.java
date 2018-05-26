@@ -31,7 +31,7 @@ import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 
-interface IgenerateBed extends ICadGenerator {
+public interface IgenerateBed extends ICadGenerator {
 
   /**
    * This function should generate the bed or beds or parts to be used in manufacturing If parts are

@@ -31,11 +31,11 @@ import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class OpenCVLoadingTest {
+public class OpenCVLoadingTest {
 
   @Test
   @Disabled
-  void test() {
+  public void test() {
     OpenCVJNILoader.load();
   }
 }

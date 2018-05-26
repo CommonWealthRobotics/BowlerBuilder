@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 
 public class ConfigurationDatabase {
 
@@ -54,7 +53,7 @@ public class ConfigurationDatabase {
   // chreat the gson object, this is the parsing factory
   private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
-  public static Object getObject(final String paramsKey, final String objectKey, final Object defaultValue) {
+  public static Object getObject(String paramsKey, String objectKey, Object defaultValue) {
     if (getParamMap(paramsKey).get(objectKey) == null) {
       System.err.println("Cant find: " + paramsKey + ":" + objectKey);
       setObject(paramsKey, objectKey, defaultValue);
@@ -62,17 +61,18 @@ public class ConfigurationDatabase {
     return getParamMap(paramsKey).get(objectKey);
   }
 
-  private static HashMap<String, Object> getParamMap(final String paramsKey) {
-    getDatabase().computeIfAbsent(paramsKey, k -> new HashMap<>());
+  public static HashMap<String, Object> getParamMap(String paramsKey) {
+    if (getDatabase().get(paramsKey) == null) {
+      getDatabase().put(paramsKey, new HashMap<String, Object>());
+    }
     return getDatabase().get(paramsKey);
   }
 
-  private static Object setObject(final String paramsKey, final String objectKey,
-      final Object value) {
+  public static Object setObject(String paramsKey, String objectKey, Object value) {
     return getParamMap(paramsKey).put(objectKey, value);
   }
 
-  public static Object removeObject(final String paramsKey, final String objectKey) {
+  public static Object removeObject(String paramsKey, String objectKey) {
     return getParamMap(paramsKey).remove(objectKey);
   }
 
@@ -89,14 +89,14 @@ public class ConfigurationDatabase {
           getDbFile(),
           writeOut,
           "Saving database");
-    } catch (final Exception e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   @SuppressWarnings("unchecked")
-  private static HashMap<String, HashMap<String, Object>> getDatabase() {
+  public static HashMap<String, HashMap<String, Object>> getDatabase() {
     if (database != null) {
       return database;
     }
@@ -105,41 +105,41 @@ public class ConfigurationDatabase {
           (HashMap<String, HashMap<String, Object>>)
               ScriptingEngine.inlineFileScriptRun(loadFile(), null);
 
-    } catch (final Exception e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     if (database == null) {
-      database = new HashMap<>();
+      database = new HashMap<String, HashMap<String, Object>>();
     }
     return database;
   }
 
-  private static File loadFile() throws Exception {
+  public static File loadFile() throws Exception {
     return ScriptingEngine.fileFromGit(
         getGitSource(), // git repo, change
         getDbFile());
   }
 
-  private static String getGitSource() throws Exception {
+  public static String getGitSource() throws Exception {
     if (!checked) {
       checked = true;
       if (ScriptingEngine.hasNetwork() && ScriptingEngine.isLoginSuccess()) {
 
         ScriptingEngine.setAutoupdate(true);
-        final GitHub github = ScriptingEngine.getGithub();
-        final GHMyself self = github.getMyself();
-        final Map<String, GHRepository> myPublic = self.getAllRepositories();
-        for (final Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
+        org.kohsuke.github.GitHub github = ScriptingEngine.getGithub();
+        GHMyself self = github.getMyself();
+        Map<String, GHRepository> myPublic = self.getAllRepositories();
+        for (Map.Entry<String, GHRepository> entry : myPublic.entrySet()) {
           if (entry.getKey().contentEquals(repo)
               && entry.getValue().getOwnerName().equals(self.getName())) {
-            final GHRepository ghrepo = entry.getValue();
+            GHRepository ghrepo = entry.getValue();
             setRepo(ghrepo);
           }
         }
         if (gitSource == null) {
-          final GHRepository defaultRep = github.getRepository("CommonWealthRobotics/" + repo);
-          final GHRepository forkedRep = defaultRep.fork();
+          GHRepository defaultRep = github.getRepository("CommonWealthRobotics/" + repo);
+          GHRepository forkedRep = defaultRep.fork();
           setRepo(forkedRep);
         }
       } else {
@@ -150,23 +150,23 @@ public class ConfigurationDatabase {
     return gitSource;
   }
 
-  private static void setRepo(final GHRepository forkedRep) {
-    final String myAssets = forkedRep.getGitTransportUrl().replaceAll("git://", "https://");
+  private static void setRepo(GHRepository forkedRep) {
+    String myAssets = forkedRep.getGitTransportUrl().replaceAll("git://", "https://");
     // System.out.println("Using my version of configuration database: " + myAssets);
     setGitSource(myAssets);
   }
 
-  private static void setGitSource(final String myAssets) {
+  public static void setGitSource(String myAssets) {
     database = null;
     gitSource = myAssets;
     getDatabase();
   }
 
-  private static String getDbFile() {
+  public static String getDbFile() {
     return dbFile;
   }
 
-  public static void setDbFile(final String dbFile) {
+  public static void setDbFile(String dbFile) {
     ConfigurationDatabase.dbFile = dbFile;
     setGitSource(gitSource);
   }

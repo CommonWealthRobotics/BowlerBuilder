@@ -27,4 +27,4 @@
  */
 package com.neuronrobotics.bowlerstudio.creature;
 
-interface ICadGenerator extends IgenerateCad, IgenerateBody {}
+public interface ICadGenerator extends IgenerateCad, IgenerateBody {}

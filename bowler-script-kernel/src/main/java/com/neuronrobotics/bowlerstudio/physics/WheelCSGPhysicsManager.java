@@ -48,24 +48,24 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager {
   private final int wheelIndex;
 
   public WheelCSGPhysicsManager(
-      final ArrayList<CSG> baseCSG,
-      final Transform pose,
-      final double mass,
-      final PhysicsCore c,
-      final RaycastVehicle v,
-      final int wheelIndex) {
+      ArrayList<CSG> baseCSG,
+      Transform pose,
+      double mass,
+      PhysicsCore c,
+      RaycastVehicle v,
+      int wheelIndex) {
     super(baseCSG, pose, mass, false, c);
     this.vehicle = v;
     this.wheelIndex = wheelIndex;
   }
 
   @Override
-  public void update(final float timeStep) {
+  public void update(float timeStep) {
     // cut out the falling body update
     if (getUpdateManager() != null) {
       try {
         getUpdateManager().update(timeStep);
-      } catch (final Exception e) {
+      } catch (Exception e) {
         // BowlerStudio.printStackTrace(e);
         throw e;
       }
@@ -74,17 +74,17 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager {
       velocity = getController().compute(getWheelInfo().rotation, getTarget(), timeStep);
     }
     vehicle.updateWheelTransform(getWheelIndex(), true);
-    final TransformNR trans =
+    TransformNR trans =
         TransformFactory.bulletToNr(vehicle.getWheelInfo(getWheelIndex()).worldTransform);
     // copy in the current wheel location
     TransformFactory.nrToBullet(trans, getUpdateTransform());
   }
 
-  private double getTarget() {
+  public double getTarget() {
     return target;
   }
 
-  public void setTarget(final double target) {
+  public void setTarget(double target) {
     this.target = target;
   }
 
@@ -92,27 +92,27 @@ public class WheelCSGPhysicsManager extends CSGPhysicsManager {
     return muscleStrength;
   }
 
-  private static void setMuscleStrength(final float ms) {
+  public static void setMuscleStrength(float ms) {
     muscleStrength = ms;
   }
 
-  public void setMuscleStrength(final double muscleStrength) {
+  public void setMuscleStrength(double muscleStrength) {
     setMuscleStrength((float) muscleStrength);
   }
 
-  private IClosedLoopController getController() {
+  public IClosedLoopController getController() {
     return controller;
   }
 
-  public void setController(final IClosedLoopController controller) {
+  public void setController(IClosedLoopController controller) {
     this.controller = controller;
   }
 
-  private WheelInfo getWheelInfo() {
+  public WheelInfo getWheelInfo() {
     return vehicle.getWheelInfo(getWheelIndex());
   }
 
-  private int getWheelIndex() {
+  public int getWheelIndex() {
     return wheelIndex;
   }
 }

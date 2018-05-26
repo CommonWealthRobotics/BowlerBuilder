@@ -39,14 +39,14 @@ public class MicroServo implements IVitamin {
 
   static {
     try {
-      final File stl = NativeResource.inJarLoad(IVitamin.class, "hxt900-servo.stl");
+      File stl = NativeResource.inJarLoad(IVitamin.class, "hxt900-servo.stl");
       servoModel = STL.file(stl.toPath());
       servoModel = servoModel.transformed(new Transform().translateZ(-19.3));
       servoModel = servoModel.transformed(new Transform().translateX(5.4));
 
       //                    stl = NativeResource.inJarLoad(IVitamin.class    ,"arm.stl");
       //            servoModel=servoModel.union(STL.file(stl.toPath()));
-    } catch (final Exception e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

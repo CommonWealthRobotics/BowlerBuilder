@@ -47,7 +47,7 @@ public interface IScriptingLanguage {
    * @param args the incoming arguments as a list of objects
    * @return the objects returned form the code that ran
    */
-  Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception;
+  public abstract Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception;
 
   /**
    * This interface is for adding additional language support.
@@ -56,16 +56,16 @@ public interface IScriptingLanguage {
    * @param args the incoming arguments as a list of objects
    * @return the objects returned form the code that ran
    */
-  Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception;
+  public abstract Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception;
 
   /** Returns the HashMap key for this language */
-  String getShellType();
+  public abstract String getShellType();
 
   /**
    * Returns the list of supported file extentions Convention is to provide just the leters that
    * make up the file extention
    */
-  ArrayList<String> getFileExtenetion();
+  public abstract ArrayList<String> getFileExtenetion();
 
   /**
    * This function should return true is the filename provided is of a supported file extension.
@@ -74,8 +74,8 @@ public interface IScriptingLanguage {
    * @param filename the filename of the file to be executed
    * @return true if the file extension is supported, false otherwise.
    */
-  default boolean isSupportedFileExtenetion(final String filename) {
-    for (final String s : getFileExtenetion()) {
+  default boolean isSupportedFileExtenetion(String filename) {
+    for (String s : getFileExtenetion()) {
       if (filename.toLowerCase().endsWith(s.toLowerCase())) {
         return true;
       }
@@ -88,5 +88,5 @@ public interface IScriptingLanguage {
    *
    * @return true if the file is a text file.
    */
-  boolean getIsTextFile();
+  public boolean getIsTextFile();
 }

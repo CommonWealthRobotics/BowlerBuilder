@@ -40,8 +40,8 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 public class GroovyHelper implements IScriptingLanguage, IScriptingLanguageDebugger {
 
-  private Object inline(final Object code, final ArrayList<Object> args) throws Exception {
-    final CompilerConfiguration cc = new CompilerConfiguration();
+  private Object inline(Object code, ArrayList<Object> args) throws Exception {
+    CompilerConfiguration cc = new CompilerConfiguration();
     cc.addCompilationCustomizers(
         new ImportCustomizer()
             .addStarImports(ScriptingEngine.getImports())
@@ -50,21 +50,26 @@ public class GroovyHelper implements IScriptingLanguage, IScriptingLanguageDebug
                 "eu.mihosoft.vrl.v3d.Transform",
                 "com.neuronrobotics.bowlerstudio.vitamins.Vitamins"));
 
-    final Binding binding = new Binding();
-    for (final String pm : DeviceManager.listConnectedDevice()) {
-      final BowlerAbstractDevice bad = DeviceManager.getSpecificDevice(null, pm);
+    Binding binding = new Binding();
+    for (String pm : DeviceManager.listConnectedDevice()) {
+      BowlerAbstractDevice bad = DeviceManager.getSpecificDevice(null, pm);
       try {
-        // groovy needs the objects cas to thier actual type before passing into the script
+        // groovy needs the objects cas to thier actual type befor
+        // passing into the scipt
+
         binding.setVariable(
             bad.getScriptingName(), Class.forName(bad.getClass().getName()).cast(bad));
-      } catch (final Throwable e) {
+      } catch (Throwable e) {
+        // throw e;
       }
+      //            System.err.println("Device " + bad.getScriptingName() + " is "
+      //                    + bad);
     }
     binding.setVariable("args", args);
 
-    final GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding, cc);
+    GroovyShell shell = new GroovyShell(GroovyHelper.class.getClassLoader(), binding, cc);
     // System.out.println(code + "\n\nStart\n\n");
-    final Script script;
+    Script script;
     if (String.class.isInstance(code)) {
       script = shell.parse((String) code);
     } else if (File.class.isInstance(code)) {
@@ -81,27 +86,37 @@ public class GroovyHelper implements IScriptingLanguage, IScriptingLanguageDebug
   }
 
   @Override
-  public Object inlineScriptRun(final File code, final ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception {
     return inline(code, args);
   }
 
   @Override
-  public Object inlineScriptRun(final String code, final ArrayList<Object> args) throws Exception {
+  public Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception {
     return inline(code, args);
   }
 
   @Override
   public boolean getIsTextFile() {
+    // TODO Auto-generated method stub
     return true;
   }
 
   @Override
   public ArrayList<String> getFileExtenetion() {
+    // TODO Auto-generated method stub
     return new ArrayList<>(Arrays.asList("java", "groovy"));
   }
 
   @Override
-  public IDebugScriptRunner compileDebug(final File f) {
-    return () -> new String[] {"fileame.groovy", "345"};
+  public IDebugScriptRunner compileDebug(File f) {
+    // TODO Auto-generated method stub
+    return new IDebugScriptRunner() {
+
+      @Override
+      public String[] step() {
+        // TODO Auto-generated method stub
+        return new String[] {"fileame.groovy", "345"};
+      }
+    };
   }
 }

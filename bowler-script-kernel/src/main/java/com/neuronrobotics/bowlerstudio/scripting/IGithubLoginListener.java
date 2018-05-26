@@ -27,9 +27,9 @@
  */
 package com.neuronrobotics.bowlerstudio.scripting;
 
-interface IGithubLoginListener {
+public interface IGithubLoginListener {
 
-  void onLogin(String newUsername);
+  public void onLogin(String newUsername);
 
-  void onLogout(String oldUsername);
+  public void onLogout(String oldUsername);
 }

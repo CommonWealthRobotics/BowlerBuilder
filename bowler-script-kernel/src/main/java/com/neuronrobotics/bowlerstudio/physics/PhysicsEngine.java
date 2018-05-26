@@ -30,11 +30,11 @@ package com.neuronrobotics.bowlerstudio.physics;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 
-class PhysicsEngine {
+public class PhysicsEngine {
 
   private static PhysicsCore mainEngine;
 
-  public static void startPhysicsThread(final int ms) {
+  public static void startPhysicsThread(int ms) {
     get().startPhysicsThread(ms);
   }
 
@@ -42,19 +42,19 @@ class PhysicsEngine {
     get().stopPhysicsThread();
   }
 
-  public static void step(final float timeStep) {
+  public static void step(float timeStep) {
     get().step(timeStep);
   }
 
-  public static void stepMs(final double timeStep) {
+  public static void stepMs(double timeStep) {
     get().stepMs(timeStep);
   }
 
-  public static void add(final IPhysicsManager manager) {
+  public static void add(IPhysicsManager manager) {
     get().add(manager);
   }
 
-  public static void remove(final IPhysicsManager manager) {
+  public static void remove(IPhysicsManager manager) {
     get().remove(manager);
   }
 
@@ -67,7 +67,7 @@ class PhysicsEngine {
     if (mainEngine == null) {
       try {
         mainEngine = new PhysicsCore();
-      } catch (final Exception e) {
+      } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }

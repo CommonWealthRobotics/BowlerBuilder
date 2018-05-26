@@ -29,7 +29,6 @@ package com.neuronrobotics.bowlerstudio.physics;
 
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
-import eu.mihosoft.vrl.v3d.Transform;
 import javafx.scene.transform.Affine;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
@@ -42,7 +41,7 @@ import javax.vecmath.Vector3d;
 @SuppressWarnings("restriction")
 public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.TransformFactory {
 
-  public static void nrToBullet(final TransformNR nr, final com.bulletphysics.linearmath.Transform bullet) {
+  public static void nrToBullet(TransformNR nr, com.bulletphysics.linearmath.Transform bullet) {
     bullet.origin.set((float) nr.getX(), (float) nr.getY(), (float) nr.getZ());
     bullet.setRotation(
         new Quat4f(
@@ -52,17 +51,17 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
             (float) nr.getRotation().getRotationMatrix2QuaturnionW()));
   }
 
-  public static TransformNR bulletToNr(final com.bulletphysics.linearmath.Transform bullet) {
-    final Quat4f out = new Quat4f();
+  public static TransformNR bulletToNr(com.bulletphysics.linearmath.Transform bullet) {
+    Quat4f out = new Quat4f();
     bullet.getRotation(out);
     return new TransformNR(
         bullet.origin.x, bullet.origin.y, bullet.origin.z, out.w, out.x, out.y, out.z);
   }
 
-  public static void bulletToAffine(final Affine affine, final com.bulletphysics.linearmath.Transform bullet) {
+  public static void bulletToAffine(Affine affine, com.bulletphysics.linearmath.Transform bullet) {
 
     // synchronized(out){
-    final double[][] vals = bulletToNr(bullet).getRotationMatrix().getRotationMatrix();
+    double[][] vals = bulletToNr(bullet).getRotationMatrix().getRotationMatrix();
     // we explicitly test norm against one here, saving a division
     // at the cost of a test and branch. Is it worth it?
     // compute xs/ys/zs first to save 6 multiplications, since xs/ys/zs
@@ -82,32 +81,32 @@ public class TransformFactory extends com.neuronrobotics.sdk.addons.kinematics.T
     affine.setTz(bullet.origin.z);
   }
 
-  public static void affineToBullet(final Affine affine, final com.bulletphysics.linearmath.Transform bullet) {
-    final TransformNR nr = affineToNr(affine);
+  public static void affineToBullet(Affine affine, com.bulletphysics.linearmath.Transform bullet) {
+    TransformNR nr = affineToNr(affine);
     nrToBullet(nr, bullet);
   }
 
-  public static Transform nrToCSG(final TransformNR nr) {
-    final Quat4d q1 = new Quat4d();
+  public static eu.mihosoft.vrl.v3d.Transform nrToCSG(TransformNR nr) {
+    Quat4d q1 = new Quat4d();
     q1.w = nr.getRotation().getRotationMatrix2QuaturnionW();
     q1.x = nr.getRotation().getRotationMatrix2QuaturnionX();
     q1.y = nr.getRotation().getRotationMatrix2QuaturnionY();
     q1.z = nr.getRotation().getRotationMatrix2QuaturnionZ();
-    final Vector3d t1 = new Vector3d();
+    Vector3d t1 = new Vector3d();
     t1.x = nr.getX();
     t1.y = nr.getY();
     t1.z = nr.getZ();
-    final double s = 1.0;
+    double s = 1.0;
 
-    final Matrix4d rotation = new Matrix4d(q1, t1, s);
-    return new Transform(rotation);
+    Matrix4d rotation = new Matrix4d(q1, t1, s);
+    return new eu.mihosoft.vrl.v3d.Transform(rotation);
   }
 
-  public static TransformNR csgToNR(final Transform csg) {
-    final Matrix4d rotation = csg.getInternalMatrix();
-    final Quat4d q1 = new Quat4d();
+  public static TransformNR csgToNR(eu.mihosoft.vrl.v3d.Transform csg) {
+    Matrix4d rotation = csg.getInternalMatrix();
+    Quat4d q1 = new Quat4d();
     rotation.get(q1);
-    final Vector3d t1 = new Vector3d();
+    Vector3d t1 = new Vector3d();
     rotation.get(t1);
 
     return new TransformNR(t1.x, t1.y, t1.z, new RotationNR(q1.w, q1.x, q1.y, q1.z));

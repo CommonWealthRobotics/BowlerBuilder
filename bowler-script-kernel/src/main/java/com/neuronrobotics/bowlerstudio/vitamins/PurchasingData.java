@@ -53,15 +53,15 @@ public class PurchasingData {
     return variantParameters;
   }
 
-  public void setVariantParameters(final HashMap<String, Double> variantParameters) {
+  public void setVariantParameters(HashMap<String, Double> variantParameters) {
     this.variantParameters = variantParameters;
   }
 
-  public double getPricsUSD(final int qty) {
+  public double getPricsUSD(int qty) {
     return pricsUSD.get(qty);
   }
 
-  public void setPricsUSD(final int qty, final double pricsUSD) {
+  public void setPricsUSD(int qty, double pricsUSD) {
     this.pricsUSD.put(qty, pricsUSD);
   }
 
@@ -69,7 +69,7 @@ public class PurchasingData {
     return urlAPI;
   }
 
-  public void setAPIUrl(final String url) {
+  public void setAPIUrl(String url) {
     this.urlAPI = url;
   }
 
@@ -77,7 +77,7 @@ public class PurchasingData {
     return db;
   }
 
-  public void setDatabase(final String db) {
+  public void setDatabase(String db) {
     this.db = db;
   }
 
@@ -85,7 +85,7 @@ public class PurchasingData {
     return serverType;
   }
 
-  public void setServerType(final String serverType) {
+  public void setServerType(String serverType) {
     this.serverType = serverType;
   }
 
@@ -93,7 +93,7 @@ public class PurchasingData {
     return cartURL;
   }
 
-  public void setCartUrl(final String cartURL) {
+  public void setCartUrl(String cartURL) {
     this.cartURL = cartURL;
   }
 
@@ -104,10 +104,10 @@ public class PurchasingData {
     s += "db " + db + "\n";
     s += "serverType " + serverType + "\n";
     s += "cartURL " + cartURL + "\n";
-    for (final String key : variantParameters.keySet()) {
+    for (String key : variantParameters.keySet()) {
       s += "variable " + key + " to " + variantParameters.get(key) + "\n";
     }
-    for (final Integer key : pricsUSD.keySet()) {
+    for (Integer key : pricsUSD.keySet()) {
       s += "Price at " + key + " = " + pricsUSD.get(key) + "\n";
     }
 

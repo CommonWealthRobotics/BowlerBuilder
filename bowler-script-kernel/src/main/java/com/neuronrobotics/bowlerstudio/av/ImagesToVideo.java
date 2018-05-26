@@ -88,31 +88,30 @@ import javax.media.protocol.FileTypeDescriptor;
 public class ImagesToVideo implements ControllerListener, DataSinkListener {
 
   public boolean run(
-      final int width, final int height, final int frameRate, final ArrayList<File> inFiles, final File outputFile) {
-    final Vector<String> inputFiles = new Vector<>();
-    for (final File f : inFiles) {
+      int width, int height, int frameRate, ArrayList<File> inFiles, File outputFile) {
+    Vector<String> inputFiles = new Vector<String>();
+    for (File f : inFiles) {
       inputFiles.addElement(f.getAbsolutePath());
     }
-    final String outputURL = outputFile.getAbsolutePath();
+    String outputURL = outputFile.getAbsolutePath();
     if (!outputURL.endsWith(".mov") && !outputURL.endsWith(".MOV")) {
       throw new RuntimeException("The output file extension should end with a .mov extension");
     }
 
-    final MediaLocator oml = createMediaLocator(outputFile.getAbsolutePath());
+    MediaLocator oml = createMediaLocator(outputFile.getAbsolutePath());
     return run(width, height, frameRate, inputFiles, oml);
   }
 
-  private boolean run(
-      final int width, final int height, final int frameRate, final Vector<String> inFiles,
-      final MediaLocator outML) {
-    final ImageDataSource ids = new ImageDataSource(width, height, frameRate, inFiles);
+  public boolean run(
+      int width, int height, int frameRate, Vector<String> inFiles, MediaLocator outML) {
+    ImageDataSource ids = new ImageDataSource(width, height, frameRate, inFiles);
 
-    final Processor p;
+    Processor p;
 
     try {
       System.err.println("- create processor for the image datasource ...");
       p = Manager.createProcessor(ids);
-    } catch (final Exception e) {
+    } catch (Exception e) {
       System.err.println("Yikes!  Cannot create a processor from the data source.");
       return false;
     }
@@ -132,8 +131,8 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
 
     // Query for the processor for supported formats.
     // Then set it on the processor.
-    final TrackControl[] tcs = p.getTrackControls();
-    final Format[] f = tcs[0].getSupportedFormats();
+    TrackControl tcs[] = p.getTrackControls();
+    Format f[] = tcs[0].getSupportedFormats();
     if (f == null || f.length <= 0) {
       System.err.println("The mux does not support the input format: " + tcs[0].getFormat());
       return false;
@@ -152,7 +151,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     }
 
     // Now, we'll need to create a DataSink.
-    final DataSink dsink;
+    DataSink dsink;
     if ((dsink = createDataSink(p, outML)) == null) {
       System.err.println("Failed to create a DataSink for the given output MediaLocator: " + outML);
       return false;
@@ -167,7 +166,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     try {
       p.start();
       dsink.start();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       System.err.println("IO error during processing");
       return false;
     }
@@ -178,7 +177,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     // Cleanup.
     try {
       dsink.close();
-    } catch (final Exception e) {
+    } catch (Exception e) {
     }
     p.removeControllerListener(this);
 
@@ -188,9 +187,9 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
   }
 
   /** Create the DataSink. */
-  private DataSink createDataSink(final Processor p, final MediaLocator outML) {
+  DataSink createDataSink(Processor p, MediaLocator outML) {
 
-    final DataSource ds;
+    DataSource ds;
 
     if ((ds = p.getDataOutput()) == null) {
       System.err.println(
@@ -198,13 +197,13 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
       return null;
     }
 
-    final DataSink dsink;
+    DataSink dsink;
 
     try {
       System.err.println("- create DataSink for: " + outML);
       dsink = Manager.createDataSink(ds, outML);
       dsink.open();
-    } catch (final Exception e) {
+    } catch (Exception e) {
       System.err.println("Cannot create the DataSink: " + e);
       return null;
     }
@@ -212,27 +211,27 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     return dsink;
   }
 
-  private Object waitSync = new Object();
-  private boolean stateTransitionOK = true;
+  Object waitSync = new Object();
+  boolean stateTransitionOK = true;
 
   /**
    * Block until the processor has transitioned to the given state. Return false if the transition
    * failed.
    */
-  private boolean waitForState(final Processor p, final int state) {
+  boolean waitForState(Processor p, int state) {
     synchronized (waitSync) {
       try {
         while (p.getState() < state && stateTransitionOK) {
           waitSync.wait();
         }
-      } catch (final Exception e) {
+      } catch (Exception e) {
       }
     }
     return stateTransitionOK;
   }
 
   /** Controller Listener. */
-  public void controllerUpdate(final ControllerEvent evt) {
+  public void controllerUpdate(ControllerEvent evt) {
 
     if (evt instanceof ConfigureCompleteEvent
         || evt instanceof RealizeCompleteEvent
@@ -252,25 +251,25 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     }
   }
 
-  private Object waitFileSync = new Object();
-  private boolean fileDone = false;
-  private boolean fileSuccess = true;
+  Object waitFileSync = new Object();
+  boolean fileDone = false;
+  boolean fileSuccess = true;
 
   /** Block until file writing is done. */
-  private boolean waitForFileDone() {
+  boolean waitForFileDone() {
     synchronized (waitFileSync) {
       try {
         while (!fileDone) {
           waitFileSync.wait();
         }
-      } catch (final Exception e) {
+      } catch (Exception e) {
       }
     }
     return fileSuccess;
   }
 
   /** Event handler for the file writer. */
-  public void dataSinkUpdate(final DataSinkEvent evt) {
+  public void dataSinkUpdate(DataSinkEvent evt) {
 
     if (evt instanceof EndOfStreamEvent) {
       synchronized (waitFileSync) {
@@ -286,7 +285,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     }
   }
 
-  public static void main(final String[] args) {
+  public static void main(String args[]) {
 
     if (args.length == 0) {
       prUsage();
@@ -295,7 +294,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     // Parse the arguments.
     int i = 0;
     int width = -1, height = -1, frameRate = 1;
-    final Vector<String> inputFiles = new Vector<>();
+    Vector<String> inputFiles = new Vector<String>();
     String outputURL = null;
 
     while (i < args.length) {
@@ -353,20 +352,20 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     }
 
     // Generate the output media locators.
-    final MediaLocator oml;
+    MediaLocator oml;
 
     if ((oml = createMediaLocator(outputURL)) == null) {
       System.err.println("Cannot build media locator from: " + outputURL);
       System.exit(0);
     }
 
-    final ImagesToVideo imageToMovie = new ImagesToVideo();
+    ImagesToVideo imageToMovie = new ImagesToVideo();
     imageToMovie.run(width, height, frameRate, inputFiles, oml);
 
     System.exit(0);
   }
 
-  private static void prUsage() {
+  static void prUsage() {
     System.err.println(
         "Usage: java JpegImagesToMovie -w <width> -h <height> -f <frame rate> -o <output URL> <input JPEG file 1> <input JPEG file 2> ...");
     System.exit(-1);
@@ -375,7 +374,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
 
   /** Create a media locator from the given string. */
   @SuppressWarnings("unused")
-  private static MediaLocator createMediaLocator(final String url) {
+  static MediaLocator createMediaLocator(String url) {
 
     MediaLocator ml;
 
@@ -388,7 +387,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
         return ml;
       }
     } else {
-      final String file = "file:" + System.getProperty("user.dir") + File.separator + url;
+      String file = "file:" + System.getProperty("user.dir") + File.separator + url;
       if ((ml = new MediaLocator(file)) != null) {
         return ml;
       }

@@ -33,20 +33,20 @@ import eu.mihosoft.vrl.v3d.CSG;
 import java.util.ArrayList;
 import javafx.scene.transform.Affine;
 
-interface IPhysicsManager {
+public interface IPhysicsManager {
 
   /** Run the update for this ridgid body. Run any controllers for links */
-  void update(float timeStep);
+  public void update(float timeStep);
 
   /** Return a RigidBody for the physics engine */
-  RigidBody getFallRigidBody();
+  public RigidBody getFallRigidBody();
 
   /** Return the CSG that tis being modelsed */
-  ArrayList<CSG> getBaseCSG();
+  public ArrayList<CSG> getBaseCSG();
 
   /** Return the current spatial location fo the rigid body */
-  Affine getRigidBodyLocation();
+  public Affine getRigidBodyLocation();
 
   /** The Bullet version of the location */
-  Transform getUpdateTransform();
+  public Transform getUpdateTransform();
 }

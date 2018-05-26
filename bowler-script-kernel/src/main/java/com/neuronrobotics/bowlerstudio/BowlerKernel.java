@@ -28,11 +28,12 @@
 package com.neuronrobotics.bowlerstudio;
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
-import com.sun.speech.freetts.Voice;
+import com.neuronrobotics.imageprovider.OpenCVJNILoader;
 import com.sun.speech.freetts.VoiceManager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -44,17 +45,24 @@ import java.util.List;
 import jline.ConsoleReader;
 import jline.Terminal;
 
+// import org.springframework.boot.SpringApplication;
+// import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+// import org.springframework.context.annotation.ComponentScan;
+// import org.springframework.context.annotation.Configuration;
+
 public class BowlerKernel {
 
-  private static File historyFile;
+  private static final String CSG = null;
+  private static File historyFile =
+      new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/bowler.history");
 
   static {
     historyFile = new File(ScriptingEngine.getWorkspace().getAbsolutePath() + "/bowler.history");
-    final ArrayList<String> history = new ArrayList<>();
+    ArrayList<String> history = new ArrayList<>();
     if (!historyFile.exists()) {
       try {
         historyFile.createNewFile();
-      } catch (final IOException e) {
+      } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
@@ -91,20 +99,28 @@ public class BowlerKernel {
 
   /** @param args the command line arguments */
   @SuppressWarnings("unchecked")
-  public static void main(final String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
 
     if (args.length == 0) {
       fail();
     }
+    OpenCVJNILoader.load(); // Loads the OpenCV JNI (java native interface)
+    //        File servo =
+    // ScriptingEngine.fileFromGit("https://github.com/CommonWealthRobotics/BowlerStudioVitamins.git",
+    //                            "BowlerStudioVitamins/stl/servo/smallservo.stl");
+    //
+    //        ArrayList<CSG>  cad = (ArrayList<CSG>
+    // )ScriptingEngine.inlineGistScriptRun("4814b39ee72e9f590757", "javaCad.groovy" , null);
+    //        System.out.println(servo.exists()+" exists: "+servo);
 
     boolean startLoadingScripts = false;
     Object ret = null;
-    for (final String s : args) {
+    for (String s : args) {
       if (startLoadingScripts) {
         try {
 
           ret = ScriptingEngine.inlineFileScriptRun(new File(s), null);
-        } catch (final Error e) {
+        } catch (Error e) {
           e.printStackTrace();
           fail();
         }
@@ -115,12 +131,12 @@ public class BowlerKernel {
     }
     startLoadingScripts = false;
 
-    for (final String s : args) {
+    for (String s : args) {
 
       if (startLoadingScripts) {
         try {
           ret = ScriptingEngine.inlineFileScriptRun(new File(s), (ArrayList<Object>) ret);
-        } catch (final Error e) {
+        } catch (Error e) {
           e.printStackTrace();
           fail();
         }
@@ -130,14 +146,14 @@ public class BowlerKernel {
       }
     }
     boolean runShell = false;
-    final String groovy = "Groovy";
+    String groovy = "Groovy";
     String shellTypeStorage = groovy;
-    for (final String s : args) {
+    for (String s : args) {
 
       if (runShell) {
         try {
           shellTypeStorage = s;
-        } catch (final Exception e) {
+        } catch (Exception e) {
           shellTypeStorage = groovy;
         }
         break;
@@ -156,7 +172,7 @@ public class BowlerKernel {
     }
     // Terminal.getTerminal().initializeTerminal();
 
-    final ConsoleReader reader = new ConsoleReader();
+    ConsoleReader reader = new ConsoleReader();
     reader.addTriggeredAction(
         Terminal.CTRL_C,
         e -> {
@@ -185,8 +201,8 @@ public class BowlerKernel {
       reader.getHistory().addToHistory("println \"Hello world!\"");
       writeHistory(reader.getHistory().getHistoryList());
     } else {
-      final List<String> history = loadHistory();
-      for (final String h : history) {
+      List<String> history = loadHistory();
+      for (String h : history) {
         reader.getHistory().addToHistory(h);
       }
     }
@@ -195,7 +211,15 @@ public class BowlerKernel {
 
     Runtime.getRuntime()
         .addShutdownHook(
-            new Thread(() -> writeHistory(reader.getHistory().getHistoryList())));
+            new Thread() {
+              @Override
+              public void run() {
+
+                writeHistory(reader.getHistory().getHistoryList());
+              }
+            });
+
+    // SpringApplication.run(SpringBowlerUI.class, new String[]{});
 
     String line;
     try {
@@ -204,8 +228,8 @@ public class BowlerKernel {
           break;
         }
         if (line.equalsIgnoreCase("history") || line.equalsIgnoreCase("h")) {
-          final List<String> h = reader.getHistory().getHistoryList();
-          for (final String s : h) {
+          List<String> h = reader.getHistory().getHistoryList();
+          for (String s : h) {
             System.out.println(s);
           }
           continue;
@@ -213,7 +237,7 @@ public class BowlerKernel {
         if (line.startsWith("shellType")) {
           try {
             shellTypeStorage = line.split(" ")[1];
-          } catch (final Exception e) {
+          } catch (Exception e) {
             shellTypeStorage = groovy;
           }
           continue;
@@ -223,21 +247,23 @@ public class BowlerKernel {
           if (ret != null) {
             System.out.println(ret);
           }
-        } catch (final Error | Exception e) {
+        } catch (Error e) {
+          e.printStackTrace();
+        } catch (Exception e) {
           e.printStackTrace();
         }
       }
-    } catch (final Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  private static ArrayList<String> loadHistory() throws IOException {
-    final ArrayList<String> history = new ArrayList<>();
+  public static ArrayList<String> loadHistory() throws IOException {
+    ArrayList<String> history = new ArrayList<>();
     // Construct BufferedReader from FileReader
-    final BufferedReader br = new BufferedReader(new FileReader(historyFile));
+    BufferedReader br = new BufferedReader(new FileReader(historyFile));
 
-    String line;
+    String line = null;
     while ((line = br.readLine()) != null) {
       history.add(line);
     }
@@ -245,36 +271,39 @@ public class BowlerKernel {
     return history;
   }
 
-  private static void writeHistory(final List<String> history) {
+  public static void writeHistory(List<String> history) {
     System.out.println("Saving history");
-    final FileOutputStream fos;
+    FileOutputStream fos;
     try {
       fos = new FileOutputStream(historyFile);
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-      for (final String s : history) {
+      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+      for (String s : history) {
         bw.write(s);
         bw.newLine();
       }
 
       bw.close();
-    } catch (final IOException e) {
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  public static int speak(final String msg) {
+  public static int speak(String msg) {
+
     return speak(msg, 175.0, 120.0, 41.0, 1.0, 1.0);
   }
 
   @SuppressWarnings("unused")
-  private static int speak(
-      final String msg, final Double rate, final Double pitch, final Double range,
-      final Double shift, final Double volume) {
+  public static int speak(
+      String msg, Double rate, Double pitch, Double range, Double shift, Double volume) {
     System.setProperty(
         "freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
-    final VoiceManager voiceManager = VoiceManager.getInstance();
-    final Voice voice = voiceManager.getVoice("kevin16");
+    VoiceManager voiceManager = VoiceManager.getInstance();
+    com.sun.speech.freetts.Voice voice = voiceManager.getVoice("kevin16");
 
     System.out.println("Rate " + rate);
     System.out.println("Pitch hertz " + pitch);
@@ -292,13 +321,24 @@ public class BowlerKernel {
       voice.deallocate();
     } else {
       System.out.println("All voices available:");
-      final Voice[] voices = voiceManager.getVoices();
-      for (final Voice aVoice : voices) {
+      com.sun.speech.freetts.Voice[] voices = voiceManager.getVoices();
+      for (int i = 0; i < voices.length; i++) {
         System.out.println(
-            "    " + aVoice.getName() + " (" + aVoice.getDomain() + " domain)");
+            "    " + voices[i].getName() + " (" + voices[i].getDomain() + " domain)");
       }
     }
 
+    // WordNumSyls feature =
+    // (WordNumSyls)voice.getFeatureProcessor("word_numsyls");
+    // if(feature!=null)
+    // try {
+    //
+    // System.out.println("Syllables# = "+feature.process(null));
+    // } catch (ProcessException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
     return 0;
   }
 }

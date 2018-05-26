@@ -42,11 +42,11 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager {
   ////////////////////////////////////////////////////////////////////////////
 
   private VehicleTuning tuning = new VehicleTuning();
-  private VehicleRaycaster vehicleRayCaster;
+  public VehicleRaycaster vehicleRayCaster;
   private RaycastVehicle vehicle;
 
   public VehicleCSGPhysicsManager(
-      final ArrayList<CSG> baseCSG, final Transform pose, final double mass, final boolean adjustCenter, final PhysicsCore core) {
+      ArrayList<CSG> baseCSG, Transform pose, double mass, boolean adjustCenter, PhysicsCore core) {
     super(baseCSG, pose, mass, adjustCenter, core);
 
     vehicleRayCaster = new DefaultVehicleRaycaster(core.getDynamicsWorld());
@@ -54,12 +54,12 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager {
   }
 
   @Override
-  public void update(final float timeStep) {
+  public void update(float timeStep) {
     getFallRigidBody().getMotionState().getWorldTransform(getUpdateTransform());
     if (getUpdateManager() != null) {
       try {
         getUpdateManager().update(timeStep);
-      } catch (final Exception e) {
+      } catch (Exception e) {
         // BowlerStudio.printStackTrace(e);
         throw e;
       }
@@ -71,15 +71,15 @@ public class VehicleCSGPhysicsManager extends CSGPhysicsManager {
     return vehicle;
   }
 
-  private void setVehicle(final RaycastVehicle vehicle) {
+  public void setVehicle(RaycastVehicle vehicle) {
     this.vehicle = vehicle;
   }
 
-  private VehicleTuning getTuning() {
+  public VehicleTuning getTuning() {
     return tuning;
   }
 
-  public void setTuning(final VehicleTuning tuning) {
+  public void setTuning(VehicleTuning tuning) {
     this.tuning = tuning;
   }
 }

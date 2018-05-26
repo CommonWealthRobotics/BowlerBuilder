@@ -75,7 +75,7 @@ public class PhysicsCore {
   private float angularSleepThreshhold;
   private float deactivationTime;
 
-  public PhysicsCore() {
+  public PhysicsCore() throws Exception {
     // set the gravity of our world
     getDynamicsWorld()
         .setGravity(
@@ -88,7 +88,7 @@ public class PhysicsCore {
     return broadphase;
   }
 
-  public void setBroadphase(final BroadphaseInterface broadphase) {
+  public void setBroadphase(BroadphaseInterface broadphase) {
     this.broadphase = broadphase;
   }
 
@@ -96,7 +96,7 @@ public class PhysicsCore {
     return collisionConfiguration;
   }
 
-  public void setCollisionConfiguration(final DefaultCollisionConfiguration collisionConfiguration) {
+  public void setCollisionConfiguration(DefaultCollisionConfiguration collisionConfiguration) {
     this.collisionConfiguration = collisionConfiguration;
   }
 
@@ -104,7 +104,7 @@ public class PhysicsCore {
     return dispatcher;
   }
 
-  public void setDispatcher(final CollisionDispatcher dispatcher) {
+  public void setDispatcher(CollisionDispatcher dispatcher) {
     this.dispatcher = dispatcher;
   }
 
@@ -112,7 +112,7 @@ public class PhysicsCore {
     return solver;
   }
 
-  public void setSolver(final SequentialImpulseConstraintSolver solver) {
+  public void setSolver(SequentialImpulseConstraintSolver solver) {
     this.solver = solver;
   }
 
@@ -120,7 +120,7 @@ public class PhysicsCore {
     return dynamicsWorld;
   }
 
-  public void setDynamicsWorld(final DiscreteDynamicsWorld dynamicsWorld) {
+  public void setDynamicsWorld(DiscreteDynamicsWorld dynamicsWorld) {
     this.dynamicsWorld = dynamicsWorld;
   }
 
@@ -128,7 +128,7 @@ public class PhysicsCore {
     return groundShape;
   }
 
-  private void setGroundShape(final CollisionShape cs) {
+  public void setGroundShape(CollisionShape cs) {
     if (groundRigidBody != null) {
       getDynamicsWorld().removeRigidBody(groundRigidBody); // add our
       // ground to
@@ -136,48 +136,48 @@ public class PhysicsCore {
     }
     this.groundShape = cs;
     // setup the motion state
-    final DefaultMotionState groundMotionState =
+    DefaultMotionState groundMotionState =
         new DefaultMotionState(
             new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), new Vector3f(0, 0, 0), 1.0f)));
 
-    final RigidBodyConstructionInfo groundRigidBodyCI =
+    RigidBodyConstructionInfo groundRigidBodyCI =
         new RigidBodyConstructionInfo(0, groundMotionState, groundShape, new Vector3f(0, 0, 0));
     groundRigidBody = new RigidBody(groundRigidBodyCI);
     dynamicsWorld.addRigidBody(groundRigidBody); // add our ground to the
   }
 
-  private ArrayList<IPhysicsManager> getPhysicsObjects() {
+  public ArrayList<IPhysicsManager> getPhysicsObjects() {
     return objects;
   }
 
-  public void setDamping(final float lin_damping, final float ang_damping) {
+  public void setDamping(float lin_damping, float ang_damping) {
     this.lin_damping = (lin_damping);
     this.ang_damping = (ang_damping);
-    for (final IPhysicsManager m : getPhysicsObjects()) {
+    for (IPhysicsManager m : getPhysicsObjects()) {
       m.getFallRigidBody().setDamping(lin_damping, ang_damping);
     }
   }
 
-  public void setSleepingThresholds(final float linearSleepThreshhold, final float angularSleepThreshhold) {
+  public void setSleepingThresholds(float linearSleepThreshhold, float angularSleepThreshhold) {
     this.linearSleepThreshhold = (linearSleepThreshhold);
     this.angularSleepThreshhold = (angularSleepThreshhold);
-    for (final IPhysicsManager m : getPhysicsObjects()) {
+    for (IPhysicsManager m : getPhysicsObjects()) {
       m.getFallRigidBody().setSleepingThresholds(linearSleepThreshhold, angularSleepThreshhold);
     }
   }
 
-  public void setDeactivationTime(final float deactivationTime) {
+  public void setDeactivationTime(float deactivationTime) {
     this.deactivationTime = deactivationTime;
-    for (final IPhysicsManager m : getPhysicsObjects()) {
+    for (IPhysicsManager m : getPhysicsObjects()) {
       m.getFallRigidBody().setDeactivationTime(deactivationTime);
     }
   }
 
-  public void setObjects(final ArrayList<IPhysicsManager> objects) {
+  public void setObjects(ArrayList<IPhysicsManager> objects) {
     this.objects = objects;
   }
 
-  public void startPhysicsThread(final int ms) {
+  public void startPhysicsThread(int ms) {
     msTime = ms;
     if (physicsThread == null) {
       runEngine = true;
@@ -186,15 +186,15 @@ public class PhysicsCore {
               () -> {
                 while (runEngine) {
                   try {
-                    final long start = System.currentTimeMillis();
+                    long start = System.currentTimeMillis();
                     stepMs(msTime);
-                    final long took = (System.currentTimeMillis() - start);
+                    long took = (System.currentTimeMillis() - start);
                     if (took < msTime) {
                       ThreadUtil.wait((int) (msTime - took));
                     } else {
                       System.out.println("Real time physics broken: " + took);
                     }
-                  } catch (final Exception E) {
+                  } catch (Exception E) {
                     E.printStackTrace();
                   }
                 }
@@ -204,9 +204,9 @@ public class PhysicsCore {
   }
 
   public ArrayList<CSG> getCsgFromEngine() {
-    final ArrayList<CSG> csg = new ArrayList<>();
-    for (final IPhysicsManager o : getPhysicsObjects()) {
-      for (final CSG c : o.getBaseCSG()) {
+    ArrayList<CSG> csg = new ArrayList<>();
+    for (IPhysicsManager o : getPhysicsObjects()) {
+      for (CSG c : o.getBaseCSG()) {
         csg.add(c);
       }
     }
@@ -218,34 +218,34 @@ public class PhysicsCore {
     runEngine = false;
   }
 
-  public void step(final float timeStep) {
-    final long startTime = System.currentTimeMillis();
+  public void step(float timeStep) {
+    long startTime = System.currentTimeMillis();
 
     getDynamicsWorld().stepSimulation(timeStep, getSimulationSubSteps());
     if ((((float) (System.currentTimeMillis() - startTime)) / 1000.0f) > timeStep) {
       // System.out.println(" Compute took too long "+timeStep);
     }
-    for (final IPhysicsManager o : getPhysicsObjects()) {
+    for (IPhysicsManager o : getPhysicsObjects()) {
       o.update(timeStep);
     }
 
     Platform.runLater(
         () -> {
-          for (final IPhysicsManager o : getPhysicsObjects()) {
+          for (IPhysicsManager o : getPhysicsObjects()) {
             try {
               TransformFactory.bulletToAffine(o.getRigidBodyLocation(), o.getUpdateTransform());
-            } catch (final Exception e) {
+            } catch (Exception e) {
 
             }
           }
         });
   }
 
-  public void stepMs(final double timeStep) {
+  public void stepMs(double timeStep) {
     step((float) (timeStep / 1000.0));
   }
 
-  public void add(final IPhysicsManager manager) {
+  public void add(IPhysicsManager manager) {
     if (!getPhysicsObjects().contains(manager)) {
       getPhysicsObjects().add(manager);
       if (!WheelCSGPhysicsManager.class.isInstance(manager)
@@ -264,7 +264,7 @@ public class PhysicsCore {
     }
   }
 
-  public void remove(final IPhysicsManager manager) {
+  public void remove(IPhysicsManager manager) {
     if (getPhysicsObjects().contains(manager)) {
       getPhysicsObjects().remove(manager);
       if (!WheelCSGPhysicsManager.class.isInstance(manager)
@@ -285,8 +285,8 @@ public class PhysicsCore {
 
   public void clear() {
     stopPhysicsThread();
-    ThreadUtil.wait(msTime * 2);
-    for (final IPhysicsManager manager : getPhysicsObjects()) {
+    ThreadUtil.wait((int) (msTime * 2));
+    for (IPhysicsManager manager : getPhysicsObjects()) {
       if (!WheelCSGPhysicsManager.class.isInstance(manager)
           && !VehicleCSGPhysicsManager.class.isInstance(manager)) {
         getDynamicsWorld().removeRigidBody(manager.getFallRigidBody());
@@ -303,7 +303,7 @@ public class PhysicsCore {
     getPhysicsObjects().clear();
   }
 
-  private int getSimulationSubSteps() {
+  public int getSimulationSubSteps() {
     return simulationSubSteps;
   }
 
@@ -311,7 +311,7 @@ public class PhysicsCore {
     return deactivationTime;
   }
 
-  public void setSimulationSubSteps(final int simpulationSubSteps) {
+  public void setSimulationSubSteps(int simpulationSubSteps) {
     this.simulationSubSteps = simpulationSubSteps;
   }
 

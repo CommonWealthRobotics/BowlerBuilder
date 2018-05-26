@@ -44,21 +44,21 @@ import java.util.Arrays;
  */
 public class ClojureHelper implements IScriptingLanguage {
 
-  private static Var REQUIRE = var("clojure.core", "require");
+  public static Var REQUIRE = var("clojure.core", "require");
   public static Var META = var("clojure.core", "meta");
-  private static Var EVAL = var("clojure.core", "eval");
-  private static Var READ_STRING = var("clojure.core", "load-string");
+  public static Var EVAL = var("clojure.core", "eval");
+  public static Var READ_STRING = var("clojure.core", "load-string");
 
   /**
    * Require a namespace by name, loading it if necessary.
    *
    * <p>Calls clojure.core/require
    */
-  public static Object require(final String nsName) {
+  public static Object require(String nsName) {
     return REQUIRE.invoke(Symbol.intern(nsName));
   }
 
-  private static Object readString(final String s) {
+  public static Object readString(String s) {
     return READ_STRING.invoke(s);
   }
 
@@ -67,7 +67,7 @@ public class ClojureHelper implements IScriptingLanguage {
    *
    * <p>The var can subsequently be invoked if it is a function.
    */
-  public static Var var(final String varName) {
+  public static Var var(String varName) {
     return var("clojure.core", varName);
   }
 
@@ -76,32 +76,32 @@ public class ClojureHelper implements IScriptingLanguage {
    *
    * <p>The var can subsequently be invoked if it is a function.
    */
-  private static Var var(final String nsName, final String varName) {
+  public static Var var(String nsName, String varName) {
     return RT.var(nsName, varName);
   }
 
   /** Evaluates a String, which should contain valid Clojure code. */
-  private static Object eval(final String string) {
+  public static Object eval(String string) {
     return EVAL.invoke(readString(string));
   }
 
   @Override
-  public Object inlineScriptRun(final File code, final ArrayList<Object> args) {
-    final byte[] bytes;
+  public Object inlineScriptRun(File code, ArrayList<Object> args) {
+    byte[] bytes;
     try {
       bytes = Files.readAllBytes(code.toPath());
-      final String s = new String(bytes, "UTF-8");
+      String s = new String(bytes, "UTF-8");
       return inlineScriptRun(s, args);
-    } catch (final IOException e1) {
+    } catch (IOException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
-
+    // System.out.println("Clojure returned of type="+ret.getClass()+" value="+ret);
     return null;
   }
 
   @Override
-  public Object inlineScriptRun(final String code, final ArrayList<Object> args) {
+  public Object inlineScriptRun(String code, ArrayList<Object> args) {
 
     return ClojureHelper.eval(code);
   }
@@ -113,6 +113,7 @@ public class ClojureHelper implements IScriptingLanguage {
 
   @Override
   public boolean getIsTextFile() {
+    // TODO Auto-generated method stub
     return true;
   }
 

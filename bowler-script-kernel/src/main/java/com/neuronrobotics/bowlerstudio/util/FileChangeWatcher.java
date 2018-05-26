@@ -80,6 +80,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: Auto-generated Javadoc
+
 /** The Class FileChangeWatcher. */
 public class FileChangeWatcher {
 
@@ -99,17 +101,17 @@ public class FileChangeWatcher {
   private final boolean recursive = false;
 
   /** The listeners. */
-  private ArrayList<IFileChangeListener> listeners = new ArrayList<>();
+  private ArrayList<IFileChangeListener> listeners = new ArrayList<IFileChangeListener>();
 
   private static boolean runThread = true;
 
   private static HashMap<String, FileChangeWatcher> activeListener =
-      new HashMap<>();
+      new HashMap<String, FileChangeWatcher>();
   private Thread watcherThread = null;
 
   /** clear the listeners */
   public static void clearAll() {
-    for (final String key : activeListener.keySet()) {
+    for (String key : activeListener.keySet()) {
       activeListener.get(key).close();
     }
     activeListener.clear();
@@ -121,8 +123,8 @@ public class FileChangeWatcher {
    * @param fileToWatch a file that should be watched
    * @return the watcher object for this file
    */
-  public static FileChangeWatcher watch(final File fileToWatch) throws IOException {
-    final String path = fileToWatch.getAbsolutePath();
+  public static FileChangeWatcher watch(File fileToWatch) throws IOException {
+    String path = fileToWatch.getAbsolutePath();
     if (activeListener.get(path) == null) {
       activeListener.put(path, new FileChangeWatcher(fileToWatch));
       System.err.println("Adding file to listening " + fileToWatch.getAbsolutePath());
@@ -136,13 +138,13 @@ public class FileChangeWatcher {
    * @param fileToWatch the file to watch
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  private FileChangeWatcher(final File fileToWatch) throws IOException {
+  private FileChangeWatcher(File fileToWatch) throws IOException {
 
     this.setFileToWatch(fileToWatch);
 
     this.watcher = FileSystems.getDefault().newWatchService();
-    this.keys = new HashMap<>();
-    final Path dir = Paths.get(fileToWatch.getParent());
+    this.keys = new HashMap<WatchKey, Path>();
+    Path dir = Paths.get(fileToWatch.getParent());
     if (recursive) {
       System.out.format("Scanning %s ...\n", dir);
       registerAll(dir);
@@ -160,13 +162,13 @@ public class FileChangeWatcher {
               try {
                 System.err.println("Checking File: " + getFileToWatch().getAbsolutePath());
                 watch();
-              } catch (final Exception ex) {
+              } catch (Exception ex) {
                 ex.printStackTrace();
               }
 
               try {
                 Thread.sleep(100);
-              } catch (final InterruptedException e) {
+              } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
               }
@@ -182,7 +184,7 @@ public class FileChangeWatcher {
    *
    * @param l the l
    */
-  public void addIFileChangeListener(final IFileChangeListener l) {
+  public void addIFileChangeListener(IFileChangeListener l) {
     if (!listeners.contains(l)) {
       listeners.add(l);
     }
@@ -193,8 +195,10 @@ public class FileChangeWatcher {
    *
    * @param l the l
    */
-  public void removeIFileChangeListener(final IFileChangeListener l) {
-    listeners.remove(l);
+  public void removeIFileChangeListener(IFileChangeListener l) {
+    if (listeners.contains(l)) {
+      listeners.remove(l);
+    }
     //        if(listeners.size()==0){
     //            close() ;
     //        }
@@ -208,7 +212,7 @@ public class FileChangeWatcher {
    * @return the watch event
    */
   @SuppressWarnings("unchecked")
-  private static <T> WatchEvent<T> cast(final WatchEvent<?> event) {
+  static <T> WatchEvent<T> cast(WatchEvent<?> event) {
     return (WatchEvent<T>) event;
   }
 
@@ -218,10 +222,10 @@ public class FileChangeWatcher {
    * @param dir the dir
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  private void register(final Path dir) throws IOException {
-    final WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+  private void register(Path dir) throws IOException {
+    WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
-    final Path prev = keys.get(key);
+    Path prev = keys.get(key);
     if (prev == null) {
       // System.out.format("register: %s\n", dir);
     } else {
@@ -245,7 +249,7 @@ public class FileChangeWatcher {
         start,
         new SimpleFileVisitor<Path>() {
           @Override
-          public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs)
+          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
               throws IOException {
             register(dir);
             return FileVisitResult.CONTINUE;
@@ -254,27 +258,27 @@ public class FileChangeWatcher {
   }
 
   /** Perfom the watch execution */
-  private void watch() {
+  public void watch() {
 
     // wait for key to be signalled
-    final WatchKey key;
+    WatchKey key;
     try {
       key = watcher.take();
-    } catch (final Exception x) {
+    } catch (Exception x) {
       return;
     }
     if (!run) {
       return;
     }
 
-    final Path dir = keys.get(key);
+    Path dir = keys.get(key);
     if (dir == null) {
       System.err.println("WatchKey not recognized!!");
       return;
     }
 
-    for (final WatchEvent<?> event : key.pollEvents()) {
-      final WatchEvent.Kind kind = event.kind();
+    for (WatchEvent<?> event : key.pollEvents()) {
+      WatchEvent.Kind kind = event.kind();
 
       // TBD - provide example of how OVERFLOW event is handled
       if (kind == OVERFLOW) {
@@ -282,9 +286,9 @@ public class FileChangeWatcher {
       }
 
       // Context for directory entry event is the file name of entry
-      final WatchEvent<Path> ev = cast(event);
-      final Path name = ev.context();
-      final Path child = dir.resolve(name);
+      WatchEvent<Path> ev = cast(event);
+      Path name = ev.context();
+      Path child = dir.resolve(name);
       try {
         if (!child.toFile().getCanonicalPath().equals(fileToWatch.getCanonicalPath())) {
           continue;
@@ -292,20 +296,20 @@ public class FileChangeWatcher {
         // print out event
         // System.out.format("%s: %s\n", event.kind().name(), child);
         System.err.println("File Changed: " + getFileToWatch().getAbsolutePath());
-        for (final IFileChangeListener listener : listeners) {
+        for (int i = 0; i < listeners.size(); i++) {
 
-          listener.onFileChange(child.toFile(), event);
+          listeners.get(i).onFileChange(child.toFile(), event);
           Thread.sleep(50); // pad out the events to avoid file box
           // overwrites
         }
-      } catch (final Exception e) {
+      } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
     }
 
     // reset key and remove from set if directory no longer accessible
-    final boolean valid = key.reset();
+    boolean valid = key.reset();
     if (!valid) {
       keys.remove(key);
 
@@ -321,7 +325,7 @@ public class FileChangeWatcher {
    *
    * @return the file to watch
    */
-  private File getFileToWatch() {
+  public File getFileToWatch() {
     return fileToWatch;
   }
 
@@ -330,7 +334,7 @@ public class FileChangeWatcher {
    *
    * @param fileToWatch the new file to watch
    */
-  private void setFileToWatch(final File fileToWatch) {
+  public void setFileToWatch(File fileToWatch) {
     this.fileToWatch = fileToWatch;
   }
 
@@ -344,12 +348,12 @@ public class FileChangeWatcher {
   }
 
   /** Close. */
-  private void close() {
+  public void close() {
     new Exception("File watcher closed " + fileToWatch.getAbsolutePath()).printStackTrace();
     this.run = false;
     try {
       watcher.close();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }

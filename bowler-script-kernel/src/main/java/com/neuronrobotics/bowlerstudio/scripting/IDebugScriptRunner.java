@@ -34,5 +34,5 @@ public interface IDebugScriptRunner {
    *
    * @return the file URI and line number
    */
-  String[] step();
+  public String[] step();
 }

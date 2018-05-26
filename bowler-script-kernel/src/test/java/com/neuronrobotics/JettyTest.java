@@ -32,9 +32,7 @@ import static org.junit.Assert.fail;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -47,7 +45,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class JettyTest {
+public class JettyTest {
   private static int WEBSERVER_PORT = 8065;
   private static String HOME_Local_URL =
       "http://localhost:" + WEBSERVER_PORT + "/BowlerStudio/Welcome-To-BowlerStudio/";
@@ -55,14 +53,14 @@ class JettyTest {
   private Server server;
 
   @Before
-  void startJetty() throws Exception {
+  public void startJetty() throws Exception {
     try {
       ScriptingEngine.setupAnyonmous();
       // ScriptingEngine.setAutoupdate(true);
-    } catch (final Exception ex) {
+    } catch (Exception ex) {
       System.out.println("User not logged in, test can not run");
     }
-    final File indexOfTutorial =
+    File indexOfTutorial =
         ScriptingEngine.fileFromGit(
             "https://github.com/CommonWealthRobotics/CommonWealthRobotics.github.io.git",
             "master", // the default branch is source, so this needs to be specified
@@ -71,16 +69,16 @@ class JettyTest {
     // HOME_Local_URL = indexOfTutorial.toURI().toString().replace("file:/",
     // "file:///");
     server = new Server();
-    final ServerConnector connector = new ServerConnector(server);
+    ServerConnector connector = new ServerConnector(server);
     server.setConnectors(new Connector[] {connector});
 
-    final ResourceHandler resource_handler = new ResourceHandler();
+    ResourceHandler resource_handler = new ResourceHandler();
     resource_handler.setDirectoriesListed(true);
     resource_handler.setWelcomeFiles(new String[] {"index.html"});
     System.out.println("Serving " + indexOfTutorial.getParent());
     resource_handler.setResourceBase(indexOfTutorial.getParent());
 
-    final HandlerList handlers = new HandlerList();
+    HandlerList handlers = new HandlerList();
     handlers.setHandlers(new Handler[] {resource_handler, new DefaultHandler()});
     server.setHandler(handlers);
 
@@ -93,18 +91,18 @@ class JettyTest {
 
   @Test
   @Disabled
-  void test() {
+  public void test() {
 
     try {
-      final InputStream url = new URL(HOME_Local_URL).openStream();
+      java.io.InputStream url = new URL(HOME_Local_URL).openStream();
       try {
-        System.out.println(IOUtils.toString(url));
+        System.out.println(org.apache.commons.io.IOUtils.toString(url));
       } finally {
-        IOUtils.closeQuietly(url);
+        org.apache.commons.io.IOUtils.closeQuietly(url);
       }
 
       // read from your scanner
-    } catch (final IOException ex) {
+    } catch (IOException ex) {
       // there was some connection problem, or the file did not exist on
       // the server,
       // or your URL was not in the right format.
@@ -115,10 +113,10 @@ class JettyTest {
   }
 
   @After
-  void stopJetty() {
+  public void stopJetty() {
     try {
       server.stop();
-    } catch (final Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }

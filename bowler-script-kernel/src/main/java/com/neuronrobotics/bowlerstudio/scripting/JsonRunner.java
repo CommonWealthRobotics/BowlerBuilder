@@ -41,26 +41,27 @@ import org.apache.commons.io.IOUtils;
 
 public class JsonRunner implements IScriptingLanguage {
 
-  // Create the type, this tells GSON what data types to instantiate when parsing and saving the
-  // json
+  // Create the type, this tells GSON what datatypes to instantiate when parsing and saving the json
   private static Type TT_mapStringString =
       new TypeToken<HashMap<String, HashMap<String, Object>>>() {}.getType();
-  // create the gson object, this is the parsing factory
+  // chreat the gson object, this is the parsing factory
   private static Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
   @Override
-  public Object inlineScriptRun(final File code, final ArrayList<Object> args) throws Exception {
-    String jsonString;
-    InputStream inPut;
+  public Object inlineScriptRun(File code, ArrayList<Object> args) throws Exception {
+    String jsonString = null;
+    InputStream inPut = null;
     inPut = FileUtils.openInputStream(code);
     jsonString = IOUtils.toString(inPut);
     return inlineScriptRun(jsonString, args);
   }
 
   @Override
-  public Object inlineScriptRun(final String code, final ArrayList<Object> args) {
-    // perform the GSON parse
-    return gson.<HashMap<String, HashMap<String, Object>>>fromJson(code, TT_mapStringString);
+  public Object inlineScriptRun(String code, ArrayList<Object> args) throws Exception {
+
+    // perfoem the GSON parse
+    HashMap<String, HashMap<String, Object>> database = gson.fromJson(code, TT_mapStringString);
+    return database;
   }
 
   @Override
@@ -75,6 +76,7 @@ public class JsonRunner implements IScriptingLanguage {
 
   @Override
   public ArrayList<String> getFileExtenetion() {
+    // TODO Auto-generated method stub
     return new ArrayList<>(Arrays.asList("json"));
   }
 }

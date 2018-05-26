@@ -29,10 +29,10 @@ package com.neuronrobotics;
 
 import org.junit.jupiter.api.Test;
 
-class GitHub {
+public class GitHub {
 
   @Test
-  void test() {
+  public void test() throws Exception {
     /*
         ScriptingEngine.runLogin();
         try {

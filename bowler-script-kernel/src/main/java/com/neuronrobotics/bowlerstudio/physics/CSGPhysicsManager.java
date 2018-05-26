@@ -28,7 +28,6 @@
 package com.neuronrobotics.bowlerstudio.physics;
 
 import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.collision.shapes.ConvexHullShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
@@ -48,12 +47,12 @@ public class CSGPhysicsManager implements IPhysicsManager {
 
   private RigidBody fallRigidBody;
   private final Affine ballLocation = new Affine();
-  ArrayList<CSG> baseCSG = null;
+  protected ArrayList<CSG> baseCSG = null;
   private Transform updateTransform = new Transform();
   private IPhysicsUpdate updateManager = null;
   private PhysicsCore core;
 
-  public CSGPhysicsManager(final ArrayList<CSG> baseCSG, final Vector3f start, final double mass, final PhysicsCore core) {
+  public CSGPhysicsManager(ArrayList<CSG> baseCSG, Vector3f start, double mass, PhysicsCore core) {
     this(
         baseCSG,
         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), start, 1.0f)),
@@ -62,17 +61,16 @@ public class CSGPhysicsManager implements IPhysicsManager {
         core);
   }
 
-  private CSG loadCSGToPoints(
-      final CSG baseCSG, final boolean adjustCenter, final Transform pose,
-      final ObjectArrayList<Vector3f> arg0) {
+  protected CSG loadCSGToPoints(
+      CSG baseCSG, boolean adjustCenter, Transform pose, ObjectArrayList<Vector3f> arg0) {
     CSG finalCSG = baseCSG;
 
     if (adjustCenter) {
-      final double xcenter = baseCSG.getMaxX() / 2 + baseCSG.getMinX() / 2;
-      final double ycenter = baseCSG.getMaxY() / 2 + baseCSG.getMinY() / 2;
-      final double zcenter = baseCSG.getMaxZ() / 2 + baseCSG.getMinZ() / 2;
+      double xcenter = baseCSG.getMaxX() / 2 + baseCSG.getMinX() / 2;
+      double ycenter = baseCSG.getMaxY() / 2 + baseCSG.getMinY() / 2;
+      double zcenter = baseCSG.getMaxZ() / 2 + baseCSG.getMinZ() / 2;
 
-      final TransformNR poseToMove = TransformFactory.bulletToNr(pose);
+      TransformNR poseToMove = TransformFactory.bulletToNr(pose);
       if (baseCSG.getMaxX() < 1 || baseCSG.getMinX() > -1) {
         finalCSG = finalCSG.movex(-xcenter);
         poseToMove.translateX(xcenter);
@@ -88,8 +86,8 @@ public class CSGPhysicsManager implements IPhysicsManager {
       TransformFactory.nrToBullet(poseToMove, pose);
     }
 
-    for (final Polygon p : finalCSG.getPolygons()) {
-      for (final Vertex v : p.vertices) {
+    for (Polygon p : finalCSG.getPolygons()) {
+      for (Vertex v : p.vertices) {
         arg0.add(new Vector3f((float) v.getX(), (float) v.getY(), (float) v.getZ()));
       }
     }
@@ -97,42 +95,45 @@ public class CSGPhysicsManager implements IPhysicsManager {
   }
 
   public CSGPhysicsManager(
-      final ArrayList<CSG> baseCSG, final Transform pose, final double mass, final boolean adjustCenter, final PhysicsCore core) {
+      ArrayList<CSG> baseCSG, Transform pose, double mass, boolean adjustCenter, PhysicsCore core) {
     this.setBaseCSG(baseCSG); // force a hull of the shape to simplify physics
 
-    final ObjectArrayList<Vector3f> arg0 = new ObjectArrayList<>();
+    ObjectArrayList<Vector3f> arg0 = new ObjectArrayList<>();
     for (int i = 0; i < baseCSG.size(); i++) {
 
-      final CSG back = loadCSGToPoints(baseCSG.get(i), adjustCenter, pose, arg0);
+      CSG back = loadCSGToPoints(baseCSG.get(i), adjustCenter, pose, arg0);
       back.setManipulator(baseCSG.get(i).getManipulator());
       baseCSG.set(i, back);
     }
-    final CollisionShape fallShape = new ConvexHullShape(arg0);
+    CollisionShape fallShape = new com.bulletphysics.collision.shapes.ConvexHullShape(arg0);
     setup(fallShape, pose, mass, core);
   }
 
-  private void setup(
-      final CollisionShape fallShape, final Transform pose, final double mass,
-      final PhysicsCore core) {
+  public void setup(CollisionShape fallShape, Transform pose, double mass, PhysicsCore core) {
     this.setCore(core);
 
     // setup the motion state for the ball
     System.out.println("Starting Object at " + TransformFactory.bulletToNr(pose));
-    final DefaultMotionState fallMotionState = new DefaultMotionState(pose);
+    DefaultMotionState fallMotionState = new DefaultMotionState(pose);
     // This we're going to give mass so it responds to gravity
-    final Vector3f fallInertia = new Vector3f(0, 0, 0);
+    Vector3f fallInertia = new Vector3f(0, 0, 0);
     fallShape.calculateLocalInertia((float) mass, fallInertia);
-    final RigidBodyConstructionInfo fallRigidBodyCI =
+    RigidBodyConstructionInfo fallRigidBodyCI =
         new RigidBodyConstructionInfo((float) mass, fallMotionState, fallShape, fallInertia);
     fallRigidBodyCI.additionalDamping = true;
     setFallRigidBody(new RigidBody(fallRigidBodyCI));
     // update(40);
   }
 
-  public void update(final float timeStep) {
+  public void update(float timeStep) {
     fallRigidBody.getMotionState().getWorldTransform(updateTransform);
     if (getUpdateManager() != null) {
-      getUpdateManager().update(timeStep);
+      try {
+        getUpdateManager().update(timeStep);
+      } catch (Exception e) {
+        // BowlerStudio.printStackTrace(e);
+        throw e;
+      }
     }
   }
 
@@ -140,7 +141,7 @@ public class CSGPhysicsManager implements IPhysicsManager {
     return fallRigidBody;
   }
 
-  private void setFallRigidBody(final RigidBody fallRigidBody) {
+  public void setFallRigidBody(RigidBody fallRigidBody) {
 
     this.fallRigidBody = fallRigidBody;
   }
@@ -149,8 +150,8 @@ public class CSGPhysicsManager implements IPhysicsManager {
     return baseCSG;
   }
 
-  private void setBaseCSG(final ArrayList<CSG> baseCSG) {
-    for (final CSG c : baseCSG) {
+  public void setBaseCSG(ArrayList<CSG> baseCSG) {
+    for (CSG c : baseCSG) {
       c.setManipulator(getRigidBodyLocation());
     }
     this.baseCSG = baseCSG;
@@ -164,19 +165,19 @@ public class CSGPhysicsManager implements IPhysicsManager {
     return ballLocation;
   }
 
-  IPhysicsUpdate getUpdateManager() {
+  public IPhysicsUpdate getUpdateManager() {
     return updateManager;
   }
 
-  public void setUpdateManager(final IPhysicsUpdate updateManager) {
+  public void setUpdateManager(IPhysicsUpdate updateManager) {
     this.updateManager = updateManager;
   }
 
-  PhysicsCore getCore() {
+  public PhysicsCore getCore() {
     return core;
   }
 
-  private void setCore(final PhysicsCore core) {
+  public void setCore(PhysicsCore core) {
     this.core = core;
   }
 }
