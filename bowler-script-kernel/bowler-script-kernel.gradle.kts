@@ -53,7 +53,6 @@ dependencies {
     compile(group = "org.eclipse.jgit", name = "org.eclipse.jgit", version = "4.0.1.201506240215-r")
     compile(group = "com.squareup.okhttp", name = "okhttp-urlconnection", version = "2.0.0")
     compile(group = "org.kohsuke", name = "wordnet-random-name", version = "1.2")
-    compile(group = "org.mockito", name = "mockito-all", version = "1.9.5")
     compile(group = "com.infradna.tool", name = "bridge-method-injector", version = "1.14")
     compile(group = "org.kohsuke", name = "github-api", version = "1.66")
     compile(group = "com.miglayout", name = "miglayout-swing", version = "4.2")
