@@ -20,7 +20,7 @@ dependencies {
     compile(group = "org.functionaljava", name = "functionaljava-java8", version = "4.7")
     compile(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
     compile(group = "org.apache.ivy", name = "ivy", version = "2.2.0")
-    compile(project(":BowlerScriptKernel"))
+    compile(project(":bowler-script-kernel"))
 }
 
 spotless {

@@ -15,7 +15,7 @@ allprojects {
     group = "com.neuronrobotics"
 }
 
-val bowlerScriptKernelProject = project(":BowlerScriptKernel")
+val bowlerScriptKernelProject = project(":bowler-script-kernel")
 val bowlerBuilderProject = project(":BowlerBuilder")
 
 val kotlinProjects = setOf(

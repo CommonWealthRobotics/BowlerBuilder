@@ -7,7 +7,7 @@ buildCache {
 
 rootProject.name = "Bowler"
 
-include(":BowlerScriptKernel")
+include(":bowler-script-kernel")
 include(":BowlerBuilder")
 
 /**
@@ -18,8 +18,6 @@ include(":BowlerBuilder")
  */
 fun configureGradleBuild(project: ProjectDescriptor) {
     val projectBuildFileBaseName = project.name
-    assert(projectBuildFileBaseName[0].isUpperCase()) { "Project must begin with upper case letter" }
-
     val gradleBuild = File(project.projectDir, "$projectBuildFileBaseName.gradle")
     val kotlinBuild = File(project.projectDir, "$projectBuildFileBaseName.gradle.kts")
     assert(!(gradleBuild.exists() && kotlinBuild.exists())) {
