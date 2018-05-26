@@ -7,7 +7,7 @@ buildCache {
 
 rootProject.name = "Bowler"
 
-include(":bowler-script-kernel")
+include(":BowlerScriptKernel")
 include(":BowlerBuilder")
 
 /**
