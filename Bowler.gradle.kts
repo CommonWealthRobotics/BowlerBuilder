@@ -17,9 +17,13 @@ allprojects {
 
 val bowlerScriptKernelProject = project(":bowler-script-kernel")
 val bowlerBuilderProject = project(":BowlerBuilder")
+val bowlerBuilderJavaUIProject = project(":BowlerBuilder:JavaUI")
+val bowlerBuilderCoreProject = project(":BowlerBuilder:Core")
 
 val kotlinProjects = setOf(
-        bowlerBuilderProject
+        bowlerBuilderProject,
+        bowlerBuilderJavaUIProject,
+        bowlerBuilderCoreProject
 )
 
 val javaProjects = setOf(
@@ -27,7 +31,8 @@ val javaProjects = setOf(
 ) + kotlinProjects
 
 val javafxProjects = setOf(
-        bowlerBuilderProject
+        bowlerBuilderProject,
+        bowlerBuilderJavaUIProject
 )
 
 // /////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +266,29 @@ configure(kotlinProjects) {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs = listOf("-Xenable-jvm-default")
+        }
+    }
+
+    val compileKotlin: KotlinCompile by tasks
+    afterEvaluate {
+        /*
+         * Needed to configure kotlin to work correctly with the "java-library" plugin.
+         * See:
+         * https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_known_issues
+         */
+        pluginManager.withPlugin("java-library") {
+            configurations {
+                "apiElements" {
+                    outgoing
+                            .variants
+                            .getByName("classes")
+                            .artifact(mapOf(
+                                    "file" to compileKotlin.destinationDir,
+                                    "type" to "java-classes-directory",
+                                    "builtBy" to compileKotlin
+                            ))
+                }
+            }
         }
     }
 
