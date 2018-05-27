@@ -7,7 +7,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.dialog.widget;
 
-import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.AddPluginDialog;
 import java.util.List;
 import java.util.Optional;

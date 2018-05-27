@@ -7,7 +7,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.dialog.plugin;
 
-import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import java.util.List;
 import java.util.Optional;
 import javafx.collections.ObservableList;

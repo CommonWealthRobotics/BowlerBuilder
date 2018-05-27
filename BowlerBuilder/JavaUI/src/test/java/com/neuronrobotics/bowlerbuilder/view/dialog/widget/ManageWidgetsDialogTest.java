@@ -10,7 +10,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog.widget;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
-import com.neuronrobotics.bowlerbuilder.controller.plugin.Plugin;
+import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;

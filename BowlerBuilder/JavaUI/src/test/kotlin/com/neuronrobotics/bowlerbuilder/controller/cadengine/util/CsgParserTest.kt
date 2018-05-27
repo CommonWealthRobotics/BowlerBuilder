@@ -7,9 +7,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.util
 
+import com.google.common.collect.ImmutableList
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.hasSize
+import com.neuronrobotics.bowlerbuilder.cad.CsgParser
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import eu.mihosoft.vrl.v3d.CSG
 import eu.mihosoft.vrl.v3d.Sphere
@@ -24,7 +26,7 @@ class CsgParserTest {
         val result = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy") as CSG
 
         val parser = CsgParser()
-        val test = parser.parseCsgFromSource("Script1", 1, listOf(result))
+        val test = parser.parseCsgFromSource("Script1", 1, ImmutableList.of(result))
 
         assertEquals(result, test.iterator().next())
     }
@@ -39,7 +41,7 @@ class CsgParserTest {
         val result = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy") as List<CSG>
 
         val parser = CsgParser()
-        val test = parser.parseCsgFromSource("Script1", 1, result)
+        val test = parser.parseCsgFromSource("Script1", 1, ImmutableList.copyOf(result))
 
         assertThat(test, hasSize(equalTo(1)))
         assertEquals(result[0], test[0])
@@ -51,7 +53,7 @@ class CsgParserTest {
         val result: Any? = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy")
 
         val parser = CsgParser()
-        val test = parser.parseCsgFromSource("Script1", 1, emptyList())
+        val test = parser.parseCsgFromSource("Script1", 1, ImmutableList.of())
 
         assertThat(test, hasSize(equalTo(0)))
     }
@@ -63,7 +65,7 @@ class CsgParserTest {
         val result: Any? = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy")
 
         val parser = CsgParser()
-        val test = parser.parseCsgFromSource("Script1", 1, listOf(Sphere(1.0).toCSG()))
+        val test = parser.parseCsgFromSource("Script1", 1, ImmutableList.of(Sphere(1.0).toCSG()))
 
         assertThat(test, hasSize(equalTo(0)))
     }

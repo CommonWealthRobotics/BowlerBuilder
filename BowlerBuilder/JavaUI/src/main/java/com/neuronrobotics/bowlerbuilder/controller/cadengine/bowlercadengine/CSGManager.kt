@@ -8,7 +8,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine
 
 import com.google.common.collect.ImmutableSet
-import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.CsgParser
+import com.neuronrobotics.bowlerbuilder.cad.CsgParser
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.shape.MeshView
 import java.util.concurrent.ConcurrentHashMap

@@ -5,8 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.neuronrobotics.bowlerbuilder.controller.cadengine.util
+package com.neuronrobotics.bowlerbuilder.cad
 
+import com.google.common.collect.ImmutableCollection
+import com.google.common.collect.ImmutableList
 import eu.mihosoft.vrl.v3d.CSG
 import java.util.Locale
 
@@ -23,8 +25,8 @@ class CsgParser {
     fun parseCsgFromSource(
         scriptName: String,
         lineNumber: Int,
-        csgs: Iterable<CSG>
-    ): List<CSG> {
+        csgs: ImmutableCollection<CSG>
+    ): ImmutableList<CSG> {
         val csgsFromScriptLine = mutableListOf<CSG>()
 
         csgs.forEach { testCSG ->
@@ -46,6 +48,6 @@ class CsgParser {
                     }
         }
 
-        return csgsFromScriptLine
+        return ImmutableList.copyOf(csgsFromScriptLine)
     }
 }

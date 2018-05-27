@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.neuronrobotics.bowlerbuilder.controller.plugin
+package com.neuronrobotics.bowlerbuilder.plugin
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import java.io.Serializable
