@@ -28,6 +28,7 @@
 package com.neuronrobotics.smallkat;
 
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.sdk.addons.kinematics.AbstractRotoryLink;
 import com.neuronrobotics.sdk.addons.kinematics.LinkConfiguration;
 import com.neuronrobotics.sdk.addons.kinematics.LinkFactory;
@@ -43,7 +44,12 @@ import org.junit.jupiter.api.Test;
 public class SmallKatTest {
 
   @Test
-  void loadTheCreature() {
+  void loadCreatureFromScriptingEngine() throws Exception {
+      ScriptingEngine.gitScriptRun("https://github.com/keionbis/SmallKat.git", "launch.groovy", null);
+  }
+
+  @Test
+  void loadCreatureManually() {
     final HIDSimpleComsDevice device =
         (HIDSimpleComsDevice)
             DeviceManager.getSpecificDevice(
