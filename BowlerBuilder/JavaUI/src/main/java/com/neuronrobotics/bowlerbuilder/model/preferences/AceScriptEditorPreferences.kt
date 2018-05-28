@@ -22,7 +22,18 @@ class AceScriptEditorPreferencesService : PreferencesService<AceScriptEditorPref
             File(path).writeText(Klaxon().toJsonString(preferences))
 }
 
-class AceScriptEditorPreferences(
-    val maxToastLength: Int = 15,
-    val fontSize: Int = 14
-) : Preferences
+data class AceScriptEditorPreferences(
+    @Preference(name = "Max Toast Length", description = "The maximum length for a toast in the script editor.")
+    var maxToastLength: Int = 15,
+    @Preference(name = "Font Size", description = "The editor's font size.")
+    var fontSize: Int = 14
+) : Preferences<AceScriptEditorPreferencesService> {
+
+    override fun save() =
+            AceScriptEditorPreferencesService().writePreferences(this)
+
+    override fun getService() =
+            AceScriptEditorPreferencesService()
+}
+
+class AceScriptEditorPreferencesBeanInfo : CustomBeanInfo(AceScriptEditorPreferences::class.java)

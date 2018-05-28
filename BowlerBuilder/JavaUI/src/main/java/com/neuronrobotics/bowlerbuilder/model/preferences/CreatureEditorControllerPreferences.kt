@@ -22,6 +22,13 @@ class CreatureEditorControllerPreferencesService : PreferencesService<CreatureEd
             File(path).writeText(Klaxon().toJsonString(preferences))
 }
 
-class CreatureEditorControllerPreferences(
-    val autoRegenCAD: Boolean = false
-) : Preferences
+data class CreatureEditorControllerPreferences(
+    @Preference(name = "Auto-regen CAD", description = "Whether to automatically regenerate CAD in the Creature editor.")
+    var autoRegenCAD: Boolean = false
+) : Preferences<CreatureEditorControllerPreferencesService> {
+
+    override fun save() =
+            CreatureEditorControllerPreferencesService().writePreferences(this)
+}
+
+class CreatureEditorControllerPreferencesBeanInfo : CustomBeanInfo(CreatureEditorControllerPreferences::class.java)

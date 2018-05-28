@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ScriptEditorView;
 import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner;
@@ -52,11 +53,12 @@ import org.controlsfx.control.Notifications;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.jetbrains.annotations.NotNull;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
 @ParametersAreNonnullByDefault
-public class AceScriptEditorController implements PreferencesConsumer {
+public class AceScriptEditorController implements PreferencesConsumer<AceScriptEditorPreferences> {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(AceScriptEditorController.class.getSimpleName());
@@ -116,6 +118,12 @@ public class AceScriptEditorController implements PreferencesConsumer {
       maxToastLength = preferences.getMaxToastLength();
       scriptEditorView.setFontSize(preferences.getFontSize());
     }
+  }
+
+  @NotNull
+  @Override
+  public Preferences getCurrentPreferences() {
+    return preferencesService.getCurrentPreferencesOrDefault();
   }
 
   @FXML

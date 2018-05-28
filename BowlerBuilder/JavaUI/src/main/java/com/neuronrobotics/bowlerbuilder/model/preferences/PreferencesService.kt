@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.model.preferences
 
-interface PreferencesService<T> {
+interface PreferencesService<T : Any> {
 
     fun getCurrentPreferences(): T?
 

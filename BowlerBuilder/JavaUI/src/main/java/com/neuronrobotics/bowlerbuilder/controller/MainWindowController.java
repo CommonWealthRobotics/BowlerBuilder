@@ -20,15 +20,21 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.BowlerMobileBaseUI;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
+import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.BowlerCadEnginePreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.MainWindowControllerPreferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.MainWindowControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
+import com.neuronrobotics.bowlerbuilder.view.dialog.preferences.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
@@ -46,6 +52,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -84,6 +91,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -98,7 +106,7 @@ import org.kohsuke.github.PagedIterable;
 
 @Singleton
 @ParametersAreNonnullByDefault
-public class MainWindowController implements PreferencesConsumer {
+public class MainWindowController implements PreferencesConsumer<MainWindowControllerPreferences> {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
@@ -196,11 +204,23 @@ public class MainWindowController implements PreferencesConsumer {
     reloadPlugins(preferences.getPlugins());
   }
 
+  @NotNull
+  @Override
+  public Preferences getCurrentPreferences() {
+    return preferencesService.getCurrentPreferencesOrDefault();
+  }
+
   @FXML
   private void openPreferences(final ActionEvent actionEvent) {
-    // TODO: Load all preferences from the file
-    // new
-    // PreferencesDialog(serializablePreferencesServiceFactory.getAllPreferencesServices()).showAndWait();
+    final List<PreferencesService<? extends Preferences>> services = new ArrayList<>();
+    services.add(new AceScriptEditorPreferencesService());
+    services.add(new BowlerCadEnginePreferencesService());
+    services.add(new CreatureEditorControllerPreferencesService());
+    services.add(new MainWindowControllerPreferencesService());
+
+    final Optional<List<Preferences>> optionalPreferences =
+        new PreferencesDialog(services).showAndWait();
+    optionalPreferences.ifPresent(preferences -> preferences.forEach(Preferences::save));
   }
 
   @FXML

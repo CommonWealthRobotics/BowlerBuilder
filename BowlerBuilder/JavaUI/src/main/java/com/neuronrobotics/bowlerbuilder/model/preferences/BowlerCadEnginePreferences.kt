@@ -22,6 +22,13 @@ class BowlerCadEnginePreferencesService : PreferencesService<BowlerCadEnginePref
             File(path).writeText(Klaxon().toJsonString(preferences))
 }
 
-class BowlerCadEnginePreferences(
-    val shouldAA: Boolean = true
-) : Preferences
+data class BowlerCadEnginePreferences(
+    @Preference(name = "Anti-aliasing", description = "Whether to apply anti-aliasing in the CAD engine.")
+    var shouldAA: Boolean = true
+) : Preferences<BowlerCadEnginePreferencesService> {
+
+    override fun save() =
+            BowlerCadEnginePreferencesService().writePreferences(this)
+}
+
+class BowlerCadEnginePreferencesBeanInfo : CustomBeanInfo(BowlerCadEnginePreferences::class.java)

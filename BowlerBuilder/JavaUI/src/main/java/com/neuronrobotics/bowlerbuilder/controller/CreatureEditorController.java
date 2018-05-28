@@ -25,6 +25,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.Movem
 import com.neuronrobotics.bowlerbuilder.model.LimbType;
 import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
@@ -74,12 +75,13 @@ import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.jetbrains.annotations.NotNull;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
 
 @ParametersAreNonnullByDefault
-public class CreatureEditorController implements PreferencesConsumer {
+public class CreatureEditorController implements PreferencesConsumer<CreatureEditorControllerPreferences> {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(CreatureEditorController.class.getSimpleName());
@@ -196,6 +198,12 @@ public class CreatureEditorController implements PreferencesConsumer {
     final CreatureEditorControllerPreferences preferences =
         preferencesService.getCurrentPreferencesOrDefault();
     autoRegenCAD.selectedProperty().set(preferences.getAutoRegenCAD());
+  }
+
+  @NotNull
+  @Override
+  public Preferences getCurrentPreferences() {
+    return preferencesService.getCurrentPreferencesOrDefault();
   }
 
   /**

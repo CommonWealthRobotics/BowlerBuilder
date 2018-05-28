@@ -23,9 +23,19 @@ class MainWindowControllerPreferencesService : PreferencesService<MainWindowCont
             File(path).writeText(Klaxon().toJsonString(preferences))
 }
 
-class MainWindowControllerPreferences(
-    val plugins: List<Plugin> = emptyList(),
-    val favoriteGists: Set<String> = emptySet(),
-    val defaultCreaturePushURL: String = "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git",
-    val defaultCreatureFileName: String = "defaultCreatures.json"
-) : Preferences
+data class MainWindowControllerPreferences(
+    @Preference(name = "Plugins", description = "The installed plugins.")
+    var plugins: List<Plugin> = emptyList(),
+    @Preference(name = "Favorite Gists", description = "The favorited gists.")
+    var favoriteGists: Set<String> = emptySet(),
+    @Preference(name = "Default Creature Push URL", description = "The default creature push URL.")
+    var defaultCreaturePushURL: String = "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git",
+    @Preference(name = "Default Creature File Name", description = "The default creature file name.")
+    var defaultCreatureFileName: String = "defaultCreatures.json"
+) : Preferences<MainWindowControllerPreferencesService> {
+
+    override fun save() =
+            MainWindowControllerPreferencesService().writePreferences(this)
+}
+
+class MainWindowControllerPreferencesBeanInfo : CustomBeanInfo(MainWindowControllerPreferences::class.java)

@@ -15,6 +15,7 @@ import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.SerializablePreferencesService;
+import com.neuronrobotics.bowlerbuilder.view.dialog.preferences.PreferencesDialog;
 import java.util.Collections;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
