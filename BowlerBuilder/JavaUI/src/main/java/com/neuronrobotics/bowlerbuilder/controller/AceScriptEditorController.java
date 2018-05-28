@@ -15,8 +15,8 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ScriptEditorView;
-import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
@@ -58,7 +58,7 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
 @ParametersAreNonnullByDefault
-public class AceScriptEditorController implements PreferencesConsumer<AceScriptEditorPreferences> {
+public class AceScriptEditorController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(AceScriptEditorController.class.getSimpleName());
@@ -113,11 +113,9 @@ public class AceScriptEditorController implements PreferencesConsumer<AceScriptE
 
   @Override
   public void refreshPreferences() {
-    final AceScriptEditorPreferences preferences = preferencesService.getCurrentPreferences();
-    if (preferences != null) {
-      maxToastLength = preferences.getMaxToastLength();
-      scriptEditorView.setFontSize(preferences.getFontSize());
-    }
+    final AceScriptEditorPreferences preferences = preferencesService.getCurrentPreferencesOrDefault();
+    maxToastLength = preferences.getMaxToastLength();
+    scriptEditorView.setFontSize(preferences.getFontSize());
   }
 
   @NotNull

@@ -1,6 +1,9 @@
-package com.neuronrobotics.bowlerbuilder.model.preferences
+package com.neuronrobotics.bowlerbuilder.model.preferences.bowler
 
 import com.beust.klaxon.Klaxon
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preference
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService
 import com.neuronrobotics.bowlerbuilder.plugin.Plugin
 import java.io.File
 import java.io.FileNotFoundException
@@ -32,10 +35,13 @@ data class MainWindowControllerPreferences(
     var defaultCreaturePushURL: String = "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git",
     @Preference(name = "Default Creature File Name", description = "The default creature file name.")
     var defaultCreatureFileName: String = "defaultCreatures.json"
-) : Preferences<MainWindowControllerPreferencesService> {
+) : Preferences {
 
     override fun save() =
             MainWindowControllerPreferencesService().writePreferences(this)
 }
 
+/**
+ * Used by automatic introspection. See [CustomBeanInfo].
+ */
 class MainWindowControllerPreferencesBeanInfo : CustomBeanInfo(MainWindowControllerPreferences::class.java)

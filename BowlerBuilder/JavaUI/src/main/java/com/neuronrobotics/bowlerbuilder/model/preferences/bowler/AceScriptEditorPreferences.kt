@@ -1,6 +1,9 @@
-package com.neuronrobotics.bowlerbuilder.model.preferences
+package com.neuronrobotics.bowlerbuilder.model.preferences.bowler
 
 import com.beust.klaxon.Klaxon
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preference
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -27,13 +30,13 @@ data class AceScriptEditorPreferences(
     var maxToastLength: Int = 15,
     @Preference(name = "Font Size", description = "The editor's font size.")
     var fontSize: Int = 14
-) : Preferences<AceScriptEditorPreferencesService> {
+) : Preferences {
 
     override fun save() =
             AceScriptEditorPreferencesService().writePreferences(this)
-
-    override fun getService() =
-            AceScriptEditorPreferencesService()
 }
 
+/**
+ * Used by automatic introspection. See [CustomBeanInfo].
+ */
 class AceScriptEditorPreferencesBeanInfo : CustomBeanInfo(AceScriptEditorPreferences::class.java)

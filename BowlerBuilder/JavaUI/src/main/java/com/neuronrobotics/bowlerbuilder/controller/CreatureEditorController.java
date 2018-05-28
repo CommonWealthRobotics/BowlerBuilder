@@ -23,8 +23,8 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.Scrip
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.model.LimbType;
-import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
@@ -81,7 +81,7 @@ import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
 
 @ParametersAreNonnullByDefault
-public class CreatureEditorController implements PreferencesConsumer<CreatureEditorControllerPreferences> {
+public class CreatureEditorController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(CreatureEditorController.class.getSimpleName());

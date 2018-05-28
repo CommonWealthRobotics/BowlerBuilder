@@ -1,7 +1,9 @@
-package com.neuronrobotics.bowlerbuilder.model.preferences;
+package com.neuronrobotics.bowlerbuilder.model.preferences.bowler;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preference;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;

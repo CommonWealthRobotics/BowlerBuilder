@@ -11,7 +11,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Preference {
+  /**
+   * The title for this preference. This string gets displayed in the preferences editor UI.
+   *
+   * @return a name
+   */
   String name();
 
+  /**
+   * A short description for the purpose of this preference.
+   *
+   * @return a short description
+   */
   String description();
 }

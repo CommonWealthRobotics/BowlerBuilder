@@ -1,6 +1,9 @@
-package com.neuronrobotics.bowlerbuilder.model.preferences
+package com.neuronrobotics.bowlerbuilder.model.preferences.bowler
 
 import com.beust.klaxon.Klaxon
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preference
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -25,10 +28,13 @@ class CreatureEditorControllerPreferencesService : PreferencesService<CreatureEd
 data class CreatureEditorControllerPreferences(
     @Preference(name = "Auto-regen CAD", description = "Whether to automatically regenerate CAD in the Creature editor.")
     var autoRegenCAD: Boolean = false
-) : Preferences<CreatureEditorControllerPreferencesService> {
+) : Preferences {
 
     override fun save() =
             CreatureEditorControllerPreferencesService().writePreferences(this)
 }
 
+/**
+ * Used by automatic introspection. See [CustomBeanInfo].
+ */
 class CreatureEditorControllerPreferencesBeanInfo : CustomBeanInfo(CreatureEditorControllerPreferences::class.java)

@@ -5,7 +5,9 @@ plugins {
 }
 
 dependencies {
-    api(project(":bowler-script-kernel"))
+    api(project(":bowler-script-kernel")) {
+        exclude("org.slf4j", "slf4j-simple")
+    }
     implementation(group = "org.apache.ivy", name = "ivy", version = "2.2.0")
     implementation(group = "com.google.inject", name = "guice", version = "4.1.0")
     implementation(group = "com.google.inject.extensions", name = "guice-assistedinject", version = "4.1.0")

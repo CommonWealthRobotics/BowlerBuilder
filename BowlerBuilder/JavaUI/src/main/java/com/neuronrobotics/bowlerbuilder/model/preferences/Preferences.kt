@@ -1,11 +1,9 @@
 package com.neuronrobotics.bowlerbuilder.model.preferences
 
-interface Preferences<T : PreferencesService<Preferences<T>>> {
+interface Preferences {
 
     /**
      * Save the current preferences.
      */
     fun save()
-
-    fun getService(): T
 }

@@ -13,7 +13,7 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.VirtualCameraMobileBaseFactory;
-import com.neuronrobotics.bowlerbuilder.model.preferences.BowlerCadEnginePreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.BowlerCadEnginePreferencesService;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraDevice;

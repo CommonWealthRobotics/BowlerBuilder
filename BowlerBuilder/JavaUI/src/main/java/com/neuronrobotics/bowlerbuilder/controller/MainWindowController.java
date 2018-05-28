@@ -20,11 +20,11 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.BowlerMobileBaseUI;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
-import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.BowlerCadEnginePreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.MainWindowControllerPreferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.MainWindowControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.BowlerCadEnginePreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.MainWindowControllerPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.MainWindowControllerPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
@@ -106,7 +106,7 @@ import org.kohsuke.github.PagedIterable;
 
 @Singleton
 @ParametersAreNonnullByDefault
-public class MainWindowController implements PreferencesConsumer<MainWindowControllerPreferences> {
+public class MainWindowController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());

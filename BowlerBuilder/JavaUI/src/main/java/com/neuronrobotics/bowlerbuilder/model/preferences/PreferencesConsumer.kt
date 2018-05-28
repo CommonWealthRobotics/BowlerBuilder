@@ -1,8 +1,14 @@
 package com.neuronrobotics.bowlerbuilder.model.preferences
 
-interface PreferencesConsumer<T> {
+interface PreferencesConsumer {
 
+    /**
+     * Read the current preferences and apply them. Requires that a [PreferencesService] be stored somewhere in the implementing class.
+     */
     fun refreshPreferences()
 
-    fun getCurrentPreferences(): Preferences<T>
+    /**
+     * Read the current preferences. Requires that a [PreferencesService] be stored somewhere in the implementing class.
+     */
+    fun getCurrentPreferences(): Preferences
 }
