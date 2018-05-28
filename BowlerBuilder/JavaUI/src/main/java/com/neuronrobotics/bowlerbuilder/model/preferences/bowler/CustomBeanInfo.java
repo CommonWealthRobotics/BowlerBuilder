@@ -13,8 +13,8 @@ import java.util.Objects;
 /**
  * From GRIP. See third-party-licenses/GRIP.txt.
  *
- * This needs to be in the same package as all the preferences subclasses of this so the automatic
- * introspection can find them.
+ * <p>This needs to be in the same package as all the preferences subclasses of this so the
+ * automatic introspection can find them.
  */
 public class CustomBeanInfo extends SimpleBeanInfo {
   private final Converter<String, String> caseConverter =

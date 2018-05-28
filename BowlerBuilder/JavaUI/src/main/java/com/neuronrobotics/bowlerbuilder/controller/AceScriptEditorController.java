@@ -15,10 +15,10 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ScriptEditorView;
-import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferencesService;
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerbuilder.util.StringClipper;
@@ -113,7 +113,8 @@ public class AceScriptEditorController implements PreferencesConsumer {
 
   @Override
   public void refreshPreferences() {
-    final AceScriptEditorPreferences preferences = preferencesService.getCurrentPreferencesOrDefault();
+    final AceScriptEditorPreferences preferences =
+        preferencesService.getCurrentPreferencesOrDefault();
     maxToastLength = preferences.getMaxToastLength();
     scriptEditorView.setFontSize(preferences.getFontSize());
   }

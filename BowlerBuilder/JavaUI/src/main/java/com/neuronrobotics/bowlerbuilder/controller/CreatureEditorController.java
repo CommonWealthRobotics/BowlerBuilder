@@ -23,10 +23,10 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.Scrip
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.model.LimbType;
-import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferencesService;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;

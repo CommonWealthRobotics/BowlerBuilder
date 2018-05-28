@@ -25,7 +25,7 @@ import org.controlsfx.property.BeanPropertyUtils;
 /**
  * Dialog to show user preferences from a {@link PropertySheet}.
  *
- * Based on GRIP. See third-party-licenses/GRIP.txt.
+ * <p>Based on GRIP. See third-party-licenses/GRIP.txt.
  */
 @ParametersAreNonnullByDefault
 public class PreferencesDialog extends Dialog<List<Preferences>> {
