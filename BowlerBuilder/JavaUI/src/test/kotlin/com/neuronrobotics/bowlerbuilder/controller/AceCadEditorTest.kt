@@ -57,7 +57,10 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
     fun runEmptyFileTest() {
         FxHelper.runAndWait { controller.runEditorContent() }
 
-        assertNull(controller.scriptRunner.getResult().isSuccess())
+        assertAll(
+                { assertTrue(controller.scriptRunner.getResult().isSuccess()) },
+                { assertNull(controller.scriptRunner.getResult().getSuccess()) }
+        )
     }
 
     @Test

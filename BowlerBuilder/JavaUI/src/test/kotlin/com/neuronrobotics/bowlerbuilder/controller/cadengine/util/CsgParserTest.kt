@@ -38,6 +38,8 @@ class CsgParserTest {
             CSG bar = new Sphere(1).toCSG();
             return [foo, bar]
         """.trimIndent()
+
+        @Suppress("UNCHECKED_CAST") // We know the type from the script
         val result = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy") as List<CSG>
 
         val parser = CsgParser()
@@ -50,7 +52,7 @@ class CsgParserTest {
     @Test
     fun `empty script with no input csgs should return nothing`() {
         val script = ""
-        val result: Any? = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy")
+        ScriptingEngine.inlineScriptStringRun(script, null, "Groovy")
 
         val parser = CsgParser()
         val test = parser.parseCsgFromSource("Script1", 1, ImmutableList.of())

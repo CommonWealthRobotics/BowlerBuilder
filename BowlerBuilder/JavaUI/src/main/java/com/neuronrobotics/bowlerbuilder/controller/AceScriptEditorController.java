@@ -83,6 +83,15 @@ public class AceScriptEditorController implements PreferencesConsumer {
   private Tab tab;
   private Runnable reloadMenus;
 
+  /**
+   * A script editor.
+   *
+   * @param preferencesService this class's preferences
+   * @param scriptEditorView the script editor view to embed and pull a script editor from
+   * @param scriptRunner the script runner to pass script content to
+   * @param scriptLangName the scripting language to use
+   * @param stringClipper used to clip toast length for error messages
+   */
   @Inject
   public AceScriptEditorController(
       final AceScriptEditorPreferencesService preferencesService,

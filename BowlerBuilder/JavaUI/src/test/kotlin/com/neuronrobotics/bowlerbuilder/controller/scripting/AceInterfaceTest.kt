@@ -44,13 +44,6 @@ class AceInterfaceTest {
     }
 
     @Test
-    fun fontSizeTest() {
-        aceEditor.setFontSize(1)
-        assertEquals("document.getElementById('editor').style.fontSize='1px';",
-                mockAdapter.lastExecutedScript)
-    }
-
-    @Test
     fun gotoLineTest() {
         aceEditor.gotoLine(1)
         assertEquals("editor.gotoLine(1);",

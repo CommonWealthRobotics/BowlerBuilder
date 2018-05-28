@@ -78,7 +78,7 @@ public class PreferencesDialog extends Dialog<List<Preferences>> {
   }
 
   private static class CustomPropertySheet extends PropertySheet {
-    public CustomPropertySheet(ObservableList<Item> items) {
+    CustomPropertySheet(final ObservableList<Item> items) {
       super(items);
       setMode(Mode.NAME);
       setModeSwitcherVisible(false);

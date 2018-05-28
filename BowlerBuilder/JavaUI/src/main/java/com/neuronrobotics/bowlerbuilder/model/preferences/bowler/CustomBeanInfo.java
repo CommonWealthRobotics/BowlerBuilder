@@ -2,6 +2,8 @@ package com.neuronrobotics.bowlerbuilder.model.preferences.bowler;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import com.google.common.base.Throwables;
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preference;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import java.beans.IntrospectionException;
@@ -9,6 +11,7 @@ import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * From GRIP. See third-party-licenses/GRIP.txt.
@@ -17,11 +20,15 @@ import java.util.Objects;
  * automatic introspection can find them.
  */
 public class CustomBeanInfo extends SimpleBeanInfo {
+
+  private static final Logger LOGGER =
+      LoggerUtilities.getLogger(CustomBeanInfo.class.getSimpleName());
   private final Converter<String, String> caseConverter =
       CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.UPPER_CAMEL);
   private final Class<? extends Preferences> beanClass;
 
-  public CustomBeanInfo(Class<? extends Preferences> beanClass) {
+  public CustomBeanInfo(final Class<? extends Preferences> beanClass) {
+    super();
     this.beanClass = beanClass;
   }
 
@@ -45,8 +52,12 @@ public class CustomBeanInfo extends SimpleBeanInfo {
                   descriptor.setDisplayName(preference.name());
                   descriptor.setShortDescription(preference.description());
                   return descriptor;
-                } catch (IntrospectionException e) {
-                  e.printStackTrace();
+                } catch (final IntrospectionException e) {
+                  LOGGER.warning(
+                      "Failed to create a PropertyDescriptor for preference: "
+                          + property
+                          + "\n"
+                          + Throwables.getStackTraceAsString(e));
                 }
               }
 
