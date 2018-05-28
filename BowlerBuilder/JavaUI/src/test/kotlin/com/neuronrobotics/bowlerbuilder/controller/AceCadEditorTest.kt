@@ -14,7 +14,7 @@ import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder
 import com.neuronrobotics.bowlerbuilder.FxHelper
 import com.neuronrobotics.bowlerbuilder.FxUtil
-import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule
+import com.neuronrobotics.bowlerbuilder.controller.module.DefaultCadEditorControllerModule
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ace.AceEditorView
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.fxml.FXMLLoader
@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException
 
 class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
 
-    private lateinit var controller: AceScriptEditorController
+    private lateinit var controller: DefaultScriptEditorController
 
     @Throws(IOException::class)
     override fun start(stage: Stage) {
@@ -41,14 +41,14 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
                 javaClass.getResource("../view/AceScriptEditor.fxml"), null, null,
                 Callback<Class<*>, Any> {
                     Guice.createInjector(
-                            AceCadEditorControllerModule(
+                            DefaultCadEditorControllerModule(
                                     BowlerBuilder
                                             .getInjector()
                                             .getInstance(AceEditorView::class.java)))
                             .getInstance(it)
                 })
         val mainWindow = loader.load<SplitPane>()
-        controller = loader.getController<AceScriptEditorController>()
+        controller = loader.getController<DefaultScriptEditorController>()
         stage.scene = Scene(mainWindow)
         stage.show()
     }

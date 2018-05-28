@@ -9,25 +9,25 @@ package com.neuronrobotics.bowlerbuilder.controller
 
 import eu.mihosoft.vrl.v3d.CSG
 
-class AceCadEditorTabController(
-    val aceScriptEditorController: AceScriptEditorController,
-    val cadModelViewerController: CADModelViewerController
+class DefaultCadEditorTabController(
+    val defaultScriptEditorController: DefaultScriptEditorController,
+    val defaultCadModelViewerController: DefaultCADModelViewerController
 ) {
 
     private fun parseCSG(item: Any?) {
         if (item is CSG) {
-            cadModelViewerController.addCSG(item)
+            defaultCadModelViewerController.addCSG(item)
         } else if (item is Iterable<*>) {
             item.forEach { parseCSG(it) }
         }
     }
 
     init {
-        aceScriptEditorController
+        defaultScriptEditorController
                 .scriptRunner
                 .resultProperty()
                 .addListener { _, _, newValue ->
-                    cadModelViewerController.clearMeshes()
+                    defaultCadModelViewerController.clearMeshes()
                     parseCSG(newValue.getSuccess())
                 }
     }

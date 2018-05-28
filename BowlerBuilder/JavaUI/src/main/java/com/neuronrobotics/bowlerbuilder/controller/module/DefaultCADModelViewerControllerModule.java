@@ -13,9 +13,9 @@ import com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine.Bow
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class CADModelViewerControllerModule extends AbstractModule {
+public class DefaultCADModelViewerControllerModule extends AbstractModule {
 
-  public CADModelViewerControllerModule() {
+  public DefaultCADModelViewerControllerModule() {
     super();
   }
 

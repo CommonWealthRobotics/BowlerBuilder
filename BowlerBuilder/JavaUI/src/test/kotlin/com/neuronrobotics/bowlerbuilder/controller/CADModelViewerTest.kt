@@ -12,7 +12,7 @@ import com.natpryce.hamkrest.hasElement
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder
 import com.neuronrobotics.bowlerbuilder.FxHelper
-import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule
+import com.neuronrobotics.bowlerbuilder.controller.module.DefaultCADModelViewerControllerModule
 import eu.mihosoft.vrl.v3d.Cube
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
@@ -27,16 +27,16 @@ import java.io.IOException
 
 class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
 
-    private var controller: CADModelViewerController? = null
+    private var controller: DefaultCADModelViewerController? = null
 
     @Throws(IOException::class)
     override fun start(stage: Stage) {
         val loader = FXMLLoader(
                 javaClass.getResource("../view/CADModelViewer.fxml"),
                 null, null,
-                Callback<Class<*>, Any> { BowlerBuilder.getInjector().createChildInjector(CADModelViewerControllerModule()).getInstance(it) })
+                Callback<Class<*>, Any> { BowlerBuilder.getInjector().createChildInjector(DefaultCADModelViewerControllerModule()).getInstance(it) })
         val mainWindow = loader.load<BorderPane>()
-        controller = loader.getController<CADModelViewerController>()
+        controller = loader.getController<DefaultCADModelViewerController>()
         stage.scene = Scene(mainWindow)
         stage.show()
     }

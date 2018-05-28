@@ -15,11 +15,11 @@ import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScri
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class AceCadEditorControllerModule extends AbstractModule {
+public class DefaultCadEditorControllerModule extends AbstractModule {
 
   private final ScriptEditorView scriptEditorView;
 
-  public AceCadEditorControllerModule(final ScriptEditorView scriptEditorView) {
+  public DefaultCadEditorControllerModule(final ScriptEditorView scriptEditorView) {
     super();
     this.scriptEditorView = scriptEditorView;
   }
@@ -29,7 +29,7 @@ public class AceCadEditorControllerModule extends AbstractModule {
     bind(ScriptEditorView.class).toInstance(scriptEditorView);
     bind(ScriptRunner.class).to(BowlerScriptRunner.class);
     bind(String.class)
-        .annotatedWith(Names.named("aceScriptEditorLangName"))
+        .annotatedWith(Names.named("defaultScriptEditorLangName"))
         .toInstance("BowlerGroovy");
   }
 }

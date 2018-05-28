@@ -13,7 +13,7 @@ import com.natpryce.hamkrest.hasElement
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest
 import com.neuronrobotics.bowlerbuilder.BowlerBuilder
 import com.neuronrobotics.bowlerbuilder.FxHelper
-import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule
+import com.neuronrobotics.bowlerbuilder.controller.module.DefaultCADModelViewerControllerModule
 import eu.mihosoft.vrl.v3d.Cube
 import javafx.stage.Stage
 import org.junit.jupiter.api.AfterEach
@@ -28,7 +28,7 @@ class BowlerMobileBaseUITest : AbstractAutoClosingApplicationTest() {
 
     override fun start(stage: Stage) {
         controller = BowlerBuilder.getInjector()
-                .createChildInjector(CADModelViewerControllerModule())
+                .createChildInjector(DefaultCADModelViewerControllerModule())
                 .getInstance(BowlerMobileBaseUI::class.java)
     }
 

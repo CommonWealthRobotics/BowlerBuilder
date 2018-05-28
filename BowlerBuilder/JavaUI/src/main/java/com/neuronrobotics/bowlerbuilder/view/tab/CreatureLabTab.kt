@@ -11,8 +11,8 @@ import com.neuronrobotics.bowlerbuilder.BowlerBuilder
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.AceCreatureLabController
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine.BowlerCadEngine
-import com.neuronrobotics.bowlerbuilder.controller.module.AceCadEditorControllerModule
-import com.neuronrobotics.bowlerbuilder.controller.module.CADModelViewerControllerModule
+import com.neuronrobotics.bowlerbuilder.controller.module.DefaultCadEditorControllerModule
+import com.neuronrobotics.bowlerbuilder.controller.module.DefaultCADModelViewerControllerModule
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ScriptEditorView
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ace.AceEditorView
 import javafx.fxml.FXMLLoader
@@ -58,7 +58,7 @@ class CreatureLabTab(title: String) :
                 {
                     BowlerBuilder
                             .getInjector()
-                            .createChildInjector(CADModelViewerControllerModule())
+                            .createChildInjector(DefaultCADModelViewerControllerModule())
                             .getInstance(it)
                 })
         val cadViewer: Node = cadViewerLoader.load()
@@ -82,7 +82,7 @@ class CreatureLabTab(title: String) :
                             {
                                 BowlerBuilder
                                         .getInjector()
-                                        .createChildInjector(AceCadEditorControllerModule(
+                                        .createChildInjector(DefaultCadEditorControllerModule(
                                                 BowlerBuilder
                                                         .getInjector()
                                                         .getInstance(AceEditorView::class.java)

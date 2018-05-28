@@ -18,7 +18,7 @@ import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.Sc
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferences;
-import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.DefaultScriptEditorPreferencesService;
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerbuilder.util.StringClipper;
@@ -58,11 +58,11 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
 @ParametersAreNonnullByDefault
-public class AceScriptEditorController implements PreferencesConsumer {
+public class DefaultScriptEditorController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
-      LoggerUtilities.getLogger(AceScriptEditorController.class.getSimpleName());
-  private final AceScriptEditorPreferencesService preferencesService;
+      LoggerUtilities.getLogger(DefaultScriptEditorController.class.getSimpleName());
+  private final DefaultScriptEditorPreferencesService preferencesService;
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
@@ -93,11 +93,11 @@ public class AceScriptEditorController implements PreferencesConsumer {
    * @param stringClipper used to clip toast length for error messages
    */
   @Inject
-  public AceScriptEditorController(
-      final AceScriptEditorPreferencesService preferencesService,
+  public DefaultScriptEditorController(
+      final DefaultScriptEditorPreferencesService preferencesService,
       final ScriptEditorView scriptEditorView,
       final ScriptRunner scriptRunner,
-      @Named("aceScriptEditorLangName") final String scriptLangName,
+      @Named("defaultScriptEditorLangName") final String scriptLangName,
       final StringClipper stringClipper) {
     this.preferencesService = preferencesService;
     this.scriptEditorView = scriptEditorView;

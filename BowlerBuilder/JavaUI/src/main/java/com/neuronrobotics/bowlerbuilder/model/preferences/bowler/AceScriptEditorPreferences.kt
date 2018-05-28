@@ -7,8 +7,8 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService
 import java.io.File
 import java.io.FileNotFoundException
 
-class AceScriptEditorPreferencesService : PreferencesService<AceScriptEditorPreferences> {
-    private val path = getFilePath("AceScriptEditorController")
+class DefaultScriptEditorPreferencesService : PreferencesService<AceScriptEditorPreferences> {
+    private val path = getFilePath("DefaultScriptEditorController")
 
     override fun getCurrentPreferences() =
             try {
@@ -33,7 +33,7 @@ data class AceScriptEditorPreferences(
 ) : Preferences {
 
     override fun save() =
-            AceScriptEditorPreferencesService().writePreferences(this)
+            DefaultScriptEditorPreferencesService().writePreferences(this)
 }
 
 /**

@@ -21,7 +21,7 @@ import javafx.scene.shape.MeshView;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class CADModelViewerController {
+public class DefaultCADModelViewerController {
 
   @FXML private BorderPane root;
   private final CadEngine engine;
@@ -29,7 +29,7 @@ public class CADModelViewerController {
   private boolean handShowing = true;
 
   @Inject
-  public CADModelViewerController(final CadEngine engine) {
+  public DefaultCADModelViewerController(final CadEngine engine) {
     this.engine = engine;
   }
 

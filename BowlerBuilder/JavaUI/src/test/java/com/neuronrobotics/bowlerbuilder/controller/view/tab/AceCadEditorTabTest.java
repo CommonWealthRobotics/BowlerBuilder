@@ -13,7 +13,7 @@ import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.util.Verified;
-import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,11 +24,11 @@ import org.junit.jupiter.api.Test;
 
 public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
 
-  private AceCadEditorTab tab;
+  private BaseCadEditorTab tab;
 
   @Override
   public void start(final Stage stage) throws IOException {
-    tab = new AceCadEditorTab("");
+    tab = new BaseCadEditorTab("");
     stage.setScene(tab.getView().getScene());
     stage.show();
   }
@@ -38,7 +38,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
     FxHelper.runAndWait(
         () ->
             tab.getController()
-                .getAceScriptEditorController()
+                .getDefaultScriptEditorController()
                 .getScriptEditor()
                 .insertAtCursor("return new Cube(1,1,1).toCSG();"));
 
@@ -46,11 +46,11 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
         FxUtil.returnFX(
             () ->
                 tab.getController()
-                    .getAceScriptEditorController()
+                    .getDefaultScriptEditorController()
                     .getScriptRunner()
                     .runScript(
                         tab.getController()
-                            .getAceScriptEditorController()
+                            .getDefaultScriptEditorController()
                             .getScriptEditor()
                             .getFullText(),
                         new ArrayList<>(),

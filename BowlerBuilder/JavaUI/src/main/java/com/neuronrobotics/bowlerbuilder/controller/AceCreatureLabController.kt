@@ -22,11 +22,11 @@ import java.util.function.Supplier
 class AceCreatureLabController(
     private val scriptEditorPane: TabPane,
     private val scriptEditorSupplier: Supplier<FXMLLoader>,
-    val cadModelViewerController: CADModelViewerController,
+    val defaultCadModelViewerController: DefaultCADModelViewerController,
     val creatureEditorController: CreatureEditorController
 ) {
     private val tabMap: MutableMap<File, Tab>
-    private val tabControllerMap: MutableMap<Tab, AceScriptEditorController>
+    private val tabControllerMap: MutableMap<Tab, DefaultScriptEditorController>
 
     init {
         this.tabMap = HashMap()
@@ -86,7 +86,7 @@ class AceCreatureLabController(
                 LOGGER.severe("Could not load Ace script editor.\n" + Throwables.getStackTraceAsString(e))
             }
 
-            val controller = loader.getController<AceScriptEditorController>()
+            val controller = loader.getController<DefaultScriptEditorController>()
             tabControllerMap[tab] = controller
             controller.loadManualGist(pushURL, fileName, file)
         }

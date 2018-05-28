@@ -23,9 +23,9 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManage
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.AceScriptEditorPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.BowlerCadEnginePreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.DefaultScriptEditorPreferencesService;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.MainWindowControllerPreferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.MainWindowControllerPreferencesService;
 import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
@@ -36,8 +36,8 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.preferences.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
-import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -213,7 +213,7 @@ public class MainWindowController implements PreferencesConsumer {
   @FXML
   private void openPreferences(final ActionEvent actionEvent) {
     final List<PreferencesService<? extends Preferences>> services = new ArrayList<>();
-    services.add(new AceScriptEditorPreferencesService());
+    services.add(new DefaultScriptEditorPreferencesService());
     services.add(new BowlerCadEnginePreferencesService());
     services.add(new CreatureEditorControllerPreferencesService());
     services.add(new MainWindowControllerPreferencesService());
@@ -284,10 +284,10 @@ public class MainWindowController implements PreferencesConsumer {
 
   @FXML
   private void onOpenScratchpad(final ActionEvent actionEvent) {
-    final AceCadEditorTab tab = new AceCadEditorTab("Scratchpad");
-    final AceCadEditorTabController controller = tab.getController();
+    final BaseCadEditorTab tab = new BaseCadEditorTab("Scratchpad");
+    final DefaultCadEditorTabController controller = tab.getController();
 
-    controller.getAceScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
+    controller.getDefaultScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
 
     tabPane.getTabs().add(tab);
     tabPane.getSelectionModel().select(tab);
@@ -394,10 +394,10 @@ public class MainWindowController implements PreferencesConsumer {
   public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(
         () -> {
-          final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
-          final AceCadEditorTabController controller = tab.getController();
+          final BaseCadEditorTab tab = new BaseCadEditorTab(gistFile.getFileName());
+          final DefaultCadEditorTabController controller = tab.getController();
 
-          controller.getAceScriptEditorController().loadGist(gist, gistFile);
+          controller.getDefaultScriptEditorController().loadGist(gist, gistFile);
 
           tabPane.getTabs().add(tab);
           tabPane.getSelectionModel().select(tab);
@@ -415,10 +415,10 @@ public class MainWindowController implements PreferencesConsumer {
       final String pushURL, final String fileName, final File file) {
     Platform.runLater(
         () -> {
-          final AceCadEditorTab tab = new AceCadEditorTab(fileName);
-          final AceCadEditorTabController controller = tab.getController();
+          final BaseCadEditorTab tab = new BaseCadEditorTab(fileName);
+          final DefaultCadEditorTabController controller = tab.getController();
 
-          controller.getAceScriptEditorController().loadManualGist(pushURL, fileName, file);
+          controller.getDefaultScriptEditorController().loadManualGist(pushURL, fileName, file);
 
           tabPane.getTabs().add(tab);
           tabPane.getSelectionModel().select(tab);
@@ -461,7 +461,7 @@ public class MainWindowController implements PreferencesConsumer {
                           new MobileBaseCadManager(
                               mobileBase,
                               new BowlerMobileBaseUI(
-                                  controller.getCadModelViewerController().getEngine()));
+                                  controller.getDefaultCadModelViewerController().getEngine()));
                       mobileBase.updatePositions();
 
                       DeviceManager.addConnection(mobileBase, mobileBase.getScriptingName());

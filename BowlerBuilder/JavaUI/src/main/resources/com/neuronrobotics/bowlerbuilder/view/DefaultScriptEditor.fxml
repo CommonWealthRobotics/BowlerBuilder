@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane id="fileEditorRoot" fx:id="fileEditorRoot" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.AceScriptEditorController">
+<SplitPane id="fileEditorRoot" fx:id="fileEditorRoot" dividerPositions="0.8" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.DefaultScriptEditorController">
    <items>
       <BorderPane fx:id="editorBorderPane">
          <bottom>

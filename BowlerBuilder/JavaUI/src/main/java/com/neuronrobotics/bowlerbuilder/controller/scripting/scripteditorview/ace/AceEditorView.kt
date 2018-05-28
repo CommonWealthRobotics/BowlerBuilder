@@ -7,7 +7,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ace
 
-import com.neuronrobotics.bowlerbuilder.controller.AceScriptEditorController
+import com.neuronrobotics.bowlerbuilder.controller.DefaultScriptEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.ace.AceEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ScriptEditorView
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
@@ -34,7 +34,7 @@ class AceEditorView @Inject constructor(
         scriptEditor = AceEditor(aceWebEngineFactory.create(webView.engine))
 
         launch(context = UI) {
-            webView.engine.load(AceScriptEditorController::class.java
+            webView.engine.load(DefaultScriptEditorController::class.java
                     .getResource("/com/neuronrobotics/bowlerbuilder/web/ace.html")
                     .toString())
         }
