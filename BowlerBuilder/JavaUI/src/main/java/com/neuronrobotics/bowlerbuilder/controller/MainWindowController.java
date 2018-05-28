@@ -37,7 +37,8 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.preferences.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
-import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.RichTextCadEditorTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -284,7 +285,7 @@ public class MainWindowController implements PreferencesConsumer {
 
   @FXML
   private void onOpenScratchpad(final ActionEvent actionEvent) {
-    final BaseCadEditorTab tab = new BaseCadEditorTab("Scratchpad");
+    final RichTextCadEditorTab tab = new RichTextCadEditorTab("Scratchpad");
     final DefaultCadEditorTabController controller = tab.getController();
 
     controller.getDefaultScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
@@ -394,7 +395,7 @@ public class MainWindowController implements PreferencesConsumer {
   public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(
         () -> {
-          final BaseCadEditorTab tab = new BaseCadEditorTab(gistFile.getFileName());
+          final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
           final DefaultCadEditorTabController controller = tab.getController();
 
           controller.getDefaultScriptEditorController().loadGist(gist, gistFile);
@@ -415,7 +416,7 @@ public class MainWindowController implements PreferencesConsumer {
       final String pushURL, final String fileName, final File file) {
     Platform.runLater(
         () -> {
-          final BaseCadEditorTab tab = new BaseCadEditorTab(fileName);
+          final AceCadEditorTab tab = new AceCadEditorTab(fileName);
           final DefaultCadEditorTabController controller = tab.getController();
 
           controller.getDefaultScriptEditorController().loadManualGist(pushURL, fileName, file);

@@ -56,7 +56,7 @@ abstract class BaseCadEditorTab(
         val cadViewerLoader = FXMLLoader(
                 BaseCadEditorTab::class.java
                         .getResource(
-                                "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
+                                "/com/neuronrobotics/bowlerbuilder/view/DefaultCADModelViewer.fxml"),
                 null,
                 null,
                 {
