@@ -63,8 +63,6 @@ public class PreferencesDialog extends Dialog<List<Preferences>> {
     final VBox vBox = new VBox(5);
     vBox.getChildren().addAll(nodes);
 
-    preferences.forEach(System.out::println);
-
     getDialogPane().setContent(vBox);
     getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
     getDialogPane().setId("preferencesDialogPane");

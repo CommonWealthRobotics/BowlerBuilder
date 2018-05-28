@@ -20,5 +20,6 @@ interface PreferencesService<T : Any> {
     /**
      * The preferences file path.
      */
+    @JvmDefault
     fun getFilePath(name: String) = "${PreferencesPath.PATH}$name.json"
 }
