@@ -55,9 +55,9 @@
                 <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Widgets">
+          <Menu mnemonicParsing="false" text="Plugins">
             <items>
-                <MenuItem mnemonicParsing="false" onAction="#onManageWidgets" text="Manage Plugins" />
+                <MenuItem mnemonicParsing="false" onAction="#onManagePlugins" text="Manage Plugins" />
                 <Menu fx:id="installedPlugins" mnemonicParsing="false" text="Installed Plugins" />
             </items>
           </Menu>

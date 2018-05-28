@@ -15,9 +15,9 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.GistUtilities;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ScriptEditorView;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
+import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.AceScriptEditorPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor;
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner;
 import com.neuronrobotics.bowlerbuilder.util.StringClipper;
@@ -35,8 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -58,16 +56,16 @@ import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
 @ParametersAreNonnullByDefault
-public class AceScriptEditorController {
+public class AceScriptEditorController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(AceScriptEditorController.class.getSimpleName());
+  private final AceScriptEditorPreferencesService preferencesService;
   private final ScriptEditorView scriptEditorView;
   private final ScriptEditor scriptEditor;
   private final ScriptRunner scriptRunner;
   private final StringClipper stringClipper;
-  private final IntegerProperty fontSize;
-  private final IntegerProperty maxToastLength;
+  private int maxToastLength;
   private String scriptLangName;
   @FXML private SplitPane fileEditorRoot;
   @FXML private BorderPane editorBorderPane;
@@ -85,49 +83,39 @@ public class AceScriptEditorController {
 
   @Inject
   public AceScriptEditorController(
-      final PreferencesServiceFactory preferencesServiceFactory,
+      final AceScriptEditorPreferencesService preferencesService,
       final ScriptEditorView scriptEditorView,
       final ScriptRunner scriptRunner,
-      @Named("scriptLangName") final String scriptLangName,
+      @Named("aceScriptEditorLangName") final String scriptLangName,
       final StringClipper stringClipper) {
+    this.preferencesService = preferencesService;
     this.scriptEditorView = scriptEditorView;
     this.scriptEditor = scriptEditorView.getScriptEditor();
     this.scriptRunner = scriptRunner;
     this.scriptLangName = scriptLangName;
     this.stringClipper = stringClipper;
-
-    LOGGER.log(Level.FINE, "factory: " + preferencesServiceFactory);
-
-    final PreferencesService preferencesService =
-        preferencesServiceFactory.create("AceScriptEditorController");
-    fontSize = new SimpleIntegerProperty(preferencesService.get("Font Size", 14));
-    preferencesService.addListener(
-        "Font Size",
-        (PreferenceListener<Integer>)
-            (oldVal, newVal) -> {
-              fontSize.setValue(newVal);
-              scriptEditorView.setFontSize(newVal);
-            });
-
-    maxToastLength = new SimpleIntegerProperty(preferencesService.get("Max Toast Length", 15));
-    preferencesService.addListener(
-        "Max Toast Length",
-        (PreferenceListener<Integer>) (oldVal, newVal) -> maxToastLength.setValue(newVal));
-
     LOGGER.log(Level.FINE, "Running with language: " + scriptLangName);
   }
 
   @FXML
   protected void initialize() {
     editorBorderPane.setCenter(scriptEditorView.getView());
-
     fileEditorRoot.setDividerPosition(0, 0.8);
 
     runButton.setGraphic(new FontAwesome().create(String.valueOf(FontAwesome.Glyph.PLAY)));
     publishButton.setGraphic(
         new FontAwesome().create(String.valueOf(FontAwesome.Glyph.CLOUD_UPLOAD)));
 
-    scriptEditorView.setFontSize(fontSize.get());
+    refreshPreferences();
+  }
+
+  @Override
+  public void refreshPreferences() {
+    final AceScriptEditorPreferences preferences = preferencesService.getCurrentPreferences();
+    if (preferences != null) {
+      maxToastLength = preferences.getMaxToastLength();
+      scriptEditorView.setFontSize(preferences.getFontSize());
+    }
   }
 
   @FXML
@@ -368,9 +356,7 @@ public class AceScriptEditorController {
           () ->
               Notifications.create()
                   .title("Error in CAD Script")
-                  .text(
-                      stringClipper.clipStringToLines(
-                          failure.getMessage(), maxToastLength.getValue()))
+                  .text(stringClipper.clipStringToLines(failure.getMessage(), maxToastLength))
                   .owner(fileEditorRoot)
                   .position(Pos.BOTTOM_RIGHT)
                   .showInformation());

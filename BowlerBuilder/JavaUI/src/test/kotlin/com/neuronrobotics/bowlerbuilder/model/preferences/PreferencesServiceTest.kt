@@ -19,13 +19,13 @@ class PreferencesServiceTest {
 
     @Test
     fun get() {
-        val preferencesService = PreferencesService("")
+        val preferencesService = SerializablePreferencesService("")
         assertEquals("a", preferencesService.get("foo", "a"))
     }
 
     @Test
     fun `attaching a listener after setting the preference does not fire the listener`() {
-        val preferencesService = PreferencesService("")
+        val preferencesService = SerializablePreferencesService("")
         preferencesService.set("foo", "a")
 
         val test = SimpleBooleanProperty(false)
@@ -36,7 +36,7 @@ class PreferencesServiceTest {
 
     @Test
     fun `attaching a listener before setting the preference fires the listener`() {
-        val preferencesService = PreferencesService("")
+        val preferencesService = SerializablePreferencesService("")
 
         val test = SimpleBooleanProperty(false)
         preferencesService.addListener<Serializable>("foo") { _, _ -> test.value = true }
@@ -47,7 +47,7 @@ class PreferencesServiceTest {
 
     @Test
     fun `simple set test`() {
-        val preferencesService = PreferencesService("")
+        val preferencesService = SerializablePreferencesService("")
         preferencesService.set("foo", "b")
 
         assertEquals("b", preferencesService.get("foo", "a"))
@@ -55,7 +55,7 @@ class PreferencesServiceTest {
 
     @Test
     fun `simple set multiple test`() {
-        val preferencesService = PreferencesService("")
+        val preferencesService = SerializablePreferencesService("")
         preferencesService.set("foo", "a")
         preferencesService.set("bar", "b")
 
@@ -66,7 +66,7 @@ class PreferencesServiceTest {
 
     @Test
     fun getAll() {
-        val preferencesService = PreferencesService("")
+        val preferencesService = SerializablePreferencesService("")
         preferencesService.set("foo", "a")
         preferencesService.set("bar", "b")
 

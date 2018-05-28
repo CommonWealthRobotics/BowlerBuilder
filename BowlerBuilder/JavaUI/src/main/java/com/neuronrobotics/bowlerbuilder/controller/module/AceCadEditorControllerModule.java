@@ -28,6 +28,8 @@ public class AceCadEditorControllerModule extends AbstractModule {
   protected void configure() {
     bind(ScriptEditorView.class).toInstance(scriptEditorView);
     bind(ScriptRunner.class).to(BowlerScriptRunner.class);
-    bind(String.class).annotatedWith(Names.named("scriptLangName")).toInstance("BowlerGroovy");
+    bind(String.class)
+        .annotatedWith(Names.named("aceScriptEditorLangName"))
+        .toInstance("BowlerGroovy");
   }
 }

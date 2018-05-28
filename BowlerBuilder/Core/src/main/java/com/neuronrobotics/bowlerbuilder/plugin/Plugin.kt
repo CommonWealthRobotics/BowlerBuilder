@@ -8,10 +8,9 @@
 package com.neuronrobotics.bowlerbuilder.plugin
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
-import java.io.Serializable
 import java.util.ArrayList
 
-class Plugin(val gitSource: String, val displayName: String) : Serializable {
+data class Plugin(val gitSource: String, val displayName: String) {
 
     /**
      * Clone and run the gist code for this Plugin.
@@ -21,11 +20,4 @@ class Plugin(val gitSource: String, val displayName: String) : Serializable {
     @Throws(Exception::class)
     fun run(): Any? =
             ScriptingEngine.gitScriptRun(gitSource, "main.groovy", ArrayList())
-
-    override fun toString(): String =
-            displayName
-
-    companion object {
-        private const val serialVersionUID = -4350419926001196348L
-    }
 }

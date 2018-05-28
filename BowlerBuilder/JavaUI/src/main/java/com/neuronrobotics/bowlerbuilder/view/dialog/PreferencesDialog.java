@@ -7,16 +7,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.dialog;
 
-import com.neuronrobotics.bowlerbuilder.model.BeanPropertySheetItem;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
-import java.io.Serializable;
+import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
@@ -32,36 +25,37 @@ public class PreferencesDialog extends Dialog {
    *
    * @param preferencesServices the preferences to edit
    */
-  public PreferencesDialog(final Iterable<PreferencesService> preferencesServices) {
+  public PreferencesDialog(final Iterable<Preferences> preferencesServices) {
     super();
 
     final List<PropertySheet> propertySheets = new ArrayList<>();
-    preferencesServices.forEach(
-        service -> {
-          final List<Property> props =
-              service
-                  .getAll()
-                  .entrySet()
-                  .stream()
-                  .map(
-                      entry -> {
-                        ObjectProperty<Serializable> property =
-                            new SimpleObjectProperty<>(null, entry.getKey(), entry.getValue());
-                        property.addListener(
-                            (observableValue, oldVal, newVal) ->
-                                service.set(entry.getKey(), newVal));
-                        return property;
-                      })
-                  .collect(Collectors.toList());
-
-          propertySheets.add(
-              new PropertySheet(
-                  FXCollections.observableArrayList(
-                      props
-                          .stream()
-                          .map(BeanPropertySheetItem::new)
-                          .collect(Collectors.toList()))));
-        });
+    //    preferencesServices.forEach(
+    //        service -> {
+    //          final List<Property> props =
+    //              service
+    //                  .getAll()
+    //                  .entrySet()
+    //                  .stream()
+    //                  .map(
+    //                      entry -> {
+    //                        ObjectProperty<Serializable> property =
+    //                            new SimpleObjectProperty<>(null, entry.getKey(),
+    // entry.getValue());
+    //                        property.addListener(
+    //                            (observableValue, oldVal, newVal) ->
+    //                                service.set(entry.getKey(), newVal));
+    //                        return property;
+    //                      })
+    //                  .collect(Collectors.toList());
+    //
+    //          propertySheets.add(
+    //              new PropertySheet(
+    //                  FXCollections.observableArrayList(
+    //                      props
+    //                          .stream()
+    //                          .map(BeanPropertySheetItem::new)
+    //                          .collect(Collectors.toList()))));
+    //        });
 
     final VBox vBox = new VBox(5);
     propertySheets.forEach(vBox.getChildren()::add);

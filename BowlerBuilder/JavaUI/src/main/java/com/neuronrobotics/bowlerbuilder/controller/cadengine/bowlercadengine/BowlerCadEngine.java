@@ -13,8 +13,7 @@ import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.CadEngine;
 import com.neuronrobotics.bowlerbuilder.controller.cadengine.util.VirtualCameraMobileBaseFactory;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
+import com.neuronrobotics.bowlerbuilder.model.preferences.BowlerCadEnginePreferencesService;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsChangeListener;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.EngineeringUnitsSliderWidget;
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraDevice;
@@ -110,25 +109,19 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    *
    * @param csgManager {@link CSGManager}
    * @param selectionManagerFactory {@link SelectionManager}
-   * @param preferencesServiceFactory {@link PreferencesServiceFactory}
    */
   @Inject
   public BowlerCadEngine(
+      final BowlerCadEnginePreferencesService preferencesService,
       final CSGManager csgManager,
-      final SelectionManagerFactory selectionManagerFactory,
-      final PreferencesServiceFactory preferencesServiceFactory) {
+      final SelectionManagerFactory selectionManagerFactory) {
     super();
     this.csgManager = csgManager;
 
     axisShowing = new SimpleBooleanProperty(true);
     handShowing = new SimpleBooleanProperty(true);
 
-    final PreferencesService preferencesService =
-        preferencesServiceFactory.create("BowlerCadEngine");
-    preferencesService.load();
-    final Boolean shouldAA = preferencesService.get("CAD Engine Antialiasing", true);
-
-    if (shouldAA) {
+    if (preferencesService.getCurrentPreferencesOrDefault().getShouldAA()) {
       scene = new SubScene(root, 1024, 1024, true, SceneAntialiasing.BALANCED);
     } else {
       scene = new SubScene(root, 1024, 1024, true, SceneAntialiasing.DISABLED);

@@ -14,6 +14,7 @@ import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.SerializablePreferencesService;
 import java.util.Collections;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -32,7 +33,7 @@ public class PreferencesDialogTest extends AbstractAutoClosingApplicationTest {
 
   @Test
   void valueChangedTest() {
-    final PreferencesService service = new PreferencesService("");
+    final PreferencesService service = new SerializablePreferencesService("");
     service.set("a", "foo");
     service.set("b", 99);
 
@@ -54,7 +55,7 @@ public class PreferencesDialogTest extends AbstractAutoClosingApplicationTest {
 
   @Test
   void listenerTest() {
-    final PreferencesService service = new PreferencesService("");
+    final PreferencesService service = new SerializablePreferencesService("");
     service.set("a", "foo");
     final BooleanProperty val = new SimpleBooleanProperty(false);
     service.addListener("a", (PreferenceListener<String>) (oldVal, newVal) -> val.setValue(true));

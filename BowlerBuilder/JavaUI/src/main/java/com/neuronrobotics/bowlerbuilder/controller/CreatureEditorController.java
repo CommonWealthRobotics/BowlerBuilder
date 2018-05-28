@@ -23,9 +23,9 @@ import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.limb.Scrip
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.ConfigTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.model.link.MovementTabLinkSelection;
 import com.neuronrobotics.bowlerbuilder.model.LimbType;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferenceListener;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
+import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.CreatureEditorControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
@@ -79,10 +79,11 @@ import org.kohsuke.github.GHGistBuilder;
 import org.kohsuke.github.GitHub;
 
 @ParametersAreNonnullByDefault
-public class CreatureEditorController {
+public class CreatureEditorController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(CreatureEditorController.class.getSimpleName());
+  private final CreatureEditorControllerPreferencesService preferencesService;
   private final AnchorPane limbWidget;
   private final AnchorPane movementWidget;
   private final AnchorPane configWidget;
@@ -90,7 +91,6 @@ public class CreatureEditorController {
   private final ObjectProperty<Selection> widgetSelectionProperty;
   private final ObjectProperty<AnchorPane> selectedWidgetPane;
   private final MainWindowController mainWindowController;
-  private final PreferencesService preferencesService;
   @FXML private ProgressIndicator cadProgress;
   @FXML private CheckBox autoRegenCAD;
   @FXML private Button regenCADButton;
@@ -108,8 +108,9 @@ public class CreatureEditorController {
   @Inject
   public CreatureEditorController(
       final MainWindowController mainWindowController,
-      final PreferencesServiceFactory preferencesServiceFactory) {
+      final CreatureEditorControllerPreferencesService preferencesService) {
     this.mainWindowController = mainWindowController;
+    this.preferencesService = preferencesService;
 
     limbWidget = new AnchorPane();
     movementWidget = new AnchorPane();
@@ -117,9 +118,6 @@ public class CreatureEditorController {
     scriptWidget = new AnchorPane();
     widgetSelectionProperty = new SimpleObjectProperty<>();
     selectedWidgetPane = new SimpleObjectProperty<>();
-
-    preferencesService = preferencesServiceFactory.create("CreatureEditorController");
-    preferencesService.load();
   }
 
   @FXML
@@ -132,13 +130,6 @@ public class CreatureEditorController {
                 cadManager.setAutoRegen(newValue);
               }
             });
-
-    preferencesService.addListener(
-        "Auto-Regenerate CAD",
-        (PreferenceListener<Boolean>)
-            (oldVal, newVal) -> autoRegenCAD.selectedProperty().set(newVal));
-
-    autoRegenCAD.selectedProperty().set(preferencesService.get("Auto-Regenerate CAD", false));
 
     selectedWidgetPane.set(limbWidget); // Limb widget to start
 
@@ -196,6 +187,15 @@ public class CreatureEditorController {
 
     genKinSTL.setGraphic(AssetFactory.loadIcon("Printable-Cad.png"));
     genKinSTL.setText("Kinematic STL");
+
+    refreshPreferences();
+  }
+
+  @Override
+  public void refreshPreferences() {
+    final CreatureEditorControllerPreferences preferences =
+        preferencesService.getCurrentPreferencesOrDefault();
+    autoRegenCAD.selectedProperty().set(preferences.getAutoRegenCAD());
   }
 
   /**

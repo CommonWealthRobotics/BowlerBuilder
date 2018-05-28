@@ -18,16 +18,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
-import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.BowlerMobileBaseUI;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService;
-import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesServiceFactory;
+import com.neuronrobotics.bowlerbuilder.model.preferences.MainWindowControllerPreferences;
+import com.neuronrobotics.bowlerbuilder.model.preferences.MainWindowControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
+import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddFileToGistDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.HelpDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.LoginDialog;
-import com.neuronrobotics.bowlerbuilder.view.dialog.PreferencesDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.plugin.ManagePluginsDialog;
 import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.AceCadEditorTab;
@@ -46,11 +46,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -100,12 +98,11 @@ import org.kohsuke.github.PagedIterable;
 
 @Singleton
 @ParametersAreNonnullByDefault
-public class MainWindowController {
+public class MainWindowController implements PreferencesConsumer {
 
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(MainWindowController.class.getSimpleName());
-  private final PreferencesServiceFactory preferencesServiceFactory;
-  private final PreferencesService preferencesService;
+  private final MainWindowControllerPreferencesService preferencesService;
   private final ConnectionManagerFactory connectionManagerFactory;
 
   @FXML private BorderPane root;
@@ -129,13 +126,10 @@ public class MainWindowController {
 
   @Inject
   protected MainWindowController(
-      final PreferencesServiceFactory preferencesServiceFactory,
+      final MainWindowControllerPreferencesService preferencesService,
       final ConnectionManagerFactory connectionManagerFactory) {
-    this.preferencesServiceFactory = preferencesServiceFactory;
+    this.preferencesService = preferencesService;
     this.connectionManagerFactory = connectionManagerFactory;
-
-    preferencesService = preferencesServiceFactory.create("MainWindowController");
-    preferencesService.load();
   }
 
   @FXML
@@ -192,12 +186,21 @@ public class MainWindowController {
       logIn.setDisable(false);
     }
 
-    reloadPlugins(preferencesService.get("Widgets", new ArrayList<>()));
+    refreshPreferences();
+  }
+
+  @Override
+  public void refreshPreferences() {
+    final MainWindowControllerPreferences preferences =
+        preferencesService.getCurrentPreferencesOrDefault();
+    reloadPlugins(preferences.getPlugins());
   }
 
   @FXML
   private void openPreferences(final ActionEvent actionEvent) {
-    new PreferencesDialog(preferencesServiceFactory.getAllPreferencesServices()).showAndWait();
+    // TODO: Load all preferences from the file
+    // new
+    // PreferencesDialog(serializablePreferencesServiceFactory.getAllPreferencesServices()).showAndWait();
   }
 
   @FXML
@@ -300,17 +303,24 @@ public class MainWindowController {
   }
 
   @FXML
-  private void onManageWidgets(final ActionEvent actionEvent) {
+  private void onManagePlugins(final ActionEvent actionEvent) {
+    final MainWindowControllerPreferences preferences =
+        preferencesService.getCurrentPreferencesOrDefault();
+    final List<Plugin> currentPlugins = preferences.getPlugins();
+
     final ManagePluginsDialog dialog =
-        new ManagePluginsDialog(
-            FXCollections.observableArrayList(
-                preferencesService.get("Widgets", new ArrayList<>())));
+        new ManagePluginsDialog(FXCollections.observableArrayList(currentPlugins));
     dialog
         .showAndWait()
         .ifPresent(
-            widgets -> {
-              preferencesService.set("Widgets", new ArrayList<>(widgets));
-              reloadPlugins(widgets);
+            newPlugins -> {
+              preferencesService.writePreferences(
+                  new MainWindowControllerPreferences(
+                      newPlugins,
+                      preferences.getFavoriteGists(),
+                      preferences.getDefaultCreaturePushURL(),
+                      preferences.getDefaultCreaturePushURL()));
+              reloadPlugins(newPlugins);
             });
   }
 
@@ -781,8 +791,8 @@ public class MainWindowController {
                   loadGistsIntoMenus(myGists, reloadGists);
                 };
 
-            final HashSet<String> favoriteGists =
-                preferencesService.get("Favorite Gists", new HashSet<>());
+            final Set<String> favoriteGists =
+                preferencesService.getCurrentPreferencesOrDefault().getFavoriteGists();
             if (favoriteGists.contains(gistID)) {
               final MenuItem favoriteGist = new MenuItem("Unfavorite");
               favoriteGist.setOnAction(
@@ -976,7 +986,8 @@ public class MainWindowController {
    * @param menu the Menu to side-effect
    */
   private void loadFavoritesIntoMenus(final Menu menu) {
-    final HashSet<String> gistIDs = preferencesService.get("Favorite Gists", new HashSet<>());
+    final Set<String> gistIDs =
+        preferencesService.getCurrentPreferencesOrDefault().getFavoriteGists();
     final GitHub gitHub = ScriptingEngine.getGithub();
 
     final List<GHGist> gists =
@@ -1001,13 +1012,11 @@ public class MainWindowController {
 
   private void loadCreaturesIntoMenus(final Menu menu) {
     try {
-      final String gistURL =
-          preferencesService.get(
-              "Default Creatures Push URL",
-              "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git");
-      final String gistName =
-          preferencesService.get("Default Creatures Filename", "defaultCreatures.json");
-      final String[] code = ScriptingEngine.codeFromGit(gistURL, gistName);
+      final MainWindowControllerPreferences preferences =
+          preferencesService.getCurrentPreferencesOrDefault();
+      final String[] code =
+          ScriptingEngine.codeFromGit(
+              preferences.getDefaultCreaturePushURL(), preferences.getDefaultCreatureFileName());
 
       if (code != null) {
         final String content = code[0];
@@ -1061,7 +1070,6 @@ public class MainWindowController {
 
   /** Save work and quit. */
   public void saveAndQuit() {
-    preferencesServiceFactory.saveAllCached();
     quit();
   }
 
