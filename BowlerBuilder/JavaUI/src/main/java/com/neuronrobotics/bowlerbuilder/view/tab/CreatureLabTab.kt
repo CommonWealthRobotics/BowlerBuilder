@@ -52,7 +52,7 @@ class CreatureLabTab(title: String) :
         val cadViewerLoader = FXMLLoader(
                 CreatureLabTab::class.java
                         .getResource(
-                                "/com/neuronrobotics/bowlerbuilder/view/CADModelViewer.fxml"),
+                                "/com/neuronrobotics/bowlerbuilder/view/DefaultCADModelViewer.fxml"),
                 null,
                 null,
                 {
@@ -76,7 +76,7 @@ class CreatureLabTab(title: String) :
                             CreatureLabTab::class.java
                                     .getResource(
                                             "/com/neuronrobotics/bowlerbuilder/view/" +
-                                                    "AceScriptEditor.fxml"),
+                                                    "DefaultScriptEditor.fxml"),
                             null,
                             null,
                             {

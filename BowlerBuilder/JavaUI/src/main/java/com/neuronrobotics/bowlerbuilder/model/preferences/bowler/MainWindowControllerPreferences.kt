@@ -24,6 +24,8 @@ class MainWindowControllerPreferencesService : PreferencesService<MainWindowCont
 
     override fun writePreferences(preferences: MainWindowControllerPreferences) =
             File(path).writeText(Klaxon().toJsonString(preferences))
+
+    override fun getName() = "Primary Preferences"
 }
 
 data class MainWindowControllerPreferences(

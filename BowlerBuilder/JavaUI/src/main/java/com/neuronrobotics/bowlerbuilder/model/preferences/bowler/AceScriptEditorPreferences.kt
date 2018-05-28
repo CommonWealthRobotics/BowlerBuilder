@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileNotFoundException
 
 class DefaultScriptEditorPreferencesService : PreferencesService<AceScriptEditorPreferences> {
+
     private val path = getFilePath("DefaultScriptEditorController")
 
     override fun getCurrentPreferences() =
@@ -23,6 +24,8 @@ class DefaultScriptEditorPreferencesService : PreferencesService<AceScriptEditor
 
     override fun writePreferences(preferences: AceScriptEditorPreferences) =
             File(path).writeText(Klaxon().toJsonString(preferences))
+
+    override fun getName() = "Default Script Editor"
 }
 
 data class AceScriptEditorPreferences(

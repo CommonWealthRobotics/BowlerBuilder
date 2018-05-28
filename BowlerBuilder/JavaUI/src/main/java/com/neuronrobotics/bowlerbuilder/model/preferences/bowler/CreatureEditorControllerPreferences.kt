@@ -23,6 +23,8 @@ class CreatureEditorControllerPreferencesService : PreferencesService<CreatureEd
 
     override fun writePreferences(preferences: CreatureEditorControllerPreferences) =
             File(path).writeText(Klaxon().toJsonString(preferences))
+
+    override fun getName() = "Creature Editor"
 }
 
 data class CreatureEditorControllerPreferences(

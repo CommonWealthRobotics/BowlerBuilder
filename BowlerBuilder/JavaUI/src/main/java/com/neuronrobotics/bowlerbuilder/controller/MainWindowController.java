@@ -7,6 +7,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller; // NOPMD
 
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
 import com.google.common.base.Charsets;
@@ -38,7 +39,6 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.preferences.PreferencesDialo
 import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
-import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.RichTextCadEditorTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
@@ -214,12 +214,12 @@ public class MainWindowController implements PreferencesConsumer {
   @FXML
   private void openPreferences(final ActionEvent actionEvent) {
     final List<PreferencesService<? extends Preferences>> services = new ArrayList<>();
+    services.add(new MainWindowControllerPreferencesService());
     services.add(new DefaultScriptEditorPreferencesService());
     services.add(new BowlerCadEnginePreferencesService());
     services.add(new CreatureEditorControllerPreferencesService());
-    services.add(new MainWindowControllerPreferencesService());
 
-    final Optional<List<Preferences>> optionalPreferences =
+    final Optional<List<? extends Preferences>> optionalPreferences =
         new PreferencesDialog(services).showAndWait();
     optionalPreferences.ifPresent(preferences -> preferences.forEach(Preferences::save));
   }
@@ -285,7 +285,7 @@ public class MainWindowController implements PreferencesConsumer {
 
   @FXML
   private void onOpenScratchpad(final ActionEvent actionEvent) {
-    final RichTextCadEditorTab tab = new RichTextCadEditorTab("Scratchpad");
+    final BaseCadEditorTab tab = new AceCadEditorTab("Scratchpad");
     final DefaultCadEditorTabController controller = tab.getController();
 
     controller.getDefaultScriptEditorController().initScratchpad(tab, this::reloadGitMenus);
@@ -395,7 +395,7 @@ public class MainWindowController implements PreferencesConsumer {
   public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(
         () -> {
-          final AceCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
+          final BaseCadEditorTab tab = new AceCadEditorTab(gistFile.getFileName());
           final DefaultCadEditorTabController controller = tab.getController();
 
           controller.getDefaultScriptEditorController().loadGist(gist, gistFile);
@@ -416,7 +416,7 @@ public class MainWindowController implements PreferencesConsumer {
       final String pushURL, final String fileName, final File file) {
     Platform.runLater(
         () -> {
-          final AceCadEditorTab tab = new AceCadEditorTab(fileName);
+          final BaseCadEditorTab tab = new AceCadEditorTab(fileName);
           final DefaultCadEditorTabController controller = tab.getController();
 
           controller.getDefaultScriptEditorController().loadManualGist(pushURL, fileName, file);

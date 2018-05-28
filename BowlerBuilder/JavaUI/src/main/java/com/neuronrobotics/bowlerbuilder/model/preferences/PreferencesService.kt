@@ -18,6 +18,11 @@ interface PreferencesService<T : Any> {
     fun writePreferences(preferences: T)
 
     /**
+     * Get a short name for the type of preferences.
+     */
+    fun getName(): String
+
+    /**
      * The preferences file path.
      */
     @JvmDefault

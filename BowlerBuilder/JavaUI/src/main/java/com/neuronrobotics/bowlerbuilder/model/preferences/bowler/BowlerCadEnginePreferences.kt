@@ -23,6 +23,8 @@ class BowlerCadEnginePreferencesService : PreferencesService<BowlerCadEnginePref
 
     override fun writePreferences(preferences: BowlerCadEnginePreferences) =
             File(path).writeText(Klaxon().toJsonString(preferences))
+
+    override fun getName() = "Bowler CAD Engine"
 }
 
 data class BowlerCadEnginePreferences(
