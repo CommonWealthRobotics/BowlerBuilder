@@ -27,21 +27,14 @@
  */
 package com.neuronrobotics.imageprovider;
 
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.control.Tab;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
-import org.opencv.core.Scalar;
 
 // any java file starting with i is the interface
 
@@ -49,9 +42,7 @@ public class OpenCVTest {
 
   private ArrayList<IObjectDetector> detectors;
 
-  /**
-   * Main object detection demo.
-   */
+  /** Main object detection demo. */
   public void run() {
     JFrame frame = new JFrame();
 

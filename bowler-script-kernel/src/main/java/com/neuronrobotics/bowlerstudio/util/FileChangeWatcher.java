@@ -105,8 +105,7 @@ public class FileChangeWatcher {
 
   private static boolean runThread = true;
 
-  private static HashMap<String, FileChangeWatcher> activeListener =
-      new HashMap<>();
+  private static HashMap<String, FileChangeWatcher> activeListener = new HashMap<>();
   private Thread watcherThread = null;
 
   /** clear the listeners */

@@ -144,8 +144,7 @@ public class ScriptingEngine { // this subclasses boarder pane for the widgets
   private static CredentialsProvider cp; // = new
   // UsernamePasswordCredentialsProvider(name,
   // password);
-  private static ArrayList<IGithubLoginListener> loginListeners =
-      new ArrayList<>();
+  private static ArrayList<IGithubLoginListener> loginListeners = new ArrayList<>();
 
   private static HashMap<String, IScriptingLanguage> langauges = new HashMap<>();
 

@@ -36,9 +36,7 @@ public class OpenCVJNILoader {
 
   static NativeResource resource = null;
 
-  /**
-   * Loads the OpenCV JNI.
-   */
+  /** Loads the OpenCV JNI. */
   public static void load() {
     if (resource != null) {
       return;
