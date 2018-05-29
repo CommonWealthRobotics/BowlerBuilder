@@ -46,11 +46,11 @@ public class WhiteBlobDetect implements IObjectDetector {
   MatOfKeyPoint matOfKeyPoints = new MatOfKeyPoint();
   Mat prethresh = new Mat();
   Mat postthresh = new Mat();
-  private FeatureDetector RGBblobdetector =
+  private FeatureDetector rgbBlobDetector =
       FeatureDetector.create(FeatureDetector.PYRAMID_SIMPLEBLOB);
   private int minSize;
   private int maxSize;
-  Scalar colorKey = new Scalar(0, 0, 255, 0);
+  Scalar colorKey;
 
   public WhiteBlobDetect(int minSize, int maxSize, Scalar lower) {
     this.minSize = minSize;
@@ -80,7 +80,7 @@ public class WhiteBlobDetect implements IObjectDetector {
         new Mat(postthresh.rows(), postthresh.cols(), postthresh.type(), new Scalar(255, 255, 255));
     Core.subtract(invertcolormatrix, postthresh, postthresh);
 
-    RGBblobdetector.detect(postthresh, matOfKeyPoints);
+    rgbBlobDetector.detect(postthresh, matOfKeyPoints);
 
     postthresh.copyTo(displayImage);
     Features2d.drawKeypoints(postthresh, matOfKeyPoints, displayImage, new Scalar(0, 0, 255, 0), 0);
