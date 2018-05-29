@@ -36,6 +36,9 @@ public class OpenCVJNILoader {
 
   static NativeResource resource = null;
 
+  /**
+   * Loads the OpenCV JNI.
+   */
   public static void load() {
     if (resource != null) {
       return;
@@ -104,9 +107,5 @@ public class OpenCVJNILoader {
       System.err.println("OPENCV_DIR found at " + lib);
       System.load(lib);
     }
-
-    // Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
-    // System.out.println("m = " + m.dump());
-
   }
 }
