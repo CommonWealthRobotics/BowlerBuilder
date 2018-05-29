@@ -196,7 +196,7 @@ public class SalientDetector implements IObjectDetector {
   public ArrayList<Rect> SortFindContours(
       ArrayList<MatOfPoint> a, ArrayList<Rect> b, Mat c, int Horizon, int minArea) {
 
-    ArrayList<MatOfPoint> contourFinal = new ArrayList<MatOfPoint>();
+    ArrayList<MatOfPoint> contourFinal = new ArrayList<>();
 
     if (a.size() != 0 && a.size() < 100) {
 
@@ -299,7 +299,7 @@ public class SalientDetector implements IObjectDetector {
   @Override
   public List<Detection> getObjects(BufferedImage inImg, BufferedImage disp) {
 
-    ArrayList<Detection> ReturnedArea = new ArrayList<Detection>(); // areas
+    ArrayList<Detection> ReturnedArea = new ArrayList<>(); // areas
 
     Mat original = new Mat(); // original webcam image
 
@@ -308,8 +308,8 @@ public class SalientDetector implements IObjectDetector {
     if (original.empty()
         == false) { // Prevent runtime exception incase bowler derps and doesn't give a frame
 
-      ArrayList<Rect> STAGE1_BOXES = new ArrayList<Rect>();
-      ArrayList<Rect> STAGE2_BOXES = new ArrayList<Rect>();
+      ArrayList<Rect> STAGE1_BOXES = new ArrayList<>();
+      ArrayList<Rect> STAGE2_BOXES = new ArrayList<>();
 
       Mat ObjFound = new Mat(); // Where stuff is found and red boxes drawn
       ObjFound = original.clone();
@@ -326,7 +326,7 @@ public class SalientDetector implements IObjectDetector {
         Imgproc.blur(Canny, Canny, new Size(3, 3));
         Imgproc.Canny(Canny, Canny, 100, 300, 3, false);
 
-        ArrayList<MatOfPoint> contourCanny = new ArrayList<MatOfPoint>();
+        ArrayList<MatOfPoint> contourCanny = new ArrayList<>();
         Imgproc.findContours(
             Canny, contourCanny, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
@@ -360,7 +360,7 @@ public class SalientDetector implements IObjectDetector {
           if (prev == false) {
             ComparTo = Saliency.clone();
 
-            ArrayList<MatOfPoint> compCont = new ArrayList<MatOfPoint>();
+            ArrayList<MatOfPoint> compCont = new ArrayList<>();
             Imgproc.findContours(
                 ComparTo, compCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
@@ -372,7 +372,7 @@ public class SalientDetector implements IObjectDetector {
             prev = true;
           } else {
             double total = 0;
-            ArrayList<MatOfPoint> currCont = new ArrayList<MatOfPoint>();
+            ArrayList<MatOfPoint> currCont = new ArrayList<>();
             Imgproc.findContours(
                 Saliency, currCont, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
             for (int i = 0; i < currCont.size(); i++) {
@@ -388,7 +388,7 @@ public class SalientDetector implements IObjectDetector {
           }
         } else if (stage1 == true && stage3 == false) {
 
-          ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+          ArrayList<MatOfPoint> contours = new ArrayList<>();
 
           Imgproc.findContours(
               Saliency, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
@@ -461,7 +461,7 @@ public class SalientDetector implements IObjectDetector {
             Scalar grey_min1 = new Scalar(0, 0, 200);
             Scalar grey_max1 = new Scalar(0, 0, 256);
 
-            ArrayList<MatOfPoint> resultCont = new ArrayList<MatOfPoint>();
+            ArrayList<MatOfPoint> resultCont = new ArrayList<>();
             Imgproc.cvtColor(ObjectTemp, ObjectTemp, Imgproc.COLOR_BGR2HSV);
 
             // ArrayList<MatOfPoint> FinalContours = new ArrayList<MatOfPoint>();

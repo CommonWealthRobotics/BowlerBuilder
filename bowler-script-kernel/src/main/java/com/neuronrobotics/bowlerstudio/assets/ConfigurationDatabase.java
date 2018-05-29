@@ -63,7 +63,7 @@ public class ConfigurationDatabase {
 
   public static HashMap<String, Object> getParamMap(String paramsKey) {
     if (getDatabase().get(paramsKey) == null) {
-      getDatabase().put(paramsKey, new HashMap<String, Object>());
+      getDatabase().put(paramsKey, new HashMap<>());
     }
     return getDatabase().get(paramsKey);
   }
@@ -110,7 +110,7 @@ public class ConfigurationDatabase {
       e.printStackTrace();
     }
     if (database == null) {
-      database = new HashMap<String, HashMap<String, Object>>();
+      database = new HashMap<>();
     }
     return database;
   }

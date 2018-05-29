@@ -182,7 +182,7 @@ public class MobileBaseCadManager {
 
     MobileBase device = base;
     if (getBasetoCadMap().get(device) == null) {
-      getBasetoCadMap().put(device, new ArrayList<CSG>());
+      getBasetoCadMap().put(device, new ArrayList<>());
     }
 
     if (cadEngine == null) {
@@ -243,7 +243,7 @@ public class MobileBaseCadManager {
     int i = 0;
     for (DHParameterKinematics l : limbs) {
       if (getDHtoCadMap().get(l) == null) {
-        getDHtoCadMap().put(l, new ArrayList<CSG>());
+        getDHtoCadMap().put(l, new ArrayList<>());
       }
       ArrayList<CSG> arrayList = getDHtoCadMap().get(l);
       int j = 0;
@@ -690,7 +690,7 @@ public class MobileBaseCadManager {
                 @Override
                 public Set<CSG> getVisibleCSGs() {
                   // TODO Auto-generated method stub
-                  return new HashSet<CSG>(list);
+                  return new HashSet<>(list);
                 }
 
                 @Override

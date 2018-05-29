@@ -65,7 +65,7 @@ public class HaarDetector implements IObjectDetector {
 
       faceDetector.detectMultiScale(localImage, faceDetections);
       Rect[] smallArray = faceDetections.toArray();
-      ArrayList<Detection> myArray = new ArrayList<Detection>();
+      ArrayList<Detection> myArray = new ArrayList<>();
 
       for (int i = 0; i < smallArray.length; i++) {
         Rect r = smallArray[i];
@@ -91,7 +91,7 @@ public class HaarDetector implements IObjectDetector {
     } catch (CvException | NullPointerException | IllegalArgumentException e2) {
       // startup noise
       // e.printStackTrace();
-      return new ArrayList<Detection>();
+      return new ArrayList<>();
     }
   }
 }

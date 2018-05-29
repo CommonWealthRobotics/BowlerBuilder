@@ -169,7 +169,7 @@ public class Example {
     H.ones(new Size(hsv_image.width(),hsv_image.height()),CvType.CV_8UC1);*/
     Mat distance = new Mat(webcam_image.height(), webcam_image.width(), CvType.CV_8UC1);
     // new Mat();//new Size(webcam_image.width(),webcam_image.height()),CvType.CV_8UC1);
-    List<Mat> lhsv = new ArrayList<Mat>(3);
+    List<Mat> lhsv = new ArrayList<>(3);
     Mat circles = new Mat(); // No need (and don't know how) to initialize it.
     // The function later will do it... (to a 1*N*CV_32FC3)
     Scalar hsv_min = new Scalar(0, 50, 50, 0);

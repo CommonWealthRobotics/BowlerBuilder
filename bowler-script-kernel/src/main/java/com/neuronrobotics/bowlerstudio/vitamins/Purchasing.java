@@ -48,9 +48,9 @@ import org.apache.commons.io.IOUtils;
 public class Purchasing {
 
   private static String jsonRootDir = "json/";
-  private static final Map<String, CSG> fileLastLoaded = new HashMap<String, CSG>();
+  private static final Map<String, CSG> fileLastLoaded = new HashMap<>();
   private static final Map<String, HashMap<String, HashMap<String, PurchasingData>>> databaseSet =
-      new HashMap<String, HashMap<String, HashMap<String, PurchasingData>>>();
+      new HashMap<>();
   private static final String defaultgitRpoDatabase =
       "https://github.com/CommonWealthRobotics/Hardware-Purchasing.git";
   private static String gitRpoDatabase = defaultgitRpoDatabase;
@@ -64,7 +64,7 @@ public class Purchasing {
   public static HashMap<String, PurchasingData> getConfiguration(String type, String id) {
     HashMap<String, HashMap<String, PurchasingData>> database = getDatabase(type);
     if (database.get(id) == null) {
-      database.put(id, new HashMap<String, PurchasingData>());
+      database.put(id, new HashMap<>());
     }
 
     return database.get(id);
@@ -155,7 +155,7 @@ public class Purchasing {
         databaseSet.put(type, database);
 
       } catch (Exception e) {
-        databaseSet.put(type, new HashMap<String, HashMap<String, PurchasingData>>());
+        databaseSet.put(type, new HashMap<>());
       }
     }
     return databaseSet.get(type);
@@ -167,7 +167,7 @@ public class Purchasing {
 
   public static ArrayList<String> listVitaminTypes() {
 
-    ArrayList<String> types = new ArrayList<String>();
+    ArrayList<String> types = new ArrayList<>();
     File folder;
     try {
       folder =
@@ -191,7 +191,7 @@ public class Purchasing {
 
   public static ArrayList<String> listVitaminSizes(String type) {
 
-    ArrayList<String> types = new ArrayList<String>();
+    ArrayList<String> types = new ArrayList<>();
     HashMap<String, HashMap<String, PurchasingData>> database = getDatabase(type);
     Set<String> keys = database.keySet();
     for (String s : keys) {
@@ -205,7 +205,7 @@ public class Purchasing {
 
   public static ArrayList<String> listVitaminVariants(String type, String size) {
 
-    ArrayList<String> types = new ArrayList<String>();
+    ArrayList<String> types = new ArrayList<>();
     HashMap<String, PurchasingData> database = getDatabase(type).get(size);
     Set<String> keys = database.keySet();
 

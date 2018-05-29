@@ -55,9 +55,9 @@ import org.kohsuke.github.GHRepository;
 public class Vitamins {
 
   private static String jsonRootDir = "json/";
-  private static final Map<String, CSG> fileLastLoaded = new HashMap<String, CSG>();
+  private static final Map<String, CSG> fileLastLoaded = new HashMap<>();
   private static final Map<String, HashMap<String, HashMap<String, Object>>> databaseSet =
-      new HashMap<String, HashMap<String, HashMap<String, Object>>>();
+      new HashMap<>();
   private static final String defaultgitRpoDatabase =
       "https://github.com/madhephaestus/Hardware-Dimensions.git";
   private static String gitRpoDatabase = defaultgitRpoDatabase;
@@ -126,7 +126,7 @@ public class Vitamins {
       Object file = script.get("scriptGit");
       Object repo = script.get("scriptFile");
       if (file != null && repo != null) {
-        ArrayList<Object> servoMeasurments = new ArrayList<Object>();
+        ArrayList<Object> servoMeasurments = new ArrayList<>();
         servoMeasurments.add(id);
         newVitamin =
             (CSG)
@@ -164,7 +164,7 @@ public class Vitamins {
   public static HashMap<String, Object> getConfiguration(String type, String id) {
     HashMap<String, HashMap<String, Object>> database = getDatabase(type);
     if (database.get(id) == null) {
-      database.put(id, new HashMap<String, Object>());
+      database.put(id, new HashMap<>());
     }
     return database.get(id);
   }
@@ -276,7 +276,7 @@ public class Vitamins {
 
       } catch (Exception e) {
         e.printStackTrace();
-        databaseSet.put(type, new HashMap<String, HashMap<String, Object>>());
+        databaseSet.put(type, new HashMap<>());
       }
     }
     return databaseSet.get(type);
@@ -288,7 +288,7 @@ public class Vitamins {
 
   public static ArrayList<String> listVitaminTypes() {
 
-    ArrayList<String> types = new ArrayList<String>();
+    ArrayList<String> types = new ArrayList<>();
     File folder;
     try {
       folder =
@@ -312,7 +312,7 @@ public class Vitamins {
 
   public static ArrayList<String> listVitaminSizes(String type) {
 
-    ArrayList<String> types = new ArrayList<String>();
+    ArrayList<String> types = new ArrayList<>();
     HashMap<String, HashMap<String, Object>> database = getDatabase(type);
     Set<String> keys = database.keySet();
     for (String s : keys) {

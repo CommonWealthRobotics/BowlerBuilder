@@ -42,45 +42,45 @@ import org.opencv.imgproc.Imgproc;
 
 public class RGBColorDetector implements IObjectDetector {
 
-  private Mat rgb_image = new Mat();
+  private Mat rgbImage = new Mat();
   private Mat thresholded = new Mat();
   private Mat thresholded2 = new Mat();
 
   private Mat circles = new Mat(); // No need (and don't know how) to initialize it.
   // The function later will do it... (to a 1*N*CV_32FC3)
-  //    Scalar rgb_min = new Scalar(200, 200, 200, 0);
-  //    Scalar rgb_max = new Scalar(255, 255, 255, 0);
-  //    Scalar rgb_min2 = new Scalar(50, 50, 50, 0);
-  //    Scalar rgb_max2 = new Scalar(255, 255, 255, 0);
+  //    Scalar rgbMin = new Scalar(200, 200, 200, 0);
+  //    Scalar rgbMax = new Scalar(255, 255, 255, 0);
+  //    Scalar rgbMin2 = new Scalar(50, 50, 50, 0);
+  //    Scalar rgbMax2 = new Scalar(255, 255, 255, 0);
   private double[] data = new double[3];
   private List<Mat> lrgb;
   private Mat array255;
   private Mat distance;
-  private Scalar rgb_min;
-  private Scalar rgb_max;
-  private Scalar rgb_min2;
-  private Scalar rgb_max2;
+  private Scalar rgbMin;
+  private Scalar rgbMax;
+  private Scalar rgbMin2;
+  private Scalar rgbMax2;
 
   public RGBColorDetector(
-      Mat matImage, Scalar rgb_min, Scalar rgb_max, Scalar rgb_min2, Scalar rgb_max2) {
-    this.rgb_min = rgb_min;
-    this.rgb_max = rgb_max;
-    this.rgb_min2 = rgb_min2;
-    this.rgb_max2 = rgb_max2;
-    lrgb = new ArrayList<Mat>(3);
+      Mat matImage, Scalar rgbMin, Scalar rgbMax, Scalar rgbMin2, Scalar rgbMax2) {
+    this.rgbMin = rgbMin;
+    this.rgbMax = rgbMax;
+    this.rgbMin2 = rgbMin2;
+    this.rgbMax2 = rgbMax2;
+    lrgb = new ArrayList<>(3);
     array255 = new Mat(matImage.height(), matImage.width(), CvType.CV_8UC1);
     array255.setTo(new Scalar(255));
     distance = new Mat(matImage.height(), matImage.width(), CvType.CV_8UC1);
   }
 
   public void setThreshhold(Scalar rgb_min, Scalar rgb_max) {
-    this.rgb_min = rgb_min;
-    this.rgb_max = rgb_max;
+    this.rgbMin = rgb_min;
+    this.rgbMax = rgb_max;
   }
 
   public void setThreshhold2(Scalar rgb_min2, Scalar rgb_max2) {
-    this.rgb_min2 = rgb_min2;
-    this.rgb_max2 = rgb_max2;
+    this.rgbMin2 = rgb_min2;
+    this.rgbMax2 = rgb_max2;
   }
 
   public List<Detection> getObjects(BufferedImage in, BufferedImage disp) {
@@ -88,9 +88,9 @@ public class RGBColorDetector implements IObjectDetector {
     OpenCVImageConversionFactory.bufferedImageToMat(in, inputImage);
     Mat displayImage = new Mat();
     // One way to select a range of colors by Hue
-    Imgproc.cvtColor(inputImage, rgb_image, Imgproc.COLOR_BGR2HSV);
-    Core.inRange(rgb_image, rgb_min, rgb_max, thresholded);
-    Core.inRange(rgb_image, rgb_min2, rgb_max2, thresholded2);
+    Imgproc.cvtColor(inputImage, rgbImage, Imgproc.COLOR_BGR2HSV);
+    Core.inRange(rgbImage, rgbMin, rgbMax, thresholded);
+    Core.inRange(rgbImage, rgbMin2, rgbMax2, thresholded2);
     Core.bitwise_or(thresholded, thresholded2, thresholded);
     // Notice that the thresholds don't really work as a "distance"
     // Ideally we would like to cut the image by hue and then pick just
@@ -100,14 +100,14 @@ public class RGBColorDetector implements IObjectDetector {
     // But if we want to be "faster" we can do just (255-S)+(255-V)>Range
     // Or otherwise 510-S-V>Range
     // Anyhow, we do the following... Will see how fast it goes...
-    Core.split(rgb_image, lrgb); // We get 3 2D one channel Mats
-    Mat S = lrgb.get(1);
-    Mat V = lrgb.get(2);
-    Core.subtract(array255, S, S);
-    Core.subtract(array255, V, V);
-    S.convertTo(S, CvType.CV_32F);
-    V.convertTo(V, CvType.CV_32F);
-    Core.magnitude(S, V, distance);
+    Core.split(rgbImage, lrgb); // We get 3 2D one channel Mats
+    Mat sMat = lrgb.get(1);
+    Mat vMat = lrgb.get(2);
+    Core.subtract(array255, sMat, sMat);
+    Core.subtract(array255, vMat, vMat);
+    sMat.convertTo(sMat, CvType.CV_32F);
+    vMat.convertTo(vMat, CvType.CV_32F);
+    Core.magnitude(sMat, vMat, distance);
     Core.inRange(distance, new Scalar(0.0), new Scalar(200.0), thresholded2);
     Core.bitwise_and(thresholded, thresholded2, thresholded);
     // Apply the Hough Transform to find the circles
@@ -136,7 +136,7 @@ public class RGBColorDetector implements IObjectDetector {
     int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a
     // float)
     float[] data2 = new float[rows * elemSize / 4];
-    ArrayList<Detection> myArray = new ArrayList<Detection>();
+    ArrayList<Detection> myArray = new ArrayList<>();
     Point center = null; //
 
     if (data2.length > 0) {

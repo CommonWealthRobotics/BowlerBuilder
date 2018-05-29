@@ -89,7 +89,7 @@ public class ScriptingEngine { // this subclasses boarder pane for the widgets
   // hard for java...
   private static final int TIME_TO_WAIT_BETWEEN_GIT_PULL = 100000;
   /** */
-  private static final Map<String, Long> fileLastLoaded = new HashMap<String, Long>();
+  private static final Map<String, Long> fileLastLoaded = new HashMap<>();
 
   private static boolean hasnetwork = false;
   private static boolean autoupdate = false;
@@ -145,7 +145,7 @@ public class ScriptingEngine { // this subclasses boarder pane for the widgets
   // UsernamePasswordCredentialsProvider(name,
   // password);
   private static ArrayList<IGithubLoginListener> loginListeners =
-      new ArrayList<IGithubLoginListener>();
+      new ArrayList<>();
 
   private static HashMap<String, IScriptingLanguage> langauges = new HashMap<>();
 

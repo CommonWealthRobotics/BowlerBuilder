@@ -69,7 +69,7 @@ public class ColorDetector implements IObjectDetector {
     this.hsv_max = hsv_max;
     this.hsv_min2 = hsv_min2;
     this.hsv_max2 = hsv_max2;
-    lhsv = new ArrayList<Mat>(3);
+    lhsv = new ArrayList<>(3);
     array255 = new Mat(matImage.height(), matImage.width(), CvType.CV_8UC1);
     array255.setTo(new Scalar(255));
     distance = new Mat(matImage.height(), matImage.width(), CvType.CV_8UC1);
@@ -138,7 +138,7 @@ public class ColorDetector implements IObjectDetector {
     int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a
     // float)
     float[] data2 = new float[rows * elemSize / 4];
-    ArrayList<Detection> myArray = new ArrayList<Detection>();
+    ArrayList<Detection> myArray = new ArrayList<>();
     Point center = null; //
 
     if (data2.length > 0) {

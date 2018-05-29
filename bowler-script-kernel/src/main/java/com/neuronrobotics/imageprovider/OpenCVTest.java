@@ -83,10 +83,10 @@ public class OpenCVTest {
     frame.setSize(640, 580);
     frame.setVisible(true);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    detectors = new ArrayList<IObjectDetector>();
-    ArrayList<AbstractImageProvider> imageProviders = new ArrayList<AbstractImageProvider>();
-    ArrayList<ImageIcon> iconsCaptured = new ArrayList<ImageIcon>();
-    ArrayList<ImageIcon> iconsProcessed = new ArrayList<ImageIcon>();
+    detectors = new ArrayList<>();
+    ArrayList<AbstractImageProvider> imageProviders = new ArrayList<>();
+    ArrayList<ImageIcon> iconsCaptured = new ArrayList<>();
+    ArrayList<ImageIcon> iconsProcessed = new ArrayList<>();
 
     Scalar upper = new Scalar(30, 150, 0, 0);
     Scalar lower = new Scalar(240, 166, 0, 0);

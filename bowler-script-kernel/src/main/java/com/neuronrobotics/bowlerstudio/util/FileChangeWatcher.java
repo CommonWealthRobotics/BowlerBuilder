@@ -101,12 +101,12 @@ public class FileChangeWatcher {
   private final boolean recursive = false;
 
   /** The listeners. */
-  private ArrayList<IFileChangeListener> listeners = new ArrayList<IFileChangeListener>();
+  private ArrayList<IFileChangeListener> listeners = new ArrayList<>();
 
   private static boolean runThread = true;
 
   private static HashMap<String, FileChangeWatcher> activeListener =
-      new HashMap<String, FileChangeWatcher>();
+      new HashMap<>();
   private Thread watcherThread = null;
 
   /** clear the listeners */
@@ -143,7 +143,7 @@ public class FileChangeWatcher {
     this.setFileToWatch(fileToWatch);
 
     this.watcher = FileSystems.getDefault().newWatchService();
-    this.keys = new HashMap<WatchKey, Path>();
+    this.keys = new HashMap<>();
     Path dir = Paths.get(fileToWatch.getParent());
     if (recursive) {
       System.out.format("Scanning %s ...\n", dir);

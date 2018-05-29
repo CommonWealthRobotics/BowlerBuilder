@@ -89,7 +89,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
 
   public boolean run(
       int width, int height, int frameRate, ArrayList<File> inFiles, File outputFile) {
-    Vector<String> inputFiles = new Vector<String>();
+    Vector<String> inputFiles = new Vector<>();
     for (File f : inFiles) {
       inputFiles.addElement(f.getAbsolutePath());
     }
@@ -294,7 +294,7 @@ public class ImagesToVideo implements ControllerListener, DataSinkListener {
     // Parse the arguments.
     int i = 0;
     int width = -1, height = -1, frameRate = 1;
-    Vector<String> inputFiles = new Vector<String>();
+    Vector<String> inputFiles = new Vector<>();
     String outputURL = null;
 
     while (i < args.length) {
