@@ -135,56 +135,12 @@ public class ColorDetector implements IObjectDetector {
 
     // int cols = circles.cols();
     int rows = circles.rows();
-    int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a
-    // float)
+    int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a float)
     float[] data2 = new float[rows * elemSize / 4];
     ArrayList<Detection> myArray = new ArrayList<>();
-    Point center = null; //
+    Point center = null;
 
-    if (data2.length > 0) {
-      circles.get(0, 0, data2); // Points to the first element and reads
-      // the whole thing
-      // into data2
-      for (int i = 0; i < data2.length; i = i + 3) {
-        center = new Point(data2[i], data2[i + 1]);
-        Size objectSize = new Size((double) data2[i + 2], (double) data2[i + 2]);
-        // Core.ellipse( this, center, new Size( rect.width*0.5,
-        // rect.height*0.5), 0, 0, 360, new Scalar( 255, 0, 255 ), 4, 8,
-        // 0 );
-        Core.ellipse(displayImage, center, objectSize, 0, 0, 360, new Scalar(255, 0, 255), 4, 8, 0);
-        myArray.add(new Detection(center.x, center.y, objectSize.height));
-      }
-      if (center != null) {
-        Core.putText(
-            displayImage,
-            String.format(
-                "Circles ("
-                    + String.valueOf(data[0])
-                    + ","
-                    + String.valueOf(data[1])
-                    + ","
-                    + String.valueOf(data[2])
-                    + ")"),
-            new Point(30, 30),
-            2
-            // FONT_HERSHEY_SCRIPT_SIMPLEX
-            ,
-            .5,
-            new Scalar(100, 10, 10, 255),
-            3);
-        for (int i = 0; i < myArray.size(); i++) {
-
-          Point centerTmp = new Point(myArray.get(i).getX(), myArray.get(i).getY());
-          Core.line(
-              displayImage,
-              new Point(150, 50),
-              centerTmp,
-              new Scalar(100, 10, 10) /* CV_BGR(100,10,10) */,
-              3);
-          Core.circle(displayImage, centerTmp, 10, new Scalar(100, 10, 10), 3);
-        }
-      }
-    }
+    DetectionUtil.labelDetectedObjects(displayImage, data2, myArray, center, circles, data);
 
     AbstractImageProvider.deepCopy(
         OpenCVImageConversionFactory.matToBufferedImage(displayImage), disp);
