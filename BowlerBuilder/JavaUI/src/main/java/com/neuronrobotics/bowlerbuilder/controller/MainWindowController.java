@@ -41,6 +41,7 @@ import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
@@ -59,6 +60,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -89,12 +91,9 @@ import javafx.stage.FileChooser;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
@@ -451,11 +450,7 @@ public class MainWindowController implements PreferencesConsumer {
                     final AceCreatureLabController controller = tab.getController();
 
                     try {
-                      final String xmlContent = ScriptingEngine.codeFromGit(file[0], file[1])[0];
-
-                      final MobileBase mobileBase =
-                          new MobileBase(IOUtils.toInputStream(xmlContent, "UTF-8"));
-                      mobileBase.setGitSelfSource(file);
+                      final MobileBase mobileBase = MobileBaseLoader.fromGit(file[0], file[1]);
                       mobileBase.connect();
 
                       final MobileBaseCadManager mobileBaseCadManager =
@@ -1042,19 +1037,19 @@ public class MainWindowController implements PreferencesConsumer {
       if (code != null) {
         final String content = code[0];
         final JSONParser parser = new JSONParser();
-        final JSONObject result = (JSONObject) parser.parse(content);
+        @SuppressWarnings("unchecked") // We have to assume the format of the file
+        final Map<String, Map<String, String>> result =
+            (Map<String, Map<String, String>>) parser.parse(content);
 
-        final JSONArray jsonArray = (JSONArray) result.get("files");
-        for (final Object element : jsonArray) {
-          final JSONObject jsonObject = (JSONObject) element;
-          final String pushURL = (String) jsonObject.get("pushURL");
-          final String fileName = (String) jsonObject.get("fileName");
-          final String creatureName = (String) jsonObject.get("creatureName");
+        result.forEach(
+            (key, value) -> {
+              final String pushURL = value.get("scriptGit");
+              final String fileName = value.get("scriptFile");
 
-          final MenuItem menuItem = new MenuItem(creatureName);
-          menuItem.setOnAction(event -> loadCreatureLab(pushURL, fileName));
-          menu.getItems().add(menuItem);
-        }
+              final MenuItem menuItem = new MenuItem(key);
+              menuItem.setOnAction(event -> loadCreatureLab(pushURL, fileName));
+              menu.getItems().add(menuItem);
+            });
       }
     } catch (final Exception e) {
       LOGGER.warning("Could not load default creatures.\n" + Throwables.getStackTraceAsString(e));

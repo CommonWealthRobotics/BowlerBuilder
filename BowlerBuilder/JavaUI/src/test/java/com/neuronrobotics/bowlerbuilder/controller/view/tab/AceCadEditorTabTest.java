@@ -13,6 +13,7 @@ import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.FxHelper;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.util.Verified;
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import eu.mihosoft.vrl.v3d.CSG;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
 
   @Override
   public void start(final Stage stage) throws IOException {
-    tab = new BaseCadEditorTab("");
+    tab = new AceCadEditorTab("");
     stage.setScene(tab.getView().getScene());
     stage.show();
   }

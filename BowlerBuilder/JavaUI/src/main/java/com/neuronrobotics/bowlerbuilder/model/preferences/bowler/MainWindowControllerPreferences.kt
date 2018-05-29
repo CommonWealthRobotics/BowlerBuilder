@@ -36,10 +36,10 @@ data class MainWindowControllerPreferences(
     var favoriteGists: Set<String> = emptySet(),
     @Preference(name = "Default Creature Push URL", description = "The default creature push URL.")
     var defaultCreaturePushURL: String =
-            "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git",
+            "https://github.com/CommonWealthRobotics/BowlerStudioExampleRobots.git",
     @Preference(name = "Default Creature File Name",
                 description = "The default creature file name.")
-    var defaultCreatureFileName: String = "defaultCreatures.json"
+    var defaultCreatureFileName: String = "exampleRobots.json"
 ) : Preferences {
 
     override fun save() =
