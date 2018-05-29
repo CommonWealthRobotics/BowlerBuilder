@@ -44,7 +44,7 @@ import org.opencv.objdetect.CascadeClassifier;
 
 public class HaarDetector implements IObjectDetector {
 
-  private MatOfRect faceDetections = new MatOfRect();;
+  private MatOfRect faceDetections = new MatOfRect();
   private CascadeClassifier faceDetector;
   private double scale = .3;
 
@@ -54,6 +54,13 @@ public class HaarDetector implements IObjectDetector {
     faceDetector = new CascadeClassifier(cascade.getAbsolutePath());
   }
 
+  /**
+   * Run object detection.
+   *
+   * @param in image to read from
+   * @param disp image to label detected objects on
+   * @return a list of detected objects
+   */
   public List<Detection> getObjects(BufferedImage in, BufferedImage disp) {
     Mat inputImage = new Mat();
     OpenCVImageConversionFactory.bufferedImageToMat(in, inputImage);
