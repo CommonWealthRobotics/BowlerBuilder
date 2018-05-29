@@ -85,6 +85,12 @@ public class OpenCVImageProvider extends AbstractImageProvider {
     return true;
   }
 
+  @Override
+  public BufferedImage captureNewImage() {
+    getVc().read(m);
+    return OpenCVImageConversionFactory.matToBufferedImage(m);
+  }
+
   private VideoCapture getVc() {
     return vc;
   }
@@ -111,11 +117,5 @@ public class OpenCVImageProvider extends AbstractImageProvider {
   public ArrayList<String> getNamespacesImp() {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public BufferedImage captureNewImage() {
-    getVc().read(m);
-    return OpenCVImageConversionFactory.matToBufferedImage(m);
   }
 }
