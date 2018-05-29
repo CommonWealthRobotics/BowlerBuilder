@@ -29,7 +29,8 @@ class DefaultScriptEditorPreferencesService : PreferencesService<AceScriptEditor
 }
 
 data class AceScriptEditorPreferences(
-    @Preference(name = "Max Toast Length", description = "The maximum length for a toast in the script editor.")
+    @Preference(name = "Max Toast Length",
+                description = "The maximum length for a toast in the script editor.")
     var maxToastLength: Int = 15,
     @Preference(name = "Font Size", description = "The editor's font size.")
     var fontSize: Int = 14

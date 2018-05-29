@@ -7,7 +7,6 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller; // NOPMD
 
-import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
 
 import com.google.common.base.Charsets;
@@ -39,6 +38,7 @@ import com.neuronrobotics.bowlerbuilder.view.dialog.preferences.PreferencesDialo
 import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine;

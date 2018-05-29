@@ -8,7 +8,8 @@ import com.neuronrobotics.bowlerbuilder.plugin.Plugin
 import java.io.File
 import java.io.FileNotFoundException
 
-class MainWindowControllerPreferencesService : PreferencesService<MainWindowControllerPreferences> {
+class MainWindowControllerPreferencesService :
+        PreferencesService<MainWindowControllerPreferences> {
     private val path = getFilePath("MainWindowController")
 
     override fun getCurrentPreferences() =
@@ -34,8 +35,10 @@ data class MainWindowControllerPreferences(
     @Preference(name = "Favorite Gists", description = "The favorited gists.")
     var favoriteGists: Set<String> = emptySet(),
     @Preference(name = "Default Creature Push URL", description = "The default creature push URL.")
-    var defaultCreaturePushURL: String = "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git",
-    @Preference(name = "Default Creature File Name", description = "The default creature file name.")
+    var defaultCreaturePushURL: String =
+            "https://gist.github.com/e72d6c298cfc02cc5b5f11061cd99702.git",
+    @Preference(name = "Default Creature File Name",
+                description = "The default creature file name.")
     var defaultCreatureFileName: String = "defaultCreatures.json"
 ) : Preferences {
 
@@ -46,4 +49,5 @@ data class MainWindowControllerPreferences(
 /**
  * Used by automatic introspection. See [CustomBeanInfo].
  */
-class MainWindowControllerPreferencesBeanInfo : CustomBeanInfo(MainWindowControllerPreferences::class.java)
+class MainWindowControllerPreferencesBeanInfo :
+        CustomBeanInfo(MainWindowControllerPreferences::class.java)

@@ -28,7 +28,8 @@ class BowlerCadEnginePreferencesService : PreferencesService<BowlerCadEnginePref
 }
 
 data class BowlerCadEnginePreferences(
-    @Preference(name = "Anti-aliasing", description = "Whether to apply anti-aliasing in the CAD engine.")
+    @Preference(name = "Anti-aliasing",
+                description = "Whether to apply anti-aliasing in the CAD engine.")
     var shouldAA: Boolean = true
 ) : Preferences {
 

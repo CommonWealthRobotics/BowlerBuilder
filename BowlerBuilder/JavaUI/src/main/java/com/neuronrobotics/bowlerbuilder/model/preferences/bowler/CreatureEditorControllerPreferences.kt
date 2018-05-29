@@ -7,7 +7,8 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesService
 import java.io.File
 import java.io.FileNotFoundException
 
-class CreatureEditorControllerPreferencesService : PreferencesService<CreatureEditorControllerPreferences> {
+class CreatureEditorControllerPreferencesService :
+        PreferencesService<CreatureEditorControllerPreferences> {
     private val path = getFilePath("CreatureEditorController")
 
     override fun getCurrentPreferences() =
@@ -28,7 +29,8 @@ class CreatureEditorControllerPreferencesService : PreferencesService<CreatureEd
 }
 
 data class CreatureEditorControllerPreferences(
-    @Preference(name = "Auto-regen CAD", description = "Whether to automatically regenerate CAD in the Creature editor.")
+    @Preference(name = "Auto-regen CAD",
+                description = "Whether to automatically regenerate CAD in the Creature editor.")
     var autoRegenCAD: Boolean = false
 ) : Preferences {
 
@@ -39,4 +41,5 @@ data class CreatureEditorControllerPreferences(
 /**
  * Used by automatic introspection. See [CustomBeanInfo].
  */
-class CreatureEditorControllerPreferencesBeanInfo : CustomBeanInfo(CreatureEditorControllerPreferences::class.java)
+class CreatureEditorControllerPreferencesBeanInfo :
+        CustomBeanInfo(CreatureEditorControllerPreferences::class.java)
