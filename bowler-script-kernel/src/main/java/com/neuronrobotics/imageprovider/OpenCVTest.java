@@ -48,34 +48,11 @@ import org.opencv.core.Scalar;
 public class OpenCVTest {
 
   private ArrayList<IObjectDetector> detectors;
-  private RGBColorDetector mainFilter;
 
+  /**
+   * Main object detection demo.
+   */
   public void run() {
-
-    File harr = null;
-    try {
-      harr =
-          ScriptingEngine.fileFromGit(
-              "https://github.com/madhephaestus/DefaultHaarCascade.git",
-              "haarcascade_frontalface_default.xml");
-    } catch (InvalidRemoteException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (TransportException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (GitAPIException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    HaarDetector faceDetectorObject = new HaarDetector(harr);
-
-    BufferedImage inputImage = AbstractImageProvider.newBufferImage(640, 480);
-    BufferedImage displayImage = AbstractImageProvider.newBufferImage(640, 480);
-
     JFrame frame = new JFrame();
 
     JTabbedPane tabs = new JTabbedPane();
@@ -88,28 +65,22 @@ public class OpenCVTest {
     ArrayList<ImageIcon> iconsCaptured = new ArrayList<>();
     ArrayList<ImageIcon> iconsProcessed = new ArrayList<>();
 
-    Scalar upper = new Scalar(30, 150, 0, 0);
-    Scalar lower = new Scalar(240, 166, 0, 0);
-
-    Scalar upper1 = new Scalar(360, 255, 255, 0);
-    Scalar lower1 = new Scalar(240, 0, 0, 0);
-
     imageProviders.add(new OpenCVImageProvider(0)); // Image provider
+
+    BufferedImage inputImage = AbstractImageProvider.newBufferImage(640, 480);
+    BufferedImage displayImage = AbstractImageProvider.newBufferImage(640, 480);
     imageProviders.get(0).getLatestImage(inputImage, displayImage);
     // Provides the static file to the processors
     imageProviders.add(new StaticFileProvider(new File("image.png")));
 
-    //        mainFilter = new RGBColorDetector(inputImage,
-    //                lower,
-    //                upper,
-    //                lower1,
-    //                upper1);
-
     // add human detector later
+    // harr = ScriptingEngine.fileFromGit(
+    // "https://github.com/madhephaestus/DefaultHaarCascade.git",
+    // "haarcascade_frontalface_default.xml");
+    // HaarDetector faceDetectorObject = new HaarDetector(harr);
     // detectors.add(faceDetectorObject);
     detectors.add(new SalientDetector());
     // detectors.add(new WhiteBlobDetect((int) upper.val[0],(int) upper.val[1], lower));
-    Tab t = new Tab();
 
     int x = 0;
     for (AbstractImageProvider img : imageProviders) {
@@ -138,9 +109,7 @@ public class OpenCVTest {
           for (int j = 0; j < detectors.size(); j++) { // list of object detectors
             List<Detection> data = detectors.get(j).getObjects(inputImage, displayImage);
             iconsProcessed.get(i * j).setImage(displayImage); // show processed image
-
             // System.out.println("Got: "+data.length);
-
           }
           frame.repaint();
         }
@@ -150,8 +119,12 @@ public class OpenCVTest {
     }
   }
 
-  /** @param args */
-  public static void main(String[] args) { // Main entry for object detection
+  /**
+   * Main entry for object detection.
+   *
+   * @param args ignored
+   */
+  public static void main(String[] args) {
 
     new OpenCVTest().run(); // starts
   }
