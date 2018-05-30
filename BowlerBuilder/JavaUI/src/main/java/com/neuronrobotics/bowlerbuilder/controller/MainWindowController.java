@@ -55,6 +55,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -313,7 +314,7 @@ public class MainWindowController implements PreferencesConsumer {
   @FXML
   private void onLoadCreature(final ActionEvent actionEvent) {
     final GistFileSelectionDialog dialog =
-        new GistFileSelectionDialog("Select Creature File", file -> file.endsWith(".xml"));
+        new GistFileSelectionDialog("Select Creature File", file -> file.endsWith(".xml") || file.endsWith(".groovy"));
     dialog.showAndWait().ifPresent(result -> loadCreatureLab(result[0], result[1]));
   }
 
@@ -450,7 +451,22 @@ public class MainWindowController implements PreferencesConsumer {
                     final AceCreatureLabController controller = tab.getController();
 
                     try {
-                      final MobileBase mobileBase = MobileBaseLoader.fromGit(file[0], file[1]);
+                      final MobileBase mobileBase;
+                      if (file[1].toLowerCase().endsWith(".xml")) {
+                        mobileBase = MobileBaseLoader.fromGit(file[0], file[1]);
+                      } else {
+                        final Object result = ScriptingEngine.gitScriptRun(file[0], file[1], null);
+                        if (result instanceof MobileBase) {
+                          mobileBase = (MobileBase) result;
+                        } else {
+                          LOGGER.severe("Tried to load a script result as a MobileBase, "
+                              + "but the result was not a MobileBase."
+                          + "File: " + Arrays.toString(file));
+                          throw new IllegalStateException("Tried to load a script result as a "
+                              + "MobileBase, but the result was not a MobileBase.");
+                        }
+                      }
+
                       mobileBase.connect();
 
                       final MobileBaseCadManager mobileBaseCadManager =
