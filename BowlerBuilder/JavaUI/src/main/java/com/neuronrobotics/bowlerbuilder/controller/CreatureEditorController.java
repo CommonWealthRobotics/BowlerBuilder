@@ -27,6 +27,7 @@ import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.PreferencesConsumer;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferences;
 import com.neuronrobotics.bowlerbuilder.model.preferences.bowler.CreatureEditorControllerPreferencesService;
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.FullBodyJogWidget;
 import com.neuronrobotics.bowlerbuilder.view.dialog.AddLimbDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.GistFileSelectionDialog;
 import com.neuronrobotics.bowlerbuilder.view.dialog.PublishDialog;
@@ -324,7 +325,7 @@ public class CreatureEditorController implements PreferencesConsumer {
 
     try {
       final Node content = loader.load();
-      final VBox container = new VBox(10, content, movementWidget);
+      final VBox container = new VBox(10, new FullBodyJogWidget(device).getView(), content, movementWidget);
       container.maxWidth(Double.MAX_VALUE);
       content.maxWidth(Double.MAX_VALUE);
       Platform.runLater(() -> movementTab.setContent(getScrollPane(container)));
