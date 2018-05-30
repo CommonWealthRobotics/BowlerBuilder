@@ -314,7 +314,8 @@ public class MainWindowController implements PreferencesConsumer {
   @FXML
   private void onLoadCreature(final ActionEvent actionEvent) {
     final GistFileSelectionDialog dialog =
-        new GistFileSelectionDialog("Select Creature File", file -> file.endsWith(".xml") || file.endsWith(".groovy"));
+        new GistFileSelectionDialog(
+            "Select Creature File", file -> file.endsWith(".xml") || file.endsWith(".groovy"));
     dialog.showAndWait().ifPresent(result -> loadCreatureLab(result[0], result[1]));
   }
 
@@ -459,11 +460,14 @@ public class MainWindowController implements PreferencesConsumer {
                         if (result instanceof MobileBase) {
                           mobileBase = (MobileBase) result;
                         } else {
-                          LOGGER.severe("Tried to load a script result as a MobileBase, "
-                              + "but the result was not a MobileBase."
-                          + "File: " + Arrays.toString(file));
-                          throw new IllegalStateException("Tried to load a script result as a "
-                              + "MobileBase, but the result was not a MobileBase.");
+                          LOGGER.severe(
+                              "Tried to load a script result as a MobileBase, "
+                                  + "but the result was not a MobileBase."
+                                  + "File: "
+                                  + Arrays.toString(file));
+                          throw new IllegalStateException(
+                              "Tried to load a script result as a "
+                                  + "MobileBase, but the result was not a MobileBase.");
                         }
                       }
 

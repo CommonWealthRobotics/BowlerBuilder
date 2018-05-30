@@ -563,26 +563,35 @@ public class MobileBaseCadManager {
     }
   }
 
+  /** Regenerates CAD if it not already generating and if CAD should auto-regen. */
   public void generateCad() {
-    if (cadGenerating || !getAutoRegen()) {
+    generateCad(false);
+  }
+
+  /**
+   * Regenerates CAD if it not already generating and if CAD should auto-regen.
+   *
+   * @param force whether to ignore the state of auto-regen
+   */
+  public void generateCad(final boolean force) {
+    if (cadGenerating || (!getAutoRegen() && !force)) {
       return;
     }
+
     cadGenerating = true;
-    // new RuntimeException().printStackTrace();
-    // new Exception().printStackTrace();
     new Thread() {
       @Override
       public void run() {
         System.out.print("\r\nGenerating CAD...\r\n");
         setName("MobileBaseCadManager Generating cad Thread ");
-        // new Exception().printStackTrace();
+
         MobileBase device = base;
         try {
           setAllCad(generateBody(device));
         } catch (Exception e) {
           getUi().highlightException(getCadScript(), e);
         }
-        // System.out.print("\r\nDone Generating CAD!\r\n");
+
         getUi().setCsg(MobileBaseCadManager.get(base), getCadScript());
         cadGenerating = false;
         System.out.print("\r\nDone Generating CAD!\r\n");

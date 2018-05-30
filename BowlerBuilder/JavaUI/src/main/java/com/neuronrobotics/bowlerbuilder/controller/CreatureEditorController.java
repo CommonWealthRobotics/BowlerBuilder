@@ -135,7 +135,7 @@ public class CreatureEditorController implements PreferencesConsumer {
 
     selectedWidgetPane.set(limbWidget); // Limb widget to start
 
-    // Change the widget pane new widgets go into when the user changes tabs
+    // Change the widget pane that new widgets go into when the user changes tabs
     creatureTabPane
         .getSelectionModel()
         .selectedItemProperty()
@@ -837,7 +837,7 @@ public class CreatureEditorController implements PreferencesConsumer {
 
   @FXML
   private void onRegenCAD(final ActionEvent actionEvent) {
-    regenCAD();
+    regenCAD(true);
   }
 
   @FXML
@@ -852,8 +852,17 @@ public class CreatureEditorController implements PreferencesConsumer {
 
   /** Regenerate {@link MobileBase} CAD if there is a non-null {@link MobileBaseCadManager}. */
   public void regenCAD() {
+    regenCAD(false);
+  }
+
+  /**
+   * Regenerate {@link MobileBase} CAD if there is a non-null {@link MobileBaseCadManager}.
+   *
+   * @param force whether to ignore the state of auto-regen
+   */
+  public void regenCAD(final boolean force) {
     if (cadManager != null) {
-      cadManager.generateCad(); // TODO: Always regen CAD regardless of auto regen flag
+      cadManager.generateCad(force);
     }
   }
 

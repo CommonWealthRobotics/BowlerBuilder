@@ -33,7 +33,7 @@ public class LimbLayoutController {
   private static final Logger LOGGER =
       LoggerUtilities.getLogger(LimbLayoutController.class.getSimpleName());
   protected final MobileBase device;
-  protected final ObjectProperty<Optional<DHParameterKinematics>> limbSelection;
+  final ObjectProperty<Optional<DHParameterKinematics>> limbSelection;
   @FXML private HBox legHBox;
   @FXML private ImageView legIcon;
   @FXML private HBox legPaneHBox;
