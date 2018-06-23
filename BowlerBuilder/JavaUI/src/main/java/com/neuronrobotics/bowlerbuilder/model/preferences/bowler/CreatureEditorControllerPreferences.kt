@@ -9,6 +9,7 @@ import java.io.FileNotFoundException
 
 class CreatureEditorControllerPreferencesService :
         PreferencesService<CreatureEditorControllerPreferences> {
+
     private val path = getFilePath("CreatureEditorController")
 
     override fun getCurrentPreferences() =

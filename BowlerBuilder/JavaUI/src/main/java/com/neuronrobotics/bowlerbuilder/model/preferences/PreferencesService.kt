@@ -1,5 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.model.preferences
 
+import java.io.File
+
 interface PreferencesService<T : Any> {
 
     /**
@@ -27,6 +29,19 @@ interface PreferencesService<T : Any> {
     /**
      * The preferences file path.
      */
-    @JvmDefault
-    fun getFilePath(name: String) = "${PreferencesPath.PATH}$name.json"
+    fun getFilePath(name: String): String {
+        createPreferencesFolder()
+        return "${PreferencesPath.PATH}$name.json"
+    }
+
+    /**
+     * Create the preferences folder if it does not exist.
+     */
+    private fun createPreferencesFolder() {
+        File(PreferencesPath.PATH).apply {
+            if (!exists()) {
+                mkdir()
+            }
+        }
+    }
 }

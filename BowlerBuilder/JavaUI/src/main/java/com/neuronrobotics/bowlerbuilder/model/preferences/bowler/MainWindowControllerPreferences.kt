@@ -10,6 +10,7 @@ import java.io.FileNotFoundException
 
 class MainWindowControllerPreferencesService :
         PreferencesService<MainWindowControllerPreferences> {
+
     private val path = getFilePath("MainWindowController")
 
     override fun getCurrentPreferences() =

@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.Test
+import org.gradle.util.GFileUtils
 
 plugins {
     jacoco
@@ -265,7 +266,7 @@ configure(kotlinProjects) {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xenable-jvm-default")
+            freeCompilerArgs = listOf("-Xjvm-default=enable")
         }
     }
 
@@ -367,6 +368,23 @@ configure(javaProjects + kotlinProjects) {
 task<Wrapper>("wrapper") {
     gradleVersion = "4.7"
     distributionType = Wrapper.DistributionType.ALL
+
+    doLast {
+        /*
+         * Copy the properties file into the buildSrc project.
+         * Related issues:
+         *
+         * https://youtrack.jetbrains.com/issue/KT-14895
+         * https://youtrack.jetbrains.com/issue/IDEA-169717
+         * https://youtrack.jetbrains.com/issue/IDEA-153336
+         */
+        val buildSrcWrapperDir = File(rootDir, "buildSrc/gradle/wrapper")
+        GFileUtils.mkdirs(buildSrcWrapperDir)
+        copy {
+            from(propertiesFile)
+            into(buildSrcWrapperDir)
+        }
+    }
 }
 
 /**
