@@ -11,7 +11,6 @@ class BowlerCadEnginePreferencesService : PreferencesService<BowlerCadEnginePref
 
     private val path = getFilePath("BowlerCadEngine")
 
-
     override fun getCurrentPreferences() =
             try {
                 Klaxon().parse<BowlerCadEnginePreferences>(File(path).readText())

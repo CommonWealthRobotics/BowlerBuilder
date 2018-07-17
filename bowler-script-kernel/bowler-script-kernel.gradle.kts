@@ -120,6 +120,15 @@ spotless {
     }
 }
 
+// Disable all style/quality checks for the kernel except spotless
 checkstyle {
-    configFile = file("${rootProject.rootDir}/config/checkstyle/checkstyle.xml")
+    sourceSets = listOf()
+}
+
+findbugs {
+    sourceSets = listOf()
+}
+
+pmd {
+    sourceSets = listOf()
 }

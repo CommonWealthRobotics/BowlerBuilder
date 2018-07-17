@@ -325,7 +325,8 @@ public class CreatureEditorController implements PreferencesConsumer {
 
     try {
       final Node content = loader.load();
-      final VBox container = new VBox(10, new FullBodyJogWidget(device).getView(), content, movementWidget);
+      final VBox container =
+          new VBox(10, new FullBodyJogWidget(device).getView(), content, movementWidget);
       container.maxWidth(Double.MAX_VALUE);
       content.maxWidth(Double.MAX_VALUE);
       Platform.runLater(() -> movementTab.setContent(getScrollPane(container)));

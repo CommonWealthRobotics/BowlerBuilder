@@ -11,7 +11,6 @@ import com.google.common.base.Throwables;
 import com.google.common.primitives.Floats;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
-import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics;
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase;
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR;
 import com.neuronrobotics.sdk.util.ThreadUtil;
@@ -38,7 +37,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class FullBodyJogWidget {
 
-  private static final Logger LOGGER = LoggerUtilities.getLogger(FullBodyJogWidget.class.getSimpleName());
+  private static final Logger LOGGER =
+      LoggerUtilities.getLogger(FullBodyJogWidget.class.getSimpleName());
   private final VBox view;
   private final GridPane controlPane;
   private final MobileBase base;
