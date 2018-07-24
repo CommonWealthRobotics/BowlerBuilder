@@ -1,7 +1,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.richtextfx
 
 // TODO: Re-enable once the kernel is a subproject
-//class RichTextEditor(private val codeArea: CodeArea) : ScriptEditor {
+// class RichTextEditor(private val codeArea: CodeArea) : ScriptEditor {
 //
 //    override fun insertAtCursor(text: String) {
 //        codeArea.insertText(codeArea.caretPosition, text)
@@ -26,4 +26,4 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditor.richt
 //    override fun getCursorPosition(): Int {
 //        return 0
 //    }
-//}
+// }

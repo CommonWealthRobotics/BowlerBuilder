@@ -5,7 +5,7 @@ plugins {
 description = "The core library."
 
 dependencies {
-    //api(project(":bowler-script-kernel")) {
+    // api(project(":bowler-script-kernel")) {
     api(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.32.4") {
         exclude(group = "org.slf4j", module = "slf4j-simple")
     }

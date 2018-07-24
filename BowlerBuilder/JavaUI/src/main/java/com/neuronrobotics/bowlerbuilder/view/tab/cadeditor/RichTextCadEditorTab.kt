@@ -6,7 +6,7 @@ package com.neuronrobotics.bowlerbuilder.view.tab.cadeditor
  * @param title the title of this tab
  */
 // TODO: Re-enable once the kernel is a subproject
-//class RichTextCadEditorTab(title: String) : BaseCadEditorTab(
+// class RichTextCadEditorTab(title: String) : BaseCadEditorTab(
 //        title,
 //        BowlerBuilder.getInjector().getInstance(RichTextEditorView::class.java),
 //        BowlerBuilder.getInjector().getInstance(BowlerCadEngine::class.java))

@@ -4,7 +4,7 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.r
  * Based on RichTextFX's async Java highlighting demo.
  */
 // TODO: Re-enable once the kernel is a subproject
-//class RichTextEditorView : ScriptEditorView {
+// class RichTextEditorView : ScriptEditorView {
 //
 //    private val codeArea: CodeArea = CodeArea()
 //    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
@@ -114,4 +114,4 @@ package com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.r
 //    override fun getView(): Node = pane
 //
 //    override fun getScriptEditor(): ScriptEditor = editor
-//}
+// }
