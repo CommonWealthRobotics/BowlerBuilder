@@ -16,7 +16,7 @@ allprojects {
     group = "com.neuronrobotics"
 }
 
-val bowlerScriptKernelProject = project(":bowler-script-kernel")
+//val bowlerScriptKernelProject = project(":bowler-script-kernel")
 val bowlerBuilderProject = project(":BowlerBuilder")
 val bowlerBuilderJavaUIProject = project(":BowlerBuilder:JavaUI")
 val bowlerBuilderCoreProject = project(":BowlerBuilder:Core")
@@ -27,8 +27,8 @@ val kotlinProjects = setOf(
         bowlerBuilderCoreProject
 )
 
-val javaProjects = setOf(
-        bowlerScriptKernelProject
+val javaProjects = setOf<Project>(
+//        bowlerScriptKernelProject
 ) + kotlinProjects
 
 val javafxProjects = setOf(
@@ -366,7 +366,7 @@ configure(javaProjects + kotlinProjects) {
 }
 
 task<Wrapper>("wrapper") {
-    gradleVersion = "4.7"
+    gradleVersion = "4.9"
     distributionType = Wrapper.DistributionType.ALL
 
     doLast {

@@ -864,7 +864,9 @@ public class CreatureEditorController implements PreferencesConsumer {
    */
   public void regenCAD(final boolean force) {
     if (cadManager != null) {
-      cadManager.generateCad(force);
+      // TODO: Re-enable this after it's put into the kernel
+      //cadManager.generateCad(force);
+      cadManager.generateCad();
     }
   }
 
