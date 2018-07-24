@@ -38,7 +38,7 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
     @Throws(IOException::class)
     override fun start(stage: Stage) {
         val loader = FXMLLoader(
-                javaClass.getResource("../view/AceScriptEditor.fxml"), null, null,
+                javaClass.getResource("../view/DefaultScriptEditor.fxml"), null, null,
                 Callback<Class<*>, Any> {
                     Guice.createInjector(
                             DefaultCadEditorControllerModule(

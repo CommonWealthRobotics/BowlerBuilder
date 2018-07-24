@@ -32,7 +32,7 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
     @Throws(IOException::class)
     override fun start(stage: Stage) {
         val loader = FXMLLoader(
-                javaClass.getResource("../view/CADModelViewer.fxml"),
+                javaClass.getResource("../view/DefaultCADModelViewer.fxml"),
                 null, null,
                 Callback<Class<*>, Any> { BowlerBuilder.getInjector().createChildInjector(DefaultCADModelViewerControllerModule()).getInstance(it) })
         val mainWindow = loader.load<BorderPane>()

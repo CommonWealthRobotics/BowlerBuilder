@@ -453,7 +453,7 @@ public class MainWindowController implements PreferencesConsumer {
 
                     try {
                       final MobileBase mobileBase;
-                      if (file[1].toLowerCase().endsWith(".xml")) {
+                      if (file[1].toLowerCase(Locale.US).endsWith(".xml")) {
                         mobileBase = MobileBaseLoader.fromGit(file[0], file[1]);
                       } else {
                         final Object result = ScriptingEngine.gitScriptRun(file[0], file[1], null);
