@@ -24,7 +24,7 @@ import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.Callable
 import java.util.function.Function
 import java.util.function.Predicate
-import kotlinx.coroutines.experimental.javafx.JavaFx as UI
+import kotlinx.coroutines.experimental.javafx.JavaFx
 
 /**
  * A [Dialog] to select files from a GitHub Gist.
@@ -59,7 +59,7 @@ class GistFileSelectionDialog(
                                     .filter { extensionFilter.test(it) }
                                     .toSet()
 
-                            launch(context = UI) {
+                            launch(context = JavaFx) {
                                 fileChooser.items = FXCollections.observableArrayList(files)
                             }
                         }
@@ -84,7 +84,7 @@ class GistFileSelectionDialog(
         isResizable = true
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
 
-        launch(context = UI) {
+        launch(context = JavaFx) {
             gistField.requestFocus()
         }
 
