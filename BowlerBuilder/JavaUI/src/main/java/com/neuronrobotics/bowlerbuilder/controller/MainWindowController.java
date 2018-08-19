@@ -1183,21 +1183,4 @@ public class MainWindowController implements PreferencesConsumer {
 
     return Optional.empty();
   }
-
-  // Simple stream to append input characters to a text area
-  @ParametersAreNonnullByDefault
-  private static class TextAreaPrintStream extends OutputStream {
-
-    private final TextArea textArea;
-
-    public TextAreaPrintStream(final TextArea textArea) {
-      super();
-      this.textArea = textArea;
-    }
-
-    @Override
-    public void write(final int character) {
-      Platform.runLater(() -> textArea.appendText(String.valueOf((char) character)));
-    }
-  }
 }
