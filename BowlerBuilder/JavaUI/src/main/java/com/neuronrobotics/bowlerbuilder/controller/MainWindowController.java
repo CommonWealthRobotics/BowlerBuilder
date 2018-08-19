@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
+import com.neuronrobotics.bowlerbuilder.PublicAPI;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.BowlerMobileBaseUI;
 import com.neuronrobotics.bowlerbuilder.controller.robotmanager.ConnectionManagerFactory;
 import com.neuronrobotics.bowlerbuilder.model.preferences.Preferences;
@@ -199,6 +200,7 @@ public class MainWindowController implements PreferencesConsumer {
   }
 
   @Override
+  @PublicAPI
   public void refreshPreferences() {
     final MainWindowControllerPreferences preferences =
         preferencesService.getCurrentPreferencesOrDefault();
@@ -206,6 +208,7 @@ public class MainWindowController implements PreferencesConsumer {
   }
 
   @NotNull
+  @PublicAPI
   @Override
   public Preferences getCurrentPreferences() {
     return preferencesService.getCurrentPreferencesOrDefault();
@@ -356,6 +359,8 @@ public class MainWindowController implements PreferencesConsumer {
    *
    * @param url URL to load
    */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void loadPage(final String url) {
     Platform.runLater(() -> webBrowserController.loadPage(url));
   }
@@ -366,6 +371,8 @@ public class MainWindowController implements PreferencesConsumer {
    * @param tabName name for new tab
    * @param url URL to load
    */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void loadPageIntoNewTab(final String tabName, final String url) {
     Platform.runLater(
         () -> {
@@ -393,6 +400,8 @@ public class MainWindowController implements PreferencesConsumer {
    * @param gist Gist containing file
    * @param gistFile File
    */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void openGistFileInEditor(final GHGist gist, final GHGistFile gistFile) {
     Platform.runLater(
         () -> {
@@ -413,6 +422,8 @@ public class MainWindowController implements PreferencesConsumer {
    * @param fileName filename in gist
    * @param file file on disk
    */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void openManualGistFileInEditor(
       final String pushURL, final String fileName, final File file) {
     Platform.runLater(
@@ -433,6 +444,8 @@ public class MainWindowController implements PreferencesConsumer {
    * @param gist gist clone URL
    * @param fileName file name (with .xml extension)
    */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void loadCreatureLab(final String gist, final String fileName) {
     loadCreatureLab(new String[] {gist, fileName});
   }
@@ -442,6 +455,8 @@ public class MainWindowController implements PreferencesConsumer {
    *
    * @param file xml file in gist
    */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void loadCreatureLab(final String[] file) { // NOPMD
     Platform.runLater(
         () -> {
@@ -573,6 +588,8 @@ public class MainWindowController implements PreferencesConsumer {
   }
 
   /** Reload the GitHub-related menus. */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void reloadGitMenus() {
     Platform.runLater(
         () -> {
@@ -636,6 +653,8 @@ public class MainWindowController implements PreferencesConsumer {
   }
 
   /** Reload the CAD menus. */
+  @SuppressWarnings("WeakerAccess")
+  @PublicAPI
   public void reloadCadMenus() {
     Platform.runLater(
         () -> {
@@ -1141,6 +1160,8 @@ public class MainWindowController implements PreferencesConsumer {
    *
    * @param tab tab to add
    */
+  @SuppressWarnings("unused")
+  @PublicAPI
   public void addTab(final Tab tab) {
     Platform.runLater(() -> tabPane.getTabs().add(tab));
   }
@@ -1150,6 +1171,8 @@ public class MainWindowController implements PreferencesConsumer {
    *
    * @return current tab
    */
+  @SuppressWarnings("unused")
+  @PublicAPI
   public Optional<Tab> getSelectedTab() {
     try {
       return Optional.of(FxUtil.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
