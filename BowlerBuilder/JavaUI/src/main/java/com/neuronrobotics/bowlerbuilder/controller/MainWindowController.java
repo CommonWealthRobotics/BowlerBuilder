@@ -40,6 +40,7 @@ import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
+import com.neuronrobotics.bowlerbuilder.view.util.GitHubRepoFileTree;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
@@ -77,15 +78,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -96,14 +89,7 @@ import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.JSONParser;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHOrganization;
-import org.kohsuke.github.GHPersonSet;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
+import org.kohsuke.github.*;
 
 @Singleton
 @ParametersAreNonnullByDefault
@@ -115,6 +101,7 @@ public class MainWindowController implements PreferencesConsumer {
   private final ConnectionManagerFactory connectionManagerFactory;
 
   @FXML private BorderPane root;
+  @FXML private TreeView<String> fileTreeView;
   @FXML private MenuItem logIn;
   @FXML private MenuItem logOut;
   @FXML private Menu myGists;
@@ -988,6 +975,20 @@ public class MainWindowController implements PreferencesConsumer {
                 .sequential()
                 .map(repoOwner -> createRepoOwnerMenu(repoOwner, repoMap.get(repoOwner)))
                 .collect(Collectors.toList()));
+
+    try {
+      FxUtil.runFXAndWait(
+          () -> {
+            fileTreeView.setRoot(new TreeItem<>());
+            fileTreeView.setShowRoot(false);
+          });
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    repos.forEach(
+        repo ->
+            fileTreeView.getRoot().getChildren().add(GitHubRepoFileTree.getTreeItemForRepo(repo)));
   }
 
   /**

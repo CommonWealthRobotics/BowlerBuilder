@@ -19,12 +19,11 @@ object WebEngineUtil {
         if (checkEngine(worker)) {
             runnable.run()
         } else {
-            worker.stateProperty().addListener(
-                    { _, _, newState ->
-                        if (newState == Worker.State.SUCCEEDED) {
-                            runnable.run()
-                        }
-                    })
+            worker.stateProperty().addListener { _, _, newState ->
+                if (newState == Worker.State.SUCCEEDED) {
+                    runnable.run()
+                }
+            }
         }
     }
 
