@@ -41,12 +41,12 @@ class CreatureLabTab(title: String) :
                         .getResource(
                                 "/com/neuronrobotics/bowlerbuilder/view/CreatureEditor.fxml"),
                 null,
-                null,
-                {
-                    BowlerBuilder
-                            .getInjector()
-                            .getInstance(it)
-                })
+                null
+        ) {
+            BowlerBuilder
+                    .getInjector()
+                    .getInstance(it)
+        }
         val creatureEditor: Node = creatureEditorLoader.load()
 
         val cadViewerLoader = FXMLLoader(
@@ -54,23 +54,23 @@ class CreatureLabTab(title: String) :
                         .getResource(
                                 "/com/neuronrobotics/bowlerbuilder/view/DefaultCADModelViewer.fxml"),
                 null,
-                null,
-                {
-                    BowlerBuilder
-                            .getInjector()
-                            .createChildInjector(DefaultCADModelViewerControllerModule())
-                            .getInstance(it)
-                })
+                null
+        ) {
+            BowlerBuilder
+                    .getInjector()
+                    .createChildInjector(DefaultCADModelViewerControllerModule())
+                    .getInstance(it)
+        }
         val cadViewer: Node = cadViewerLoader.load()
 
         // Contains script editors for the creature's files
-        val tabPane = TabPane()
+        val scriptEditorTabs = TabPane()
 
-        pane = SplitPane(tabPane, creatureEditor, cadViewer)
+        pane = SplitPane(creatureEditor, scriptEditorTabs, cadViewer)
         pane.setDividerPositions(0.2, 0.7)
 
         creatureLabController = AceCreatureLabController(
-                tabPane,
+                scriptEditorTabs,
                 Supplier {
                     FXMLLoader(
                             CreatureLabTab::class.java
@@ -78,17 +78,17 @@ class CreatureLabTab(title: String) :
                                             "/com/neuronrobotics/bowlerbuilder/view/" +
                                                     "DefaultScriptEditor.fxml"),
                             null,
-                            null,
-                            {
-                                BowlerBuilder
-                                        .getInjector()
-                                        .createChildInjector(DefaultCadEditorControllerModule(
-                                                BowlerBuilder
-                                                        .getInjector()
-                                                        .getInstance(AceEditorView::class.java)
-                                        ))
-                                        .getInstance(it)
-                            })
+                            null
+                    ) {
+                        BowlerBuilder
+                                .getInjector()
+                                .createChildInjector(DefaultCadEditorControllerModule(
+                                        BowlerBuilder
+                                                .getInjector()
+                                                .getInstance(AceEditorView::class.java)
+                                ))
+                                .getInstance(it)
+                    }
                 },
                 cadViewerLoader.getController(),
                 creatureEditorLoader.getController()

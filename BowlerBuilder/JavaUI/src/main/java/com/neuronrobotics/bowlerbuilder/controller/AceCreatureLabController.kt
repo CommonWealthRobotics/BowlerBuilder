@@ -69,7 +69,7 @@ class AceCreatureLabController(
         } else {
             val tab = Tab()
             tab.text = title
-            graphic.ifPresent({ tab.graphic = it })
+            graphic.ifPresent { tab.graphic = it }
             tab.setOnClosed { _ ->
                 tabMap.remove(file)
                 tabControllerMap.remove(tab)
