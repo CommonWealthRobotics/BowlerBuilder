@@ -1,6 +1,5 @@
 package com.neuronrobotics.bowlerbuilder.view.util
 
-import com.neuronrobotics.bowlerbuilder.FxUtil
 import javafx.beans.value.ChangeListener
 import javafx.scene.control.TreeItem
 import org.kohsuke.github.GHContent
@@ -8,6 +7,9 @@ import org.kohsuke.github.GHRepository
 
 object GitHubRepoFileTree {
 
+    /**
+     * Generate a [TreeItem] for a [GHRepository] containing the repo name and all of its contents.
+     */
     @JvmStatic
     fun getTreeItemForRepo(repo: GHRepository): TreeItem<String> {
         val repoItem = TreeItem(repo.name)
@@ -17,18 +19,21 @@ object GitHubRepoFileTree {
 
         repoItem.expandedProperty().addListener { _, _, new ->
             if (new) {
-                FxUtil.runFXAndWait {
-                    repo.getDirectoryContent(".").map {
-                        getTreeItemForRepoContent(repo, it, null)
-                    }.let { repoItem.children.setAll(it) }
-                }
+                repo.getDirectoryContent(".").map {
+                    getTreeItemForRepoContent(repo, it, null, null)
+                }.let { repoItem.children.setAll(it) }
             }
         }
 
         return repoItem
     }
 
-    private fun getTreeItemForRepoContent(rootRepo: GHRepository, content: GHContent, parentItem: TreeItem<String>?): TreeItem<String> {
+    private fun getTreeItemForRepoContent(
+            rootRepo: GHRepository,
+            content: GHContent,
+            parentItem: TreeItem<String>?,
+            parentContent: GHContent?
+    ): TreeItem<String> {
         val contentItem = TreeItem(content.name)
 
         if (content.isDirectory) {
@@ -39,23 +44,25 @@ object GitHubRepoFileTree {
 
             listener = ChangeListener { _, _, new ->
                 if (new) {
-                    FxUtil.runFXAndWait {
-                        val directoryContent = content.listDirectoryContent().asList()
-                        if (parentItem != null && directoryContent.size == 1 && directoryContent.first().isDirectory) {
-                            parentItem.value = "${parentItem.value}.${content.name}"
-                            parentItem.children.setAll(getTreeItemForRepoContent(rootRepo, directoryContent.first(), parentItem))
-                        } else {
-                            directoryContent.map {
-                                getTreeItemForRepoContent(rootRepo, it, contentItem)
-                            }.let { contentItem.children.setAll(it) }
-                        }
-
-                        /**
-                         * Remove the listener so it won't re-expand incorrectly. If the user wants
-                         * to reload the files, they should reload the git menus.
-                         */
-                        contentItem.expandedProperty().removeListener(listener)
+                    val directoryContent = content.listDirectoryContent().asList()
+                    if (parentItem != null
+                            && parentContent != null
+                            && parentContent.listDirectoryContent().asList().size == 1
+                            && directoryContent.size == 1
+                            && directoryContent.first().isDirectory) {
+                        parentItem.value = "${parentItem.value}.${content.name}"
+                        parentItem.children.setAll(getTreeItemForRepoContent(rootRepo, directoryContent.first(), parentItem, parentContent))
+                    } else {
+                        directoryContent.map {
+                            getTreeItemForRepoContent(rootRepo, it, contentItem, content)
+                        }.let { contentItem.children.setAll(it) }
                     }
+
+                    /**
+                     * Remove the listener so it won't re-expand incorrectly. If the user wants
+                     * to reload the files, they should reload the git menus.
+                     */
+                    contentItem.expandedProperty().removeListener(listener)
                 }
             }
 

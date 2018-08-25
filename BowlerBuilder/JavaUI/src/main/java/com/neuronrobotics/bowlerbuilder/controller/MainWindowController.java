@@ -981,14 +981,19 @@ public class MainWindowController implements PreferencesConsumer {
           () -> {
             fileTreeView.setRoot(new TreeItem<>());
             fileTreeView.setShowRoot(false);
+            fileTreeView
+                .getRoot()
+                .getChildren()
+                .addAll(
+                    repos
+                        .asList()
+                        .stream()
+                        .map(GitHubRepoFileTree::getTreeItemForRepo)
+                        .collect(Collectors.toList()));
           });
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-
-    repos.forEach(
-        repo ->
-            fileTreeView.getRoot().getChildren().add(GitHubRepoFileTree.getTreeItemForRepo(repo)));
   }
 
   /**
