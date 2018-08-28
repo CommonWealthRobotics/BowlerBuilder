@@ -28,6 +28,9 @@ object GitHubRepoFileTree {
         return repoItem
     }
 
+    /**
+     * Recursively generate a [TreeItem] instances, optionally simplifying empty directories.
+     */
     private fun getTreeItemForRepoContent(
         rootRepo: GHRepository,
         content: GHContent,
@@ -45,15 +48,18 @@ object GitHubRepoFileTree {
             listener = ChangeListener { _, _, new ->
                 if (new) {
                     val directoryContent = content.listDirectoryContent().asList()
-                    if (parentItem != null &&
-                            parentContent != null &&
-                            parentContent.listDirectoryContent().asList().size == 1) {
+                    if (parentItem != null && canSimplifyDirectory(parentContent)) {
                         parentItem.value = "${parentItem.value}.${content.name}"
                         directoryContent.map {
+                            /**
+                             * We need to keep the parentItem the same as last time so the
+                             * TreeItems get added to the same TreeItem (thereby extending the name
+                             * of the same TreeItem); however, the content for the next item needs
+                             * to be the current content so the correct directory is checked
+                             * for emptiness.
+                             */
                             getTreeItemForRepoContent(rootRepo, it, parentItem, content)
-                        }.let {
-                            parentItem.children.setAll(it)
-                        }
+                        }.let { parentItem.children.setAll(it) }
                     } else {
                         directoryContent.map {
                             getTreeItemForRepoContent(rootRepo, it, contentItem, content)
@@ -73,4 +79,11 @@ object GitHubRepoFileTree {
 
         return contentItem
     }
+
+    /**
+     * Whether a directory contains one item and therefore can be combined with the parent
+     * directory.
+     */
+    private fun canSimplifyDirectory(parentContent: GHContent?) =
+            parentContent != null && parentContent.listDirectoryContent().asList().size == 1
 }
