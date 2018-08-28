@@ -9,6 +9,7 @@ plugins {
     jacoco
     pmd
     id("com.diffplug.gradle.spotless") version "3.10.0"
+    id("org.jlleitschuh.gradle.ktlint") version "5.0.0"
 }
 
 allprojects {
@@ -43,6 +44,7 @@ val javafxProjects = setOf(
 buildscript {
     repositories {
         mavenCentral() // Needed for kotlin gradle plugin
+        maven(url = "https://plugins.gradle.org/m2/")
     }
     dependencies {
         // Gives us the KotlinJvmProjectExtension
@@ -242,10 +244,11 @@ configure(javaProjects) {
 }
 
 configure(kotlinProjects) {
-    val kotlinVersion = "1.2.41"
+    val kotlinVersion = "1.2.61"
 
     apply {
         plugin("kotlin")
+        plugin("org.jlleitschuh.gradle.ktlint")
     }
 
     dependencies {
@@ -366,7 +369,7 @@ configure(javaProjects + kotlinProjects) {
 }
 
 task<Wrapper>("wrapper") {
-    gradleVersion = "4.9"
+    gradleVersion = "4.10"
     distributionType = Wrapper.DistributionType.ALL
 
     doLast {

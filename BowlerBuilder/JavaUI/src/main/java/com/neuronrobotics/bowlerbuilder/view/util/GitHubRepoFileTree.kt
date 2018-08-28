@@ -29,10 +29,10 @@ object GitHubRepoFileTree {
     }
 
     private fun getTreeItemForRepoContent(
-            rootRepo: GHRepository,
-            content: GHContent,
-            parentItem: TreeItem<String>?,
-            parentContent: GHContent?
+        rootRepo: GHRepository,
+        content: GHContent,
+        parentItem: TreeItem<String>?,
+        parentContent: GHContent?
     ): TreeItem<String> {
         val contentItem = TreeItem(content.name)
 
@@ -45,13 +45,15 @@ object GitHubRepoFileTree {
             listener = ChangeListener { _, _, new ->
                 if (new) {
                     val directoryContent = content.listDirectoryContent().asList()
-                    if (parentItem != null
-                            && parentContent != null
-                            && parentContent.listDirectoryContent().asList().size == 1
-                            && directoryContent.size == 1
-                            && directoryContent.first().isDirectory) {
+                    if (parentItem != null &&
+                            parentContent != null &&
+                            parentContent.listDirectoryContent().asList().size == 1) {
                         parentItem.value = "${parentItem.value}.${content.name}"
-                        parentItem.children.setAll(getTreeItemForRepoContent(rootRepo, directoryContent.first(), parentItem, parentContent))
+                        directoryContent.map {
+                            getTreeItemForRepoContent(rootRepo, it, parentItem, parentContent)
+                        }.let {
+                            parentItem.children.setAll(it)
+                        }
                     } else {
                         directoryContent.map {
                             getTreeItemForRepoContent(rootRepo, it, contentItem, content)
