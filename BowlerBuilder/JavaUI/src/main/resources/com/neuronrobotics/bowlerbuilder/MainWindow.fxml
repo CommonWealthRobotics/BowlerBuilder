@@ -11,108 +11,80 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.TextArea?>
-<BorderPane id="root" fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.181" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#openPreferences" text="Preferences">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                     </accelerator></MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#onExitProgram" text="Exit">
-                     <accelerator>
-                        <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                     </accelerator>
-                  </MenuItem>
-            </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Git">
-              <items>
-                <MenuItem id="logIn" fx:id="logIn" mnemonicParsing="false" onAction="#onLogInToGitHub" text="Log in to GitHub" />
-                  <MenuItem id="logOut" fx:id="logOut" mnemonicParsing="false" onAction="#onLogOutFromGitHub" text="Log out from GitHub" />
-                  <Menu id="myGists" fx:id="myGists" mnemonicParsing="false" text="My Gists" />
-                  <Menu id="myOrgs" fx:id="myOrgs" mnemonicParsing="false" text="My Organizations" />
-                  <Menu id="myRepos" fx:id="myRepos" mnemonicParsing="false" text="My Repositories" />
-                  <Menu id="myRepos" fx:id="favorites" mnemonicParsing="false" text="Favorites" />
-                  <Menu id="myRepos" fx:id="creatures" mnemonicParsing="false" text="Creatures" />
-                  <MenuItem mnemonicParsing="false" onAction="#onReloadMenus" text="Reload Menus" />
-                <MenuItem mnemonicParsing="false" onAction="#onDeleteLocalCache" text="Delete Local Cache" />
-              </items>
-            </Menu>
-          <Menu mnemonicParsing="false" text="3D CAD">
-            <items>
-                <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
-              <MenuItem mnemonicParsing="false" onAction="#onLoadFileFromGit" text="Load File From Git" />
-              <MenuItem mnemonicParsing="false" onAction="#onLoadCreature" text="Load Creature" />
-                <Menu fx:id="cadVitamins" mnemonicParsing="false" text="Vitamins" />
-                <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Plugins">
-            <items>
-                <MenuItem mnemonicParsing="false" onAction="#onManagePlugins" text="Manage Plugins" />
-                <Menu fx:id="installedPlugins" mnemonicParsing="false" text="Installed Plugins" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#openEditorHelp" text="Editor Guide" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-   <center>
-      <SplitPane fx:id="splitPane" dividerPositions="0.8" orientation="VERTICAL" BorderPane.alignment="CENTER">
-         <items>
-            <TabPane fx:id="tabPane">
-               <tabs>
-                  <Tab id="homeTab" fx:id="homeTab" closable="false" text="Home">
-                     <content>
+<SplitPane dividerPositions="0.5" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
+    <TreeView fx:id="fileTreeView" showRoot="false" />
+    <BorderPane id="root" fx:id="root">
+        <top>
+            <MenuBar BorderPane.alignment="CENTER">
+                <Menu mnemonicParsing="false" text="File">
+                    <MenuItem mnemonicParsing="false" onAction="#openPreferences" text="Preferences">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="COMMA" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                        </accelerator>
+                    </MenuItem>
+                    <MenuItem mnemonicParsing="false" onAction="#onExitProgram" text="Exit">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                        </accelerator>
+                    </MenuItem>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Git">
+                    <MenuItem id="logIn" fx:id="logIn" mnemonicParsing="false" onAction="#onLogInToGitHub" text="Log in to GitHub" />
+                    <MenuItem id="logOut" fx:id="logOut" mnemonicParsing="false" onAction="#onLogOutFromGitHub" text="Log out from GitHub" />
+                    <Menu id="myGists" fx:id="myGists" mnemonicParsing="false" text="My Gists" />
+                    <Menu id="myOrgs" fx:id="myOrgs" mnemonicParsing="false" text="My Organizations" />
+                    <Menu id="myRepos" fx:id="myRepos" mnemonicParsing="false" text="My Repositories" />
+                    <Menu id="myRepos" fx:id="favorites" mnemonicParsing="false" text="Favorites" />
+                    <Menu id="myRepos" fx:id="creatures" mnemonicParsing="false" text="Creatures" />
+                    <MenuItem mnemonicParsing="false" onAction="#onReloadMenus" text="Reload Menus" />
+                    <MenuItem mnemonicParsing="false" onAction="#onDeleteLocalCache" text="Delete Local Cache" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="3D CAD">
+                    <MenuItem mnemonicParsing="false" onAction="#onOpenScratchpad" text="Scratchpad" />
+                    <MenuItem mnemonicParsing="false" onAction="#onLoadFileFromGit" text="Load File From Git" />
+                    <MenuItem mnemonicParsing="false" onAction="#onLoadCreature" text="Load Creature" />
+                    <Menu fx:id="cadVitamins" mnemonicParsing="false" text="Vitamins" />
+                    <MenuItem mnemonicParsing="false" onAction="#onReloadVitamins" text="Reload Vitamins" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="Plugins">
+                    <MenuItem mnemonicParsing="false" onAction="#onManagePlugins" text="Manage Plugins" />
+                    <Menu fx:id="installedPlugins" mnemonicParsing="false" text="Installed Plugins" />
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <MenuItem mnemonicParsing="false" onAction="#openEditorHelp" text="Editor Guide" />
+                </Menu>
+            </MenuBar>
+        </top>
+        <center>
+            <SplitPane dividerPositions="0.8" orientation="VERTICAL" BorderPane.alignment="CENTER">
+                <TabPane fx:id="tabPane">
+                    <Tab id="homeTab" fx:id="homeTab" closable="false" text="Home">
                         <BorderPane>
-                           <center>
-                               <fx:include fx:id="webBrowser" source="view/WebBrowser.fxml" />
-                           </center>
+                            <center>
+                                <fx:include fx:id="webBrowser" source="view/WebBrowser.fxml" />
+                            </center>
                         </BorderPane>
-                     </content>
-                  </Tab>
-               </tabs>
-            </TabPane>
-            <TabPane>
-               <tabs>
-                  <Tab fx:id="consoleTab" text="Terminal">
-                     <content>
+                    </Tab>
+                </TabPane>
+                <TabPane>
+                    <Tab fx:id="connectionTab" text="Connections">
+                        <VBox>
+                            <HBox fx:id="connectionsHeader" />
+                            <Accordion fx:id="connections" prefHeight="100.0" />
+                        </VBox>
+                    </Tab>
+                    <Tab fx:id="consoleTab" text="Terminal">
                         <TextArea fx:id="console" editable="false" prefHeight="100.0" />
-                     </content>
-                  </Tab>
-               </tabs>
-              <Tab fx:id="connectionTab" text="Connections">
-                <content>
-                  <VBox>
-                    <HBox fx:id="connectionsHeader" />
-                    <Accordion fx:id="connections" prefHeight="100.0" />
-                  </VBox>
-                </content>
-              </Tab>
-            </TabPane>
-         </items>
-      </SplitPane>
-   </center>
-   <left>
-      <AnchorPane BorderPane.alignment="CENTER">
-         <children>
-            <TreeView fx:id="fileTreeView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-         </children>
-      </AnchorPane>
-   </left>
-</BorderPane>
+                    </Tab>
+                </TabPane>
+            </SplitPane>
+        </center>
+    </BorderPane>
+</SplitPane>

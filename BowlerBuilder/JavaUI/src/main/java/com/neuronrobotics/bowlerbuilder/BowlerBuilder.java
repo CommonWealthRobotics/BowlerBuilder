@@ -17,7 +17,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -46,7 +48,7 @@ public class BowlerBuilder extends Application {
             null,
             null,
             INJECTOR::getInstance);
-    final Pane mainWindow = loader.load();
+    final SplitPane mainWindow = loader.load();
 
     primaryStage.setTitle("BowlerBuilder");
     primaryStage.setScene(new Scene(mainWindow));

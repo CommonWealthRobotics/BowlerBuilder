@@ -8,7 +8,6 @@
 package com.neuronrobotics.bowlerbuilder.controller; // NOPMD
 
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
@@ -78,7 +77,17 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -89,7 +98,14 @@ import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.JSONParser;
-import org.kohsuke.github.*;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHPersonSet;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
 
 @Singleton
 @ParametersAreNonnullByDefault
@@ -980,7 +996,6 @@ public class MainWindowController implements PreferencesConsumer {
       FxUtil.runFXAndWait(
           () -> {
             fileTreeView.setRoot(new TreeItem<>());
-            fileTreeView.setShowRoot(false);
             fileTreeView
                 .getRoot()
                 .getChildren()
