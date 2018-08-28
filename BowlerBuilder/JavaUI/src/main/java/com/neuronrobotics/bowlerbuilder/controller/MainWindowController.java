@@ -74,6 +74,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -81,12 +82,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
@@ -118,7 +121,7 @@ public class MainWindowController implements PreferencesConsumer {
   private final ConnectionManagerFactory connectionManagerFactory;
 
   @FXML private BorderPane root;
-  @FXML private TreeView<String> fileTreeView;
+  @FXML private TreeView<GitHubRepoFileTree.GitContent> fileTreeView;
   @FXML private MenuItem logIn;
   @FXML private MenuItem logOut;
   @FXML private Menu myGists;
@@ -997,23 +1000,77 @@ public class MainWindowController implements PreferencesConsumer {
       FxUtil.runFXAndWait(
           () -> {
             fileTreeView.setRoot(new TreeItem<>());
-            fileTreeView
-                .getRoot()
-                .getChildren()
-                .addAll(
-                    repoMap
-                        .keySet()
-                        .stream()
-                        .map(
-                            ownerName ->
-                                GitHubRepoFileTree.getTreeItemForUser(
-                                    ownerName, repoMap.get(ownerName)))
-                        .collect(Collectors.toList()));
+
+            fileTreeView.setCellFactory(
+                lv -> {
+                  TreeCell<GitHubRepoFileTree.GitContent> cell = new TreeCell<>();
+
+                  ContextMenu contextMenu = new ContextMenu();
+                  MenuItem editItem = new MenuItem("Edit");
+                  editItem.setOnAction(
+                      actionEvent -> {
+                        if (cell.getItem() != null) {
+                          Platform.runLater(
+                              () -> {
+                                try {
+                                  openManualGistFileInEditor(
+                                      cell.getItem().getContent().getGitUrl(),
+                                      cell.getItem().getContent().getName(),
+                                      ScriptingEngine.fileFromGit(
+                                          cell.getItem().getContent().getGitUrl(),
+                                          cell.getItem().getContent().getName()));
+                                } catch (GitAPIException | IOException e) {
+                                  e.printStackTrace();
+                                }
+                              });
+                        }
+                      });
+                  contextMenu.getItems().addAll(editItem);
+                  cell.setContextMenu(contextMenu);
+
+                  cell.textProperty()
+                      .bind(
+                          Bindings.createStringBinding(
+                              () -> {
+                                final GitHubRepoFileTree.GitContent item = cell.getItem();
+
+                                if (item != null) {
+                                  return item.getDisplayName();
+                                }
+
+                                // Null items are for the empty cells at the bottom of the TreeView
+                                return "";
+                              },
+                              cell.itemProperty()));
+
+                  return cell;
+                });
+
+            final List<TreeItem<GitHubRepoFileTree.GitContent>> fileItems =
+                repoMap
+                    .keySet()
+                    .stream()
+                    .map(
+                        ownerName ->
+                            GitHubRepoFileTree.getTreeItemForUser(
+                                ownerName, repoMap.get(ownerName)))
+                    .collect(Collectors.toList());
+
+            fileTreeView.getRoot().getChildren().addAll(fileItems);
           });
     } catch (InterruptedException e) {
       LOGGER.warning(
           "Loading repos into file TreeView interrupted.\n" + Throwables.getStackTraceAsString(e));
     }
+  }
+
+  private void addContextMenus(Collection<TreeItem<GitHubRepoFileTree.GitContent>> items) {
+    items.forEach(
+        item -> {
+          if (item.getValue().getContent() != null && item.getValue().getContent().isFile()) {}
+
+          addContextMenus(item.getChildren());
+        });
   }
 
   /**

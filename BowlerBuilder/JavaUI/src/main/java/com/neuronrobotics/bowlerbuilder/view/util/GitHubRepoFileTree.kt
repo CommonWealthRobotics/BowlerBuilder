@@ -7,12 +7,20 @@ import org.kohsuke.github.GHRepository
 
 object GitHubRepoFileTree {
 
+    data class GitContent(
+        val displayName: String,
+        val repo: GHRepository? = null,
+        val content: GHContent? = null
+    ) {
+        override fun toString() = displayName
+    }
+
     /**
      * Generate a [TreeItem] for each [GHRepository] under the owner's name.
      */
     @JvmStatic
-    fun getTreeItemForUser(ownerName: String, repos: Collection<GHRepository>): TreeItem<String> {
-        return TreeItem(ownerName).apply {
+    fun getTreeItemForUser(ownerName: String, repos: Collection<GHRepository>): TreeItem<GitContent> {
+        return TreeItem(GitContent(ownerName)).apply {
             children.setAll(repos.map { getTreeItemForRepo(it) })
         }
     }
@@ -21,8 +29,8 @@ object GitHubRepoFileTree {
      * Generate a [TreeItem] for a [GHRepository] containing the repo name and all of its contents.
      */
     @JvmStatic
-    fun getTreeItemForRepo(repo: GHRepository): TreeItem<String> {
-        val repoItem = TreeItem(repo.name)
+    fun getTreeItemForRepo(repo: GHRepository): TreeItem<GitContent> {
+        val repoItem = TreeItem(GitContent(repo.name, repo))
 
         // Temporary item so repoItem has a dropdown arrow
         repoItem.children.add(TreeItem())
@@ -44,10 +52,10 @@ object GitHubRepoFileTree {
     private fun getTreeItemForRepoContent(
         rootRepo: GHRepository,
         content: GHContent,
-        parentItem: TreeItem<String>?,
+        parentItem: TreeItem<GitContent>?,
         parentContent: GHContent?
-    ): TreeItem<String> {
-        val contentItem = TreeItem(content.name)
+    ): TreeItem<GitContent> {
+        val contentItem = TreeItem(GitContent(content.name, rootRepo, content))
 
         if (content.isDirectory) {
             // Temporary item so contentItem has a dropdown arrow
@@ -59,7 +67,12 @@ object GitHubRepoFileTree {
                 if (new) {
                     val directoryContent = content.listDirectoryContent().asList()
                     if (parentItem != null && canSimplifyDirectory(parentContent)) {
-                        parentItem.value = "${parentItem.value}.${content.name}"
+                        parentItem.value = GitContent(
+                                displayName = "${parentItem.value}.${content.name}",
+                                repo = rootRepo,
+                                content = content
+                        )
+
                         directoryContent.map {
                             /**
                              * We need to keep the parentItem the same as last time so the
