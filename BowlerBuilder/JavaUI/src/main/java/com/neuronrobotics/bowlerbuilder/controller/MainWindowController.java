@@ -8,6 +8,7 @@
 package com.neuronrobotics.bowlerbuilder.controller; // NOPMD
 
 import static com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine.hasNetwork;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
@@ -1007,7 +1008,8 @@ public class MainWindowController implements PreferencesConsumer {
                         .collect(Collectors.toList()));
           });
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      LOGGER.warning(
+          "Loading repos into file TreeView interrupted.\n" + Throwables.getStackTraceAsString(e));
     }
   }
 
