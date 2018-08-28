@@ -8,6 +8,16 @@ import org.kohsuke.github.GHRepository
 object GitHubRepoFileTree {
 
     /**
+     * Generate a [TreeItem] for each [GHRepository] under the owner's name.
+     */
+    @JvmStatic
+    fun getTreeItemForUser(ownerName: String, repos: Collection<GHRepository>): TreeItem<String> {
+        return TreeItem(ownerName).apply {
+            children.setAll(repos.map { getTreeItemForRepo(it) })
+        }
+    }
+
+    /**
      * Generate a [TreeItem] for a [GHRepository] containing the repo name and all of its contents.
      */
     @JvmStatic

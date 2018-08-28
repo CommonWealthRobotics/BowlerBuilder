@@ -1001,10 +1001,13 @@ public class MainWindowController implements PreferencesConsumer {
                 .getRoot()
                 .getChildren()
                 .addAll(
-                    repos
-                        .asList()
+                    repoMap
+                        .keySet()
                         .stream()
-                        .map(GitHubRepoFileTree::getTreeItemForRepo)
+                        .map(
+                            ownerName ->
+                                GitHubRepoFileTree.getTreeItemForUser(
+                                    ownerName, repoMap.get(ownerName)))
                         .collect(Collectors.toList()));
           });
     } catch (InterruptedException e) {
