@@ -50,7 +50,7 @@ object GitHubRepoFileTree {
                             parentContent.listDirectoryContent().asList().size == 1) {
                         parentItem.value = "${parentItem.value}.${content.name}"
                         directoryContent.map {
-                            getTreeItemForRepoContent(rootRepo, it, parentItem, parentContent)
+                            getTreeItemForRepoContent(rootRepo, it, parentItem, content)
                         }.let {
                             parentItem.children.setAll(it)
                         }
