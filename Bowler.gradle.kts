@@ -21,11 +21,17 @@ allprojects {
 val bowlerBuilderProject = project(":BowlerBuilder")
 val bowlerBuilderJavaUIProject = project(":BowlerBuilder:JavaUI")
 val bowlerBuilderCoreProject = project(":BowlerBuilder:Core")
+val bowlerKernelProject = project(":BowlerKernel")
+val bowlerKernelCoreProject = project(":BowlerKernel:Core")
+val bowlerKernelKernelTestProject = project(":BowlerKernel:KernelTest")
 
 val kotlinProjects = setOf(
         bowlerBuilderProject,
         bowlerBuilderJavaUIProject,
-        bowlerBuilderCoreProject
+        bowlerBuilderCoreProject,
+        bowlerKernelProject,
+        bowlerKernelCoreProject,
+        bowlerKernelKernelTestProject
 )
 
 val javaProjects = setOf<Project>(
@@ -55,6 +61,11 @@ buildscript {
 allprojects {
     apply {
         plugin("com.diffplug.gradle.spotless")
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
     }
 
     // Configures the Jacoco tool version to be the same for all projects that have it applied.
@@ -102,11 +113,6 @@ configure(javaProjects) {
         plugin("checkstyle")
         plugin("findbugs")
         plugin("pmd")
-    }
-
-    repositories {
-        jcenter()
-        mavenCentral()
     }
 
     dependencies {
@@ -353,8 +359,6 @@ val jacocoRootReport = task<JacocoReport>("jacocoRootReport") {
 val checkTask = tasks.maybeCreate("check", Task::class.java).apply {
     description = "Check all sub-projects"
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-
-//    dependsOn(jacocoRootReport)
 }
 
 val buildTask = tasks.maybeCreate("build", Task::class.java).apply {
