@@ -200,6 +200,10 @@ configure(javaProjects) {
             trimTrailingWhitespace()
             indentWithSpaces(2)
             endWithNewline()
+            licenseHeaderFile(
+                "${rootProject.rootDir}/config/spotless/bowler.license",
+            "(package|import)"
+            )
         }
     }
 
@@ -304,6 +308,10 @@ configure(kotlinProjects) {
             trimTrailingWhitespace()
             indentWithSpaces(2)
             endWithNewline()
+            licenseHeaderFile(
+                "${rootProject.rootDir}/config/spotless/bowler.license",
+                "(package|import)"
+            )
         }
     }
 }
