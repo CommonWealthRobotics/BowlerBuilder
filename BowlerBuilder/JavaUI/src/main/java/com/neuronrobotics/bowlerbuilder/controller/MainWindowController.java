@@ -1003,10 +1003,10 @@ public class MainWindowController implements PreferencesConsumer {
 
             fileTreeView.setCellFactory(
                 lv -> {
-                  TreeCell<GitHubRepoFileTree.GitContent> cell = new TreeCell<>();
+                  final TreeCell<GitHubRepoFileTree.GitContent> cell = new TreeCell<>();
 
-                  ContextMenu contextMenu = new ContextMenu();
-                  MenuItem editItem = new MenuItem("Edit");
+                  final ContextMenu contextMenu = new ContextMenu();
+                  final MenuItem editItem = new MenuItem("Edit");
                   editItem.setOnAction(
                       actionEvent -> {
                         if (cell.getItem() != null) {
@@ -1020,7 +1020,9 @@ public class MainWindowController implements PreferencesConsumer {
                                           cell.getItem().getContent().getGitUrl(),
                                           cell.getItem().getContent().getName()));
                                 } catch (GitAPIException | IOException e) {
-                                  e.printStackTrace();
+                                  LOGGER.warning(
+                                      "Could not get item from git.\n"
+                                          + Throwables.getStackTraceAsString(e));
                                 }
                               });
                         }
@@ -1062,15 +1064,6 @@ public class MainWindowController implements PreferencesConsumer {
       LOGGER.warning(
           "Loading repos into file TreeView interrupted.\n" + Throwables.getStackTraceAsString(e));
     }
-  }
-
-  private void addContextMenus(Collection<TreeItem<GitHubRepoFileTree.GitContent>> items) {
-    items.forEach(
-        item -> {
-          if (item.getValue().getContent() != null && item.getValue().getContent().isFile()) {}
-
-          addContextMenus(item.getChildren());
-        });
   }
 
   /**
