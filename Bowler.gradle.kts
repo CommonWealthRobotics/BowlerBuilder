@@ -9,6 +9,7 @@ plugins {
     pmd
     id("com.diffplug.gradle.spotless") version "3.16.0"
     id("org.jlleitschuh.gradle.ktlint") version "6.2.1"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0.RC9.2"
 }
 
 allprojects {
@@ -205,7 +206,7 @@ configure(javaProjects) {
             endWithNewline()
             licenseHeaderFile(
                 "${rootProject.rootDir}/config/spotless/bowler.license",
-            "(package|import)"
+            "(@|package|import)"
             )
         }
     }
@@ -258,6 +259,7 @@ configure(kotlinProjects) {
     apply {
         plugin("kotlin")
         plugin("org.jlleitschuh.gradle.ktlint")
+        plugin("io.gitlab.arturbosch.detekt")
     }
 
     repositories {
@@ -318,9 +320,19 @@ configure(kotlinProjects) {
             endWithNewline()
             licenseHeaderFile(
                 "${rootProject.rootDir}/config/spotless/bowler.license",
-                "(package|import)"
+                "(@|package|import)"
             )
         }
+    }
+
+    detekt {
+        toolVersion = "1.0.0.RC9.2"
+        input = files(
+                "src/main/kotlin",
+                "src/test/kotlin"
+        )
+        parallel = true
+        config = files("${rootProject.rootDir}/config/detekt/config.yml")
     }
 }
 
@@ -435,3 +447,9 @@ val Project.`java`: org.gradle.api.plugins.JavaPluginConvention
  */
 fun Project.`kotlin`(configure: org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension.() -> Unit): Unit =
         extensions.configure("kotlin", configure)
+
+/**
+ * Configures the [detekt][io.gitlab.arturbosch.detekt.extensions.DetektExtension] extension.
+ */
+fun org.gradle.api.Project.`detekt`(configure: io.gitlab.arturbosch.detekt.extensions.DetektExtension.() -> Unit): Unit =
+        (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("detekt", configure)
