@@ -1,6 +1,5 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.util.GFileUtils
@@ -250,7 +249,7 @@ configure(javaProjects) {
 }
 
 configure(kotlinProjects) {
-    val kotlinVersion = "1.2.61"
+    val kotlinVersion = property("kotlin.version") as String
 
     apply {
         plugin("kotlin")
@@ -260,8 +259,8 @@ configure(kotlinProjects) {
     dependencies {
         // Weird syntax, see: https://github.com/gradle/kotlin-dsl/issues/894
         "compile"(kotlin("stdlib-jdk8", kotlinVersion))
-        "compile"(kotlin("reflect"))
-        "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "0.22.5")
+        "compile"(kotlin("reflect", kotlinVersion))
+        "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.0.0")
 
         "testCompile"(kotlin("test"))
         "testCompile"(kotlin("test-junit"))
@@ -269,7 +268,7 @@ configure(kotlinProjects) {
 
     kotlin {
         // Enable coroutines supports for Kotlin.
-        experimental.coroutines = Coroutines.ENABLE
+//        experimental.coroutines = Coroutines.ENABLE
     }
 
     tasks.withType<KotlinCompile> {
@@ -318,7 +317,7 @@ configure(kotlinProjects) {
 
 configure(kotlinProjects.intersect(javafxProjects)) {
     dependencies {
-        "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-javafx", version = "0.22.5")
+        "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-javafx", version = "1.0.0")
     }
 }
 

@@ -22,14 +22,16 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.transform.Affine
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.reactfx.util.FxTimer
 import java.io.File
 import java.time.Duration
 import java.util.Arrays
 import java.util.Optional
 import java.util.function.BiConsumer
-import kotlinx.coroutines.experimental.javafx.JavaFx
+import kotlinx.coroutines.javafx.JavaFx
 
 class DefaultSelectionManager
 /**
@@ -62,7 +64,7 @@ class DefaultSelectionManager
      * @param lineNumber line number in script
      */
     override fun setSelectedCSG(script: File, lineNumber: Int) {
-        launch(context = JavaFx) {
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
             val csgs = csgManager
                     .csgParser
                     .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
@@ -134,7 +136,7 @@ class DefaultSelectionManager
         val interpolator = Affine()
         val correction = TransformFactory.nrToAffine(reverseRotation)
 
-        launch(context = JavaFx) {
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
             interpolator.tx = startSelectNr.x - targetNR.x
             interpolator.ty = startSelectNr.y - targetNR.y
             interpolator.tz = startSelectNr.z - targetNR.z
@@ -170,7 +172,7 @@ class DefaultSelectionManager
     /** De-select the selection.  */
     override fun cancelSelection() {
         for (key in csgManager.getCSGs()) {
-            launch(context = JavaFx) {
+            GlobalScope.launch(context = Dispatchers.JavaFx) {
                 csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
             }
         }
@@ -181,7 +183,7 @@ class DefaultSelectionManager
         val interpolator = Affine()
         TransformFactory.nrToAffine(startSelectNr, interpolator)
 
-        launch(context = JavaFx) {
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
             removeAllFocusTransforms()
             focusGroup.transforms.add(interpolator)
             focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator)
@@ -286,7 +288,7 @@ class DefaultSelectionManager
         val yIncrement = (start.y - target.y) * sinusoidalScale
         val zIncrement = (start.z - target.z) * sinusoidalScale
 
-        launch(context = JavaFx) {
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
             interpolator.tx = xIncrement
             interpolator.ty = yIncrement
             interpolator.tz = zIncrement
@@ -297,7 +299,7 @@ class DefaultSelectionManager
                     Duration.ofMillis(16)
             ) { focusInterpolate(start, target, depth + 1, targetDepth, interpolator) }
         } else {
-            launch(context = JavaFx) { focusGroup.transforms.remove(interpolator) }
+            GlobalScope.launch(context = Dispatchers.JavaFx) { focusGroup.transforms.remove(interpolator) }
             previousTarget = target.copy()
             previousTarget.rotation = RotationNR()
         }

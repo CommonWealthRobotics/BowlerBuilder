@@ -20,11 +20,13 @@ import javafx.scene.control.Dialog
 import javafx.scene.control.Label
 import javafx.scene.layout.GridPane
 import javafx.util.Callback
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.Callable
 import java.util.function.Function
 import java.util.function.Predicate
-import kotlinx.coroutines.experimental.javafx.JavaFx
+import kotlinx.coroutines.javafx.JavaFx
 
 /**
  * A [Dialog] to select files from a GitHub Gist.
@@ -52,14 +54,14 @@ class GistFileSelectionDialog(
         gistField
                 .invalidProperty()
                 .addListener { _, _, newValue ->
-                    launch {
+                    GlobalScope.launch {
                         if (!newValue) {
                             val files = ScriptingEngine
                                     .filesInGit(gistField.text)
                                     .filter { extensionFilter.test(it) }
                                     .toSet()
 
-                            launch(context = JavaFx) {
+                            launch(context = Dispatchers.JavaFx) {
                                 fileChooser.items = FXCollections.observableArrayList(files)
                             }
                         }
@@ -84,7 +86,7 @@ class GistFileSelectionDialog(
         isResizable = true
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
 
-        launch(context = JavaFx) {
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
             gistField.requestFocus()
         }
 
