@@ -7,8 +7,8 @@ import org.gradle.util.GFileUtils
 plugins {
     jacoco
     pmd
-    id("com.diffplug.gradle.spotless") version "3.10.0"
-    id("org.jlleitschuh.gradle.ktlint") version "5.0.0"
+    id("com.diffplug.gradle.spotless") version "3.16.0"
+    id("org.jlleitschuh.gradle.ktlint") version "6.2.1"
 }
 
 allprojects {
@@ -41,6 +41,10 @@ val javafxProjects = setOf(
         bowlerBuilderProject,
         bowlerBuilderJavaUIProject
 )
+
+object Versions {
+    const val ktlintVersion = "0.29.0"
+}
 
 buildscript {
     repositories {
@@ -84,7 +88,7 @@ allprojects {
          * These checks are dependencies of the `check` task.
          */
         kotlinGradle {
-            ktlint("0.23.1")
+            ktlint(Versions.ktlintVersion)
             trimTrailingWhitespace()
         }
         freshmark {
@@ -308,7 +312,7 @@ configure(kotlinProjects) {
 
     spotless {
         kotlin {
-            ktlint("0.23.1")
+            ktlint(Versions.ktlintVersion)
             trimTrailingWhitespace()
             indentWithSpaces(2)
             endWithNewline()
