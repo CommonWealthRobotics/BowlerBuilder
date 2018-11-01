@@ -66,8 +66,8 @@ class DefaultSelectionManager
     override fun setSelectedCSG(script: File, lineNumber: Int) {
         GlobalScope.launch(context = Dispatchers.JavaFx) {
             val csgs = csgManager
-                    .csgParser
-                    .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
+                .csgParser
+                .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
 
             if (csgs.size == 1) {
                 selectCSG(csgs.iterator().next())
@@ -88,12 +88,12 @@ class DefaultSelectionManager
         }
 
         csgManager
-                .getCSGs()
-                .forEach { key ->
-                    Platform.runLater {
-                        csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
-                    }
+            .getCSGs()
+            .forEach { key ->
+                Platform.runLater {
+                    csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
                 }
+            }
 
         selectedCSG.value = Optional.of(selection)
         csgManager.getMeshView(selection)?.material = PhongMaterial(Color.GOLD)
@@ -164,7 +164,8 @@ class DefaultSelectionManager
             val meshView = csgManager.getMeshView(csg)
             if (meshView != null) {
                 FxTimer.runLater(
-                        Duration.ofMillis(20)) { meshView.material = PhongMaterial(Color.GOLD) }
+                    Duration.ofMillis(20)
+                ) { meshView.material = PhongMaterial(Color.GOLD) }
             }
         }
     }
@@ -237,13 +238,15 @@ class DefaultSelectionManager
 
             if (mouseEvent.isPrimaryButtonDown) {
                 val trans = TransformNR(
-                        0.0,
-                        0.0,
-                        0.0,
-                        RotationNR(
-                                mouseDeltaY * modifierFactor * modifier * 2.0,
-                                mouseDeltaX * modifierFactor * modifier * 2.0,
-                                0.0))
+                    0.0,
+                    0.0,
+                    0.0,
+                    RotationNR(
+                        mouseDeltaY * modifierFactor * modifier * 2.0,
+                        mouseDeltaX * modifierFactor * modifier * 2.0,
+                        0.0
+                    )
+                )
 
                 if (mouseEvent.isPrimaryButtonDown) {
                     moveCamera.accept(trans, 0.0)
@@ -251,17 +254,19 @@ class DefaultSelectionManager
             } else if (mouseEvent.isSecondaryButtonDown) {
                 val depth = -100 / virtualCam.zoomDepth
                 moveCamera.accept(
-                        TransformNR(
-                                mouseDeltaX * modifierFactor * modifier * 1.0 / depth,
-                                mouseDeltaY * modifierFactor * modifier * 1.0 / depth,
-                                0.0,
-                                RotationNR()),
-                        0.0)
+                    TransformNR(
+                        mouseDeltaX * modifierFactor * modifier * 1.0 / depth,
+                        mouseDeltaY * modifierFactor * modifier * 1.0 / depth,
+                        0.0,
+                        RotationNR()
+                    ),
+                    0.0
+                )
             }
         }
 
         scene.addEventHandler(
-                ScrollEvent.ANY
+            ScrollEvent.ANY
         ) { event ->
             if (ScrollEvent.SCROLL == event.eventType) {
                 val zoomFactor = -event.deltaY * virtualCam.zoomDepth / 500
@@ -296,7 +301,7 @@ class DefaultSelectionManager
 
         if (depth < targetDepth) {
             FxTimer.runLater(
-                    Duration.ofMillis(16)
+                Duration.ofMillis(16)
             ) { focusInterpolate(start, target, depth + 1, targetDepth, interpolator) }
         } else {
             GlobalScope.launch(context = Dispatchers.JavaFx) { focusGroup.transforms.remove(interpolator) }
@@ -313,7 +318,7 @@ class DefaultSelectionManager
 
     private fun checkManipulator(csg: CSG): Boolean {
         return (Math.abs(csg.manipulator.tx) > 0.1 ||
-                Math.abs(csg.manipulator.ty) > 0.1 ||
-                Math.abs(csg.manipulator.tz) > 0.1)
+            Math.abs(csg.manipulator.ty) > 0.1 ||
+            Math.abs(csg.manipulator.tz) > 0.1)
     }
 }

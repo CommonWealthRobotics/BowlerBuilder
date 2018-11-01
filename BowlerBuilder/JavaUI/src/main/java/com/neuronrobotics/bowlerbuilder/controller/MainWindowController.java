@@ -102,14 +102,7 @@ import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.JSONParser;
-import org.kohsuke.github.GHGist;
-import org.kohsuke.github.GHGistFile;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHOrganization;
-import org.kohsuke.github.GHPersonSet;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
+import org.kohsuke.github.*;
 
 @Singleton
 @ParametersAreNonnullByDefault
@@ -1013,12 +1006,14 @@ public class MainWindowController implements PreferencesConsumer {
                           Platform.runLater(
                               () -> {
                                 try {
-                                  openManualGistFileInEditor(
-                                      cell.getItem().getContent().getGitUrl(),
-                                      cell.getItem().getContent().getName(),
-                                      ScriptingEngine.fileFromGit(
-                                          cell.getItem().getContent().getGitUrl(),
-                                          cell.getItem().getContent().getName()));
+                                  final GHContent content = cell.getItem().getContent();
+                                  if (content != null) {
+                                    openManualGistFileInEditor(
+                                        content.getGitUrl(),
+                                        content.getName(),
+                                        ScriptingEngine.fileFromGit(
+                                            content.getGitUrl(), content.getName()));
+                                  }
                                 } catch (GitAPIException | IOException e) {
                                   LOGGER.warning(
                                       "Could not get item from git.\n"

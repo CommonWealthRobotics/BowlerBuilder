@@ -57,6 +57,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kohsuke.github.GHGist;
 import org.kohsuke.github.GHGistFile;
 
+@SuppressWarnings("UnstableApiUsage")
 @ParametersAreNonnullByDefault
 public class DefaultScriptEditorController implements PreferencesConsumer {
 
@@ -264,7 +265,7 @@ public class DefaultScriptEditorController implements PreferencesConsumer {
    */
   public void loadFile(final File file) {
     try {
-      scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
+      scriptEditor.setText(Files.asCharSource(file, Charset.forName("UTF-8")).read());
       if (file.getName().endsWith(".xml")) {
         scriptLangName = "MobilBaseXML";
       } else if (file.getName().endsWith(".groovy")) {
@@ -321,7 +322,7 @@ public class DefaultScriptEditorController implements PreferencesConsumer {
     fileNameField.setText(fileName);
 
     try {
-      scriptEditor.setText(Files.toString(file, Charset.forName("UTF-8")));
+      scriptEditor.setText(Files.asCharSource(file, Charset.forName("UTF-8")).read());
     } catch (final IOException e) {
       LOGGER.log(
           Level.SEVERE,

@@ -288,7 +288,7 @@ public class CreatureEditorController implements PreferencesConsumer {
   private Button getAddLinkButton(final ImageView icon, final LimbType limbType) {
     final Button button = new Button();
     button.setGraphic(icon);
-    button.setTooltip(new Tooltip("Add Link"));
+    button.setTooltip(new Tooltip("Add " + limbType.getTooltipName()));
     button.setOnAction(
         event -> {
           switch (limbType) {

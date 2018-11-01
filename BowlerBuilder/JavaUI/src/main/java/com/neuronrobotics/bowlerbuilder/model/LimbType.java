@@ -25,4 +25,19 @@ public enum LimbType {
   public String getDefaultFileName() {
     return defaultFileName;
   }
+
+  public String getTooltipName() {
+    switch (this) {
+      case LEG:
+        return "Leg";
+      case ARM:
+        return "Arm";
+      case FIXED_WHEEL:
+        return "Fixed Wheel";
+      case STEERABLE_WHEEL:
+        return "Steerable Wheel";
+      default:
+        return "Unknown Limb Type";
+    }
+  }
 }

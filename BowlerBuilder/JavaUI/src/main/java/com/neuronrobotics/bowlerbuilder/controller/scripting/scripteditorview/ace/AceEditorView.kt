@@ -14,11 +14,7 @@ import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.util.WebEngineUtil.runAfterEngine
 import javafx.scene.Node
 import javafx.scene.web.WebView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.javafx.JavaFx
 
 /**
  * A view to an [AceEditor] through a [WebView].
@@ -34,20 +30,19 @@ class AceEditorView @Inject constructor(
         webView.engine.isJavaScriptEnabled = true
         scriptEditor = AceEditor(aceWebEngineFactory.create(webView.engine))
 
-        GlobalScope.launch(context = Dispatchers.JavaFx) {
-            webView.engine.load(DefaultScriptEditorController::class.java
-                    .getResource("/com/neuronrobotics/bowlerbuilder/web/ace.html")
-                    .toString())
-        }
+        webView.engine.load(
+            DefaultScriptEditorController::class.java
+                .getResource("/com/neuronrobotics/bowlerbuilder/web/ace.html")
+                .toString()
+        )
     }
 
     override fun setFontSize(fontSize: Int) {
-        GlobalScope.launch(context = Dispatchers.JavaFx) {
-            runAfterEngine(webView.engine.loadWorker, Runnable {
-                webView.engine.executeScript("document.getElementById('editor').style" +
-                        ".fontSize='${fontSize}px';")
-            })
-        }
+        runAfterEngine(webView.engine.loadWorker, Runnable {
+            webView.engine.executeScript(
+                "document.getElementById('editor').style.fontSize='${fontSize}px';"
+            )
+        })
     }
 
     override fun getView(): Node = webView
