@@ -140,7 +140,7 @@ public final class AceEditor implements ScriptEditor {
       return WebEngineUtil.returnAfterEngine(
           engine.getLoadWorker(),
           () ->
-              (int)
+              (Integer)
                   engine.executeScript(
                       "editor.session.doc.positionToIndex(editor.selection.getCursor());"));
     } catch (final Exception e) {
