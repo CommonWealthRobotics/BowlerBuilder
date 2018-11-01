@@ -1,3 +1,4 @@
+import Bowler_gradle.Strings.spotlessLicenseHeaderDelimiter
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -45,6 +46,10 @@ val javafxProjects = setOf(
 
 object Versions {
     const val ktlintVersion = "0.29.0"
+}
+
+object Strings {
+    const val spotlessLicenseHeaderDelimiter = "(@|package|import)"
 }
 
 buildscript {
@@ -206,7 +211,7 @@ configure(javaProjects) {
             endWithNewline()
             licenseHeaderFile(
                 "${rootProject.rootDir}/config/spotless/bowler.license",
-            "(@|package|import)"
+                spotlessLicenseHeaderDelimiter
             )
         }
     }
@@ -277,15 +282,10 @@ configure(kotlinProjects) {
         "testCompile"(kotlin("test-junit"))
     }
 
-    kotlin {
-        // Enable coroutines supports for Kotlin.
-//        experimental.coroutines = Coroutines.ENABLE
-    }
-
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xjvm-default=enable")
+            freeCompilerArgs = listOf("-Xjvm-default=enable", "-Xprogressive", "-XXLanguage:+InlineClasses")
         }
     }
 
@@ -320,7 +320,7 @@ configure(kotlinProjects) {
             endWithNewline()
             licenseHeaderFile(
                 "${rootProject.rootDir}/config/spotless/bowler.license",
-                "(@|package|import)"
+                spotlessLicenseHeaderDelimiter
             )
         }
     }
