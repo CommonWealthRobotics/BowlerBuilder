@@ -43,7 +43,7 @@ class AceEditorView @Inject constructor(
     }
 
     override fun setFontSize(fontSize: Int) {
-        runBlocking(context = Dispatchers.JavaFx) {
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
             runAfterEngine(webView.engine.loadWorker, Runnable {
                 webView.engine.executeScript("document.getElementById('editor').style" +
                         ".fontSize='${fontSize}px';")
