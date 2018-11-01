@@ -256,6 +256,11 @@ configure(kotlinProjects) {
         plugin("org.jlleitschuh.gradle.ktlint")
     }
 
+    repositories {
+        maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
+        maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
+    }
+
     dependencies {
         // Weird syntax, see: https://github.com/gradle/kotlin-dsl/issues/894
         "compile"(kotlin("stdlib-jdk8", kotlinVersion))
