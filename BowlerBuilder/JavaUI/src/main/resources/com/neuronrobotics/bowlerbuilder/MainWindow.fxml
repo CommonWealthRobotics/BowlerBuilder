@@ -63,7 +63,7 @@
             </MenuBar>
         </top>
         <center>
-            <SplitPane dividerPositions="0.8" orientation="VERTICAL" BorderPane.alignment="CENTER">
+            <SplitPane fx:id="consoleSplitPane" orientation="VERTICAL" BorderPane.alignment="CENTER">
                 <TabPane fx:id="tabPane">
                     <Tab id="homeTab" fx:id="homeTab" closable="false" text="Home">
                         <BorderPane>

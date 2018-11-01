@@ -16,6 +16,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.neuronrobotics.bowlerbuilder.BowlerBuilder;
 import com.neuronrobotics.bowlerbuilder.FxUtil;
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities;
 import com.neuronrobotics.bowlerbuilder.PublicAPI;
@@ -128,6 +129,7 @@ public class MainWindowController implements PreferencesConsumer {
   @FXML private TabPane tabPane;
   @FXML private Tab homeTab;
   @FXML private WebBrowserController webBrowserController;
+  @FXML private SplitPane consoleSplitPane;
   @FXML private Tab consoleTab;
   @FXML private TextArea console;
   @FXML private Tab connectionTab;
@@ -147,15 +149,8 @@ public class MainWindowController implements PreferencesConsumer {
     consoleTab.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
     connectionTab.setGraphic(AssetFactory.loadIcon("Connected-Devices.png"));
 
-    mainSplitPane.setDividerPositions(0.1);
-    mainSplitPane
-        .heightProperty()
-        .addListener(
-            (observable, oldValue, newValue) -> {
-              final double[] oldPositions = mainSplitPane.getDividerPositions();
-              // Maintain the old divider ratio when the window resizes
-              Platform.runLater(() -> mainSplitPane.setDividerPositions(oldPositions));
-            });
+    makeSplitPaneMaintainDividerRatio(mainSplitPane, new double[] {0.1});
+    makeSplitPaneMaintainDividerRatio(consoleSplitPane, new double[] {0.8});
 
     // Add date to console
     console.setText(
@@ -165,19 +160,15 @@ public class MainWindowController implements PreferencesConsumer {
             + "\n");
 
     // Redirect output to console
-    PrintStream stream = null;
     try {
-      stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
+      PrintStream stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
+      System.setOut(stream);
+      System.setErr(stream);
     } catch (final UnsupportedEncodingException e) {
-      LOGGER.severe("UTF-8 encoding not supported.");
+      LOGGER.severe("Cannot redirect output to terminal because UTF-8 encoding not supported.");
     }
 
-    System.setOut(stream);
-    System.setErr(stream);
-
     loadPage("http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/");
-
-    SplitPane.setResizableWithParent(console, false);
 
     // Just needed to initialize here (ConnectionManager marked @singleton)
     connectionManagerFactory.get(connectionsHeader, connections);
@@ -207,6 +198,25 @@ public class MainWindowController implements PreferencesConsumer {
     }
 
     refreshPreferences();
+  }
+
+  /**
+   * Adds a height property listener to maintain divider positions on window resize.
+   *
+   * @param splitPane The SplitPane to modify.
+   * @param defaultDividerPositions The default divider positions.
+   */
+  private void makeSplitPaneMaintainDividerRatio(
+      final SplitPane splitPane, final double[] defaultDividerPositions) {
+    splitPane.setDividerPositions(defaultDividerPositions);
+    splitPane
+        .heightProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              final double[] oldPositions = mainSplitPane.getDividerPositions();
+              // Maintain the old divider ratio when the window resizes
+              Platform.runLater(() -> mainSplitPane.setDividerPositions(oldPositions));
+            });
   }
 
   @Override
@@ -389,7 +399,10 @@ public class MainWindowController implements PreferencesConsumer {
           final FXMLLoader loader =
               new FXMLLoader(
                   MainWindowController.class.getResource(
-                      "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"));
+                      "/com/neuronrobotics/bowlerbuilder/view/WebBrowser.fxml"),
+                  null,
+                  null,
+                  BowlerBuilder.getInjector()::getInstance);
 
           try {
             final Tab tab = new Tab(tabName, loader.load());
@@ -754,6 +767,7 @@ public class MainWindowController implements PreferencesConsumer {
    * @param menu menu to put submenus into
    * @param gists list of gists
    */
+  @SuppressWarnings("UnstableApiUsage")
   private void loadGistsIntoMenus(final Menu menu, final Iterable<GHGist> gists) {
     gists.forEach(
         gist -> {
@@ -811,9 +825,7 @@ public class MainWindowController implements PreferencesConsumer {
                         gist.getGitPushUrl(),
                         ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
                         selection.getName(),
-                        Files.readLines(selection, Charsets.UTF_8)
-                            .stream()
-                            .collect(Collectors.joining("\n")),
+                        String.join("\n", Files.readLines(selection, Charsets.UTF_8)),
                         "Add file: " + selection.getName());
                     reloadGitMenus();
                   } catch (final Exception e) {
@@ -983,6 +995,7 @@ public class MainWindowController implements PreferencesConsumer {
    * @param menu menu to put submenus into
    * @param repos repositories
    */
+  @SuppressWarnings("UnstableApiUsage")
   private void loadReposIntoMenus(final Menu menu, final PagedIterable<GHRepository> repos) {
     // Map the repo owner's name to the repos it falls under to group similar repos together
     final Multimap<String, GHRepository> repoMap =
@@ -1241,10 +1254,14 @@ public class MainWindowController implements PreferencesConsumer {
    *
    * @param tab tab to add
    */
-  @SuppressWarnings("unused")
+  @SuppressWarnings({"unused", "WeakerAccess"})
   @PublicAPI
   public void addTab(final Tab tab) {
-    Platform.runLater(() -> tabPane.getTabs().add(tab));
+    Platform.runLater(
+        () -> {
+          tabPane.getTabs().add(tab);
+          tabPane.getSelectionModel().select(tab);
+        });
   }
 
   /**

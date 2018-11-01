@@ -56,11 +56,11 @@ public class WebBrowserController {
   @FXML private ImageView runIcon;
   @FXML private Button modifyButton;
   @FXML private ChoiceBox<String> fileBox;
-  private final StringProperty currentGist = new SimpleStringProperty("currentGist");
+  private final StringProperty currentGistURL = new SimpleStringProperty("currentGist");
   private final StringProperty lastURL = new SimpleStringProperty("");
 
   @Inject
-  public WebBrowserController(MainWindowController parentController) {
+  public WebBrowserController(final MainWindowController parentController) {
     this.parentController = parentController;
   }
 
@@ -87,80 +87,81 @@ public class WebBrowserController {
             (observableValue, oldState, newState) -> {
               if (newState.equals(Worker.State.SUCCEEDED)) {
                 final Thread thread =
-                    LoggerUtilities.newLoggingThread(
-                        LOGGER,
-                        () -> {
-                          Platform.runLater(
-                              () -> {
-                                runButton.setDisable(true);
-                                modifyButton.setDisable(true);
-                                fileBox.setDisable(true);
-                              });
-
-                          final ImmutableList<String> gists =
-                              ImmutableList.copyOf(
-                                  ScriptingEngine.getCurrentGist(
-                                      lastURL.get(), webView.getEngine()));
-
-                          if (gists.isEmpty()) {
-                            LOGGER.info("No gists found on the current page.");
-                            return;
-                          }
-
-                          // Transform the current page URL into a git URL
-                          if (lastURL.get().contains("https://github.com/")) {
-                            // TODO: Support normal repos
-                            /*if (address.endsWith("/")) {
-                              address = address.substring(0, address.length() - 1);
-                            }
-                            currentGist = address + ".git";*/
-
-                            LOGGER.info("Can't parse from normal repo.");
-                            return;
-                          } else {
-                            currentGist.set("https://gist.github.com/" + gists.get(0) + ".git");
-                          }
-
-                          LOGGER.fine("Current gist is: " + currentGist.get());
-
-                          try {
-                            // Load files and remove "csgDatabase.json"
-                            final ImmutableList<String> files =
-                                ImmutableList.copyOf(
-                                    ScriptingEngine.filesInGit(currentGist.get())
-                                        .stream()
-                                        .filter(item -> !item.contains("csgDatabase.json"))
-                                        .collect(Collectors.toList()));
-
-                            if (files.isEmpty()) {
-                              // If there aren't files, just clear the file box
-                              Platform.runLater(() -> fileBox.getItems().clear());
-                            } else {
-                              // If there are files, add them to the fileBox, re-enable the buttons,
-                              // and load
-                              // the first file
-                              WebBrowserController.this.loadGitLocal(
-                                  currentGist.get(), files.get(0));
-                              Platform.runLater(
-                                  () -> {
-                                    runButton.setDisable(false);
-                                    modifyButton.setDisable(false);
-                                    fileBox.setDisable(false);
-                                    fileBox.getItems().setAll(files);
-                                    fileBox.getSelectionModel().select(0);
-                                  });
-                            }
-                          } catch (Exception e) {
-                            LOGGER.warning(
-                                "Could not parse and run script.\n"
-                                    + Throwables.getStackTraceAsString(e));
-                          }
-                        });
-
+                    LoggerUtilities.newLoggingThread(LOGGER, this::onPageLoadCallback);
                 thread.setDaemon(true);
                 thread.start();
               }
             });
+  }
+
+  private void onPageLoadCallback() {
+    Platform.runLater(() -> setScriptRunnerUIState(true));
+
+    final ImmutableList<String> gists =
+        ImmutableList.copyOf(ScriptingEngine.getCurrentGist(lastURL.get(), webView.getEngine()));
+
+    if (gists.isEmpty()) {
+      LOGGER.info("No gists found on the current page.");
+      return;
+    }
+
+    // Transform the current page URL into a git URL
+    currentGistURL.set(getGitUrlFromPageUrl(lastURL.get(), gists));
+    LOGGER.fine("Current gist is: " + currentGistURL.get());
+
+    try {
+      // Load files and remove "csgDatabase.json"
+      final ImmutableList<String> files =
+          ImmutableList.copyOf(
+              ScriptingEngine.filesInGit(currentGistURL.get())
+                  .stream()
+                  .filter(item -> !item.contains("csgDatabase.json"))
+                  .collect(Collectors.toList()));
+
+      if (files.isEmpty()) {
+        // If there aren't files, just clear the file box
+        Platform.runLater(() -> fileBox.getItems().clear());
+      } else {
+        // If there are files, add them to the fileBox, re-enable the buttons,
+        // and load the first file
+        loadGitLocal(currentGistURL.get(), files.get(0));
+
+        Platform.runLater(
+            () -> {
+              setScriptRunnerUIState(false);
+              fileBox.getItems().setAll(files);
+              fileBox.getSelectionModel().select(0);
+            });
+      }
+    } catch (Exception e) {
+      LOGGER.warning("Could not parse and run script.\n" + Throwables.getStackTraceAsString(e));
+    }
+  }
+
+  /**
+   * Maps the URL for a page containing Git resources to the URL for that resource.
+   *
+   * @param pageUrl The current page URL.
+   * @param gists The gists on the current page.
+   * @return A Git URL.
+   */
+  private String getGitUrlFromPageUrl(final String pageUrl, final ImmutableList<String> gists) {
+    if (pageUrl.contains("https://github.com/")) {
+      if (pageUrl.endsWith("/")) {
+        return pageUrl.substring(0, pageUrl.length() - 1) + ".git";
+      } else {
+        return pageUrl + ".git";
+      }
+    } else {
+      return "https://gist.github.com/" + gists.get(0) + ".git";
+    }
+  }
+
+  /** Sets the disabled state of the run and modify buttons and the file selection box. */
+  private void setScriptRunnerUIState(final boolean state) {
+    runButton.setDisable(state);
+    modifyButton.setDisable(state);
+    fileBox.setDisable(state);
   }
 
   @FXML
@@ -172,12 +173,11 @@ public class WebBrowserController {
               try {
                 final File currentFile =
                     ScriptingEngine.fileFromGit(
-                        currentGist.get(), fileBox.getSelectionModel().getSelectedItem());
-                final String name = currentFile.getName();
-                final Object obj =
+                        currentGistURL.get(), fileBox.getSelectionModel().getSelectedItem());
+
+                parseResult(
                     ScriptingEngine.inlineScriptRun(
-                        currentFile, null, ScriptingEngine.getShellType(name));
-                parseResult(obj);
+                        currentFile, null, ScriptingEngine.getShellType(currentFile.getName())));
               } catch (Exception e) {
                 LOGGER.warning(
                     "Could not parse and run script.\n" + Throwables.getStackTraceAsString(e));
@@ -217,11 +217,15 @@ public class WebBrowserController {
           try {
             final AceCadEditorTab tab = new AceCadEditorTab(selection);
             tab.getController().getDefaultCadModelViewerController().addAllCSGs(csgIterable);
+
             final GHGist gist =
-                ScriptingEngine.getGithub().getGist(ScriptingEngine.urlToGist(currentGist.get()));
+                ScriptingEngine.getGithub()
+                    .getGist(ScriptingEngine.urlToGist(currentGistURL.get()));
+
             tab.getController()
                 .getDefaultScriptEditorController()
                 .loadGist(gist, gist.getFile(selection));
+
             parentController.addTab(tab);
           } catch (IOException e) {
             e.printStackTrace();
@@ -235,7 +239,7 @@ public class WebBrowserController {
     LOGGER.fine("selection: " + selection);
 
     try {
-      final File currentFile = ScriptingEngine.fileFromGit(currentGist.get(), selection);
+      final File currentFile = ScriptingEngine.fileFromGit(currentGistURL.get(), selection);
 
       // TODO: Doesn't properly detect owner
       final boolean isOwner = ScriptingEngine.checkOwner(currentFile);
@@ -244,14 +248,14 @@ public class WebBrowserController {
       LOGGER.fine("isOwner: " + isOwner);
 
       if (isOwner) {
-        LOGGER.fine("Opening file from git in editor: " + currentGist.get() + ", " + selection);
-        final GHGist gist = ScriptingEngine.getGithub().getGist(currentGist.get());
+        LOGGER.fine("Opening file from git in editor: " + currentGistURL.get() + ", " + selection);
+        final GHGist gist = ScriptingEngine.getGithub().getGist(currentGistURL.get());
         parentController.openGistFileInEditor(gist, gist.getFile(selection));
       } else {
-        LOGGER.info("Forking file from git: " + currentGist.get());
-        final GHGist gist = ScriptingEngine.fork(ScriptingEngine.urlToGist(currentGist.get()));
-        currentGist.set(gist.getGitPushUrl());
-        LOGGER.info("Fork Push URL: " + currentGist.get());
+        LOGGER.info("Forking file from git: " + currentGistURL.get());
+        final GHGist gist = ScriptingEngine.fork(ScriptingEngine.urlToGist(currentGistURL.get()));
+        currentGistURL.set(gist.getGitPushUrl());
+        LOGGER.info("Fork Push URL: " + currentGistURL.get());
         LOGGER.info("Fork done.");
         parentController.openGistFileInEditor(gist, gist.getFile(selection));
       }
@@ -261,7 +265,7 @@ public class WebBrowserController {
   }
 
   private void loadGitLocal(final String currentGist, final String file) {
-    LOGGER.fine("currentGist: " + currentGist);
+    LOGGER.fine("currentGistURL: " + currentGist);
     LOGGER.fine("file: " + file);
 
     try {
