@@ -102,7 +102,6 @@ public class WebBrowserController {
 
     if (gists.isEmpty()) {
       LOGGER.info("No gists found on the current page.");
-      return;
     }
 
     // Transform the current page URL into a git URL
@@ -148,7 +147,13 @@ public class WebBrowserController {
   private String getGitUrlFromPageUrl(final String pageUrl, final ImmutableList<String> gists) {
     if (pageUrl.contains("https://github.com/")) {
       if (pageUrl.endsWith("/")) {
-        return pageUrl.substring(0, pageUrl.length() - 1) + ".git";
+        if (pageUrl.endsWith(".git/")) {
+          return pageUrl.substring(0, pageUrl.length() - 1);
+        } else {
+          return pageUrl.substring(0, pageUrl.length() - 1) + ".git";
+        }
+      } else if (pageUrl.endsWith(".git")) {
+        return pageUrl;
       } else {
         return pageUrl + ".git";
       }
