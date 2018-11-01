@@ -148,11 +148,14 @@ public class MainWindowController implements PreferencesConsumer {
     connectionTab.setGraphic(AssetFactory.loadIcon("Connected-Devices.png"));
 
     mainSplitPane.setDividerPositions(0.1);
-    mainSplitPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-      final double[] oldPositions = mainSplitPane.getDividerPositions();
-      // Maintain the old divider ratio when the window resizes
-      Platform.runLater(() -> mainSplitPane.setDividerPositions(oldPositions));
-    });
+    mainSplitPane
+        .heightProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              final double[] oldPositions = mainSplitPane.getDividerPositions();
+              // Maintain the old divider ratio when the window resizes
+              Platform.runLater(() -> mainSplitPane.setDividerPositions(oldPositions));
+            });
 
     // Add date to console
     console.setText(
