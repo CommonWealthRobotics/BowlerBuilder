@@ -210,9 +210,7 @@ class CreatureEditorController
     }
 
     /** Regenerate menus using the parameters from the last time generateMenus() was called.  */
-    fun regenerateMenus() {
-        generateMenus(device!!, cadManager!!, controller!!)
-    }
+    fun regenerateMenus() = generateMenus(device!!, cadManager!!, controller!!)
 
     /** Clear the selected widget.  */
     fun clearWidget() {
@@ -221,14 +219,10 @@ class CreatureEditorController
     }
 
     private fun generateLimbTab(mobileBase: MobileBase) {
-        val loader = FXMLLoader(
-            CreatureEditorController::class.java.getResource(
-                "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"
-            ), null, null,
-            Callback<Class<*>, Any> {
-                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(mobileBase))
-                    .getInstance(it)
-            })
+        val loader = createLimbLayoutFxmlLoader(
+            mobileBase,
+            "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"
+        )
 
         try {
             val content = loader.load<Node>()
@@ -306,14 +300,17 @@ class CreatureEditorController
                     mobileBase,
                     mobileBase.legs
                 )
+
                 LimbType.ARM -> promptAndAddLimb(
                     LimbType.ARM.defaultFileName,
                     mobileBase,
                     mobileBase.appendages
                 )
+
                 LimbType.FIXED_WHEEL -> promptAndAddLimb(
                     LimbType.FIXED_WHEEL.defaultFileName, mobileBase, mobileBase.drivable
                 )
+
                 LimbType.STEERABLE_WHEEL -> promptAndAddLimb(
                     LimbType.STEERABLE_WHEEL.defaultFileName, mobileBase, mobileBase.steerable
                 )
@@ -323,20 +320,17 @@ class CreatureEditorController
     }
 
     private fun generateMovementTab(mobileBase: MobileBase) {
-        val loader = FXMLLoader(
-            CreatureEditorController::class.java.getResource(
-                "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"
-            ), null, null,
-            Callback<Class<*>, Any> {
-                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(mobileBase))
-                    .getInstance(it)
-            })
+        val loader = createLimbLayoutFxmlLoader(
+            mobileBase,
+            "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"
+        )
 
         try {
             val content = loader.load<Node>()
             val container = VBox(10.0, FullBodyJogWidget(mobileBase).view, content, movementWidget)
             container.maxWidth(java.lang.Double.MAX_VALUE)
             content.maxWidth(java.lang.Double.MAX_VALUE)
+
             GlobalScope.launch(Dispatchers.JavaFx) {
                 movementTab.content = getScrollPane(container)
             }
@@ -377,20 +371,17 @@ class CreatureEditorController
         mobileBase: MobileBase,
         mobileBaseCadManager: MobileBaseCadManager
     ) {
-        val loader = FXMLLoader(
-            CreatureEditorController::class.java.getResource(
-                "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"
-            ), null, null,
-            Callback<Class<*>, Any> {
-                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(mobileBase))
-                    .getInstance(it)
-            })
+        val loader = createLimbLayoutFxmlLoader(
+            mobileBase,
+            "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"
+        )
 
         try {
             val content = loader.load<Node>()
             val container = VBox(10.0, content, configWidget)
             container.maxWidth(java.lang.Double.MAX_VALUE)
             content.maxWidth(java.lang.Double.MAX_VALUE)
+
             GlobalScope.launch(Dispatchers.JavaFx) { configTab.content = getScrollPane(container) }
 
             val controller = loader.getController<LimbLinkLayoutController>()
@@ -464,15 +455,10 @@ class CreatureEditorController
             val deviceXMLFile = ScriptingEngine.fileFromGit(gitXMLSource[0], gitXMLSource[1])
 
             if (ScriptingEngine.checkOwner(deviceXMLFile)) {
-                val loader = FXMLLoader(
-                    CreatureEditorController::class.java.getResource(
-                        "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"
-                    ), null, null,
-                    Callback<Class<*>, Any> {
-                        BowlerBuilder.injector
-                            .createChildInjector(LimbLayoutControllerModule(mobileBase))
-                            .getInstance(it)
-                    })
+                val loader = createLimbLayoutFxmlLoader(
+                    mobileBase,
+                    "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"
+                )
 
                 val tabContent = getScriptTabContentAsDeviceOwner(
                     makeCopy,
@@ -1072,5 +1058,17 @@ class CreatureEditorController
                 }
             }
         }
+
+        private fun createLimbLayoutFxmlLoader(mobileBase: MobileBase, resourcePath: String) =
+            FXMLLoader(
+                CreatureEditorController::class.java.getResource(resourcePath),
+                null,
+                null,
+                Callback {
+                    BowlerBuilder.injector
+                        .createChildInjector(LimbLayoutControllerModule(mobileBase))
+                        .getInstance(it)
+                }
+            )
     }
 }
