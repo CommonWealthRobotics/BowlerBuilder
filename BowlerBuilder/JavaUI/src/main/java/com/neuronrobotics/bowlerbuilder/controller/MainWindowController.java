@@ -1273,7 +1273,8 @@ public class MainWindowController implements PreferencesConsumer {
   @PublicAPI
   public Optional<Tab> getSelectedTab() {
     try {
-      return Optional.of(FxUtil.INSTANCE.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
+      return Optional.of(
+          FxUtil.INSTANCE.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
     } catch (final ExecutionException | InterruptedException e) {
       LOGGER.log(
           Level.SEVERE, "Could not get selected tab.\n" + Throwables.getStackTraceAsString(e));
