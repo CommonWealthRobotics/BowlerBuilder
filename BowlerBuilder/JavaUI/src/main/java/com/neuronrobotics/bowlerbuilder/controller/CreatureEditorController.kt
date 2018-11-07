@@ -203,11 +203,10 @@ class CreatureEditorController
 
         cadManager.autoRegen = autoRegenCAD.isSelected
 
-        // TODO: Make the content fit width
-        generateLimbTab()
-        generateMovementTab()
-        generateConfigTab()
-        generateScriptTab()
+        generateLimbTab(device)
+        generateMovementTab(device)
+        generateConfigTab(device, cadManager)
+        generateScriptTab(device, controller)
     }
 
     /** Regenerate menus using the parameters from the last time generateMenus() was called.  */
@@ -221,13 +220,13 @@ class CreatureEditorController
         selectedWidgetPane.get().children.clear()
     }
 
-    private fun generateLimbTab() {
+    private fun generateLimbTab(mobileBase: MobileBase) {
         val loader = FXMLLoader(
             CreatureEditorController::class.java.getResource(
                 "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLayout.fxml"
             ), null, null,
             Callback<Class<*>, Any> {
-                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(device!!))
+                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(mobileBase))
                     .getInstance(it)
             })
 
@@ -244,26 +243,41 @@ class CreatureEditorController
                 .addListener { _, _, newValue ->
                     newValue.ifPresent { limb ->
                         widgetSelectionProperty.set(
-                            LimbTabLimbSelection(device!!, limb, this)
+                            LimbTabLimbSelection(mobileBase, limb, this)
                         )
                     }
                 }
 
             GlobalScope.launch(Dispatchers.JavaFx) {
                 controller.addToLegHBox(
-                    getAddLinkButton(AssetFactory.loadIcon("Add-Leg.png"), LimbType.LEG)
-                )
-                controller.addToArmHBox(
-                    getAddLinkButton(AssetFactory.loadIcon("Add-Arm.png"), LimbType.ARM)
-                )
-                controller.addToSteerableHBox(
                     getAddLinkButton(
-                        AssetFactory.loadIcon("Add-Steerable-Wheel.png"), LimbType.STEERABLE_WHEEL
+                        AssetFactory.loadIcon("Add-Leg.png"),
+                        LimbType.LEG,
+                        mobileBase
                     )
                 )
+
+                controller.addToArmHBox(
+                    getAddLinkButton(
+                        AssetFactory.loadIcon("Add-Arm.png"),
+                        LimbType.ARM,
+                        mobileBase
+                    )
+                )
+
+                controller.addToSteerableHBox(
+                    getAddLinkButton(
+                        AssetFactory.loadIcon("Add-Steerable-Wheel.png"),
+                        LimbType.STEERABLE_WHEEL,
+                        mobileBase
+                    )
+                )
+
                 controller.addToFixedHBox(
                     getAddLinkButton(
-                        AssetFactory.loadIcon("Add-Fixed-Wheel.png"), LimbType.FIXED_WHEEL
+                        AssetFactory.loadIcon("Add-Fixed-Wheel.png"),
+                        LimbType.FIXED_WHEEL,
+                        mobileBase
                     )
                 )
             }
@@ -277,7 +291,11 @@ class CreatureEditorController
         }
     }
 
-    private fun getAddLinkButton(icon: ImageView, limbType: LimbType): Button {
+    private fun getAddLinkButton(
+        icon: ImageView,
+        limbType: LimbType,
+        mobileBase: MobileBase
+    ): Button {
         val button = Button()
         button.graphic = icon
         button.tooltip = Tooltip("Add " + limbType.tooltipName)
@@ -285,38 +303,38 @@ class CreatureEditorController
             when (limbType) {
                 LimbType.LEG -> promptAndAddLimb(
                     LimbType.LEG.defaultFileName,
-                    device!!,
-                    device!!.legs
+                    mobileBase,
+                    mobileBase.legs
                 )
                 LimbType.ARM -> promptAndAddLimb(
                     LimbType.ARM.defaultFileName,
-                    device!!,
-                    device!!.appendages
+                    mobileBase,
+                    mobileBase.appendages
                 )
                 LimbType.FIXED_WHEEL -> promptAndAddLimb(
-                    LimbType.FIXED_WHEEL.defaultFileName, device!!, device!!.drivable
+                    LimbType.FIXED_WHEEL.defaultFileName, mobileBase, mobileBase.drivable
                 )
                 LimbType.STEERABLE_WHEEL -> promptAndAddLimb(
-                    LimbType.STEERABLE_WHEEL.defaultFileName, device!!, device!!.steerable
+                    LimbType.STEERABLE_WHEEL.defaultFileName, mobileBase, mobileBase.steerable
                 )
             }
         }
         return button
     }
 
-    private fun generateMovementTab() {
+    private fun generateMovementTab(mobileBase: MobileBase) {
         val loader = FXMLLoader(
             CreatureEditorController::class.java.getResource(
                 "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"
             ), null, null,
             Callback<Class<*>, Any> {
-                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(device!!))
+                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(mobileBase))
                     .getInstance(it)
             })
 
         try {
             val content = loader.load<Node>()
-            val container = VBox(10.0, FullBodyJogWidget(device!!).view, content, movementWidget)
+            val container = VBox(10.0, FullBodyJogWidget(mobileBase).view, content, movementWidget)
             container.maxWidth(java.lang.Double.MAX_VALUE)
             content.maxWidth(java.lang.Double.MAX_VALUE)
             GlobalScope.launch(Dispatchers.JavaFx) {
@@ -355,13 +373,16 @@ class CreatureEditorController
         }
     }
 
-    private fun generateConfigTab() {
+    private fun generateConfigTab(
+        mobileBase: MobileBase,
+        mobileBaseCadManager: MobileBaseCadManager
+    ) {
         val loader = FXMLLoader(
             CreatureEditorController::class.java.getResource(
                 "/com/neuronrobotics/bowlerbuilder/view/robotmanager/LimbLinkLayout.fxml"
             ), null, null,
             Callback<Class<*>, Any> {
-                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(device!!))
+                BowlerBuilder.injector.createChildInjector(LimbLayoutControllerModule(mobileBase))
                     .getInstance(it)
             })
 
@@ -381,7 +402,7 @@ class CreatureEditorController
                         widgetSelectionProperty.set(
                             ConfigTabLimbSelection(
                                 limb,
-                                cadManager!!
+                                mobileBaseCadManager
                             )
                         )
                     }
@@ -397,7 +418,7 @@ class CreatureEditorController
                                 dhLink,
                                 linkConfiguration,
                                 parentLimb,
-                                cadManager!!
+                                mobileBaseCadManager
                             )
                         )
                     }
@@ -412,12 +433,15 @@ class CreatureEditorController
         }
     }
 
-    private fun generateScriptTab() {
+    private fun generateScriptTab(
+        mobileBase: MobileBase,
+        creatureLabController: AceCreatureLabController
+    ) {
         val makeCopy = Button("Clone Creature")
         makeCopy.graphic = AssetFactory.loadIcon("Make-Copy-of-Creature.png")
         makeCopy.setOnAction {
             GlobalScope.launch(Dispatchers.JavaFx) {
-                val oldName = device!!.scriptingName
+                val oldName = mobileBase.scriptingName
                 val dialog = TextInputDialog(oldName + "_copy")
                 dialog.title = "Make a copy of $oldName"
                 dialog.headerText = "Set the scripting name for this creature"
@@ -425,7 +449,7 @@ class CreatureEditorController
 
                 val result = dialog.showAndWait()
                 result.ifPresent { name ->
-                    thread(start = true) { cloneCreature(mainWindowController, device!!, name) }
+                    thread(start = true) { cloneCreature(mainWindowController, mobileBase, name) }
                 }
             }
         }
@@ -435,7 +459,7 @@ class CreatureEditorController
         topLevelControls.padding = Insets(5.0)
         topLevelControls.add(makeCopy, 0, 0)
 
-        val gitXMLSource = device!!.gitSelfSource
+        val gitXMLSource = mobileBase.gitSelfSource
         try {
             val deviceXMLFile = ScriptingEngine.fileFromGit(gitXMLSource[0], gitXMLSource[1])
 
@@ -446,15 +470,15 @@ class CreatureEditorController
                     ), null, null,
                     Callback<Class<*>, Any> {
                         BowlerBuilder.injector
-                            .createChildInjector(LimbLayoutControllerModule(device!!))
+                            .createChildInjector(LimbLayoutControllerModule(mobileBase))
                             .getInstance(it)
                     })
 
                 val tabContent = getScriptTabContentAsDeviceOwner(
                     makeCopy,
                     deviceXMLFile,
-                    device!!,
-                    controller!!
+                    mobileBase,
+                    creatureLabController
                 )
 
                 try {
@@ -466,7 +490,7 @@ class CreatureEditorController
                         .addListener { _, _, newValue ->
                             newValue.ifPresent { limb ->
                                 widgetSelectionProperty.set(
-                                    ScriptTabLimbSelection(limb, this.controller!!)
+                                    ScriptTabLimbSelection(limb, creatureLabController)
                                 )
                             }
                         }
