@@ -54,10 +54,12 @@ class BowlerBuilder : Application() {
         private val LOGGER = LoggerUtilities.getLogger(BowlerBuilder::class.java.simpleName)
 
         @PublicAPI
+        @JvmStatic
         val injector: Injector = Guice.createInjector()
 
         @Suppress("unused")
         @PublicAPI
+        @JvmStatic
         val mainController: MainWindowController
             get() = injector.getInstance(MainWindowController::class.java)
     }
