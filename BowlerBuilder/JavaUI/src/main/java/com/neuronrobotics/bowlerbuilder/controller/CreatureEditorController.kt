@@ -64,6 +64,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.apache.commons.io.IOUtils
 import org.controlsfx.control.Notifications
 import org.eclipse.jgit.api.errors.GitAPIException
@@ -618,20 +619,21 @@ class CreatureEditorController
         cadManager: MobileBaseCadManager,
         isKinematic: Boolean
     ) {
-        val defaultStlDir = File(System.getProperty("user.home") + "/bowler-workspace/STL/")
+        GlobalScope.launch {
+            val defaultStlDir = File(System.getProperty("user.home") + "/bowler-workspace/STL/")
 
-        if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
-            LOGGER.log(Level.WARNING, "Could not create default directory to save STL files.")
-            return
-        }
-
-        GlobalScope.launch(Dispatchers.JavaFx) {
-            val chooser = DirectoryChooser().apply {
-                title = "Select Output Directory For STL files"
-                initialDirectory = defaultStlDir
+            if (!defaultStlDir.exists() && !defaultStlDir.mkdirs()) {
+                LOGGER.log(Level.WARNING, "Could not create default directory to save STL files.")
+                return@launch
             }
 
-            val baseDirForFiles = chooser.showDialog(creatureTabPane.scene.window)
+            val baseDirForFiles: File? = runBlocking(Dispatchers.JavaFx) {
+                DirectoryChooser().apply {
+                    title = "Select Output Directory For STL files"
+                    initialDirectory = defaultStlDir
+                }.showDialog(creatureTabPane.scene.window)
+            }
+
             if (baseDirForFiles == null) {
                 LOGGER.log(Level.INFO, "No directory selected. Not saving STL files.")
                 return@launch
