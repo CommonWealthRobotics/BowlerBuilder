@@ -289,11 +289,10 @@ class CreatureEditorController
         icon: ImageView,
         limbType: LimbType,
         mobileBase: MobileBase
-    ): Button {
-        val button = Button()
-        button.graphic = icon
-        button.tooltip = Tooltip("Add " + limbType.tooltipName)
-        button.setOnAction {
+    ) = Button().apply {
+        graphic = icon
+        tooltip = Tooltip("Add " + limbType.tooltipName)
+        setOnAction {
             when (limbType) {
                 LimbType.LEG -> promptAndAddLimb(
                     LimbType.LEG.defaultFileName,
@@ -316,7 +315,6 @@ class CreatureEditorController
                 )
             }
         }
-        return button
     }
 
     private fun generateMovementTab(mobileBase: MobileBase) {
@@ -428,18 +426,34 @@ class CreatureEditorController
         mobileBase: MobileBase,
         creatureLabController: AceCreatureLabController
     ) {
+        fun handleException(e: Exception, gitXMLSource: Array<String>) {
+            LOGGER.severe(
+                """
+                Could not parse creature file from source: ${Arrays.toString(gitXMLSource)}
+                ${Throwables.getStackTraceAsString(e)}
+                """.trimIndent()
+            )
+
+            GlobalScope.launch(Dispatchers.JavaFx) {
+                Notifications.create()
+                    .title("Error")
+                    .text("Could not parse file from git source. Creature loading stopped.")
+                    .showError()
+            }
+        }
+
         val makeCopy = Button("Clone Creature")
         makeCopy.graphic = AssetFactory.loadIcon("Make-Copy-of-Creature.png")
         makeCopy.setOnAction {
             GlobalScope.launch(Dispatchers.JavaFx) {
                 val oldName = mobileBase.scriptingName
-                val dialog = TextInputDialog(oldName + "_copy")
-                dialog.title = "Make a copy of $oldName"
-                dialog.headerText = "Set the scripting name for this creature"
-                dialog.contentText = "Name of the new creature:"
+                val dialog = TextInputDialog("${oldName}_copy").apply {
+                    title = "Make a copy of $oldName"
+                    headerText = "Set the scripting name for this creature"
+                    contentText = "Name of the new creature:"
+                }
 
-                val result = dialog.showAndWait()
-                result.ifPresent { name ->
+                dialog.showAndWait().ifPresent { name ->
                     thread(start = true) { cloneCreature(mainWindowController, mobileBase, name) }
                 }
             }
@@ -503,31 +517,9 @@ class CreatureEditorController
                 }
             }
         } catch (e: GitAPIException) {
-            LOGGER.severe(
-                """
-                Could not parse creature file from source: ${Arrays.toString(gitXMLSource)}
-                ${Throwables.getStackTraceAsString(e)}
-                """.trimIndent()
-            )
-
-            GlobalScope.launch(Dispatchers.JavaFx) {
-                Notifications.create()
-                    .title("Error")
-                    .text("Could not parse file from git source. Creature loading stopped.")
-                    .showError()
-            }
+            handleException(e, gitXMLSource)
         } catch (e: IOException) {
-            LOGGER.severe(
-                """
-                Could not parse creature file from source: ${Arrays.toString(gitXMLSource)}
-                ${Throwables.getStackTraceAsString(e)}
-                """.trimIndent()
-            )
-            GlobalScope.launch(Dispatchers.JavaFx) {
-                Notifications.create().title("Error")
-                    .text("Could not parse file from git source. Creature loading stopped.")
-                    .showError()
-            }
+            handleException(e, gitXMLSource)
         }
     }
 
@@ -537,12 +529,11 @@ class CreatureEditorController
      * @param node node to wrap
      * @return scroll pane with node
      */
-    private fun getScrollPane(node: Node): ScrollPane {
-        val pane = ScrollPane(node)
-        pane.isFitToWidth = true
-        pane.padding = Insets(5.0)
-        return pane
-    }
+    private fun getScrollPane(node: Node) =
+        ScrollPane(node).apply {
+            isFitToWidth = true
+            padding = Insets(5.0)
+        }
 
     /**
      * Prompt with a dialog for limb name and hardware indices, then add the limb.
@@ -594,19 +585,13 @@ class CreatureEditorController
     }
 
     @FXML
-    private fun onRegenCAD(actionEvent: ActionEvent) {
-        regenCAD(true)
-    }
+    private fun onRegenCAD(actionEvent: ActionEvent) = regenCAD(true)
 
     @FXML
-    private fun onGenPrintableCAD(actionEvent: ActionEvent) {
-        genSTLs(device!!, cadManager!!, false)
-    }
+    private fun onGenPrintableCAD(actionEvent: ActionEvent) = genSTLs(device!!, cadManager!!, false)
 
     @FXML
-    private fun onGenKinSTL(actionEvent: ActionEvent) {
-        genSTLs(device!!, cadManager!!, true)
-    }
+    private fun onGenKinSTL(actionEvent: ActionEvent) = genSTLs(device!!, cadManager!!, true)
 
     /**
      * Regenerate [MobileBase] CAD if there is a non-null [MobileBaseCadManager].
@@ -641,10 +626,11 @@ class CreatureEditorController
         }
 
         GlobalScope.launch(Dispatchers.JavaFx) {
-            val chooser = DirectoryChooser()
-            chooser.title = "Select Output Directory For STL files"
+            val chooser = DirectoryChooser().apply {
+                title = "Select Output Directory For STL files"
+                initialDirectory = defaultStlDir
+            }
 
-            chooser.initialDirectory = defaultStlDir
             val baseDirForFiles = chooser.showDialog(creatureTabPane.scene.window)
             if (baseDirForFiles == null) {
                 LOGGER.log(Level.INFO, "No directory selected. Not saving STL files.")
@@ -717,18 +703,19 @@ class CreatureEditorController
             device: MobileBase,
             controller: AceCreatureLabController
         ): GridPane {
-            val publish = Button("Publish")
-            publish.graphic = AssetFactory.loadIcon("Publish.png")
-            publish.setOnAction {
-                PublishDialog()
-                    .showAndWait()
-                    .ifPresent { commitMessage ->
-                        publishCreature(
-                            device,
-                            deviceXMLFile,
-                            commitMessage
-                        )
-                    }
+            val publish = Button("Publish").apply {
+                graphic = AssetFactory.loadIcon("Publish.png")
+                setOnAction {
+                    PublishDialog()
+                        .showAndWait()
+                        .ifPresent { commitMessage ->
+                            publishCreature(
+                                device,
+                                deviceXMLFile,
+                                commitMessage
+                            )
+                        }
+                }
             }
 
             val editWalkingEngine = createEditScriptButton(
@@ -760,26 +747,21 @@ class CreatureEditorController
                 Consumer { device.gitCadEngine = it })
 
             GridPane.setHalignment(makeCopy, HPos.RIGHT)
-
-            val tabContent = GridPane()
-            tabContent.padding = Insets(5.0)
-            tabContent.add(makeCopy, 0, 0)
-            tabContent.add(publish, 1, 0)
-
-            tabContent.add(editWalkingEngine, 0, 1)
             GridPane.setHalignment(editWalkingEngine, HPos.RIGHT)
-
-            tabContent.add(editCADEngine, 1, 1)
-
-            tabContent.add(setWalkingEngine, 0, 2)
             GridPane.setHalignment(setWalkingEngine, HPos.RIGHT)
 
-            tabContent.add(setCADEngine, 1, 2)
+            return GridPane().apply {
+                padding = Insets(5.0)
+                vgap = 5.0
+                hgap = 5.0
 
-            tabContent.vgap = 5.0
-            tabContent.hgap = 5.0
-
-            return tabContent
+                add(makeCopy, 0, 0)
+                add(publish, 1, 0)
+                add(editWalkingEngine, 0, 1)
+                add(editCADEngine, 1, 1)
+                add(setWalkingEngine, 0, 2)
+                add(setCADEngine, 1, 2)
+            }
         }
 
         /**
@@ -798,10 +780,9 @@ class CreatureEditorController
             scriptFileName: String,
             fileInGit: Array<String>,
             controller: AceCreatureLabController
-        ): Button {
-            val editWalkingEngine = Button(buttonTitle)
-            editWalkingEngine.graphic = AssetFactory.loadIcon(scriptIconName)
-            editWalkingEngine.setOnAction {
+        ) = Button(buttonTitle).apply {
+            graphic = AssetFactory.loadIcon(scriptIconName)
+            setOnAction {
                 tryParseCreatureFile(fileInGit[0], fileInGit[1])
                     .ifPresent { file1 ->
                         controller.loadFileIntoNewTab(
@@ -813,7 +794,6 @@ class CreatureEditorController
                         )
                     }
             }
-            return editWalkingEngine
         }
 
         /**
@@ -830,15 +810,13 @@ class CreatureEditorController
             scriptIconName: String,
             dialogTitle: String,
             setEngine: Consumer<in Array<String>>
-        ): Button {
-            val setCADEngine = Button(buttonTitle)
-            setCADEngine.graphic = AssetFactory.loadIcon(scriptIconName)
-            setCADEngine.setOnAction {
+        ) = Button(buttonTitle).apply {
+            graphic = AssetFactory.loadIcon(scriptIconName)
+            setOnAction {
                 GistFileSelectionDialog(dialogTitle, Predicate { file -> !file.endsWith(".xml") })
                     .showAndWait()
                     .ifPresent(setEngine)
             }
-            return setCADEngine
         }
 
         /**
@@ -852,12 +830,10 @@ class CreatureEditorController
             remoteURI: String,
             fileInRepo: String
         ): Optional<File> {
-            try {
-                return Optional.of(ScriptingEngine.fileFromGit(remoteURI, fileInRepo))
-            } catch (e: GitAPIException) {
+            fun handleException(e: Exception) {
                 LOGGER.severe(
                     """
-                    Could not parse creature file from source.
+                    Could not parse creature file from source. Creature loading stopped.
                     URL: $remoteURI
                     Filename: $fileInRepo
                     ${Throwables.getStackTraceAsString(e)}
@@ -870,21 +846,14 @@ class CreatureEditorController
                         .text("Could not parse file from git source. Creature loading stopped.")
                         .showError()
                 }
-            } catch (e: IOException) {
-                LOGGER.severe(
-                    """
-                    Could not parse creature file from source.
-                    URL: $remoteURI
-                    Filename: $fileInRepo
-                    ${Throwables.getStackTraceAsString(e)}
-                    """.trimIndent()
-                )
+            }
 
-                GlobalScope.launch(Dispatchers.JavaFx) {
-                    Notifications.create().title("Error")
-                        .text("Could not parse file from git source. Creature loading stopped.")
-                        .showError()
-                }
+            try {
+                return Optional.of(ScriptingEngine.fileFromGit(remoteURI, fileInRepo))
+            } catch (e: GitAPIException) {
+                handleException(e)
+            } catch (e: IOException) {
+                handleException(e)
             }
 
             return Optional.empty()
