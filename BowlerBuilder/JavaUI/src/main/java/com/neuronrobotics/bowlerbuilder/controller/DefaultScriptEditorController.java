@@ -340,7 +340,7 @@ public class DefaultScriptEditorController implements PreferencesConsumer {
    */
   public Optional<Object> runEditorContent() {
     try {
-      final String content = FxUtil.returnFX(scriptEditor::getFullText);
+      final String content = FxUtil.INSTANCE.returnFX(scriptEditor::getFullText);
 
       runStringScript(content, null, scriptLangName)
           .fold(

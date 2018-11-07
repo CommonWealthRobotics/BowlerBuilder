@@ -44,7 +44,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
                 .insertAtCursor("return new Cube(1,1,1).toCSG();"));
 
     final Object result =
-        FxUtil.returnFX(
+        FxUtil.INSTANCE.returnFX(
             () ->
                 tab.getController()
                     .getDefaultScriptEditorController()
