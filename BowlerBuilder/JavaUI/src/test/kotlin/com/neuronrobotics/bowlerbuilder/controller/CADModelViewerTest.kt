@@ -34,7 +34,7 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
         val loader = FXMLLoader(
                 javaClass.getResource("../view/DefaultCADModelViewer.fxml"),
                 null, null,
-                Callback<Class<*>, Any> { BowlerBuilder.getInjector().createChildInjector(DefaultCADModelViewerControllerModule()).getInstance(it) })
+                Callback<Class<*>, Any> { BowlerBuilder.injector.createChildInjector(DefaultCADModelViewerControllerModule()).getInstance(it) })
         val mainWindow = loader.load<BorderPane>()
         controller = loader.getController<DefaultCADModelViewerController>()
         stage.scene = Scene(mainWindow)

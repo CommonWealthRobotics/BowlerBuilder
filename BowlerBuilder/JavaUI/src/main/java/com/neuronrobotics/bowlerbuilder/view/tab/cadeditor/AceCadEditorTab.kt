@@ -18,5 +18,5 @@ import com.neuronrobotics.bowlerbuilder.controller.scripting.scripteditorview.ac
  */
 class AceCadEditorTab(title: String) : BaseCadEditorTab(
         title,
-        BowlerBuilder.getInjector().getInstance(AceEditorView::class.java),
-        BowlerBuilder.getInjector().getInstance(BowlerCadEngine::class.java))
+        BowlerBuilder.injector.getInstance(AceEditorView::class.java),
+        BowlerBuilder.injector.getInstance(BowlerCadEngine::class.java))

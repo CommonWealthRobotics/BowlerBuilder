@@ -43,7 +43,7 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
                     Guice.createInjector(
                             DefaultCadEditorControllerModule(
                                     BowlerBuilder
-                                            .getInjector()
+                                            .injector
                                             .getInstance(AceEditorView::class.java)))
                             .getInstance(it)
                 })

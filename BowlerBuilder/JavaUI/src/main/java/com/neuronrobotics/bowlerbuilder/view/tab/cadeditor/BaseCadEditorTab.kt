@@ -47,7 +47,7 @@ abstract class BaseCadEditorTab(
                 null,
                 {
                     BowlerBuilder
-                            .getInjector()
+                            .injector
                             .createChildInjector(DefaultCadEditorControllerModule(scriptEditorView))
                             .getInstance(it)
                 })
@@ -61,7 +61,7 @@ abstract class BaseCadEditorTab(
                 null,
                 {
                     BowlerBuilder
-                            .getInjector()
+                            .injector
                             .createChildInjector(DefaultCADModelViewerControllerModule())
                             .getInstance(it)
                 })

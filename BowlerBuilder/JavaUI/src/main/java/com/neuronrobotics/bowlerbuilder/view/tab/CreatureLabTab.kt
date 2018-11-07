@@ -29,8 +29,8 @@ import java.util.function.Supplier
 class CreatureLabTab(title: String) :
         AbstractCadEditorTab<AceCreatureLabController>(
                 title,
-                BowlerBuilder.getInjector().getInstance(AceEditorView::class.java),
-                BowlerBuilder.getInjector().getInstance(BowlerCadEngine::class.java)) {
+                BowlerBuilder.injector.getInstance(AceEditorView::class.java),
+                BowlerBuilder.injector.getInstance(BowlerCadEngine::class.java)) {
 
     private val creatureLabController: AceCreatureLabController
     private val pane: SplitPane
@@ -44,7 +44,7 @@ class CreatureLabTab(title: String) :
                 null
         ) {
             BowlerBuilder
-                    .getInjector()
+                    .injector
                     .getInstance(it)
         }
         val creatureEditor: Node = creatureEditorLoader.load()
@@ -57,7 +57,7 @@ class CreatureLabTab(title: String) :
                 null
         ) {
             BowlerBuilder
-                    .getInjector()
+                    .injector
                     .createChildInjector(DefaultCADModelViewerControllerModule())
                     .getInstance(it)
         }
@@ -81,10 +81,10 @@ class CreatureLabTab(title: String) :
                             null
                     ) {
                         BowlerBuilder
-                                .getInjector()
+                                .injector
                                 .createChildInjector(DefaultCadEditorControllerModule(
                                         BowlerBuilder
-                                                .getInjector()
+                                                .injector
                                                 .getInstance(AceEditorView::class.java)
                                 ))
                                 .getInstance(it)

@@ -27,7 +27,7 @@ class BowlerMobileBaseUITest : AbstractAutoClosingApplicationTest() {
     private var controller: BowlerMobileBaseUI? = null
 
     override fun start(stage: Stage) {
-        controller = BowlerBuilder.getInjector()
+        controller = BowlerBuilder.injector
                 .createChildInjector(DefaultCADModelViewerControllerModule())
                 .getInstance(BowlerMobileBaseUI::class.java)
     }
