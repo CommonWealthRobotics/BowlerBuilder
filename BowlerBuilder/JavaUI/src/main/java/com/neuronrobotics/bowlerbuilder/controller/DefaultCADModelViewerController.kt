@@ -15,9 +15,7 @@ import javafx.fxml.FXML
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.BorderPane
 import javafx.scene.shape.MeshView
-import javax.annotation.ParametersAreNonnullByDefault
 
-@ParametersAreNonnullByDefault
 class DefaultCADModelViewerController
 @Inject constructor(
     val engine: CadEngine

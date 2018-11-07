@@ -22,11 +22,12 @@ import javafx.scene.layout.GridPane
 import javafx.util.Callback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.launch
 import java.util.concurrent.Callable
 import java.util.function.Function
 import java.util.function.Predicate
-import kotlinx.coroutines.javafx.JavaFx
+import kotlin.concurrent.thread
 
 /**
  * A [Dialog] to select files from a GitHub Gist.
@@ -40,9 +41,9 @@ class GistFileSelectionDialog(
 ) : Dialog<Array<String>>() {
 
     private val gistField: ValidatedTextField =
-            ValidatedTextField(
-                    "Invalid Gist URL",
-                    Function { GistUtilities.isValidGitURL(it).isPresent })
+        ValidatedTextField(
+            "Invalid Gist URL",
+            Function { GistUtilities.isValidGitURL(it).isPresent })
 
     private val fileChooser: ComboBox<String> = ComboBox()
 
@@ -52,21 +53,21 @@ class GistFileSelectionDialog(
 
         gistField.id = "gistField"
         gistField
-                .invalidProperty()
-                .addListener { _, _, newValue ->
-                    GlobalScope.launch {
-                        if (!newValue) {
-                            val files = ScriptingEngine
-                                    .filesInGit(gistField.text)
-                                    .filter { extensionFilter.test(it) }
-                                    .toSet()
+            .invalidProperty()
+            .addListener { _, _, newValue ->
+                thread(start = true) {
+                    if (!newValue) {
+                        val files = ScriptingEngine
+                            .filesInGit(gistField.text)
+                            .filter { extensionFilter.test(it) }
+                            .toSet()
 
-                            launch(context = Dispatchers.JavaFx) {
-                                fileChooser.items = FXCollections.observableArrayList(files)
-                            }
+                        GlobalScope.launch(Dispatchers.JavaFx) {
+                            fileChooser.items = FXCollections.observableArrayList(files)
                         }
                     }
                 }
+            }
 
         setTitle(title)
 
@@ -94,17 +95,17 @@ class GistFileSelectionDialog(
         okButton.isDefaultButton = true
         okButton.disableProperty().bind(gistField.invalidProperty())
         okButton
-                .disableProperty()
-                .bind(
-                        Bindings.createBooleanBinding(
-                                Callable {
-                                    fileChooser.selectionModel.selectedItem == null ||
-                                            gistField.text.isEmpty()
-                                },
-                                gistField.textProperty(),
-                                fileChooser.selectionModel.selectedItemProperty()
-                        )
+            .disableProperty()
+            .bind(
+                Bindings.createBooleanBinding(
+                    Callable {
+                        fileChooser.selectionModel.selectedItem == null ||
+                            gistField.text.isEmpty()
+                    },
+                    gistField.textProperty(),
+                    fileChooser.selectionModel.selectedItemProperty()
                 )
+            )
 
         resultConverter = Callback {
             if (it == ButtonType.OK) {
