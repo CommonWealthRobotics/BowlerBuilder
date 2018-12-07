@@ -16,7 +16,7 @@ plugins {
 }
 
 allprojects {
-    version = "0.0.0"
+    version = "0.1.5"
     group = "com.neuronrobotics"
 }
 
