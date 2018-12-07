@@ -17,11 +17,8 @@ dependencies {
     api(
         group = "com.neuronrobotics",
         name = "kinematicschef-core",
-        version = "0.0.9"
-    ) {
-        exclude(group = "org.slf4j", module = "slf4j-simple")
-        exclude(group = "com.google.common")
-    }
+        version = "0.0.10"
+    )
 
     implementation(group = "org.apache.ivy", name = "ivy", version = "2.2.0")
     implementation(group = "com.google.inject", name = "guice", version = "4.1.0")
