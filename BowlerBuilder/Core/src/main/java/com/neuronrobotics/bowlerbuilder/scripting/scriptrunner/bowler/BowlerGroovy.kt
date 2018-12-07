@@ -45,7 +45,8 @@ class BowlerGroovy : IScriptingLanguage {
                             .addStarImports(
                                     "com.neuronrobotics.bowlerbuilder",
                                     "com.neuronrobotics.bowlerbuilder.controller",
-                                    "com.neuronrobotics.bowlerbuilder.view.tab")
+                                    "com.neuronrobotics.bowlerbuilder.view.tab",
+                                    "com.neuronrobotics.kinematicschef")
                             .addStaticStars(
                                     "com.neuronrobotics.sdk.util.ThreadUtil",
                                     "eu.mihosoft.vrl.v3d.Transform",

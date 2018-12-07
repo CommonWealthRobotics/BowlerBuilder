@@ -5,6 +5,10 @@ plugins {
 
 application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 
+repositories {
+    maven(url = "https://dl.bintray.com/commonwealthrobotics/maven-artifacts")
+}
+
 dependencies {
     implementation(project(":BowlerBuilder:Core")) {
         exclude(group = "com.google.guava")
