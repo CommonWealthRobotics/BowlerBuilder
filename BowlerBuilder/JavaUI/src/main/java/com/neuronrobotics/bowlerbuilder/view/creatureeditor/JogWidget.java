@@ -243,7 +243,8 @@ public class JogWidget {
               home = false;
               LOGGER.log(
                   Level.WARNING,
-                  "Could not set task space transform while homing.\n" + Throwables.getStackTraceAsString(e));
+                  "Could not set task space transform while homing.\n"
+                      + Throwables.getStackTraceAsString(e));
             }
           } else {
             final TransformNR current = limb.getCurrentPoseTarget().copy();
@@ -253,13 +254,14 @@ public class JogWidget {
             current.translateZ(zStep);
 
             if (xStep != 0 || yStep != 0 || zStep != 0) {
-                try {
-                    limb.setDesiredTaskSpaceTransform(current, timeStep);
-                } catch (final Exception e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Could not set task space transform while moving.\n" + Throwables.getStackTraceAsString(e));
-                }
+              try {
+                limb.setDesiredTaskSpaceTransform(current, timeStep);
+              } catch (final Exception e) {
+                LOGGER.log(
+                    Level.WARNING,
+                    "Could not set task space transform while moving.\n"
+                        + Throwables.getStackTraceAsString(e));
+              }
             }
           }
 

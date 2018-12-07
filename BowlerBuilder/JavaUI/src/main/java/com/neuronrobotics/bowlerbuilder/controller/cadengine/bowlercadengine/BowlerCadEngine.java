@@ -349,6 +349,10 @@ public class BowlerCadEngine extends Pane implements CadEngine {
    */
   @Override
   public void addCSG(final CSG csg) {
+    if (csgManager.has(csg)) {
+      return;
+    }
+
     final MeshView mesh = csg.getMesh();
     mesh.setMaterial(new PhongMaterial(csg.getColor()));
     mesh.setDepthTest(DepthTest.ENABLE);
@@ -532,7 +536,9 @@ public class BowlerCadEngine extends Pane implements CadEngine {
     Platform.runLater(
         () -> {
           try {
-            meshViewGroup.getChildren().add(mesh);
+            if (!meshViewGroup.getChildren().contains(mesh)) {
+              meshViewGroup.getChildren().add(mesh);
+            }
           } catch (final IllegalArgumentException e) {
             LOGGER.warning("Possible duplicate child added to CAD engine.");
             LOGGER.fine(Throwables.getStackTraceAsString(e));
@@ -556,7 +562,7 @@ public class BowlerCadEngine extends Pane implements CadEngine {
   @Override
   public void clearMeshes() {
     try {
-      FxUtil.INSTANCE.runFXAndWait(() -> meshViewGroup.getChildren().clear());
+      FxUtil.runFXAndWait(() -> meshViewGroup.getChildren().clear());
     } catch (final InterruptedException e) {
       LOGGER.fine(Throwables.getStackTraceAsString(e));
     }

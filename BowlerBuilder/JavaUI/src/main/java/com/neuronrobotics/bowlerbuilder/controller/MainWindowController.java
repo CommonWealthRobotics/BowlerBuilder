@@ -149,8 +149,8 @@ public class MainWindowController implements PreferencesConsumer {
     consoleTab.setGraphic(AssetFactory.loadIcon("Command-Line.png"));
     connectionTab.setGraphic(AssetFactory.loadIcon("Connected-Devices.png"));
 
-    makeSplitPaneMaintainDividerRatio(mainSplitPane, new double[] {0.1});
-    makeSplitPaneMaintainDividerRatio(consoleSplitPane, new double[] {0.8});
+    makeSplitPaneMaintainDividerRatio(mainSplitPane, 0.1);
+    makeSplitPaneMaintainDividerRatio(consoleSplitPane, 0.8);
 
     // Add date to console
     console.setText(
@@ -161,7 +161,7 @@ public class MainWindowController implements PreferencesConsumer {
 
     // Redirect output to console
     try {
-      PrintStream stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
+      final PrintStream stream = new PrintStream(new TextAreaPrintStream(console), true, "UTF-8");
       System.setOut(stream);
       System.setErr(stream);
     } catch (final UnsupportedEncodingException e) {
@@ -207,7 +207,7 @@ public class MainWindowController implements PreferencesConsumer {
    * @param defaultDividerPositions The default divider positions.
    */
   private void makeSplitPaneMaintainDividerRatio(
-      final SplitPane splitPane, final double[] defaultDividerPositions) {
+      final SplitPane splitPane, final double... defaultDividerPositions) {
     splitPane.setDividerPositions(defaultDividerPositions);
     splitPane
         .heightProperty()

@@ -170,7 +170,7 @@ public class WebBrowserController {
   }
 
   @FXML
-  private void onRun(ActionEvent actionEvent) {
+  private void onRun(final ActionEvent actionEvent) {
     final Thread thread =
         LoggerUtilities.newLoggingThread(
             LOGGER,
@@ -233,7 +233,7 @@ public class WebBrowserController {
 
             parentController.addTab(tab);
           } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warning(Throwables.getStackTraceAsString(e));
           }
         });
   }
