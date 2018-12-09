@@ -323,6 +323,7 @@ configure(kotlinProjects) {
 configure(kotlinProjects.intersect(javafxProjects)) {
     dependencies {
         "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-javafx", version = "1.0.0")
+        "compile"(group = "no.tornado", name = "tornadofx", version = "1.7.17")
     }
 }
 
