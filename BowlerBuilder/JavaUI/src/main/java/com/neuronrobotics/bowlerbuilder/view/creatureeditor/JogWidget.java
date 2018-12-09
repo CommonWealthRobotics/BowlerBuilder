@@ -171,7 +171,7 @@ public class JogWidget {
     view.getChildren().add(controlsBox);
 
     // Home so the limb is in the position it appears to be in when it first generates
-//    jogThread.setHome(true);
+    //    jogThread.setHome(true);
   }
 
   /**

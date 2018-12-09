@@ -41,7 +41,6 @@ import com.neuronrobotics.bowlerbuilder.view.tab.AbstractScriptEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.AceCadEditorTab;
 import com.neuronrobotics.bowlerbuilder.view.tab.cadeditor.BaseCadEditorTab;
-import com.neuronrobotics.bowlerbuilder.view.util.GitHubRepoFileTree;
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseCadManager;
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader;
@@ -75,7 +74,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -83,16 +81,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -103,7 +97,14 @@ import org.controlsfx.control.Notifications;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.JSONParser;
-import org.kohsuke.github.*;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GHGistFile;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHPersonSet;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.PagedIterable;
 
 @Singleton
 @ParametersAreNonnullByDefault
@@ -116,7 +117,7 @@ public class MainWindowController implements PreferencesConsumer {
 
   @FXML private SplitPane mainSplitPane;
   @FXML private BorderPane root;
-  @FXML private TreeView<GitHubRepoFileTree.GitContent> fileTreeView;
+  //  @FXML private TreeView<GitHubRepoFileTree.GitContent> fileTreeView;
   @FXML private MenuItem logIn;
   @FXML private MenuItem logOut;
   @FXML private Menu myGists;
@@ -478,7 +479,6 @@ public class MainWindowController implements PreferencesConsumer {
    *
    * @param file xml file in gist
    */
-  @SuppressWarnings("WeakerAccess")
   @PublicAPI
   public void loadCreatureLab(final String[] file) { // NOPMD
     Platform.runLater(
@@ -611,7 +611,6 @@ public class MainWindowController implements PreferencesConsumer {
   }
 
   /** Reload the GitHub-related menus. */
-  @SuppressWarnings("WeakerAccess")
   @PublicAPI
   public void reloadGitMenus() {
     Platform.runLater(
@@ -767,7 +766,6 @@ public class MainWindowController implements PreferencesConsumer {
    * @param menu menu to put submenus into
    * @param gists list of gists
    */
-  @SuppressWarnings("UnstableApiUsage")
   private void loadGistsIntoMenus(final Menu menu, final Iterable<GHGist> gists) {
     gists.forEach(
         gist -> {
@@ -776,66 +774,10 @@ public class MainWindowController implements PreferencesConsumer {
               event -> loadPageIntoNewTab(gist.getDescription(), gist.getHtmlUrl()));
 
           final MenuItem addFileToGist = new MenuItem("Add File");
-          addFileToGist.setOnAction(
-              event ->
-                  Platform.runLater(
-                      () -> {
-                        final AddFileToGistDialog dialog = new AddFileToGistDialog();
-                        dialog
-                            .showAndWait()
-                            .ifPresent(
-                                name -> {
-                                  try {
-                                    ScriptingEngine.pushCodeToGit(
-                                        gist.getGitPushUrl(),
-                                        ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
-                                        name,
-                                        "//Your code here",
-                                        "New file");
-                                    reloadGitMenus();
-                                    ScriptingEngine.getGithub()
-                                        .getMyself()
-                                        .listGists()
-                                        .asList()
-                                        .stream()
-                                        .filter(item -> item.equals(gist))
-                                        .findFirst()
-                                        .ifPresent(
-                                            newGist ->
-                                                openGistFileInEditor(
-                                                    newGist, newGist.getFile(name)));
-                                  } catch (final Exception e) {
-                                    LOGGER.log(
-                                        Level.SEVERE,
-                                        "Could not add file to gist.\n"
-                                            + Throwables.getStackTraceAsString(e));
-                                  }
-                                });
-                      }));
+          addFileToGist.setOnAction(event -> addFileToGist(gist));
 
           final MenuItem addFileFromDisk = new MenuItem("Add File from Disk");
-          addFileFromDisk.setOnAction(
-              event -> {
-                final FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Select File to Add");
-                final File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
-                if (selection != null && selection.isFile()) {
-                  try {
-                    ScriptingEngine.pushCodeToGit(
-                        gist.getGitPushUrl(),
-                        ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
-                        selection.getName(),
-                        String.join("\n", Files.readLines(selection, Charsets.UTF_8)),
-                        "Add file: " + selection.getName());
-                    reloadGitMenus();
-                  } catch (final Exception e) {
-                    LOGGER.log(
-                        Level.SEVERE,
-                        "Could not add file from disk to gist.\n"
-                            + Throwables.getStackTraceAsString(e));
-                  }
-                }
-              });
+          addFileFromDisk.setOnAction(event -> addFileToGistFromDisk(gist));
 
           final String gistID = ScriptingEngine.urlToGist(gist.getGitPushUrl());
 
@@ -855,45 +797,45 @@ public class MainWindowController implements PreferencesConsumer {
           final Menu gistMenu = new Menu(gistMenuText);
           gistMenu.getItems().addAll(showWebGist, addFileToGist, addFileFromDisk);
 
-          try {
-            final GHMyself myself = ScriptingEngine.getGithub().getMyself();
-            final Iterable<GHGist> reloadGists = myself.listGists();
+          final Runnable reloadFavorites =
+              () ->
+                  LoggerUtilities.newLoggingThread(
+                          LOGGER,
+                          () -> {
+                            try {
+                              final GHMyself myself = ScriptingEngine.getGithub().getMyself();
+                              final Iterable<GHGist> reloadGists = myself.listGists();
+                              favorites.getItems().clear();
+                              myGists.getItems().clear();
 
-            final Runnable reloadFavorites =
-                () -> {
-                  favorites.getItems().clear();
-                  myGists.getItems().clear();
+                              loadFavoritesIntoMenus(favorites);
+                              loadGistsIntoMenus(myGists, reloadGists);
+                            } catch (IOException e) {
+                              LOGGER.warning(
+                                  "Could not get user's gists.\n"
+                                      + Throwables.getStackTraceAsString(e));
+                            }
+                          })
+                      .start();
 
-                  loadFavoritesIntoMenus(favorites);
-                  loadGistsIntoMenus(myGists, reloadGists);
-                };
-
-            final Set<String> favoriteGists =
-                preferencesService.getCurrentPreferencesOrDefault().getFavoriteGists();
-            if (favoriteGists.contains(gistID)) {
-              final MenuItem favoriteGist = new MenuItem("Unfavorite");
-              favoriteGist.setOnAction(
-                  event -> {
-                    favoriteGists.remove(gistID);
-
-                    // Reload gists and favorites
-                    LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
-                  });
-              gistMenu.getItems().add(favoriteGist);
-            } else {
-              final MenuItem favoriteGist = new MenuItem("Favorite");
-              favoriteGist.setOnAction(
-                  event -> {
-                    favoriteGists.add(gistID);
-
-                    // Reload gists and favorites
-                    LoggerUtilities.newLoggingThread(LOGGER, reloadFavorites).start();
-                  });
-              gistMenu.getItems().add(favoriteGist);
-            }
-
-          } catch (final IOException e) {
-            LOGGER.warning("Could not get user's gists.\n" + Throwables.getStackTraceAsString(e));
+          final Set<String> favoriteGists =
+              preferencesService.getCurrentPreferencesOrDefault().getFavoriteGists();
+          if (favoriteGists.contains(gistID)) {
+            final MenuItem favoriteGist = new MenuItem("Unfavorite");
+            favoriteGist.setOnAction(
+                event -> {
+                  favoriteGists.remove(gistID);
+                  reloadFavorites.run();
+                });
+            gistMenu.getItems().add(favoriteGist);
+          } else {
+            final MenuItem favoriteGist = new MenuItem("Favorite");
+            favoriteGist.setOnAction(
+                event -> {
+                  favoriteGists.add(gistID);
+                  reloadFavorites.run();
+                });
+            gistMenu.getItems().add(favoriteGist);
           }
 
           gist.getFiles()
@@ -918,6 +860,62 @@ public class MainWindowController implements PreferencesConsumer {
 
           menu.getItems().add(gistMenu);
         });
+  }
+
+  private void addFileToGist(final GHGist gist) {
+    Platform.runLater(
+        () -> {
+          final AddFileToGistDialog dialog = new AddFileToGistDialog();
+          dialog
+              .showAndWait()
+              .ifPresent(
+                  name -> {
+                    try {
+                      ScriptingEngine.pushCodeToGit(
+                          gist.getGitPushUrl(),
+                          ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
+                          name,
+                          "//Your code here",
+                          "New file");
+                      reloadGitMenus();
+                      ScriptingEngine.getGithub()
+                          .getMyself()
+                          .listGists()
+                          .asList()
+                          .stream()
+                          .filter(item -> item.equals(gist))
+                          .findFirst()
+                          .ifPresent(
+                              newGist -> openGistFileInEditor(newGist, newGist.getFile(name)));
+                    } catch (final Exception e) {
+                      LOGGER.log(
+                          Level.SEVERE,
+                          "Could not add file to gist.\n" + Throwables.getStackTraceAsString(e));
+                    }
+                  });
+        });
+  }
+
+  @SuppressWarnings("UnstableApiUsage")
+  private void addFileToGistFromDisk(final GHGist gist) {
+    final FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Select File to Add");
+    final File selection = fileChooser.showOpenDialog(root.getScene().getWindow());
+    if (selection != null && selection.isFile()) {
+      try {
+        ScriptingEngine.pushCodeToGit(
+            gist.getGitPushUrl(),
+            ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
+            selection.getName(),
+            String.join("\n", Files.readLines(selection, Charsets.UTF_8)),
+            "Add file: " + selection.getName());
+        reloadGitMenus();
+      } catch (final Exception e) {
+        LOGGER.log(
+            Level.SEVERE,
+            "Could not add file from disk to gist.\n" + Throwables.getStackTraceAsString(e));
+      }
+    }
   }
 
   /**
@@ -950,43 +948,47 @@ public class MainWindowController implements PreferencesConsumer {
         .forEach(
             org -> {
               try {
-                final Menu orgMenu = new Menu(getName.apply(org));
-                org.getRepositories()
-                    .forEach(
-                        (key, value) -> {
-                          final MenuItem repoMenu = new MenuItem(key);
-                          repoMenu.setOnAction(
-                              event -> {
-                                loadPageIntoNewTab(
-                                    value
-                                        .getDescription()
-                                        .substring(
-                                            0, Math.min(15, value.getDescription().length())),
-                                    value.gitHttpTransportUrl());
-                                event.consume();
-                              });
-                          orgMenu.getItems().add(repoMenu);
-                        });
-
-                orgMenu.setOnAction(
-                    event -> {
-                      try {
-                        loadPageIntoNewTab(org.getName(), org.getHtmlUrl());
-                      } catch (final IOException e) {
-                        LOGGER.log(
-                            Level.SEVERE,
-                            "Could not get organization name when loading new tab.\n"
-                                + Throwables.getStackTraceAsString(e));
-                      }
-                    });
-
-                menu.getItems().add(orgMenu);
+                menu.getItems().add(createOrgMenu(getName, org));
               } catch (final IOException e) {
                 LOGGER.log(
                     Level.SEVERE,
                     "Unable to get name of organization.\n" + Throwables.getStackTraceAsString(e));
               }
             });
+  }
+
+  @NotNull
+  private Menu createOrgMenu(final Function<GHOrganization, String> getName, final GHOrganization org)
+      throws IOException {
+    final Menu orgMenu = new Menu(getName.apply(org));
+    org.getRepositories()
+        .forEach(
+            (key, value) -> {
+              final MenuItem repoMenu = new MenuItem(key);
+              repoMenu.setOnAction(
+                  event -> {
+                    loadPageIntoNewTab(
+                        value
+                            .getDescription()
+                            .substring(0, Math.min(15, value.getDescription().length())),
+                        value.gitHttpTransportUrl());
+                    event.consume();
+                  });
+              orgMenu.getItems().add(repoMenu);
+            });
+
+    orgMenu.setOnAction(
+        event -> {
+          try {
+            loadPageIntoNewTab(org.getName(), org.getHtmlUrl());
+          } catch (final IOException e) {
+            LOGGER.log(
+                Level.SEVERE,
+                "Could not get organization name when loading new tab.\n"
+                    + Throwables.getStackTraceAsString(e));
+          }
+        });
+    return orgMenu;
   }
 
   /**
@@ -1013,76 +1015,78 @@ public class MainWindowController implements PreferencesConsumer {
                 .map(repoOwner -> createRepoOwnerMenu(repoOwner, repoMap.get(repoOwner)))
                 .collect(Collectors.toList()));
 
-    try {
-      FxUtil.runFXAndWait(
-          () -> {
-            fileTreeView.setRoot(new TreeItem<>());
-
-            fileTreeView.setCellFactory(
-                lv -> {
-                  final TreeCell<GitHubRepoFileTree.GitContent> cell = new TreeCell<>();
-
-                  final ContextMenu contextMenu = new ContextMenu();
-                  final MenuItem editItem = new MenuItem("Edit");
-                  editItem.setOnAction(
-                      actionEvent -> {
-                        if (cell.getItem() != null) {
-                          Platform.runLater(
-                              () -> {
-                                try {
-                                  final GHContent content = cell.getItem().getContent();
-                                  if (content != null) {
-                                    openManualGistFileInEditor(
-                                        content.getGitUrl(),
-                                        content.getName(),
-                                        ScriptingEngine.fileFromGit(
-                                            content.getGitUrl(), content.getName()));
-                                  }
-                                } catch (GitAPIException | IOException e) {
-                                  LOGGER.warning(
-                                      "Could not get item from git.\n"
-                                          + Throwables.getStackTraceAsString(e));
-                                }
-                              });
-                        }
-                      });
-                  contextMenu.getItems().addAll(editItem);
-                  cell.setContextMenu(contextMenu);
-
-                  cell.textProperty()
-                      .bind(
-                          Bindings.createStringBinding(
-                              () -> {
-                                final GitHubRepoFileTree.GitContent item = cell.getItem();
-
-                                if (item != null) {
-                                  return item.getDisplayName();
-                                }
-
-                                // Null items are for the empty cells at the bottom of the TreeView
-                                return "";
-                              },
-                              cell.itemProperty()));
-
-                  return cell;
-                });
-
-            final List<TreeItem<GitHubRepoFileTree.GitContent>> fileItems =
-                repoMap
-                    .keySet()
-                    .stream()
-                    .map(
-                        ownerName ->
-                            GitHubRepoFileTree.getTreeItemForUser(
-                                ownerName, repoMap.get(ownerName)))
-                    .collect(Collectors.toList());
-
-            fileTreeView.getRoot().getChildren().addAll(fileItems);
-          });
-    } catch (InterruptedException e) {
-      LOGGER.warning(
-          "Loading repos into file TreeView interrupted.\n" + Throwables.getStackTraceAsString(e));
-    }
+    //    try {
+    //      FxUtil.runFXAndWait(
+    //          () -> {
+    //            fileTreeView.setRoot(new TreeItem<>());
+    //
+    //            fileTreeView.setCellFactory(
+    //                lv -> {
+    //                  final TreeCell<GitHubRepoFileTree.GitContent> cell = new TreeCell<>();
+    //
+    //                  final ContextMenu contextMenu = new ContextMenu();
+    //                  final MenuItem editItem = new MenuItem("Edit");
+    //                  editItem.setOnAction(
+    //                      actionEvent -> {
+    //                        if (cell.getItem() != null) {
+    //                          Platform.runLater(
+    //                              () -> {
+    //                                try {
+    //                                  final GHContent content = cell.getItem().getContent();
+    //                                  if (content != null) {
+    //                                    openManualGistFileInEditor(
+    //                                        content.getGitUrl(),
+    //                                        content.getName(),
+    //                                        ScriptingEngine.fileFromGit(
+    //                                            content.getGitUrl(), content.getName()));
+    //                                  }
+    //                                } catch (GitAPIException | IOException e) {
+    //                                  LOGGER.warning(
+    //                                      "Could not get item from git.\n"
+    //                                          + Throwables.getStackTraceAsString(e));
+    //                                }
+    //                              });
+    //                        }
+    //                      });
+    //                  contextMenu.getItems().addAll(editItem);
+    //                  cell.setContextMenu(contextMenu);
+    //
+    //                  cell.textProperty()
+    //                      .bind(
+    //                          Bindings.createStringBinding(
+    //                              () -> {
+    //                                final GitHubRepoFileTree.GitContent item = cell.getItem();
+    //
+    //                                if (item != null) {
+    //                                  return item.getDisplayName();
+    //                                }
+    //
+    //                                // Null items are for the empty cells at the bottom of the
+    // TreeView
+    //                                return "";
+    //                              },
+    //                              cell.itemProperty()));
+    //
+    //                  return cell;
+    //                });
+    //
+    //            final List<TreeItem<GitHubRepoFileTree.GitContent>> fileItems =
+    //                repoMap
+    //                    .keySet()
+    //                    .stream()
+    //                    .map(
+    //                        ownerName ->
+    //                            GitHubRepoFileTree.getTreeItemForUser(
+    //                                ownerName, repoMap.get(ownerName)))
+    //                    .collect(Collectors.toList());
+    //
+    //            fileTreeView.getRoot().getChildren().addAll(fileItems);
+    //          });
+    //    } catch (InterruptedException e) {
+    //      LOGGER.warning(
+    //          "Loading repos into file TreeView interrupted.\n" +
+    // Throwables.getStackTraceAsString(e));
+    //    }
   }
 
   /**
@@ -1273,8 +1277,7 @@ public class MainWindowController implements PreferencesConsumer {
   @PublicAPI
   public Optional<Tab> getSelectedTab() {
     try {
-      return Optional.of(
-          FxUtil.INSTANCE.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
+      return Optional.of(FxUtil.returnFX(() -> tabPane.getSelectionModel().getSelectedItem()));
     } catch (final ExecutionException | InterruptedException e) {
       LOGGER.log(
           Level.SEVERE, "Could not get selected tab.\n" + Throwables.getStackTraceAsString(e));
