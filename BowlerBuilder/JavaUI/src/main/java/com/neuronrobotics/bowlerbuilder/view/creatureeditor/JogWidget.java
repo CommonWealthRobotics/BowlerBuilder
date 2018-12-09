@@ -158,16 +158,7 @@ public class JogWidget {
         });
 
     final Button home = addButton(AssetFactory.loadIcon("Home.png"), "", 1, 1);
-    home.setOnAction(
-        event -> {
-          try {
-            limb.setDesiredTaskSpaceTransform(limb.calcHome(), 0);
-          } catch (final Exception e) {
-            LOGGER.log(
-                Level.WARNING,
-                "Could not set task space transform.\n" + Throwables.getStackTraceAsString(e));
-          }
-        });
+    home.setOnAction(event -> jogThread.setHome(true));
 
     /*Button addJoystick = addButton(AssetFactory.loadIcon("Add-Game-Controller.png"), "", 3, 0);
     Button configureJoystick = addButton(AssetFactory.loadIcon("Configure-Game-Controller.png"),
@@ -180,7 +171,7 @@ public class JogWidget {
     view.getChildren().add(controlsBox);
 
     // Home so the limb is in the position it appears to be in when it first generates
-    jogThread.setHome(true);
+//    jogThread.setHome(true);
   }
 
   /**

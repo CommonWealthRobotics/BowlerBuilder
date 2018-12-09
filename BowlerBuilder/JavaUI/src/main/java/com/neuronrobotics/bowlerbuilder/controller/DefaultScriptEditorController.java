@@ -154,41 +154,51 @@ public class DefaultScriptEditorController implements PreferencesConsumer {
     new PublishDialog()
         .showAndWait()
         .ifPresent(
-            commitMessage -> {
-              try {
-                if (gist == null) {
-                  ScriptingEngine.pushCodeToGit(
-                      manualRemote,
-                      ScriptingEngine.getFullBranch(manualRemote),
-                      manualFile,
-                      scriptEditor.getFullText(),
-                      commitMessage);
-                } else {
-                  final File currentFile =
-                      ScriptingEngine.fileFromGit(gist.getGitPushUrl(), gistFile.getFileName());
+            commitMessage ->
+                LoggerUtilities.newLoggingThread(
+                        LOGGER,
+                        () -> {
+                          try {
+                            if (gist == null) {
+                              ScriptingEngine.pushCodeToGit(
+                                  manualRemote,
+                                  ScriptingEngine.getFullBranch(manualRemote),
+                                  manualFile,
+                                  scriptEditor.getFullText(),
+                                  commitMessage);
+                            } else {
+                              final File currentFile =
+                                  ScriptingEngine.fileFromGit(
+                                      gist.getGitPushUrl(), gistFile.getFileName());
 
-                  final Git git = ScriptingEngine.locateGit(currentFile);
-                  final String remote =
-                      git.getRepository().getConfig().getString("remote", "origin", "url");
+                              final Git git = ScriptingEngine.locateGit(currentFile);
+                              final String remote =
+                                  git.getRepository()
+                                      .getConfig()
+                                      .getString("remote", "origin", "url");
 
-                  ScriptingEngine.pushCodeToGit(
-                      git.getRepository().getConfig().getString("remote", "origin", "url"),
-                      ScriptingEngine.getFullBranch(remote),
-                      ScriptingEngine.findLocalPath(currentFile, git),
-                      scriptEditor.getFullText(),
-                      commitMessage);
-                }
-              } catch (final Exception e) {
-                LOGGER.log(
-                    Level.SEVERE, "Could not commit.\n" + Throwables.getStackTraceAsString(e));
-                Platform.runLater(
-                    () ->
-                        Notifications.create()
-                            .title("Commit failed")
-                            .text("Could not perform commit. Changes not saved.")
-                            .showError());
-              }
-            });
+                              ScriptingEngine.pushCodeToGit(
+                                  git.getRepository()
+                                      .getConfig()
+                                      .getString("remote", "origin", "url"),
+                                  ScriptingEngine.getFullBranch(remote),
+                                  ScriptingEngine.findLocalPath(currentFile, git),
+                                  scriptEditor.getFullText(),
+                                  commitMessage);
+                            }
+                          } catch (Exception e) {
+                            LOGGER.log(
+                                Level.SEVERE,
+                                "Could not commit.\n" + Throwables.getStackTraceAsString(e));
+                            Platform.runLater(
+                                () ->
+                                    Notifications.create()
+                                        .title("Commit failed")
+                                        .text("Could not perform commit. Changes not saved.")
+                                        .showError());
+                          }
+                        })
+                    .start());
   }
 
   /** Publish the editor contents during scratchpad mode. Disables scratchpad mode. */
@@ -229,25 +239,31 @@ public class DefaultScriptEditorController implements PreferencesConsumer {
    */
   private void commitAndPushScratchpad(
       final String newFileName, final GHGist gist, final String commitMessage) {
-    try {
-      // Push the new gist
-      ScriptingEngine.pushCodeToGit(
-          gist.getGitPushUrl(),
-          ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
-          newFileName,
-          scriptEditor.getFullText(),
-          commitMessage);
+    LoggerUtilities.newLoggingThread(
+            LOGGER,
+            () -> {
+              try {
+                // Push the new gist
+                ScriptingEngine.pushCodeToGit(
+                    gist.getGitPushUrl(),
+                    ScriptingEngine.getFullBranch(gist.getGitPushUrl()),
+                    newFileName,
+                    FxUtil.returnFX(scriptEditor::getFullText),
+                    commitMessage);
 
-      isScratchpad = false;
-      gistURLField.setText(gist.getGitPushUrl());
-      fileNameField.setText(newFileName);
-      this.gist = gist;
-      gistFile = gist.getFiles().get(newFileName);
-      tab.setText(newFileName);
-      reloadMenus.run();
-    } catch (final Exception e) {
-      LOGGER.log(Level.SEVERE, "Could not push code.\n" + Throwables.getStackTraceAsString(e));
-    }
+                isScratchpad = false;
+                gistURLField.setText(gist.getGitPushUrl());
+                fileNameField.setText(newFileName);
+                this.gist = gist;
+                gistFile = gist.getFiles().get(newFileName);
+                Platform.runLater(() -> tab.setText(newFileName));
+                reloadMenus.run();
+              } catch (final Exception e) {
+                LOGGER.log(
+                    Level.SEVERE, "Could not push code.\n" + Throwables.getStackTraceAsString(e));
+              }
+            })
+        .start();
   }
 
   @FXML
@@ -340,7 +356,7 @@ public class DefaultScriptEditorController implements PreferencesConsumer {
    */
   public Optional<Object> runEditorContent() {
     try {
-      final String content = FxUtil.INSTANCE.returnFX(scriptEditor::getFullText);
+      final String content = FxUtil.returnFX(scriptEditor::getFullText);
 
       runStringScript(content, null, scriptLangName)
           .fold(

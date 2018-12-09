@@ -9,6 +9,10 @@ package com.neuronrobotics.bowlerbuilder.view.util
 
 import javafx.concurrent.Worker
 import javafx.scene.web.WebEngine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.launch
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.FutureTask
@@ -23,12 +27,14 @@ object WebEngineUtil {
      */
     @JvmStatic
     fun runAfterEngine(worker: Worker<Void>, runnable: Runnable) {
-        if (checkEngine(worker)) {
-            runnable.run()
-        } else {
-            worker.stateProperty().addListener { _, _, newState ->
-                if (newState == Worker.State.SUCCEEDED) {
-                    runnable.run()
+        GlobalScope.launch(context = Dispatchers.JavaFx) {
+            if (checkEngine(worker)) {
+                runnable.run()
+            } else {
+                worker.stateProperty().addListener { _, _, newState ->
+                    if (newState == Worker.State.SUCCEEDED) {
+                        runnable.run()
+                    }
                 }
             }
         }
