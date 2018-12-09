@@ -1,6 +1,6 @@
 package com.neuronrobotics.bowlerbuilder.view
 
-import com.neuronrobotics.bowlerbuilder.controller.WebBrowserControllerNew
+import com.neuronrobotics.bowlerbuilder.controller.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.application.Platform
@@ -17,7 +17,7 @@ import tornadofx.*
 
 class WebBrowserView : Fragment() {
 
-    private val controller: WebBrowserControllerNew by inject()
+    private val controller: WebBrowserController by inject()
     private val currentUrlProperty = SimpleStringProperty(config.string(HOME_PAGE))
     private var currentUrl by currentUrlProperty
     private val currentScriptProperty =

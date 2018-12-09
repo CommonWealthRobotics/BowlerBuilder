@@ -7,7 +7,7 @@ import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
 import tornadofx.*
 
-class WebBrowserControllerNew : Controller() {
+class WebBrowserController : Controller() {
 
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
         FXCollections.observableArrayList<WebBrowserScript>()
