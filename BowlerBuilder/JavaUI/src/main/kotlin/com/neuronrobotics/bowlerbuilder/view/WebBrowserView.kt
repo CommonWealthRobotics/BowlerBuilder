@@ -6,14 +6,12 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.concurrent.Worker
 import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
-import kotlinx.coroutines.runBlocking
 import org.controlsfx.glyphfont.Glyph
 import tornadofx.*
 
@@ -22,9 +20,9 @@ class WebBrowserView : Fragment() {
     private val controller: WebBrowserControllerNew by inject()
     private val currentUrlProperty = SimpleStringProperty(config.string(HOME_PAGE))
     private var currentUrl by currentUrlProperty
-    private val currentScriptSelection =
+    private val currentScriptProperty =
         SimpleObjectProperty<WebBrowserScript>(WebBrowserScript.empty)
-    private var currentScript by currentScriptSelection
+    private var currentScript by currentScriptProperty
     private var webview: WebView by singleAssign()
 
     override val root = borderpane {
@@ -106,50 +104,38 @@ class WebBrowserView : Fragment() {
                 action { runAsync { controller.runScript(currentScript) } }
             }
 
-            val cloneButton = button(
-                text = "Clone",
-                graphic = AssetFactory.loadIcon("Make-Copy-Script.png")
-            ) {
-                action {
-                    runAsync {
-                        controller.cloneScript(currentScript)
-                    } success {
-                        modifyIntoEditButton()
-                    }
+            val cloneButton = button()
+                .modifyIntoCloneButton(WebBrowserScript.empty)
+                .apply {
+                    isDisable = true
                 }
-            }.apply {
-                runAsync {
-                    controller.doesUserOwnScript(currentScript)
-                } success {
-                    if (it) {
-                        modifyIntoEditButton()
-                    }
-                }
-            }
-
-            fun refreshCloneButton() {
-                runAsync {
-                    controller.doesUserOwnScript(currentScript)
-                } success {
-                    if (it) {
-                        cloneButton.modifyIntoEditButton()
-                    } else {
-                        cloneButton.modifyIntoCloneButton()
-                    }
-                }
-            }
 
             combobox<WebBrowserScript> {
                 cellFormat {
                     text = it.filename
                 }
 
-                currentScriptSelection.bind(valueProperty())
-                currentScriptSelection.addListener { _, _, new ->
-                    refreshCloneButton()
+                currentScriptProperty.bind(valueProperty())
+
+                valueProperty().addListener { _, _, new ->
+                    runAsync {
+                        controller.doesUserOwnScript(new)
+                    } success {
+                        if (it) {
+                            cloneButton.modifyIntoEditButton(new)
+                        } else {
+                            cloneButton.modifyIntoCloneButton(new)
+                        }
+                    }
                 }
+
                 controller.itemsOnPageProperty.addListener(ListChangeListener {
-                    Platform.runLater { items.setAll(it.list) }
+                    Platform.runLater {
+                        items.setAll(it.list)
+                        if ((value == WebBrowserScript.empty || value == null) && items.size > 0) {
+                            value = items[0]
+                        }
+                    }
                 })
             }
         }
@@ -158,23 +144,25 @@ class WebBrowserView : Fragment() {
     /**
      * Modify a button into a clone button.
      */
-    private fun Button.modifyIntoCloneButton() {
+    private fun Button.modifyIntoCloneButton(script: WebBrowserScript): Button {
         text = "Clone"
         graphic = AssetFactory.loadIcon("Make-Copy-Script.png")
         action {
-            runAsync { controller.cloneScript(currentScript) }
+            runAsync { controller.cloneScript(script) }
         }
+        return this
     }
 
     /**
      * Modify a button into an edit button.
      */
-    private fun Button.modifyIntoEditButton() {
+    private fun Button.modifyIntoEditButton(script: WebBrowserScript): Button {
         text = "Edit"
         graphic = AssetFactory.loadIcon("Edit-Script.png")
         action {
-            runAsync { controller.editScript(currentScript) }
+            runAsync { controller.editScript(script) }
         }
+        return this
     }
 
     init {

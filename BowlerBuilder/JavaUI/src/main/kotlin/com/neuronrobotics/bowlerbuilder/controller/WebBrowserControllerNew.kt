@@ -12,14 +12,6 @@ class WebBrowserControllerNew : Controller() {
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
         FXCollections.observableArrayList<WebBrowserScript>()
 
-    fun runScript(currentScript: WebBrowserScript) {
-        TODO("not implemented")
-    }
-
-    fun editScript(currentScript: WebBrowserScript) {
-        TODO("not implemented")
-    }
-
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
         if (currentUrl.split("//").size < 2) {
             // Don't call ScriptingEngine.getCurrentGist() with less than two elements because it
@@ -42,21 +34,32 @@ class WebBrowserControllerNew : Controller() {
         }
     }
 
+    fun runScript(currentScript: WebBrowserScript) {
+        TODO("not implemented")
+    }
+
+    fun editScript(currentScript: WebBrowserScript) {
+        TODO("not implemented")
+    }
+
     fun doesUserOwnScript(currentScript: WebBrowserScript): Boolean {
         if (currentScript == WebBrowserScript.empty) {
             return false
         }
 
         val currentFile = ScriptingEngine.fileFromGit(currentScript.gitUrl, currentScript.filename)
+        // TODO: checkOwner() doesn't work
         return ScriptingEngine.checkOwner(currentFile)
     }
 
-    fun cloneScript(currentScript: WebBrowserScript) {
+    fun cloneScript(currentScript: WebBrowserScript): WebBrowserScript {
         if (currentScript == WebBrowserScript.empty) {
-            return;
+            return WebBrowserScript.empty
         }
 
-        ScriptingEngine.fork(ScriptingEngine.urlToGist(currentScript.gitUrl))
+        val gist = ScriptingEngine.fork(ScriptingEngine.urlToGist(currentScript.gitUrl))
+            ?: throw IllegalStateException("Failed to fork script.")
+        return currentScript.copy(pageUrl = gist.htmlUrl, gitUrl = gist.gitPushUrl)
     }
 
     /**
