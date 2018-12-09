@@ -1,8 +1,7 @@
 package com.neuronrobotics.bowlerbuilder
 
 import com.neuronrobotics.bowlerbuilder.view.WebBrowserView
-import tornadofx.App
-import tornadofx.launch
+import tornadofx.*
 
 fun main(args: Array<String>) {
     launch<TornadoFxTest>(args)

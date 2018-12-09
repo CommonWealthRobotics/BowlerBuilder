@@ -132,7 +132,7 @@ class WebBrowserView : Fragment() {
                 controller.itemsOnPageProperty.addListener(ListChangeListener {
                     Platform.runLater {
                         items.setAll(it.list)
-                        if ((value == WebBrowserScript.empty || value == null) && items.size > 0) {
+                        if (items.size > 0) {
                             value = items[0]
                         }
                     }
