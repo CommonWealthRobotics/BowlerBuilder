@@ -6,8 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.view
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
@@ -78,8 +78,6 @@ class MainWindowView : View() {
                         find<GistFileSelectionView>().openModal()
                     }
                 }
-
-                item("Load Creature")
             }
         }
 

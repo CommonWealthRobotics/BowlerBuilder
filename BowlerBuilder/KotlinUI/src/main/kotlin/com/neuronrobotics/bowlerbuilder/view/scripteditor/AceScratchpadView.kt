@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorControl
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory

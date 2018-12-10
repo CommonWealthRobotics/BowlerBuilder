@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
-import com.neuronrobotics.bowlerbuilder.controller.LoginManager
+import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 

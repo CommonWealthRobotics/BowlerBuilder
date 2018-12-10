@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
-import com.neuronrobotics.bowlerbuilder.controller.WebBrowserController
+import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory

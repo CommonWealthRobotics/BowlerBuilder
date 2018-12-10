@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
+import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory

@@ -3,11 +3,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.neuronrobotics.bowlerbuilder.view.scripteditor
+package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.PublishController
+import com.neuronrobotics.bowlerbuilder.controller.gitmenu.PublishController
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
