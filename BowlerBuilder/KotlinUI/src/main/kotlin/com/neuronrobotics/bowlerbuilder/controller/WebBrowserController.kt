@@ -26,10 +26,17 @@ class WebBrowserController : Controller() {
                 .map {
                     WebBrowserScript(currentUrl, getGitUrlFromPageUrl(currentUrl, it), "")
                 }.flatMap { script ->
-                    ScriptingEngine.filesInGit(script.gitUrl)
-                        .map {
-                            script.copy(filename = it)
-                        }
+                    val files = try {
+                        ScriptingEngine.filesInGit(script.gitUrl)
+                    } catch (ex: Exception) {
+                        // This is the ScriptingEngine login manager being unhappy
+                        emptyList<String>()
+                    }
+
+                    files.map {
+                        script.copy(filename = it)
+                    }
+
                 }.filter {
                     it.filename != "csgDatabase.json"
                 }.let {

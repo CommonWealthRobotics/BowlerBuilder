@@ -15,29 +15,35 @@ class LogInView : Fragment() {
     override val root = form {
         fieldset("Log In") {
             field("Username") {
-                textfield(usernameProperty)
+                textfield(usernameProperty) {
+                    action { tryLogin() }
+                }
             }
 
             field("Password") {
-                passwordfield(passwordProperty)
+                passwordfield(passwordProperty) {
+                    action { tryLogin() }
+                }
             }
 
             buttonbar {
                 button("Log In") {
-                    action {
-                        runAsync {
-                            loginManager.login(username, password)
-                        } success {
-                            if (loginManager.isLoggedIn) {
-                                close()
-                            }
-                        }
-                    }
+                    action { tryLogin() }
                 }
 
                 button("Cancel") {
                     action { close() }
                 }
+            }
+        }
+    }
+
+    private fun tryLogin() {
+        runAsync {
+            loginManager.login(username, password)
+        } success {
+            if (loginManager.isLoggedIn) {
+                close()
             }
         }
     }

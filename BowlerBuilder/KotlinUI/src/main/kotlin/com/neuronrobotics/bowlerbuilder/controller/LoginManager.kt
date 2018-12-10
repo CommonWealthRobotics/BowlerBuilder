@@ -23,7 +23,16 @@ class LoginManager {
     }
 
     fun login(username: String, password: String) {
-        ScriptingEngine.setLoginManager { arrayOf(username, password) }
+        var failedLastTry = false
+        ScriptingEngine.setLoginManager {
+            if (!failedLastTry) {
+                failedLastTry = true
+                arrayOf(username, password)
+            } else {
+                arrayOf("", "")
+            }
+        }
+
         ScriptingEngine.waitForLogin()
 
         if (ScriptingEngine.isLoginSuccess() && ScriptingEngine.hasNetwork()) {
