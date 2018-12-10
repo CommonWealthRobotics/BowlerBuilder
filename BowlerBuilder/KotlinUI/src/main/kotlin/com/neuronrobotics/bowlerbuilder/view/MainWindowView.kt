@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerbuilder.controller.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
+import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
@@ -72,7 +73,11 @@ class MainWindowView : View() {
                     }
                 }
 
-                item("Load File from Git")
+                item("Load File from Git") {
+                    action {
+                        find<GistFileSelectionView>().openModal()
+                    }
+                }
 
                 item("Load Creature")
             }

@@ -71,7 +71,10 @@ class AceEditorView(
 
                 engineInitializingLatch.await()
 
-                runLater { setText(text) }
+                runLater {
+                    setText(text)
+                    gotoLine(0)
+                }
             }
         }
     }
