@@ -958,8 +958,8 @@ public class MainWindowController implements PreferencesConsumer {
   }
 
   @NotNull
-  private Menu createOrgMenu(final Function<GHOrganization, String> getName, final GHOrganization org)
-      throws IOException {
+  private Menu createOrgMenu(
+      final Function<GHOrganization, String> getName, final GHOrganization org) throws IOException {
     final Menu orgMenu = new Menu(getName.apply(org));
     org.getRepositories()
         .forEach(

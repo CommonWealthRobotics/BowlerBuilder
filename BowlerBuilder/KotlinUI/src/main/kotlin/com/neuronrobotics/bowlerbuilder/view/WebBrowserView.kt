@@ -118,16 +118,17 @@ class WebBrowserView : Fragment() {
                     text = it.filename
                 }
 
-                currentScriptProperty.bind(valueProperty())
-
                 valueProperty().addListener { _, _, new ->
+                    val nonNullValue = new ?: WebBrowserScript.empty
+                    currentScript = nonNullValue
+
                     runAsync {
-                        controller.doesUserOwnScript(new)
+                        controller.doesUserOwnScript(nonNullValue)
                     } success {
                         if (it) {
-                            cloneButton.modifyIntoEditButton(new)
+                            cloneButton.modifyIntoEditButton(nonNullValue)
                         } else {
-                            cloneButton.modifyIntoCloneButton(new)
+                            cloneButton.modifyIntoCloneButton(nonNullValue)
                         }
                     }
                 }

@@ -39,11 +39,24 @@ class WebBrowserController : Controller() {
     }
 
     fun runScript(currentScript: WebBrowserScript) {
+        if (currentScript == WebBrowserScript.empty) {
+            return
+        }
+
         scriptRunner.runScript(currentScript.gitUrl, currentScript.filename)
+        editScript(currentScript)
     }
 
     fun editScript(currentScript: WebBrowserScript) {
-        scriptEditorFactory.createAndOpenScriptEditor(currentScript.gitUrl, currentScript.filename)
+        if (currentScript == WebBrowserScript.empty) {
+            return
+        }
+
+        scriptEditorFactory
+            .createAndOpenScriptEditor(currentScript.gitUrl, currentScript.filename)
+            .apply {
+                runLater { gotoLine(0) }
+            }
     }
 
     fun doesUserOwnScript(currentScript: WebBrowserScript): Boolean {
