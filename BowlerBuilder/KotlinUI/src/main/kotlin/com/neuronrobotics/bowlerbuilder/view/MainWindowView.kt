@@ -5,7 +5,6 @@
  */
 package com.neuronrobotics.bowlerbuilder.view
 
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
@@ -16,14 +15,13 @@ import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import javafx.geometry.Orientation
 import javafx.scene.Node
+import javafx.scene.control.ButtonType
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import tornadofx.*
-import java.util.Timer
-import java.util.TimerTask
-import java.util.logging.Level
+import kotlin.concurrent.thread
 
 class MainWindowView : View() {
 
@@ -43,7 +41,7 @@ class MainWindowView : View() {
                 item("Exit") {
                     action {
                         close()
-                        beginForceQuit()
+                        thread { controller.beginForceQuit() }
                     }
                 }
             }
@@ -65,9 +63,20 @@ class MainWindowView : View() {
 
                 menu("My Repos")
 
-                item("Reload Menus")
+                item("Reload Menus") { action { reloadMenus() } }
 
-                item("Delete local cache")
+                item("Delete local cache") {
+                    action {
+                        confirmation(
+                            header = "Really delete local cache?",
+                            content = "This will delete all local assets and unsaved work."
+                        ) {
+                            if (it == ButtonType.OK) {
+                                runAsync { controller.deleteLocalCache() }
+                            }
+                        }
+                    }
+                }
             }
 
             menu("3D CAD") {
@@ -101,8 +110,7 @@ class MainWindowView : View() {
     }
 
     init {
-        reloadGists()
-        reloadOrgs()
+        reloadMenus()
     }
 
     fun addTab(tab: Tab) {
@@ -113,6 +121,11 @@ class MainWindowView : View() {
     fun closeTabByContent(cmp: Node) {
         val matches = mainTabPane.tabs.filter { it.content == cmp }
         mainTabPane.tabs.removeAll(matches)
+    }
+
+    fun reloadMenus() {
+        reloadGists()
+        reloadOrgs()
     }
 
     fun reloadGists() {
@@ -173,32 +186,5 @@ class MainWindowView : View() {
                 }
             }
         }
-    }
-
-    private fun beginForceQuit() {
-        // Need to make sure the VM exits; sometimes a rouge thread is running
-        // Wait 10 seconds before killing the VM
-        val timer = Timer(true)
-        timer.schedule(
-            object : TimerTask() {
-                override fun run() {
-                    LOGGER.severe {
-                        "Still alive for some reason. Printing threads and killing VM..."
-                    }
-
-                    val threads = Thread.getAllStackTraces().keys
-                    val threadString = StringBuilder()
-                    threads.forEach { item -> threadString.append(item).append("\n") }
-                    LOGGER.log(Level.FINE, threadString.toString())
-
-                    Runtime.getRuntime().exit(1) // Abnormal exit
-                }
-            },
-            10000
-        )
-    }
-
-    companion object {
-        private val LOGGER = LoggerUtilities.getLogger(MainWindowView::class.java.simpleName)
     }
 }
