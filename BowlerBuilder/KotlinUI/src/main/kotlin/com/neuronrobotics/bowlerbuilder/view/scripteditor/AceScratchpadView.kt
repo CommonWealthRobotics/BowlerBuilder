@@ -8,23 +8,23 @@
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerGroovy
+import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.concurrent.Worker
 import javafx.geometry.Insets
-import javafx.scene.control.TextField
-import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
 import tornadofx.*
 
-class AceEditorView : Fragment(), ScriptEditor {
+class AceScratchpadView : Fragment(), ScriptEditor {
 
     private val controller: AceEditorController by inject()
+    private val scriptEditorFactory: ScriptEditorFactory by di()
     private var webview: WebView by singleAssign()
-    private var urlTextField: TextField by singleAssign()
     val engineInitializingLatch = Latch(1)
 
     override val root = borderpane {
@@ -52,19 +52,22 @@ class AceEditorView : Fragment(), ScriptEditor {
 
             button("Publish", AssetFactory.loadIcon("Publish.png")) {
                 action {
-                    find<PublishView>(
-                        mapOf(
-                            "git_url" to params["git_url"],
-                            "filename" to params["filename"],
-                            "file_content" to getFullText()
-                        )
-                    ).openModal()
-                }
-            }
+                    val view = find<PublishNewGistView>(
+                        mapOf("file_content" to getFullText())
+                    ).apply {
+                        openModal(block = true)
+                    }
 
-            urlTextField = textfield {
-                hboxConstraints {
-                    hGrow = Priority.ALWAYS
+                    if (view.publishSuccessful) {
+                        runAsync {
+                            scriptEditorFactory.createAndOpenScriptEditor(
+                                view.gitUrl,
+                                view.gistFilename
+                            )
+                        }
+
+                        find<MainWindowView>().closeTabByContent(this@borderpane)
+                    }
                 }
             }
         }
@@ -73,15 +76,6 @@ class AceEditorView : Fragment(), ScriptEditor {
     init {
         webview.engine.loadWorker.stateProperty().addListener { _, _, new ->
             if (new == Worker.State.SUCCEEDED) {
-                urlTextField.text = params["git_url"] as String
-
-                setText(
-                    controller.getTextForGitResource(
-                        params["git_url"] as String,
-                        params["filename"] as String
-                    )
-                )
-
                 engineInitializingLatch.countDown()
             }
         }

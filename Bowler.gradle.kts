@@ -250,7 +250,7 @@ configure(kotlinProjects) {
 
     apply {
         plugin("kotlin")
-        plugin("org.jlleitschuh.gradle.ktlint")
+//        plugin("org.jlleitschuh.gradle.ktlint")
         plugin("io.gitlab.arturbosch.detekt")
     }
 
@@ -301,7 +301,6 @@ configure(kotlinProjects) {
 
     spotless {
         kotlin {
-            ktlint(Versions.ktlintVersion)
             trimTrailingWhitespace()
             indentWithSpaces(2)
             endWithNewline()

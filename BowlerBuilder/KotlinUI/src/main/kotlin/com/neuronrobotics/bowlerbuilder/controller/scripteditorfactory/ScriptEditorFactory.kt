@@ -20,4 +20,11 @@ interface ScriptEditorFactory {
      * @return The [ScriptEditor] which was created.
      */
     fun createAndOpenScriptEditor(gitUrl: String, filename: String): ScriptEditor
+
+    /**
+     * Creates a new scratchpad [ScriptEditor] and opens it.
+     *
+     * @return The [ScriptEditor] which was created.
+     */
+    fun createAndOpenScratchpad(): ScriptEditor
 }

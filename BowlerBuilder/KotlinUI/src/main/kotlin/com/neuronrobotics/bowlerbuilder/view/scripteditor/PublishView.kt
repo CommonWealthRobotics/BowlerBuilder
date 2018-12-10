@@ -1,8 +1,16 @@
+/*
+ * Copyright 2017 Ryan Benasutti
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.PublishController
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import tornadofx.*
@@ -10,12 +18,13 @@ import tornadofx.*
 class PublishView : Fragment() {
 
     private val controller: PublishController by inject()
+    private val commitMessageProperty = SimpleStringProperty("")
+    private var commitMessage by commitMessageProperty
 
     override val root = form {
-        lateinit var commitMessageField: Field
         fieldset("Commit", labelPosition = Orientation.VERTICAL) {
-            commitMessageField = field("Commit Message", Orientation.VERTICAL) {
-                textarea {
+            field("Commit Message", Orientation.VERTICAL) {
+                textarea(commitMessageProperty) {
                     prefRowCount = 3
                     vgrow = Priority.ALWAYS
                 }
@@ -30,7 +39,7 @@ class PublishView : Fragment() {
                             gitUrl = params["git_url"] as String,
                             filename = params["filename"] as String,
                             fileContent = params["file_content"] as String,
-                            commitMessage = commitMessageField.text
+                            commitMessage = commitMessage
                         )
                     } success {
                         close()
