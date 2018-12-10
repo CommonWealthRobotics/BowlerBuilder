@@ -5,7 +5,7 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceScript
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScriptRunner
-import com.neuronrobotics.bowlerbuilder.view.WebBrowserView
+import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import org.jlleitschuh.guice.module
 import tornadofx.*
 import kotlin.reflect.KClass
@@ -23,4 +23,4 @@ fun main(args: Array<String>) {
     launch<TornadoFxTest>(args)
 }
 
-class TornadoFxTest : App(WebBrowserView::class)
+class TornadoFxTest : App(MainWindowView::class)

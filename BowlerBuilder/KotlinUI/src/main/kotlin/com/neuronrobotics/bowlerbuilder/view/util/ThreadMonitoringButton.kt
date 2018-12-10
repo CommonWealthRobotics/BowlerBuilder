@@ -25,9 +25,7 @@ private constructor(
                 text = secondaryState.first
                 graphic = secondaryState.second
 
-                managedThread = thread {
-                    onRun()
-                }
+                managedThread = thread { onRun() }
 
                 thread {
                     try {

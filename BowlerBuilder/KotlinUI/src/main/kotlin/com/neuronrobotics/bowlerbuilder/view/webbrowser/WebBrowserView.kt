@@ -1,4 +1,4 @@
-package com.neuronrobotics.bowlerbuilder.view
+package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
 import com.neuronrobotics.bowlerbuilder.controller.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
@@ -59,7 +59,7 @@ class WebBrowserView : Fragment() {
                 }
 
                 button(graphic = Glyph("FontAwesome", "HOME")) {
-                    action { webview.engine.load(currentUrl) }
+                    action { webview.engine.load(config.string(HOME_PAGE)) }
                 }
             }
 
