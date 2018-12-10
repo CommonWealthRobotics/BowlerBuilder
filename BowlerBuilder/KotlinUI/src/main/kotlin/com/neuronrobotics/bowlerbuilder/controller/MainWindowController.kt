@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
+import com.neuronrobotics.bowlerbuilder.model.Organization
+import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import tornadofx.*
@@ -22,7 +24,10 @@ class MainWindowController : Controller() {
             .myself
             .listGists()
             .map {
-                Gist(it.gitPushUrl, it.description)
+                Gist(
+                    gitUrl = it.gitPushUrl,
+                    description = it.description
+                )
             }.toImmutableList()
     }
 
@@ -35,5 +40,23 @@ class MainWindowController : Controller() {
 
     fun openGistFile(file: GistFile) {
         scriptEditorFactory.createAndOpenScriptEditor(file)
+    }
+
+    fun loadUserOrgs(): ImmutableList<Organization> {
+        return ScriptingEngine.getGithub()
+            .myOrganizations
+            .map {
+                Organization(
+                    gitUrl = it.value.htmlUrl,
+                    name = it.key,
+                    repositories = it.value.repositories
+                        .map {
+                            Repository(
+                                gitUrl = it.value.gitTransportUrl,
+                                name = it.key
+                            )
+                        }.toImmutableList()
+                )
+            }.toImmutableList()
     }
 }

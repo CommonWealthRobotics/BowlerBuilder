@@ -35,6 +35,7 @@ class MainWindowView : View() {
     private var logOutMenu: MenuItem by singleAssign()
 
     private var gistsMenu: Menu by singleAssign()
+    private var orgsMenu: Menu by singleAssign()
 
     override val root = borderpane {
         top = menubar {
@@ -60,7 +61,7 @@ class MainWindowView : View() {
 
                 gistsMenu = menu("My Gists")
 
-                menu("My Orgs")
+                orgsMenu = menu("My Orgs")
 
                 menu("My Repos")
 
@@ -101,6 +102,7 @@ class MainWindowView : View() {
 
     init {
         reloadGists()
+        reloadOrgs()
     }
 
     fun addTab(tab: Tab) {
@@ -138,6 +140,33 @@ class MainWindowView : View() {
 
                             action {
                                 addTab(WebBrowserTab(gist.gitUrl))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun reloadOrgs() {
+        runLater {
+            orgsMenu.items.clear()
+            with(orgsMenu) {
+                runAsync {
+                    controller.loadUserOrgs()
+                } success { orgs ->
+                    orgs.forEach { org ->
+                        menu(org.name) {
+                            org.repositories.forEach { repo ->
+                                item(repo.name) {
+                                    action {
+                                        addTab(WebBrowserTab(repo.gitUrl))
+                                    }
+                                }
+                            }
+
+                            action {
+                                addTab(WebBrowserTab(org.gitUrl))
                             }
                         }
                     }
