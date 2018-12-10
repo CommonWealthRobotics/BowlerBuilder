@@ -8,7 +8,6 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
-import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerGroovy
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -37,11 +36,7 @@ class AceScratchpadView(
                 "Run" to AssetFactory.loadIcon("Run.png"),
                 "Stop" to AssetFactory.loadIcon("Stop.png")
             ) {
-                controller.scriptRunner.runScript(
-                    FxUtil.returnFX { getFullText() },
-                    null,
-                    BowlerGroovy.SHELL_TYPE
-                )
+                controller.runScript(FxUtil.returnFX { getFullText() })
             }
 
             button("Publish", AssetFactory.loadIcon("Publish.png")) {
