@@ -8,13 +8,12 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
-import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerGroovy
-import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScriptRunner
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import tornadofx.*
 
-class AceEditorController : Controller(),
-    ScriptRunner by BowlerScriptRunner(BowlerGroovy()) {
+class AceEditorController : Controller() {
+
+    val scriptRunner: ScriptRunner by di()
 
     fun getTextForGitResource(gitUrl: String, filename: String): String {
         return ScriptingEngine.fileFromGit(gitUrl, filename).readText()

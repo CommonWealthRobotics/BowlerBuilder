@@ -36,11 +36,23 @@ class AceEditorView : Fragment(), ScriptEditor {
                 "Run" to AssetFactory.loadIcon("Run.png"),
                 "Stop" to AssetFactory.loadIcon("Stop.png")
             ) {
-                controller.runScript(
+                controller.scriptRunner.runScript(
                     FxUtil.returnFX { getFullText() },
                     null,
                     BowlerGroovy.SHELL_TYPE
                 )
+            }
+
+            button("Publish", AssetFactory.loadIcon("Publish.png")) {
+                action {
+                    find<PublishView>(
+                        mapOf(
+                            "git_url" to params["git_url"],
+                            "filename" to params["filename"],
+                            "file_content" to getFullText()
+                        )
+                    ).openModal()
+                }
             }
 
             urlTextField = textfield {
