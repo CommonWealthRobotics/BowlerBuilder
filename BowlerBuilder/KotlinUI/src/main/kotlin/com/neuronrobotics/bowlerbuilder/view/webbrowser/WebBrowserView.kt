@@ -76,15 +76,7 @@ class WebBrowserView : Fragment() {
                 }
 
                 action {
-                    currentUrl = text.let {
-                        // Format the url to have an "https://" prefix
-                        if (it.startsWith("http://") || it.startsWith("https://")) {
-                            it
-                        } else {
-                            "https://$it"
-                        }
-                    }
-
+                    currentUrl = controller.formatUrl(text)
                     webview.engine.load(currentUrl)
                 }
             }

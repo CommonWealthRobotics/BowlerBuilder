@@ -49,6 +49,16 @@ class WebBrowserController : Controller() {
         }
     }
 
+    /**
+     * Formats the [url] so the JavaFX web engine can load it.
+     */
+    fun formatUrl(url: String) =
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            url
+        } else {
+            "https://$url"
+        }
+
     fun runScript(currentScript: WebBrowserScript) {
         if (currentScript == WebBrowserScript.empty) {
             return

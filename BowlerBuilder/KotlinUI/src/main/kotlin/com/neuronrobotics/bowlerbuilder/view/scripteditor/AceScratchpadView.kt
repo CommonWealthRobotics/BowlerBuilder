@@ -13,24 +13,20 @@ import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
-import javafx.concurrent.Worker
 import javafx.geometry.Insets
-import javafx.scene.web.WebView
 import tornadofx.*
 
-class AceScratchpadView : Fragment(), ScriptEditor {
+class AceScratchpadView(
+    private val editor: AceWebEditorView = find()
+) : Fragment(), ScriptEditor by editor {
 
     private val controller: AceEditorController by inject()
     private val scriptEditorFactory: ScriptEditorFactory by di()
-    private var webview: WebView by singleAssign()
-    val engineInitializingLatch = Latch(1)
+    val engineInitializingLatch
+        get() = editor.engineInitializingLatch
 
     override val root = borderpane {
-        webview = webview {
-            engine.load(resources["/com/neuronrobotics/bowlerbuilder/web/ace.html"])
-        }
-
-        center = webview
+        center = editor.root
 
         bottom = hbox {
             padding = Insets(5.0)
@@ -69,41 +65,5 @@ class AceScratchpadView : Fragment(), ScriptEditor {
                 }
             }
         }
-    }
-
-    init {
-        webview.engine.loadWorker.stateProperty().addListener { _, _, new ->
-            if (new == Worker.State.SUCCEEDED) {
-                engineInitializingLatch.countDown()
-            }
-        }
-    }
-
-    override fun insertAtCursor(text: String) {
-        webview.engine.executeScript("editor.insert(\"${controller.escape(text)}\");")
-    }
-
-    override fun setText(text: String) {
-        webview.engine.executeScript("editor.setValue(\"${controller.escape(text)}\");")
-    }
-
-    override fun getFullText(): String {
-        return webview.engine.executeScript("editor.getValue();") as String
-    }
-
-    override fun getSelectedText(): String {
-        return webview.engine.executeScript(
-            "editor.session.getTextRange(editor.getSelectionRange());"
-        ) as String
-    }
-
-    override fun gotoLine(lineNumber: Int) {
-        webview.engine.executeScript("editor.gotoLine($lineNumber);")
-    }
-
-    override fun getCursorPosition(): Int {
-        return webview.engine.executeScript(
-            "editor.session.doc.positionToIndex(editor.selection.getCursor());"
-        ) as Int
     }
 }

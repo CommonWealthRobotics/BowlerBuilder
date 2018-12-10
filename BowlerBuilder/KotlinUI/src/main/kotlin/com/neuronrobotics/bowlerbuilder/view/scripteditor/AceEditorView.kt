@@ -11,26 +11,22 @@ import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerGroo
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
-import javafx.concurrent.Worker
 import javafx.geometry.Insets
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
-import javafx.scene.web.WebView
 import tornadofx.*
 
-class AceEditorView : Fragment(), ScriptEditor {
+class AceEditorView(
+    private val editor: AceWebEditorView = find()
+) : Fragment(), ScriptEditor by editor {
 
     private val controller: AceEditorController by inject()
-    private var webview: WebView by singleAssign()
     private var urlTextField: TextField by singleAssign()
-    val engineInitializingLatch = Latch(1)
+    val engineInitializingLatch
+        get() = editor.engineInitializingLatch
 
     override val root = borderpane {
-        webview = webview {
-            engine.load(resources["/com/neuronrobotics/bowlerbuilder/web/ace.html"])
-        }
-
-        center = webview
+        center = editor.root
 
         bottom = hbox {
             padding = Insets(5.0)
@@ -69,47 +65,19 @@ class AceEditorView : Fragment(), ScriptEditor {
     }
 
     init {
-        webview.engine.loadWorker.stateProperty().addListener { _, _, new ->
-            if (new == Worker.State.SUCCEEDED) {
-                urlTextField.text = params["git_url"] as String
+        runLater {
+            urlTextField.text = params["git_url"] as String
 
-                setText(
-                    controller.getTextForGitResource(
-                        params["git_url"] as String,
-                        params["filename"] as String
-                    )
+            runAsync {
+                val text = controller.getTextForGitResource(
+                    params["git_url"] as String,
+                    params["filename"] as String
                 )
 
-                engineInitializingLatch.countDown()
+                engineInitializingLatch.await()
+
+                runLater { setText(text) }
             }
         }
-    }
-
-    override fun insertAtCursor(text: String) {
-        webview.engine.executeScript("editor.insert(\"${controller.escape(text)}\");")
-    }
-
-    override fun setText(text: String) {
-        webview.engine.executeScript("editor.setValue(\"${controller.escape(text)}\");")
-    }
-
-    override fun getFullText(): String {
-        return webview.engine.executeScript("editor.getValue();") as String
-    }
-
-    override fun getSelectedText(): String {
-        return webview.engine.executeScript(
-            "editor.session.getTextRange(editor.getSelectionRange());"
-        ) as String
-    }
-
-    override fun gotoLine(lineNumber: Int) {
-        webview.engine.executeScript("editor.gotoLine($lineNumber);")
-    }
-
-    override fun getCursorPosition(): Int {
-        return webview.engine.executeScript(
-            "editor.session.doc.positionToIndex(editor.selection.getCursor());"
-        ) as Int
     }
 }
