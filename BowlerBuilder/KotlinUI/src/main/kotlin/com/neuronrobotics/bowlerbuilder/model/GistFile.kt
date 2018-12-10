@@ -5,11 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
-data class WebBrowserScript(
-    val pageUrl: String,
-    val gistFile: GistFile
+data class GistFile(
+    val gist: Gist,
+    val filename: String
 ) {
-    companion object {
-        val empty = WebBrowserScript("", GistFile(Gist("", ""), ""))
-    }
+    constructor(gitUrl: String, filename: String) : this(Gist(gitUrl, ""), filename)
 }

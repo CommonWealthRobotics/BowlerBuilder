@@ -1,6 +1,12 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.GistFileSelectionController
+import com.neuronrobotics.bowlerbuilder.model.GistFile
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
 import javafx.geometry.Orientation
@@ -36,7 +42,9 @@ class GistFileSelectionView : Fragment() {
             buttonbar {
                 button("Load") {
                     action {
-                        runAsync { controller.openGistFile(gistUrl, gistFileSelection) }
+                        runAsync {
+                            controller.openGistFile(GistFile(gistUrl, gistFileSelection))
+                        }
                         close()
                     }
                 }

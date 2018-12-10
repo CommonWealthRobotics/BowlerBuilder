@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
@@ -51,8 +52,7 @@ class AceScratchpadView(
                     if (view.publishSuccessful) {
                         runAsync {
                             scriptEditorFactory.createAndOpenScriptEditor(
-                                view.gitUrl,
-                                view.gistFilename
+                                GistFile(view.gitUrl, view.gistFilename)
                             )
                         }
 

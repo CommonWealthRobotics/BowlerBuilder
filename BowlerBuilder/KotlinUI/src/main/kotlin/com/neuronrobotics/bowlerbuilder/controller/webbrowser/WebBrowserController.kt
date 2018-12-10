@@ -6,6 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.model.Gist
+import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
@@ -29,20 +31,26 @@ class WebBrowserController : Controller() {
         } else {
             ScriptingEngine.getCurrentGist(currentUrl, engine)
                 .map {
-                    WebBrowserScript(currentUrl, getGitUrlFromPageUrl(currentUrl, it), "")
+                    WebBrowserScript(
+                        currentUrl,
+                        GistFile(
+                            Gist(getGitUrlFromPageUrl(currentUrl, it), ""),
+                            ""
+                        )
+                    )
                 }.flatMap { script ->
                     val files = try {
-                        ScriptingEngine.filesInGit(script.gitUrl)
+                        ScriptingEngine.filesInGit(script.gistFile.gist.gitUrl)
                     } catch (ex: Exception) {
                         // This is the ScriptingEngine login manager being unhappy
                         emptyList<String>()
                     }
 
                     files.map {
-                        script.copy(filename = it)
+                        script.copy(gistFile = script.gistFile.copy(filename = it))
                     }
                 }.filter {
-                    it.filename != "csgDatabase.json"
+                    it.gistFile.filename != "csgDatabase.json"
                 }.let {
                     itemsOnPageProperty.setAll(it)
                 }
@@ -64,7 +72,7 @@ class WebBrowserController : Controller() {
             return
         }
 
-        scriptRunner.runScript(currentScript.gitUrl, currentScript.filename)
+        scriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.gistFile.filename)
         editScript(currentScript)
     }
 
@@ -74,7 +82,7 @@ class WebBrowserController : Controller() {
         }
 
         scriptEditorFactory
-            .createAndOpenScriptEditor(currentScript.gitUrl, currentScript.filename)
+            .createAndOpenScriptEditor(currentScript.gistFile)
             .apply {
                 runLater { gotoLine(0) }
             }
@@ -85,7 +93,11 @@ class WebBrowserController : Controller() {
             return false
         }
 
-        val currentFile = ScriptingEngine.fileFromGit(currentScript.gitUrl, currentScript.filename)
+        val currentFile = ScriptingEngine.fileFromGit(
+            currentScript.gistFile.gist.gitUrl,
+            currentScript.gistFile.filename
+        )
+
         // TODO: checkOwner() doesn't work
         return ScriptingEngine.checkOwner(currentFile)
     }
@@ -95,9 +107,18 @@ class WebBrowserController : Controller() {
             return WebBrowserScript.empty
         }
 
-        val gist = ScriptingEngine.fork(ScriptingEngine.urlToGist(currentScript.gitUrl))
-            ?: throw IllegalStateException("Failed to fork script.")
-        return currentScript.copy(pageUrl = gist.htmlUrl, gitUrl = gist.gitPushUrl)
+        val gist = ScriptingEngine.fork(
+            ScriptingEngine.urlToGist(currentScript.gistFile.gist.gitUrl)
+        ) ?: throw IllegalStateException("Failed to fork script.")
+
+        return currentScript.copy(
+            pageUrl = gist.htmlUrl,
+            gistFile = currentScript.gistFile.copy(
+                gist = currentScript.gistFile.gist.copy(
+                    gitUrl = gist.gitPushUrl
+                )
+            )
+        )
     }
 
     /**

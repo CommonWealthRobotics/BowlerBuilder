@@ -16,6 +16,7 @@ import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import javafx.geometry.Orientation
 import javafx.scene.Node
+import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
@@ -32,6 +33,8 @@ class MainWindowView : View() {
     private var mainTabPane: TabPane by singleAssign()
     private var logInMenu: MenuItem by singleAssign()
     private var logOutMenu: MenuItem by singleAssign()
+
+    private var gistsMenu: Menu by singleAssign()
 
     override val root = borderpane {
         top = menubar {
@@ -55,7 +58,7 @@ class MainWindowView : View() {
                     enableWhen(loginManager.isLoggedInProperty)
                 }
 
-                menu("My Gists")
+                gistsMenu = menu("My Gists")
 
                 menu("My Orgs")
 
@@ -96,6 +99,10 @@ class MainWindowView : View() {
         }
     }
 
+    init {
+        reloadGists()
+    }
+
     fun addTab(tab: Tab) {
         mainTabPane.tabs.add(mainTabPane.tabs.size - 1, tab)
         mainTabPane.selectionModel.select(tab)
@@ -104,6 +111,39 @@ class MainWindowView : View() {
     fun closeTabByContent(cmp: Node) {
         val matches = mainTabPane.tabs.filter { it.content == cmp }
         mainTabPane.tabs.removeAll(matches)
+    }
+
+    fun reloadGists() {
+        runLater {
+            gistsMenu.items.clear()
+            with(gistsMenu) {
+                runAsync {
+                    controller.loadUserGists()
+                } success { gists ->
+                    gists.forEach { gist ->
+                        menu(gist.description) {
+                            runAsync {
+                                controller.loadFilesInGist(gist)
+                            } success { gistFiles ->
+                                gistFiles.forEach { file ->
+                                    item(file.filename) {
+                                        action {
+                                            runAsync {
+                                                controller.openGistFile(file)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            action {
+                                addTab(WebBrowserTab(gist.gitUrl))
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun beginForceQuit() {

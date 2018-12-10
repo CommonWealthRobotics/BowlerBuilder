@@ -9,9 +9,17 @@ import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import javafx.scene.control.Tab
 import tornadofx.*
 
-class WebBrowserTab : Tab("Web") {
+class WebBrowserTab(
+    url: String? = null
+) : Tab("Web") {
 
     init {
-        content = FxUtil.returnFX { find<WebBrowserView>() }.root
+        content = FxUtil.returnFX {
+            find<WebBrowserView>(
+                params = mapOf(
+                    WebBrowserView.PAGE_TO_LOAD to url
+                )
+            )
+        }.root
     }
 }

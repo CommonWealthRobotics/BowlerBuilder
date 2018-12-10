@@ -5,6 +5,35 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller
 
+import com.google.common.collect.ImmutableList
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.model.Gist
+import com.neuronrobotics.bowlerbuilder.model.GistFile
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.kinematicschef.util.toImmutableList
 import tornadofx.*
 
-class MainWindowController : Controller()
+class MainWindowController : Controller() {
+
+    private val scriptEditorFactory: ScriptEditorFactory by di()
+
+    fun loadUserGists(): ImmutableList<Gist> {
+        return ScriptingEngine.getGithub()
+            .myself
+            .listGists()
+            .map {
+                Gist(it.gitPushUrl, it.description)
+            }.toImmutableList()
+    }
+
+    fun loadFilesInGist(gist: Gist): ImmutableList<GistFile> {
+        return ScriptingEngine.filesInGit(gist.gitUrl)
+            .map {
+                GistFile(gist, it)
+            }.toImmutableList()
+    }
+
+    fun openGistFile(file: GistFile) {
+        scriptEditorFactory.createAndOpenScriptEditor(file)
+    }
+}
