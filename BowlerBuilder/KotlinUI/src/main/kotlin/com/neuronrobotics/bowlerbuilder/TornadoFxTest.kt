@@ -9,7 +9,6 @@ import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScri
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import org.jlleitschuh.guice.module
 import tornadofx.*
-import java.util.logging.Level
 import kotlin.reflect.KClass
 
 fun main(args: Array<String>) {
@@ -19,13 +18,15 @@ fun main(args: Array<String>) {
 class TornadoFxTest : App(MainWindowView::class) {
 
     init {
-        // Log uncaught exceptions on the FX thread
-        Thread.currentThread().setUncaughtExceptionHandler { _, exception ->
-            LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception))
+        runLater {
+            // Log uncaught exceptions on the FX thread
+            Thread.currentThread().setUncaughtExceptionHandler { _, exception ->
+                LOGGER.severe(Throwables.getStackTraceAsString(exception))
+            }
         }
 
         Thread.setDefaultUncaughtExceptionHandler { _, exception ->
-            LOGGER.log(Level.SEVERE, Throwables.getStackTraceAsString(exception))
+            LOGGER.severe(Throwables.getStackTraceAsString(exception))
         }
 
         val injector = Guice.createInjector(module {

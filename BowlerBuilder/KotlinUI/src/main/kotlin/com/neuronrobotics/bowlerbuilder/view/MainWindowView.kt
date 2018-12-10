@@ -1,10 +1,14 @@
 package com.neuronrobotics.bowlerbuilder.view
 
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.LoginManager
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
+import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import javafx.geometry.Orientation
+import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import tornadofx.*
@@ -14,7 +18,11 @@ import java.util.logging.Level
 
 class MainWindowView : View() {
 
+    private val controller: MainWindowController by inject()
+    private val loginManager: LoginManager by di()
     private var mainTabPane: TabPane by singleAssign()
+    private var logInMenu: MenuItem by singleAssign()
+    private var logOutMenu: MenuItem by singleAssign()
 
     override val root = borderpane {
         top = menubar {
@@ -25,6 +33,36 @@ class MainWindowView : View() {
                         beginForceQuit()
                     }
                 }
+            }
+
+            menu("Git") {
+                logInMenu = item("Log In") {
+                    action { find<LogInView>().openModal() }
+                    enableWhen(!loginManager.isLoggedInProperty)
+                }
+
+                logOutMenu = item("Log Out") {
+                    action { loginManager.logout() }
+                    enableWhen(loginManager.isLoggedInProperty)
+                }
+
+                menu("My Gists")
+
+                menu("My Orgs")
+
+                menu("My Repos")
+
+                item("Reload Menus")
+
+                item("Delete local cache")
+            }
+
+            menu("3D CAD") {
+                item("Scratchpad")
+
+                item("Load File from Git")
+
+                item("Load Creature")
             }
         }
 
