@@ -2,8 +2,8 @@ package com.neuronrobotics.bowlerbuilder.view
 
 import com.neuronrobotics.bowlerbuilder.controller.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
-import javafx.application.Platform
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
@@ -100,8 +100,11 @@ class WebBrowserView : Fragment() {
             padding = Insets(5.0)
             spacing = 5.0
 
-            button(text = "Run", graphic = AssetFactory.loadIcon("Run.png")) {
-                action { runAsync { controller.runScript(currentScript) } }
+            this += ThreadMonitoringButton.create(
+                "Run" to AssetFactory.loadIcon("Run.png"),
+                "Stop" to AssetFactory.loadIcon("Stop.png")
+            ) {
+                controller.runScript(currentScript)
             }
 
             val cloneButton = button()
@@ -130,7 +133,7 @@ class WebBrowserView : Fragment() {
                 }
 
                 controller.itemsOnPageProperty.addListener(ListChangeListener {
-                    Platform.runLater {
+                    runLater {
                         items.setAll(it.list)
                         if (items.size > 0) {
                             value = items[0]

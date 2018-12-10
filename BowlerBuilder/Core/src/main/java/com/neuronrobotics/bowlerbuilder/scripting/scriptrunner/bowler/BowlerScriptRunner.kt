@@ -26,8 +26,16 @@ class BowlerScriptRunner @Inject constructor(language: BowlerGroovy) : ScriptRun
         ScriptingEngine.addScriptingLanguage(language)
     }
 
+    override fun runScript(
+        scriptGitUrl: String,
+        scriptFilename: String
+    ): Verified<Exception, Any?> {
+        val file = ScriptingEngine.fileFromGit(scriptGitUrl, scriptFilename)
+        return runScript(file.readText(), null, ScriptingEngine.getShellType(scriptFilename))
+    }
+
     override fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String):
-            Verified<Exception, Any?> {
+        Verified<Exception, Any?> {
         return try {
             running.value = true
             val output = ScriptingEngine.inlineScriptStringRun(script, arguments, languageName)
@@ -44,7 +52,8 @@ class BowlerScriptRunner @Inject constructor(language: BowlerGroovy) : ScriptRun
 
     override fun getResult(): Verified<Exception, Any?> = result
 
-    override fun resultProperty(): ReadOnlyObjectProperty<Verified<Exception, Any?>> = resultProperty
+    override fun resultProperty(): ReadOnlyObjectProperty<Verified<Exception, Any?>> =
+        resultProperty
 
     override fun isScriptRunning(): Boolean = running.value
 

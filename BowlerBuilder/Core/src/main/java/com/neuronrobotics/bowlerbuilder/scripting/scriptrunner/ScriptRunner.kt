@@ -16,12 +16,27 @@ interface ScriptRunner {
     /**
      * Run a script and return the result.
      *
+     * @param scriptGitUrl The push URL of the script.
+     * @param scriptFilename The filename of the script.
+     *
+     * @return result
+     */
+    fun runScript(scriptGitUrl: String, scriptFilename: String): Verified<Exception, Any?>
+
+    /**
+     * Run a script and return the result.
+     *
      * @param script code
      * @param arguments arguments
      * @param languageName language name
+     *
      * @return result
      */
-    fun runScript(script: String, arguments: ArrayList<Any>?, languageName: String): Verified<Exception, Any?>
+    fun runScript(
+        script: String,
+        arguments: ArrayList<Any>?,
+        languageName: String
+    ): Verified<Exception, Any?>
 
     /**
      * The result of running the script.

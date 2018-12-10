@@ -1,6 +1,8 @@
 package com.neuronrobotics.bowlerbuilder.controller
 
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -11,6 +13,8 @@ class WebBrowserController : Controller() {
 
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
         FXCollections.observableArrayList<WebBrowserScript>()
+    private val scriptRunner: ScriptRunner by di()
+    private val scriptEditorFactory: ScriptEditorFactory by di()
 
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
         if (currentUrl.split("//").size < 2) {
@@ -35,11 +39,11 @@ class WebBrowserController : Controller() {
     }
 
     fun runScript(currentScript: WebBrowserScript) {
-        TODO("not implemented")
+        scriptRunner.runScript(currentScript.gitUrl, currentScript.filename)
     }
 
     fun editScript(currentScript: WebBrowserScript) {
-        TODO("not implemented")
+        scriptEditorFactory.createAndOpenScriptEditor(currentScript.gitUrl, currentScript.filename)
     }
 
     fun doesUserOwnScript(currentScript: WebBrowserScript): Boolean {

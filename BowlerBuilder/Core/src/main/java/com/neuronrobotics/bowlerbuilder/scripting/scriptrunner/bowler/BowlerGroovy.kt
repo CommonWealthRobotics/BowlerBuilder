@@ -22,7 +22,7 @@ import java.util.Arrays
 /** Simple copy of [GroovyHelper] that keeps a flag for when it is compiling or running.  */
 class BowlerGroovy : IScriptingLanguage {
 
-    override fun getShellType(): String = "BowlerGroovy"
+    override fun getShellType(): String = SHELL_TYPE
 
     @Throws(Exception::class)
     override fun inlineScriptRun(code: File, args: ArrayList<Any>?): Any? = this.inline(code, args)
@@ -77,5 +77,9 @@ class BowlerGroovy : IScriptingLanguage {
                 }
 
         return script.run()
+    }
+
+    companion object {
+        const val SHELL_TYPE = "BowlerGroovy"
     }
 }
