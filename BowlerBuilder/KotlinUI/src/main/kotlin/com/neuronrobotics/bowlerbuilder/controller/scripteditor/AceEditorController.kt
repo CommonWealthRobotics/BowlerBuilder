@@ -5,6 +5,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
+import com.google.common.base.Throwables
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerGroovy
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
@@ -13,6 +15,7 @@ import tornadofx.*
 class AceEditorController : Controller() {
 
     private val scriptRunner: ScriptRunner by di()
+    private val scriptResultHandler: ScriptResultHandler by di()
 
     /**
      * Runs a script by text using the injected [ScriptRunner].
@@ -22,6 +25,18 @@ class AceEditorController : Controller() {
             scriptText,
             null,
             BowlerGroovy.SHELL_TYPE
+        ).handle(
+            {
+                scriptResultHandler.handleResult(it)
+            },
+            {
+                LOGGER.warning {
+                    """
+                    |Error running script:
+                    |${Throwables.getStackTraceAsString(it)}
+                    """.trimMargin()
+                }
+            }
         )
     }
 
@@ -30,5 +45,9 @@ class AceEditorController : Controller() {
      */
     fun getTextForGitResource(gitUrl: String, filename: String): String {
         return ScriptingEngine.fileFromGit(gitUrl, filename).readText()
+    }
+
+    companion object {
+        private val LOGGER = LoggerUtilities.getLogger(AceEditorController::class.java.simpleName)
     }
 }
