@@ -76,7 +76,7 @@ class CSGManager
     fun getMeshView(csgName: String) = csgNameToMeshView[csgName]
 
     /**
-     * Gets a CSG's [MeshView]
+     * Gets a CSG's [MeshView].
      *
      * @param csg the CSG
      * @return the MeshView

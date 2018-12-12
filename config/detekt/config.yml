@@ -98,7 +98,7 @@ complexity:
     threshold: 4
   StringLiteralDuplication:
     active: true
-    threshold: 3
+    threshold: 5
     ignoreAnnotation: true
     excludeStringsWithLessThan5Characters: true
     ignoreStringsRegex: '$^'
@@ -388,7 +388,7 @@ potential-bugs:
   UnsafeCallOnNullableType:
     active: false
   UnsafeCast:
-    active: true
+    active: false
   UselessPostfixExpression:
     active: true
   WrongEqualsTypeParameter:
@@ -424,7 +424,7 @@ style:
     active: false
     maxJumpCount: 1
   MagicNumber:
-    active: true
+    active: false
     ignoreNumbers: '-1,0,1,2'
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false

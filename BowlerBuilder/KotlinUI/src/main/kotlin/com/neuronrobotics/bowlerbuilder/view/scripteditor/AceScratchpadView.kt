@@ -30,6 +30,7 @@ class AceScratchpadView(
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
 
+    @SuppressWarnings("LabeledExpression")
     override val root = borderpane {
         center = editor.root
 

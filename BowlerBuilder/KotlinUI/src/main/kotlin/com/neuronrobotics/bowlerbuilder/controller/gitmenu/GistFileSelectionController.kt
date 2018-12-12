@@ -20,6 +20,7 @@ class GistFileSelectionController : Controller() {
     /**
      * Loads the files in a gist by [gistUrl] into [filesInGist].
      */
+    @SuppressWarnings("TooGenericExceptionCaught")
     fun loadFilesInGist(gistUrl: String) {
         try {
             ScriptingEngine.filesInGit(gistUrl)

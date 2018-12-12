@@ -48,9 +48,9 @@ class AceEditorView(
                 action {
                     find<PublishView>(
                         mapOf(
-                            "git_url" to params["git_url"],
-                            "filename" to params["filename"],
-                            "file_content" to getFullText()
+                            GIT_URL to params[GIT_URL],
+                            FILENAME to params[FILENAME],
+                            FILE_CONTENT to getFullText()
                         )
                     ).openModal()
                 }
@@ -66,12 +66,12 @@ class AceEditorView(
 
     init {
         runLater {
-            urlTextField.text = params["git_url"] as String
+            urlTextField.text = params[GIT_URL] as String
 
             runAsync {
                 val text = controller.getTextForGitResource(
-                    params["git_url"] as String,
-                    params["filename"] as String
+                    params[GIT_URL] as String,
+                    params[FILENAME] as String
                 )
 
                 engineInitializingLatch.await()
@@ -82,5 +82,11 @@ class AceEditorView(
                 }
             }
         }
+    }
+
+    companion object {
+        const val GIT_URL = "git_url"
+        const val FILENAME = "filename"
+        const val FILE_CONTENT = "file_content"
     }
 }

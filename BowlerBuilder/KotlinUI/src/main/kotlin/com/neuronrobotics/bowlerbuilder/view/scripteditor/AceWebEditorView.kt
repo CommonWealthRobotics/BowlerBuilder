@@ -36,23 +36,17 @@ class AceWebEditorView : Fragment(), ScriptEditor {
         root.engine.executeScript("editor.setValue(\"${controller.escape(text)}\");")
     }
 
-    override fun getFullText(): String {
-        return root.engine.executeScript("editor.getValue();") as String
-    }
+    override fun getFullText() = root.engine.executeScript("editor.getValue();") as String
 
-    override fun getSelectedText(): String {
-        return root.engine.executeScript(
-            "editor.session.getTextRange(editor.getSelectionRange());"
-        ) as String
-    }
+    override fun getSelectedText() = root.engine.executeScript(
+        "editor.session.getTextRange(editor.getSelectionRange());"
+    ) as String
 
     override fun gotoLine(lineNumber: Int) {
         root.engine.executeScript("editor.gotoLine($lineNumber);")
     }
 
-    override fun getCursorPosition(): Int {
-        return root.engine.executeScript(
-            "editor.session.doc.positionToIndex(editor.selection.getCursor());"
-        ) as Int
-    }
+    override fun getCursorPosition() = root.engine.executeScript(
+        "editor.session.doc.positionToIndex(editor.selection.getCursor());"
+    ) as Int
 }

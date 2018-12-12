@@ -45,9 +45,8 @@ class AceEditorController : Controller() {
     /**
      * Get the content of a file from git.
      */
-    fun getTextForGitResource(gitUrl: String, filename: String): String {
-        return ScriptingEngine.fileFromGit(gitUrl, filename).readText()
-    }
+    fun getTextForGitResource(gitUrl: String, filename: String): String =
+        ScriptingEngine.fileFromGit(gitUrl, filename).readText()
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(AceEditorController::class.java.simpleName)

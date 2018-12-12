@@ -26,7 +26,5 @@ class SelectionManagerFactory {
         focusGroup: Group,
         virtualCam: VirtualCameraDevice,
         moveCamera: BiConsumer<TransformNR, Double>
-    ): SelectionManager {
-        return DefaultSelectionManager(csgManager, focusGroup, virtualCam, moveCamera)
-    }
+    ): SelectionManager = DefaultSelectionManager(csgManager, focusGroup, virtualCam, moveCamera)
 }

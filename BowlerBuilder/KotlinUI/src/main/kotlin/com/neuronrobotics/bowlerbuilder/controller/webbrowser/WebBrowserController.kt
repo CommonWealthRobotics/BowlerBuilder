@@ -29,6 +29,7 @@ class WebBrowserController : Controller() {
      * @param currentUrl The url of the page.
      * @param engine The webview engine to pull DOM from.
      */
+    @SuppressWarnings("TooGenericExceptionCaught")
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
         if (currentUrl.split("//").size < 2) {
             // Don't call ScriptingEngine.getCurrentGist() with less than two elements because it

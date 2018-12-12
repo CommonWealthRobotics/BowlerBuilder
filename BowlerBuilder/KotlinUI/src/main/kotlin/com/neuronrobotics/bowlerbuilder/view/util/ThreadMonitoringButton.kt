@@ -61,8 +61,6 @@ private constructor(
             primaryState: Pair<String, Node>,
             secondaryState: Pair<String, Node>,
             onRun: () -> Unit
-        ): ThreadMonitoringButton {
-            return ThreadMonitoringButton(primaryState, secondaryState, onRun)
-        }
+        ) = ThreadMonitoringButton(primaryState, secondaryState, onRun)
     }
 }

@@ -10,7 +10,6 @@ import com.neuronrobotics.bowlerstudio.physics.TransformFactory
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR
 import eu.mihosoft.vrl.v3d.CSG
-import javafx.application.Platform
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Group
@@ -20,14 +19,10 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.transform.Affine
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.javafx.JavaFx
-import kotlinx.coroutines.launch
 import org.reactfx.util.FxTimer
+import tornadofx.*
 import java.io.File
 import java.time.Duration
-import java.util.Arrays
 import java.util.Optional
 import java.util.function.BiConsumer
 
@@ -40,11 +35,11 @@ class DefaultSelectionManager
  * @param virtualCam virtual camera
  * @param moveCamera [BiConsumer] to move the camera around for a new selection
  */(
-     private val csgManager: CSGManager,
-     private val focusGroup: Group,
-     private val virtualCam: VirtualCameraDevice,
-     private val moveCamera: BiConsumer<TransformNR, Double>
- ) : SelectionManager {
+    private val csgManager: CSGManager,
+    private val focusGroup: Group,
+    private val virtualCam: VirtualCameraDevice,
+    private val moveCamera: BiConsumer<TransformNR, Double>
+) : SelectionManager {
 
     private var mousePosX: Double = 0.0
     private var mousePosY: Double = 0.0
@@ -62,7 +57,7 @@ class DefaultSelectionManager
      * @param lineNumber line number in script
      */
     override fun setSelectedCSG(script: File, lineNumber: Int) {
-        GlobalScope.launch(context = Dispatchers.JavaFx) {
+        runLater {
             val csgs = csgManager
                 .csgParser
                 .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
@@ -85,33 +80,27 @@ class DefaultSelectionManager
             return
         }
 
-        csgManager
-            .getCSGs()
-            .forEach { key ->
-                Platform.runLater {
-                    csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
-                }
+        csgManager.getCSGs().forEach {
+            runLater {
+                csgManager.getMeshView(it)?.material = PhongMaterial(it.color)
             }
+        }
 
         selectedCSG.value = Optional.of(selection)
         csgManager.getMeshView(selection)?.material = PhongMaterial(Color.GOLD)
 
-        val xCenter = selection.centerX
-        val yCenter = selection.centerY
-        val zCenter = selection.centerZ
-
         val poseToMove = TransformNR()
 
         if (selection.maxX < 1 || selection.minX > -1) {
-            poseToMove.translateX(xCenter)
+            poseToMove.translateX(selection.centerX)
         }
 
         if (selection.maxY < 1 || selection.minY > -1) {
-            poseToMove.translateY(yCenter)
+            poseToMove.translateY(selection.centerY)
         }
 
         if (selection.maxZ < 1 || selection.minZ > -1) {
-            poseToMove.translateZ(zCenter)
+            poseToMove.translateZ(selection.centerZ)
         }
 
         val centering = TransformFactory.nrToAffine(poseToMove)
@@ -134,7 +123,7 @@ class DefaultSelectionManager
         val interpolator = Affine()
         val correction = TransformFactory.nrToAffine(reverseRotation)
 
-        GlobalScope.launch(context = Dispatchers.JavaFx) {
+        runLater {
             interpolator.tx = startSelectNr.x - targetNR.x
             interpolator.ty = startSelectNr.y - targetNR.y
             interpolator.tz = startSelectNr.z - targetNR.z
@@ -171,7 +160,7 @@ class DefaultSelectionManager
     /** De-select the selection.  */
     override fun cancelSelection() {
         for (key in csgManager.getCSGs()) {
-            GlobalScope.launch(context = Dispatchers.JavaFx) {
+            runLater {
                 csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
             }
         }
@@ -182,7 +171,7 @@ class DefaultSelectionManager
         val interpolator = Affine()
         TransformFactory.nrToAffine(startSelectNr, interpolator)
 
-        GlobalScope.launch(context = Dispatchers.JavaFx) {
+        runLater {
             removeAllFocusTransforms()
             focusGroup.transforms.add(interpolator)
             focusInterpolate(startSelectNr, targetNR, 0, 15, interpolator)
@@ -197,7 +186,6 @@ class DefaultSelectionManager
      */
     override fun mouseEvent(mouseEvent: MouseEvent, csg: CSG) {
         selectCSG(csg)
-
         mouseOldX = mousePosX
         mouseOldY = mousePosY
         mousePosX = mouseEvent.sceneX
@@ -225,13 +213,12 @@ class DefaultSelectionManager
             mouseDeltaX = mousePosX - mouseOldX
             mouseDeltaY = mousePosY - mouseOldY
 
-            var modifier = 1.0
             val modifierFactor = 0.1
 
-            if (mouseEvent.isControlDown) {
-                modifier = 0.1
-            } else if (mouseEvent.isShiftDown) {
-                modifier = 10.0
+            val modifier = when {
+                mouseEvent.isControlDown -> 0.1
+                mouseEvent.isShiftDown -> 10.0
+                else -> 1.0
             }
 
             if (mouseEvent.isPrimaryButtonDown) {
@@ -263,9 +250,7 @@ class DefaultSelectionManager
             }
         }
 
-        scene.addEventHandler(
-            ScrollEvent.ANY
-        ) { event ->
+        scene.addEventHandler(ScrollEvent.ANY) { event ->
             if (ScrollEvent.SCROLL == event.eventType) {
                 val zoomFactor = -event.deltaY * virtualCam.zoomDepth / 500
                 virtualCam.zoomDepth = virtualCam.zoomDepth + zoomFactor
@@ -281,7 +266,6 @@ class DefaultSelectionManager
         targetDepth: Int,
         interpolator: Affine
     ) {
-
         val depthScale = 1 - depth.toDouble() / targetDepth.toDouble()
         val sinusoidalScale = Math.sin(depthScale * (Math.PI / 2))
 
@@ -291,7 +275,7 @@ class DefaultSelectionManager
         val yIncrement = (start.y - target.y) * sinusoidalScale
         val zIncrement = (start.z - target.z) * sinusoidalScale
 
-        GlobalScope.launch(context = Dispatchers.JavaFx) {
+        runLater {
             interpolator.tx = xIncrement
             interpolator.ty = yIncrement
             interpolator.tz = zIncrement
@@ -302,21 +286,19 @@ class DefaultSelectionManager
                 Duration.ofMillis(16)
             ) { focusInterpolate(start, target, depth + 1, targetDepth, interpolator) }
         } else {
-            GlobalScope.launch(context = Dispatchers.JavaFx) { focusGroup.transforms.remove(interpolator) }
+            runLater {
+                focusGroup.transforms.remove(interpolator)
+            }
+
             previousTarget = target.copy()
             previousTarget.rotation = RotationNR()
         }
     }
 
-    private fun removeAllFocusTransforms() {
-        val allTrans = focusGroup.transforms
-        val toRemove = allTrans.toTypedArray()
-        Arrays.stream(toRemove).forEach({ allTrans.remove(it) })
-    }
+    private fun removeAllFocusTransforms() = focusGroup.transforms.clear()
 
-    private fun checkManipulator(csg: CSG): Boolean {
-        return (Math.abs(csg.manipulator.tx) > 0.1 ||
+    private fun checkManipulator(csg: CSG) =
+        Math.abs(csg.manipulator.tx) > 0.1 ||
             Math.abs(csg.manipulator.ty) > 0.1 ||
-            Math.abs(csg.manipulator.tz) > 0.1)
-    }
+            Math.abs(csg.manipulator.tz) > 0.1
 }

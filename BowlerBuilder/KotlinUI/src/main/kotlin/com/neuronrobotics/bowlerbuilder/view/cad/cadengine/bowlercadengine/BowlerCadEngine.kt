@@ -67,6 +67,7 @@ import java.util.logging.Level
  * @param csgManager [CSGManager]
  * @param selectionManagerFactory [SelectionManager]
  */
+@SuppressWarnings("TooGenericExceptionCaught")
 class BowlerCadEngine
 @Inject constructor(
     private val csgManager: CSGManager,
