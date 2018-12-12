@@ -10,6 +10,10 @@ import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import javafx.concurrent.Worker
 import tornadofx.*
 
+/**
+ * An implementation of [ScriptEditor] which uses a webview to interface with the Cloud9 Ace
+ * editor.
+ */
 class AceWebEditorView : Fragment(), ScriptEditor {
 
     private val controller: AceWebEditorController by inject()

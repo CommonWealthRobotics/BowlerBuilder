@@ -23,6 +23,12 @@ class WebBrowserController : Controller() {
     private val scriptRunner: ScriptRunner by di()
     private val scriptEditorFactory: ScriptEditorFactory by di()
 
+    /**
+     * Loads the scripts on the current page into [itemsOnPageProperty].
+     *
+     * @param currentUrl The url of the page.
+     * @param engine The webview engine to pull DOM from.
+     */
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
         if (currentUrl.split("//").size < 2) {
             // Don't call ScriptingEngine.getCurrentGist() with less than two elements because it
@@ -67,27 +73,20 @@ class WebBrowserController : Controller() {
             "https://$url"
         }
 
+    /**
+     * Runs the [currentScript] with the injected [ScriptRunner].
+     */
     fun runScript(currentScript: WebBrowserScript) {
         if (currentScript == WebBrowserScript.empty) {
             return
         }
 
         scriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.gistFile.filename)
-        editScript(currentScript)
     }
 
-    fun editScript(currentScript: WebBrowserScript) {
-        if (currentScript == WebBrowserScript.empty) {
-            return
-        }
-
-        scriptEditorFactory
-            .createAndOpenScriptEditor(currentScript.gistFile)
-            .apply {
-                runLater { gotoLine(0) }
-            }
-    }
-
+    /**
+     * Returns whether the currently logged in user owns the [currentScript].
+     */
     fun doesUserOwnScript(currentScript: WebBrowserScript): Boolean {
         if (currentScript == WebBrowserScript.empty) {
             return false
@@ -98,10 +97,13 @@ class WebBrowserController : Controller() {
             currentScript.gistFile.filename
         )
 
-        // TODO: checkOwner() doesn't work
+        // TODO: checkOwner() doesn't return true when it should
         return ScriptingEngine.checkOwner(currentFile)
     }
 
+    /**
+     * Clones the [currentScript] and opens it in an editor.
+     */
     fun cloneScript(currentScript: WebBrowserScript): WebBrowserScript {
         if (currentScript == WebBrowserScript.empty) {
             return WebBrowserScript.empty
@@ -118,7 +120,24 @@ class WebBrowserController : Controller() {
                     gitUrl = gist.gitPushUrl
                 )
             )
-        )
+        ).also {
+            editScript(it)
+        }
+    }
+
+    /**
+     * Opens the [currentScript] in an editor.
+     */
+    fun editScript(currentScript: WebBrowserScript) {
+        if (currentScript == WebBrowserScript.empty) {
+            return
+        }
+
+        scriptEditorFactory
+            .createAndOpenScriptEditor(currentScript.gistFile)
+            .apply {
+                runLater { gotoLine(0) }
+            }
     }
 
     /**

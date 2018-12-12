@@ -9,6 +9,9 @@ import com.neuronrobotics.bowlerbuilder.controller.cad.CadController
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine.BowlerCadEngine
 import tornadofx.*
 
+/**
+ * A view containing the [BowlerCadEngine] and basic engine controls.
+ */
 class CadView : Fragment() {
 
     private val controller: CadController by inject()

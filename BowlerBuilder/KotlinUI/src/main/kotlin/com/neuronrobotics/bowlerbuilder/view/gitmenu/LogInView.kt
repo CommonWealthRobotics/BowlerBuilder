@@ -9,6 +9,9 @@ import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
+/**
+ * A form to authenticate a user to GitHub.
+ */
 class LogInView : Fragment() {
 
     private val loginManager: LoginManager by di()

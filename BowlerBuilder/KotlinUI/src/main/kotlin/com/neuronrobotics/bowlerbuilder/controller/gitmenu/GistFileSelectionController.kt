@@ -17,6 +17,9 @@ class GistFileSelectionController : Controller() {
     private val scriptEditorFactory: ScriptEditorFactory by di()
     val filesInGist: ObservableList<String> = FXCollections.observableArrayList<String>()
 
+    /**
+     * Loads the files in a gist by [gistUrl] into [filesInGist].
+     */
     fun loadFilesInGist(gistUrl: String) {
         try {
             ScriptingEngine.filesInGit(gistUrl)
@@ -28,6 +31,9 @@ class GistFileSelectionController : Controller() {
         }
     }
 
+    /**
+     * Opens a [gistFile] with the injected [ScriptEditorFactory].
+     */
     fun openGistFile(gistFile: GistFile) {
         scriptEditorFactory.createAndOpenScriptEditor(gistFile)
     }

@@ -10,6 +10,9 @@ import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import javafx.geometry.Insets
 import tornadofx.*
 
+/**
+ * A view which holds buttons to create various new tabs.
+ */
 class NewTabView : View() {
 
     override val root = flowpane {

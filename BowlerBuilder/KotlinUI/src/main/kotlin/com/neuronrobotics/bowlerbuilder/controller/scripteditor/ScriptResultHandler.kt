@@ -12,8 +12,14 @@ import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
 import tornadofx.*
 
+/**
+ * A utility class to interpret the result from running a script.
+ */
 class ScriptResultHandler {
 
+    /**
+     * Handles the [result] from running a script.
+     */
     fun handleResult(result: Any?) {
         if (result != null) {
             when (result) {

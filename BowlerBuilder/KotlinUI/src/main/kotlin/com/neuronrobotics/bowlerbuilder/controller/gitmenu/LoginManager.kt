@@ -12,6 +12,9 @@ import tornadofx.*
 import java.io.IOException
 import javax.inject.Singleton
 
+/**
+ * Manages logging in & out.
+ */
 @Singleton
 class LoginManager {
 
@@ -27,6 +30,9 @@ class LoginManager {
         }
     }
 
+    /**
+     * Log in with a [username] and [password].
+     */
     fun login(username: String, password: String) {
         var failedLastTry = false
         ScriptingEngine.setLoginManager {
@@ -53,6 +59,9 @@ class LoginManager {
         }
     }
 
+    /**
+     * Logout the currently logged in user.
+     */
     fun logout() {
         ScriptingEngine.logout()
         isLoggedIn = false

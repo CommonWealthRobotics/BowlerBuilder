@@ -27,6 +27,9 @@ class MainWindowController : Controller() {
 
     private val scriptEditorFactory: ScriptEditorFactory by di()
 
+    /**
+     * Load the authenticated user's gists.
+     */
     fun loadUserGists(): ImmutableList<Gist> {
         return ScriptingEngine.getGithub()
             .myself
@@ -39,17 +42,9 @@ class MainWindowController : Controller() {
             }.toImmutableList()
     }
 
-    fun loadFilesInGist(gist: Gist): ImmutableList<GistFile> {
-        return ScriptingEngine.filesInGit(gist.gitUrl)
-            .map {
-                GistFile(gist, it)
-            }.toImmutableList()
-    }
-
-    fun openGistFile(file: GistFile) {
-        scriptEditorFactory.createAndOpenScriptEditor(file)
-    }
-
+    /**
+     * Load the authenticated user's organizations.
+     */
     fun loadUserOrgs(): ImmutableList<Organization> {
         return ScriptingEngine.getGithub()
             .myOrganizations
@@ -68,6 +63,26 @@ class MainWindowController : Controller() {
             }.toImmutableList()
     }
 
+    /**
+     * Load the files in the [gist].
+     */
+    fun loadFilesInGist(gist: Gist): ImmutableList<GistFile> {
+        return ScriptingEngine.filesInGit(gist.gitUrl)
+            .map {
+                GistFile(gist, it)
+            }.toImmutableList()
+    }
+
+    /**
+     * Open the [file] in an editor.
+     */
+    fun openGistFile(file: GistFile) {
+        scriptEditorFactory.createAndOpenScriptEditor(file)
+    }
+
+    /**
+     * Clear the local git cache.
+     */
     fun deleteLocalCache() {
         try {
             FileUtils.deleteDirectory(
@@ -85,6 +100,9 @@ class MainWindowController : Controller() {
         }
     }
 
+    /**
+     * Start a scheduled task to forcibly close the application.
+     */
     fun beginForceQuit() {
         // Need to make sure the VM exits; sometimes a rouge thread is running
         // Wait 10 seconds before killing the VM

@@ -15,6 +15,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * A [Tab] containing a console to view logging statements and errors.
+ */
 class ConsoleTab : Tab("Terminal") {
 
     init {

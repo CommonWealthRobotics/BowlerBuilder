@@ -13,6 +13,9 @@ import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import tornadofx.*
 
+/**
+ * A form to commit and push changes to a file.
+ */
 class PublishView : Fragment() {
 
     private val controller: PublishController by inject()

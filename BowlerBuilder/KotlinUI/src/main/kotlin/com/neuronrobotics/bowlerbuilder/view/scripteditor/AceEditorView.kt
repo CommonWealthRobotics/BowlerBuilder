@@ -16,6 +16,10 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import tornadofx.*
 
+/**
+ * An editor which operates on a specific file and contains the controls to run the script and
+ * push updates.
+ */
 class AceEditorView(
     private val editor: AceWebEditorView = find()
 ) : Fragment(), ScriptEditor by editor {

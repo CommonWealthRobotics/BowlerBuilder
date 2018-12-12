@@ -20,6 +20,9 @@ import javafx.scene.web.WebView
 import org.controlsfx.glyphfont.Glyph
 import tornadofx.*
 
+/**
+ * A view which has a web browser and script run/clone/edit controls.
+ */
 class WebBrowserView : Fragment() {
 
     private val controller: WebBrowserController by inject()
@@ -153,9 +156,8 @@ class WebBrowserView : Fragment() {
     private fun Button.modifyIntoCloneButton(script: WebBrowserScript): Button {
         text = "Clone"
         graphic = AssetFactory.loadIcon("Make-Copy-Script.png")
-        action {
-            runAsync { controller.cloneScript(script) }
-        }
+        isDisable = false
+        action { runAsync { controller.cloneScript(script) } }
         return this
     }
 
@@ -165,9 +167,8 @@ class WebBrowserView : Fragment() {
     private fun Button.modifyIntoEditButton(script: WebBrowserScript): Button {
         text = "Edit"
         graphic = AssetFactory.loadIcon("Edit-Script.png")
-        action {
-            runAsync { controller.editScript(script) }
-        }
+        isDisable = false
+        action { runAsync { controller.editScript(script) } }
         return this
     }
 

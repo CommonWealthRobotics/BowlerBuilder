@@ -19,6 +19,8 @@ class AceEditorController : Controller() {
 
     /**
      * Runs a script by text using the injected [ScriptRunner].
+     *
+     * @param scriptText The full text of the script.
      */
     fun runScript(scriptText: String) {
         scriptRunner.runScript(

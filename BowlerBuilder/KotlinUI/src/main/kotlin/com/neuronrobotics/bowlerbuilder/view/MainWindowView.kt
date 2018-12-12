@@ -113,21 +113,35 @@ class MainWindowView : View() {
         reloadMenus()
     }
 
+    /**
+     * Adds a tab to the [mainTabPane] and selects it.
+     */
     fun addTab(tab: Tab) {
         mainTabPane.tabs.add(mainTabPane.tabs.size - 1, tab)
         mainTabPane.selectionModel.select(tab)
     }
 
+    /**
+     * Searches for tabs by their [Tab.content] and removes all matches.
+     *
+     * @param cmp The [Tab.content] to search for.
+     */
     fun closeTabByContent(cmp: Node) {
         val matches = mainTabPane.tabs.filter { it.content == cmp }
         mainTabPane.tabs.removeAll(matches)
     }
 
+    /**
+     * Reloads the git-dependent menus.
+     */
     fun reloadMenus() {
         reloadGists()
         reloadOrgs()
     }
 
+    /**
+     * Reloads the gists menu.
+     */
     fun reloadGists() {
         runLater {
             gistsMenu.items.clear()
@@ -161,6 +175,9 @@ class MainWindowView : View() {
         }
     }
 
+    /**
+     * Reloads the organizations menu.
+     */
     fun reloadOrgs() {
         runLater {
             orgsMenu.items.clear()

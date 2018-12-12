@@ -15,6 +15,9 @@ import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import tornadofx.*
 
+/**
+ * A form to create a new gist and push the initial commit.
+ */
 class PublishNewGistView : Fragment() {
 
     private val controller: PublishController by inject()

@@ -26,6 +26,7 @@ class AceScriptEditorFactory : ScriptEditorFactory {
 
             editor
         }.also {
+            // Wait for the engine to finish loading the editor before returning
             it.engineInitializingLatch.await()
         }
     }
@@ -36,6 +37,7 @@ class AceScriptEditorFactory : ScriptEditorFactory {
             find<MainWindowView>().addTab(Tab("Scratchpad", editor.root))
             editor
         }.also {
+            // Wait for the engine to finish loading the editor before returning
             it.engineInitializingLatch.await()
         }
     }

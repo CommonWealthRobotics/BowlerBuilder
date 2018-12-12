@@ -17,6 +17,10 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.geometry.Insets
 import tornadofx.*
 
+/**
+ * An editor which operates entirely in memory and contains the controls to run the script and
+ * create a new gist with the editor contents.
+ */
 class AceScratchpadView(
     private val editor: AceWebEditorView = find()
 ) : Fragment(), ScriptEditor by editor {

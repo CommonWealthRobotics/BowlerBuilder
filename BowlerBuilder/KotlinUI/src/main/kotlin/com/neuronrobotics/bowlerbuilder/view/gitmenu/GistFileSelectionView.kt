@@ -12,6 +12,9 @@ import javafx.collections.ListChangeListener
 import javafx.geometry.Orientation
 import tornadofx.*
 
+/**
+ * A form to select a file in a gist via url.
+ */
 class GistFileSelectionView : Fragment() {
 
     private val controller: GistFileSelectionController by inject()
