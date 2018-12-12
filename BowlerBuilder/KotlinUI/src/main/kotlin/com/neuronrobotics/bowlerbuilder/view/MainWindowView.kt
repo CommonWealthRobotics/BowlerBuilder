@@ -8,6 +8,7 @@ package com.neuronrobotics.bowlerbuilder.view
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
@@ -129,6 +130,19 @@ class MainWindowView : View() {
     fun closeTabByContent(cmp: Node) {
         val matches = mainTabPane.tabs.filter { it.content == cmp }
         mainTabPane.tabs.removeAll(matches)
+    }
+
+    /**
+     * Opens a [CadView] in a splitpane with the current view.
+     */
+    fun openCadViewIntoCurrentView(): CadView {
+        val selection = mainTabPane.selectionModel.selectedItem
+        val cadView = find<CadView>()
+        selection.content = splitpane(
+            orientation = Orientation.HORIZONTAL,
+            nodes = *arrayOf(selection.content, cadView.root)
+        )
+        return cadView
     }
 
     /**

@@ -6,7 +6,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
-import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
 import com.neuronrobotics.kinematicschef.util.immutableListOf
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase
@@ -32,6 +31,7 @@ class ScriptResultHandler {
         }
     }
 
+    // return new Cube(5).toCSG()
     private fun handleIterable(result: Iterable<*>) {
         when (result.first()) {
             is CSG -> handleCsg(result as Iterable<CSG>)
@@ -46,9 +46,9 @@ class ScriptResultHandler {
 
     private fun handleCsg(result: Iterable<CSG>) =
         runLater {
-            find<CadView>().apply {
-                openModal()
+            find<MainWindowView>().openCadViewIntoCurrentView().apply {
                 engine.addAllCSGs(result)
+                println(engine.getCsgMap().keys.joinToString { it.name })
             }
         }
 

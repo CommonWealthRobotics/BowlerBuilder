@@ -490,6 +490,7 @@ class BowlerCadEngine
         runLater {
             try {
                 if (!meshViewGroup.children.contains(mesh)) {
+                    println("added mesh")
                     meshViewGroup.children.add(mesh)
                 }
             } catch (e: IllegalArgumentException) {
@@ -504,7 +505,9 @@ class BowlerCadEngine
 
     override fun addAllCSGs(vararg csgs: CSG) = csgs.forEach { addCSG(it) }
 
-    override fun addAllCSGs(csgs: Iterable<CSG>) = csgs.forEach { addCSG(it) }
+    override fun addAllCSGs(csgs: Iterable<CSG>) = csgs.forEach { addCSG(it) }.also {
+        println(getCsgMap().keys.joinToString { it.name })
+    }
 
     override fun clearMeshes() {
         try {

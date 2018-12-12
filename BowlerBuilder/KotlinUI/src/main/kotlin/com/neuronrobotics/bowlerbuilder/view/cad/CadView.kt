@@ -18,7 +18,21 @@ class CadView : Fragment() {
     val engine: BowlerCadEngine by di()
 
     override val root = borderpane {
-        center = engine
+        center = anchorpane(
+            nodes = *arrayOf(engine)
+        ) {
+            val subScene = engine.getSubScene()
+            subScene.isFocusTraversable = false
+            subScene.widthProperty().bind(this@borderpane.widthProperty())
+            subScene.heightProperty().bind(this@borderpane.widthProperty())
+
+            engine.anchorpaneConstraints {
+                topAnchor = 0.0
+                rightAnchor = 0.0
+                leftAnchor = 0.0
+                bottomAnchor = 0.0
+            }
+        }
 
         bottom = hbox {
         }
