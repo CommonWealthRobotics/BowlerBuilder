@@ -15,7 +15,7 @@ import tornadofx.*
 class CadView : Fragment() {
 
     private val controller: CadController by inject()
-    private val engine: BowlerCadEngine by di()
+    val engine: BowlerCadEngine by di()
 
     override val root = borderpane {
         center = engine

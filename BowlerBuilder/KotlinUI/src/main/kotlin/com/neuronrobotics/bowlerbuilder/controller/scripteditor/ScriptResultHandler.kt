@@ -6,7 +6,9 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
+import com.neuronrobotics.kinematicschef.util.immutableListOf
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
@@ -21,25 +23,37 @@ class ScriptResultHandler {
      * Handles the [result] from running a script.
      */
     fun handleResult(result: Any?) {
-        if (result != null) {
-            when (result) {
-                is MobileBaseLoader -> handleMobileBase(result.base)
-                is MobileBase -> handleMobileBase(result)
-                is CSG -> handleCSG(result)
-                is Tab -> handleTab(result)
-            }
+        when (result) {
+            is MobileBaseLoader -> handleMobileBase(result.base)
+            is MobileBase -> handleMobileBase(result)
+            is CSG -> handleCsg(result)
+            is Iterable<*> -> handleIterable(result)
+            is Tab -> handleTab(result)
+        }
+    }
+
+    private fun handleIterable(result: Iterable<*>) {
+        when (result.first()) {
+            is CSG -> handleCsg(result as Iterable<CSG>)
         }
     }
 
     private fun handleMobileBase(base: MobileBase) {
-        TODO("not implemented")
+        TODO()
     }
 
-    private fun handleCSG(result: CSG) {
-        TODO("not implemented")
-    }
+    private fun handleCsg(result: CSG) = handleCsg(immutableListOf(result))
 
-    private fun handleTab(result: Tab) {
-        find<MainWindowView>().addTab(result)
-    }
+    private fun handleCsg(result: Iterable<CSG>) =
+        runLater {
+            find<CadView>().apply {
+                openModal()
+                engine.addAllCSGs(result)
+            }
+        }
+
+    private fun handleTab(result: Tab) =
+        runLater {
+            find<MainWindowView>().addTab(result)
+        }
 }
