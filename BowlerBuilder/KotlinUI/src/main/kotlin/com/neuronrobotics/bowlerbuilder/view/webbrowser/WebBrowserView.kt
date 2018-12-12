@@ -24,8 +24,9 @@ class WebBrowserView : Fragment() {
 
     private val controller: WebBrowserController by inject()
 
-    private val currentUrlProperty =
-        SimpleStringProperty(params[PAGE_TO_LOAD] as? String ?: config.string(HOME_PAGE))
+    private val currentUrlProperty = SimpleStringProperty(
+        params[PAGE_TO_LOAD] as? String ?: config.string(HOME_PAGE, DEFAULT_HOME_PAGE)
+    )
     private var currentUrl by currentUrlProperty
 
     private val currentScriptProperty =
@@ -177,5 +178,7 @@ class WebBrowserView : Fragment() {
     companion object {
         const val HOME_PAGE = "webview_home_page"
         const val PAGE_TO_LOAD = "url_to_load"
+        const val DEFAULT_HOME_PAGE =
+            "http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/"
     }
 }
