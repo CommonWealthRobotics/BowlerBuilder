@@ -272,7 +272,7 @@ configure(kotlinProjects) {
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xjvm-default=enable", "-Xprogressive", "-XXLanguage:+InlineClasses")
+            freeCompilerArgs = listOf("-Xjvm-default=enable", "-progressive")
         }
     }
 

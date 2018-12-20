@@ -23,4 +23,5 @@ dependencies {
     implementation(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     implementation(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
     implementation(group = "org.fxmisc.richtext", name = "richtextfx", version = "0.9.0")
+    implementation(group = "com.beust", name = "klaxon", version = "4.+")
 }
