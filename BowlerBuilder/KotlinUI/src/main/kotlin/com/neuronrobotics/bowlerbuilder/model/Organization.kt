@@ -5,8 +5,10 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
+import arrow.optics.optics
 import com.google.common.collect.ImmutableList
 
+@optics
 data class Organization(
     val gitUrl: String,
     val name: String,

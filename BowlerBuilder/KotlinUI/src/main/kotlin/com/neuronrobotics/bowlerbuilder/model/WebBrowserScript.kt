@@ -5,6 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
+import arrow.optics.optics
+
+@optics
 data class WebBrowserScript(
     val pageUrl: String,
     val gistFile: GistFile

@@ -5,6 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
+import arrow.optics.optics
+
+@optics
 data class Repository(
     val gitUrl: String,
     val name: String
