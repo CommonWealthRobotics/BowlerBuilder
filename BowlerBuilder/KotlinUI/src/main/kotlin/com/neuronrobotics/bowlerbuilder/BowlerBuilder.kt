@@ -10,10 +10,10 @@ import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import tornadofx.*
 
 fun main(args: Array<String>) {
-    launch<TornadoFxTest>(args)
+    launch<BowlerBuilder>(args)
 }
 
-class TornadoFxTest : App(MainWindowView::class) {
+class BowlerBuilder : App(MainWindowView::class) {
 
     init {
         runLater {
@@ -29,6 +29,6 @@ class TornadoFxTest : App(MainWindowView::class) {
     }
 
     companion object {
-        private val LOGGER = LoggerUtilities.getLogger(TornadoFxTest::class.java.simpleName)
+        private val LOGGER = LoggerUtilities.getLogger(BowlerBuilder::class.java.simpleName)
     }
 }
