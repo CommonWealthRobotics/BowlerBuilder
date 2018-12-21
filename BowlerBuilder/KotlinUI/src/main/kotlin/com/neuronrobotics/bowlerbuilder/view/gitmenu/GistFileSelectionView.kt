@@ -7,9 +7,11 @@ package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.GistFileSelectionController
 import com.neuronrobotics.bowlerbuilder.model.GistFile
+import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
 import javafx.geometry.Orientation
+import org.jlleitschuh.guice.key
 import tornadofx.*
 
 /**
@@ -17,7 +19,7 @@ import tornadofx.*
  */
 class GistFileSelectionView : Fragment() {
 
-    private val controller: GistFileSelectionController by inject()
+    private val controller = MainWindowView.injector.getInstance(key<GistFileSelectionController>())
     private val gistUrlProperty = SimpleStringProperty("")
     private var gistUrl by gistUrlProperty
     private val gistFileSelectionProperty = SimpleStringProperty("")
@@ -63,5 +65,9 @@ class GistFileSelectionView : Fragment() {
         gistUrlProperty.addListener { _, _, new ->
             runAsync { controller.loadFilesInGist(new) }
         }
+    }
+
+    companion object {
+        fun create() = GistFileSelectionView()
     }
 }

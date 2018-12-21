@@ -8,7 +8,7 @@ package com.neuronrobotics.bowlerbuilder.controller
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.Organization
@@ -22,10 +22,12 @@ import java.io.IOException
 import java.util.Timer
 import java.util.TimerTask
 import java.util.logging.Level
+import javax.inject.Inject
 
-class MainWindowController : Controller() {
-
-    private val scriptEditorFactory: ScriptEditorFactory by di()
+class MainWindowController
+@Inject constructor(
+    private val cadScriptEditorFactory: CadScriptEditorFactory
+) : Controller() {
 
     /**
      * Load the authenticated user's gists.
@@ -77,7 +79,7 @@ class MainWindowController : Controller() {
      * Open the [file] in an editor.
      */
     fun openGistFile(file: GistFile) {
-        scriptEditorFactory.createAndOpenScriptEditor(file)
+        cadScriptEditorFactory.createAndOpenScriptEditor(file)
     }
 
     /**

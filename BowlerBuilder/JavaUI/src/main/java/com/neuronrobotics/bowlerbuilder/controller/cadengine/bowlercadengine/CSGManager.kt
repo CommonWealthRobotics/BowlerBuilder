@@ -12,7 +12,8 @@ import javafx.scene.shape.MeshView
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-class CSGManager @Inject constructor(val csgParser: CsgParser) {
+class CSGManager {
+
     private val csgToMeshView: MutableMap<CSG, MeshView>
     private val csgNameToMeshView: MutableMap<String, MeshView>
     private val csgNameToCSG: MutableMap<String, CSG>

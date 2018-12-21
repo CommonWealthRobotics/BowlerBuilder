@@ -6,32 +6,39 @@
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
-import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
+import com.neuronrobotics.bowlerbuilder.view.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.geometry.Insets
+import org.greenrobot.eventbus.EventBus
+import org.jlleitschuh.guice.key
 import tornadofx.*
+import javax.inject.Inject
 
 /**
  * An editor which operates entirely in memory and contains the controls to run the script and
  * create a new gist with the editor contents.
  */
-class AceScratchpadView(
-    private val editor: AceWebEditorView = find()
-) : Fragment(), ScriptEditor by editor {
+class AceScratchpadView
+@Inject constructor(
+    private val editor: AceWebEditorView,
+    private val controller: AceEditorController,
+    private val cadScriptEditorFactory: CadScriptEditorFactory
+) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
 
-    private val controller: AceEditorController by inject()
-    private val scriptEditorFactory: ScriptEditorFactory by di()
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
 
     @SuppressWarnings("LabeledExpression")
     override val root = borderpane {
+        id = "AceScratchpadView"
         center = editor.root
 
         bottom = hbox {
@@ -48,23 +55,29 @@ class AceScratchpadView(
 
             button("Publish", AssetFactory.loadIcon("Publish.png")) {
                 action {
-                    val view = find<PublishNewGistView>(
-                        mapOf("file_content" to getFullText())
-                    ).apply {
+                    val view = PublishNewGistView.create(getFullText()).apply {
                         openModal(block = true)
                     }
 
                     if (view.publishSuccessful) {
                         runAsync {
-                            scriptEditorFactory.createAndOpenScriptEditor(
+                            cadScriptEditorFactory.createAndOpenScriptEditor(
                                 GistFile(view.gitUrl, view.gistFilename)
                             )
                         }
 
-                        find<MainWindowView>().closeTabByContent(this@borderpane)
+                        EventBus.getDefault().post(CloseTabByContentEvent(this@borderpane))
                     }
                 }
             }
         }
+    }
+
+    companion object {
+        fun create() = AceScratchpadView(
+            AceWebEditorView(),
+            MainWindowView.injector.getInstance(key<AceEditorController>()),
+            MainWindowView.injector.getInstance(key<CadScriptEditorFactory>())
+        )
     }
 }

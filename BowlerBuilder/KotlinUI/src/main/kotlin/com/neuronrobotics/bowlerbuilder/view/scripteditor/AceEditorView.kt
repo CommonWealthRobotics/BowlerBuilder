@@ -6,7 +6,10 @@
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
+import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
+import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -14,22 +17,28 @@ import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.geometry.Insets
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import org.jlleitschuh.guice.key
 import tornadofx.*
+import javax.inject.Inject
 
 /**
  * An editor which operates on a specific file and contains the controls to run the script and
  * push updates.
  */
-class AceEditorView(
-    private val editor: AceWebEditorView = find()
-) : Fragment(), ScriptEditor by editor {
+class AceEditorView
+@Inject constructor(
+    private val editor: AceWebEditorView,
+    private val controller: AceEditorController,
+    private val gitUrl: String,
+    private val filename: String
+) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
 
-    private val controller: AceEditorController by inject()
     private var urlTextField: TextField by singleAssign()
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
 
     override val root = borderpane {
+        id = "AceEditorView"
         center = editor.root
 
         bottom = hbox {
@@ -46,13 +55,7 @@ class AceEditorView(
 
             button("Publish", AssetFactory.loadIcon("Publish.png")) {
                 action {
-                    find<PublishView>(
-                        mapOf(
-                            GIT_URL to params[GIT_URL],
-                            FILENAME to params[FILENAME],
-                            FILE_CONTENT to getFullText()
-                        )
-                    ).openModal()
+                    PublishView.create(gitUrl, filename, getFullText()).openModal()
                 }
             }
 
@@ -66,13 +69,10 @@ class AceEditorView(
 
     init {
         runLater {
-            urlTextField.text = params[GIT_URL] as String
+            urlTextField.text = gitUrl
 
             runAsync {
-                val text = controller.getTextForGitResource(
-                    params[GIT_URL] as String,
-                    params[FILENAME] as String
-                )
+                val text = controller.getTextForGitResource(gitUrl, filename)
 
                 engineInitializingLatch.await()
 
@@ -85,8 +85,18 @@ class AceEditorView(
     }
 
     companion object {
-        const val GIT_URL = "git_url"
-        const val FILENAME = "filename"
-        const val FILE_CONTENT = "file_content"
+        fun create(url: String, filename: String) = AceEditorView(
+            AceWebEditorView(),
+            MainWindowView.injector.getInstance(key<AceEditorController>()),
+            url,
+            filename
+        )
+
+        fun create(gistFile: GistFile) = AceEditorView(
+            AceWebEditorView(),
+            MainWindowView.injector.getInstance(key<AceEditorController>()),
+            gistFile.gist.gitUrl,
+            gistFile.filename
+        )
     }
 }

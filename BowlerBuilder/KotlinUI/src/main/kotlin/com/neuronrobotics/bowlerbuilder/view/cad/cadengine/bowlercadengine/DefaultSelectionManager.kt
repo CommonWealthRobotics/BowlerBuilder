@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
+import com.neuronrobotics.bowlerbuilder.cad.CsgParser
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR
@@ -41,6 +42,7 @@ class DefaultSelectionManager
     private val moveCamera: BiConsumer<TransformNR, Double>
 ) : SelectionManager {
 
+    private val csgParser = CsgParser()
     private var mousePosX: Double = 0.0
     private var mousePosY: Double = 0.0
     private var mouseOldX: Double = 0.0
@@ -58,9 +60,7 @@ class DefaultSelectionManager
      */
     override fun setSelectedCSG(script: File, lineNumber: Int) {
         runLater {
-            val csgs = csgManager
-                .csgParser
-                .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
+            val csgs = csgParser.parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
 
             if (csgs.size == 1) {
                 selectCSG(csgs.iterator().next())

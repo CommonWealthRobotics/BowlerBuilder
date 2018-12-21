@@ -6,9 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.google.common.base.Throwables
-import com.google.inject.Inject
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.CadEngine
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsSliderWidget
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
@@ -63,17 +61,12 @@ import java.util.logging.Level
 
 /**
  * CAD Engine from BowlerStudio.
- *
- * @param csgManager [CSGManager]
- * @param selectionManagerFactory [SelectionManager]
  */
 @SuppressWarnings("TooGenericExceptionCaught")
-class BowlerCadEngine
-@Inject constructor(
-    private val csgManager: CSGManager,
-    selectionManagerFactory: SelectionManagerFactory
-) : Pane(), CadEngine {
+class BowlerCadEngine : Pane() {
 
+    private val csgManager = CSGManager()
+    private val selectionManagerFactory = SelectionManagerFactory()
     private val scene: SubScene
     private val world = XForm()
     private val camera = PerspectiveCamera(true)
@@ -273,13 +266,13 @@ class BowlerCadEngine
         flyingCamera!!.DriveArc(newPose, seconds)
 
     /** Home the camera to its default view.  */
-    override fun homeCamera() {
+    fun homeCamera() {
         flyingCamera!!.setGlobalToFiducialTransform(defaultCameraView)
         virtualCam!!.zoomDepth = VirtualCameraDevice.getDefaultZoomDepth().toDouble()
         flyingCamera!!.updatePositions()
     }
 
-    override fun getCsgMap() = csgManager.getCsgToMeshView()
+    fun getCsgMap() = csgManager.getCsgToMeshView()
 
     /**
      * Select all CSGs from the line in the script.
@@ -287,7 +280,7 @@ class BowlerCadEngine
      * @param script script containing CSG source
      * @param lineNumber line number in script
      */
-    override fun setSelectedCSG(script: File, lineNumber: Int) =
+    fun setSelectedCSG(script: File, lineNumber: Int) =
         selectionManager.setSelectedCSG(script, lineNumber)
 
     /**
@@ -295,21 +288,21 @@ class BowlerCadEngine
      *
      * @param selection CSG to select
      */
-    override fun selectCSG(selection: CSG) = selectionManager.selectCSG(selection)
+    fun selectCSG(selection: CSG) = selectionManager.selectCSG(selection)
 
     /**
      * Select all CSGs in the collection.
      *
      * @param selection CSGs to select
      */
-    override fun selectCSGs(selection: Iterable<CSG>) = selectionManager.selectCSGs(selection)
+    fun selectCSGs(selection: Iterable<CSG>) = selectionManager.selectCSGs(selection)
 
     /**
      * Add a CSG to the scene graph.
      *
      * @param csg CSG to add
      */
-    override fun addCSG(csg: CSG) {
+    fun addCSG(csg: CSG) {
         if (csgManager.has(csg)) {
             return
         }
@@ -490,7 +483,6 @@ class BowlerCadEngine
         runLater {
             try {
                 if (!meshViewGroup.children.contains(mesh)) {
-                    println("added mesh")
                     meshViewGroup.children.add(mesh)
                 }
             } catch (e: IllegalArgumentException) {
@@ -503,29 +495,29 @@ class BowlerCadEngine
         LOGGER.log(Level.FINE, "Added CSG with name: " + csg.name)
     }
 
-    override fun addAllCSGs(vararg csgs: CSG) = csgs.forEach { addCSG(it) }
+    fun addAllCSGs(vararg csgs: CSG) = csgs.forEach { addCSG(it) }
 
-    override fun addAllCSGs(csgs: Iterable<CSG>) = csgs.forEach { addCSG(it) }.also {
+    fun addAllCSGs(csgs: Iterable<CSG>) = csgs.forEach { addCSG(it) }.also {
         println(getCsgMap().keys.joinToString { it.name })
     }
 
-    override fun clearMeshes() {
+    fun clearCSGs() {
         try {
             FxUtil.runFXAndWait { meshViewGroup.children.clear() }
         } catch (e: InterruptedException) {
             LOGGER.fine(Throwables.getStackTraceAsString(e))
         }
 
-        csgManager.getCsgToMeshView().clear()
+        csgManager.clearCSGs()
     }
 
-    override fun axisShowingProperty() = axisShowing
+    fun axisShowingProperty() = axisShowing
 
-    override fun handShowingProperty() = handShowing
+    fun handShowingProperty() = handShowing
 
-    override fun getView() = this
+    fun getView() = this
 
-    override fun getSubScene() = scene
+    fun getSubScene() = scene
 
     private fun fireRegenerate(key: String, currentObjectsToCheck: Set<CSG>) {
         val thread = LoggerUtilities.newLoggingThread(LOGGER) {

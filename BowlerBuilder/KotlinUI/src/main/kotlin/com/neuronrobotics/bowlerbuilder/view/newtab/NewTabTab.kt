@@ -14,6 +14,6 @@ class NewTabTab : Tab("New...") {
 
     init {
         graphic = Glyph("FontAwesome", "PLUS")
-        content = FxUtil.returnFX { find<NewTabView>() }.root
+        content = FxUtil.returnFX { NewTabView.create() }.root
     }
 }

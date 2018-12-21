@@ -11,11 +11,13 @@ import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerGroovy
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import tornadofx.*
+import javax.inject.Inject
 
-class AceEditorController : Controller() {
-
-    private val scriptRunner: ScriptRunner by di()
-    private val scriptResultHandler: ScriptResultHandler by di()
+class AceEditorController
+@Inject constructor(
+    private val scriptRunner: ScriptRunner,
+    private val scriptResultHandler: ScriptResultHandler
+) : Controller() {
 
     /**
      * Runs a script by text using the injected [ScriptRunner].

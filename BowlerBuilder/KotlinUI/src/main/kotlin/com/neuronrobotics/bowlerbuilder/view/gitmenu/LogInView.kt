@@ -14,7 +14,7 @@ import tornadofx.*
  */
 class LogInView : Fragment() {
 
-    private val loginManager: LoginManager by di()
+    private val loginManager = LoginManager()
     private val usernameProperty = SimpleStringProperty("")
     private val username by usernameProperty
     private val passwordProperty = SimpleStringProperty("")
@@ -54,5 +54,9 @@ class LogInView : Fragment() {
                 close()
             }
         }
+    }
+
+    companion object {
+        fun create() = LogInView()
     }
 }

@@ -16,7 +16,11 @@ import tornadofx.*
 /**
  * A form to commit and push changes to a file.
  */
-class PublishView : Fragment() {
+class PublishView(
+    private val gitUrl: String,
+    private val filename: String,
+    private val scriptContent: String
+) : Fragment() {
 
     private val controller: PublishController by inject()
     private val commitMessageProperty = SimpleStringProperty("")
@@ -36,12 +40,7 @@ class PublishView : Fragment() {
             button("Push") {
                 action {
                     runAsync {
-                        controller.publish(
-                            gitUrl = params["git_url"] as String,
-                            filename = params["filename"] as String,
-                            fileContent = params["file_content"] as String,
-                            commitMessage = commitMessage
-                        )
+                        controller.publish(gitUrl, filename, scriptContent, commitMessage)
                     } success {
                         close()
                     } fail {
@@ -62,5 +61,9 @@ class PublishView : Fragment() {
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(PublishView::class.java.simpleName)
+
+        fun create(gitUrl: String, filename: String, fullText: String) = PublishView(
+            gitUrl, filename, fullText
+        )
     }
 }

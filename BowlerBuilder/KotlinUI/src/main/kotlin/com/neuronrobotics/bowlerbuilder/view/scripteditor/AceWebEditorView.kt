@@ -6,6 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceWebEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import javafx.concurrent.Worker
 import tornadofx.*
@@ -16,10 +17,11 @@ import tornadofx.*
  */
 class AceWebEditorView : Fragment(), ScriptEditor {
 
-    private val controller: AceWebEditorController by inject()
+    private val controller = AceWebEditorController()
     val engineInitializingLatch = Latch(1)
 
     override val root = webview {
+        id = "AceWebEditorView"
         engine.load(resources["/com/neuronrobotics/bowlerbuilder/web/ace.html"])
         engine.loadWorker.stateProperty().addListener { _, _, new ->
             if (new == Worker.State.SUCCEEDED) {

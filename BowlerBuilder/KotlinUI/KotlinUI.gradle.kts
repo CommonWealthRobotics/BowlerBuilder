@@ -17,6 +17,7 @@ dependencies {
     implementation(group = "org.controlsfx", name = "controlsfx", version = "8.40.14")
     implementation(group = "com.google.inject", name = "guice", version = "4.1.0")
     implementation(group = "com.google.inject.extensions", name = "guice-assistedinject", version = "4.1.0")
+    implementation(group = "org.greenrobot", name = "eventbus", version = "3.1.1")
     implementation(group = "org.apache.commons", name = "commons-text", version = "1.2")
     implementation(group = "commons-io", name = "commons-io", version = "2.6")
     implementation(group = "commons-validator", name = "commons-validator", version = "1.6")

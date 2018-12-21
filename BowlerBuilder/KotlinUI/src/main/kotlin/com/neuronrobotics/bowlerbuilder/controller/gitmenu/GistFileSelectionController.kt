@@ -5,16 +5,19 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
-import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import tornadofx.*
+import javax.inject.Inject
 
-class GistFileSelectionController : Controller() {
+class GistFileSelectionController
+@Inject constructor(
+    private val cadScriptEditorFactory: CadScriptEditorFactory
+) : Controller() {
 
-    private val scriptEditorFactory: ScriptEditorFactory by di()
     val filesInGist: ObservableList<String> = FXCollections.observableArrayList<String>()
 
     /**
@@ -33,9 +36,9 @@ class GistFileSelectionController : Controller() {
     }
 
     /**
-     * Opens a [gistFile] with the injected [ScriptEditorFactory].
+     * Opens a [gistFile] with the injected [CadScriptEditorFactory].
      */
     fun openGistFile(gistFile: GistFile) {
-        scriptEditorFactory.createAndOpenScriptEditor(gistFile)
+        cadScriptEditorFactory.createAndOpenScriptEditor(gistFile)
     }
 }

@@ -5,9 +5,12 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.newtab
 
+import com.neuronrobotics.bowlerbuilder.view.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import javafx.geometry.Insets
+import org.greenrobot.eventbus.EventBus
+import org.jlleitschuh.guice.key
 import tornadofx.*
 
 /**
@@ -23,9 +26,13 @@ class NewTabView : View() {
         ).forEach { (tabName, tabGenerator) ->
             button(tabName) {
                 action {
-                    find<MainWindowView>().addTab(tabGenerator())
+                    EventBus.getDefault().post(AddTabEvent(tabGenerator()))
                 }
             }
         }
+    }
+
+    companion object {
+        fun create() = NewTabView()
     }
 }

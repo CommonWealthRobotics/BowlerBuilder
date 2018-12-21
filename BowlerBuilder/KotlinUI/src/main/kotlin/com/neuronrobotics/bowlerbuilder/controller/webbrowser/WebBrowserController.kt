@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
-import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
@@ -15,13 +15,16 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
 import tornadofx.*
+import javax.inject.Inject
 
-class WebBrowserController : Controller() {
+class WebBrowserController
+@Inject constructor(
+    private val scriptRunner: ScriptRunner,
+    private val cadScriptEditorFactory: CadScriptEditorFactory
+) : Controller() {
 
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
         FXCollections.observableArrayList<WebBrowserScript>()
-    private val scriptRunner: ScriptRunner by di()
-    private val scriptEditorFactory: ScriptEditorFactory by di()
 
     /**
      * Loads the scripts on the current page into [itemsOnPageProperty].
@@ -134,10 +137,10 @@ class WebBrowserController : Controller() {
             return
         }
 
-        scriptEditorFactory
+        cadScriptEditorFactory
             .createAndOpenScriptEditor(currentScript.gistFile)
             .apply {
-                runLater { gotoLine(0) }
+                runLater { editor.gotoLine(0) }
             }
     }
 

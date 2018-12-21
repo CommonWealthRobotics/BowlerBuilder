@@ -6,17 +6,16 @@
 package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
 import javafx.scene.control.Tab
-import tornadofx.*
+import javax.inject.Inject
 
 class WebBrowserTab(
-    url: String? = null
+    url: String?
 ) : Tab("Web") {
 
+    @Inject
+    constructor() : this(null)
+
     init {
-        content = find<WebBrowserView>(
-            params = mapOf(
-                WebBrowserView.PAGE_TO_LOAD to url
-            )
-        ).root
+        content = WebBrowserView.create(url).root
     }
 }

@@ -6,16 +6,11 @@
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.google.common.collect.ImmutableSet
-import com.neuronrobotics.bowlerbuilder.cad.CsgParser
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.shape.MeshView
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 
-class CSGManager
-@Inject constructor(
-    val csgParser: CsgParser
-) {
+class CSGManager {
     private val csgToMeshView: MutableMap<CSG, MeshView>
     private val csgNameToMeshView: MutableMap<String, MeshView>
     private val csgNameToCSG: MutableMap<String, CSG>
@@ -112,4 +107,13 @@ class CSGManager
      * @return true if present
      */
     fun has(csgName: String) = csgNameToMeshView.containsKey(csgName)
+
+    /**
+     * Removes all the stored CSGs.
+     */
+    fun clearCSGs() {
+        csgToMeshView.clear()
+        csgNameToMeshView.clear()
+        csgNameToCSG.clear()
+    }
 }

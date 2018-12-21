@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
 import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.beans.property.SimpleObjectProperty
@@ -18,17 +19,19 @@ import javafx.scene.control.Button
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
 import org.controlsfx.glyphfont.Glyph
+import org.jlleitschuh.guice.key
 import tornadofx.*
 
 /**
  * A view which has a web browser and script run/clone/edit controls.
  */
-class WebBrowserView : Fragment() {
-
-    private val controller: WebBrowserController by inject()
+class WebBrowserView(
+    private val controller: WebBrowserController,
+    urlToLoad: String?
+) : Fragment() {
 
     private val currentUrlProperty = SimpleStringProperty(
-        params[PAGE_TO_LOAD] as? String ?: config.string(HOME_PAGE, DEFAULT_HOME_PAGE)
+        urlToLoad ?: config.string(HOME_PAGE, DEFAULT_HOME_PAGE)
     )
     private var currentUrl by currentUrlProperty
 
@@ -178,8 +181,12 @@ class WebBrowserView : Fragment() {
 
     companion object {
         const val HOME_PAGE = "webview_home_page"
-        const val PAGE_TO_LOAD = "url_to_load"
         const val DEFAULT_HOME_PAGE =
             "http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/"
+
+        fun create(urlToLoad: String? = null) = WebBrowserView(
+            MainWindowView.injector.getInstance(key<WebBrowserController>()),
+            urlToLoad
+        )
     }
 }

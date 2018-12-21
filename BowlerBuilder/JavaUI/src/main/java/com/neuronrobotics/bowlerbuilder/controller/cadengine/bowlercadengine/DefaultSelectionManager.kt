@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.cadengine.bowlercadengine
 
+import com.neuronrobotics.bowlerbuilder.cad.CsgParser
 import com.neuronrobotics.bowlerbuilder.view.cadengine.camera.VirtualCameraDevice
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR
@@ -31,7 +32,6 @@ import java.util.Optional
 import java.util.function.BiConsumer
 import kotlinx.coroutines.javafx.JavaFx
 
-class DefaultSelectionManager
 /**
  * Manages [CSG] selections (from the GUI or programmatically).
  *
@@ -39,13 +39,15 @@ class DefaultSelectionManager
  * @param focusGroup focus group
  * @param virtualCam virtual camera
  * @param moveCamera [BiConsumer] to move the camera around for a new selection
- */(
-     private val csgManager: CSGManager,
-     private val focusGroup: Group,
-     private val virtualCam: VirtualCameraDevice,
-     private val moveCamera: BiConsumer<TransformNR, Double>
- ) : SelectionManager {
+ */
+class DefaultSelectionManager(
+    private val csgManager: CSGManager,
+    private val focusGroup: Group,
+    private val virtualCam: VirtualCameraDevice,
+    private val moveCamera: BiConsumer<TransformNR, Double>
+) : SelectionManager {
 
+    private val csgParser = CsgParser()
     private var mousePosX: Double = 0.0
     private var mousePosY: Double = 0.0
     private var mouseOldX: Double = 0.0
@@ -63,9 +65,7 @@ class DefaultSelectionManager
      */
     override fun setSelectedCSG(script: File, lineNumber: Int) {
         GlobalScope.launch(context = Dispatchers.JavaFx) {
-            val csgs = csgManager
-                .csgParser
-                .parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
+            val csgs = csgParser.parseCsgFromSource(script.name, lineNumber, csgManager.getCSGs())
 
             if (csgs.size == 1) {
                 selectCSG(csgs.iterator().next())
@@ -302,17 +302,17 @@ class DefaultSelectionManager
                 Duration.ofMillis(16)
             ) { focusInterpolate(start, target, depth + 1, targetDepth, interpolator) }
         } else {
-            GlobalScope.launch(context = Dispatchers.JavaFx) { focusGroup.transforms.remove(interpolator) }
+            GlobalScope.launch(context = Dispatchers.JavaFx) {
+                focusGroup.transforms.remove(
+                    interpolator
+                )
+            }
             previousTarget = target.copy()
             previousTarget.rotation = RotationNR()
         }
     }
 
-    private fun removeAllFocusTransforms() {
-        val allTrans = focusGroup.transforms
-        val toRemove = allTrans.toTypedArray()
-        Arrays.stream(toRemove).forEach({ allTrans.remove(it) })
-    }
+    private fun removeAllFocusTransforms() = focusGroup.transforms.clear()
 
     private fun checkManipulator(csg: CSG): Boolean {
         return (Math.abs(csg.manipulator.tx) > 0.1 ||

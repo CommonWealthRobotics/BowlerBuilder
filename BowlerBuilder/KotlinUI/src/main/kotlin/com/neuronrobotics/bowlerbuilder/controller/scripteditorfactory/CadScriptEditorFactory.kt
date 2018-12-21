@@ -7,8 +7,9 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory
 
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
+import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditor
 
-interface ScriptEditorFactory {
+interface CadScriptEditorFactory {
 
     /**
      * Creates a new [ScriptEditor] and opens it.
@@ -17,12 +18,12 @@ interface ScriptEditorFactory {
      *
      * @return The [ScriptEditor] which was created.
      */
-    fun createAndOpenScriptEditor(gistFile: GistFile): ScriptEditor
+    fun createAndOpenScriptEditor(gistFile: GistFile): CadScriptEditor
 
     /**
      * Creates a new scratchpad [ScriptEditor] and opens it.
      *
      * @return The [ScriptEditor] which was created.
      */
-    fun createAndOpenScratchpad(): ScriptEditor
+    fun createAndOpenScratchpad(): CadScriptEditor
 }

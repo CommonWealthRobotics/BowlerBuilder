@@ -18,9 +18,11 @@ import tornadofx.*
 /**
  * A form to create a new gist and push the initial commit.
  */
-class PublishNewGistView : Fragment() {
+class PublishNewGistView(
+    private val scriptContent: String
+) : Fragment() {
 
-    private val controller: PublishController by inject()
+    private val controller = PublishController()
 
     private val commitMessageProperty = SimpleStringProperty("")
     private var commitMessage by commitMessageProperty
@@ -73,7 +75,7 @@ class PublishNewGistView : Fragment() {
                                 controller.publish(
                                     gitUrl = it.gitPushUrl,
                                     filename = gistFilename,
-                                    fileContent = params["file_content"] as String,
+                                    fileContent = scriptContent,
                                     commitMessage = commitMessage
                                 )
                             },
@@ -103,5 +105,9 @@ class PublishNewGistView : Fragment() {
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(PublishNewGistView::class.java.simpleName)
+
+        fun create(scriptContent: String) = PublishNewGistView(
+            scriptContent
+        )
     }
 }

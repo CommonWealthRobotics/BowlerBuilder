@@ -12,12 +12,14 @@ import tornadofx.*
 /**
  * A view containing the [BowlerCadEngine] and basic engine controls.
  */
-class CadView : Fragment() {
+class CadView(
+    val engine: BowlerCadEngine
+) : Fragment() {
 
-    private val controller: CadController by inject()
-    val engine: BowlerCadEngine by di()
+    private val controller = CadController()
 
     override val root = borderpane {
+        id = "CadView"
         center = anchorpane(
             nodes = *arrayOf(engine)
         ) {

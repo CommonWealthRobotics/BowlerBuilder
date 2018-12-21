@@ -5,15 +5,23 @@
  */
 package com.neuronrobotics.bowlerbuilder.view
 
+import com.google.common.collect.ImmutableSet
+import com.google.inject.Guice
+import com.google.inject.Injector
+import com.google.inject.Scopes
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
-import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.ScriptEditorFactory
-import com.neuronrobotics.bowlerbuilder.view.cad.CadView
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
+import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScriptRunner
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
+import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
+import eu.mihosoft.vrl.v3d.CSG
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.control.ButtonType
@@ -21,14 +29,36 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.jlleitschuh.guice.key
+import org.jlleitschuh.guice.module
 import tornadofx.*
+import javax.inject.Singleton
 import kotlin.concurrent.thread
 
+data class AddTabEvent(
+    val tab: Tab
+)
+
+data class CloseTabByContentEvent(
+    val tabContent: Node
+)
+
+data class AddCadObjectsToCurrentTabEvent(
+    val cad: ImmutableSet<CSG>
+)
+
+data class SetCadObjectsToCurrentTabEvent(
+    val cad: ImmutableSet<CSG>
+)
+
+@Singleton
 class MainWindowView : View() {
 
-    private val controller: MainWindowController by inject()
-    private val loginManager: LoginManager by di()
-    private val scriptEditorFactory: ScriptEditorFactory by di()
+    private val controller = injector.getInstance(key<MainWindowController>())
+    private val loginManager = LoginManager()
+    private val scriptEditorFactory = injector.getInstance(key<CadScriptEditorFactory>())
     private var mainTabPane: TabPane by singleAssign()
     private var logInMenu: MenuItem by singleAssign()
     private var logOutMenu: MenuItem by singleAssign()
@@ -49,7 +79,7 @@ class MainWindowView : View() {
 
             menu("Git") {
                 logInMenu = item("Log In") {
-                    action { find<LogInView>().openModal() }
+                    action { LogInView.create().openModal() }
                     enableWhen(!loginManager.isLoggedInProperty)
                 }
 
@@ -89,14 +119,13 @@ class MainWindowView : View() {
 
                 item("Load File from Git") {
                     action {
-                        find<GistFileSelectionView>().openModal()
+                        GistFileSelectionView.create().openModal()
                     }
                 }
             }
         }
 
-        center = splitpane {
-            orientation = Orientation.VERTICAL
+        center = splitpane(orientation = Orientation.VERTICAL) {
             setDividerPositions(0.9)
 
             mainTabPane = tabpane {
@@ -111,15 +140,33 @@ class MainWindowView : View() {
     }
 
     init {
+        EventBus.getDefault().register(this)
         reloadMenus()
     }
+
+    @Subscribe
+    fun onAddTabEvent(event: AddTabEvent) = addTab(event.tab)
+
+    @Subscribe
+    fun onCloseTabByContentEvent(event: CloseTabByContentEvent) =
+        closeTabByContent(event.tabContent)
+
+    @Subscribe
+    fun onAddCadObjectsToCurrentTabEvent(event: AddCadObjectsToCurrentTabEvent) =
+        addCadObjectsToCurrentTab(event.cad)
+
+    @Subscribe
+    fun onSetCadObjectsToCurrentTabEvent(event: SetCadObjectsToCurrentTabEvent) =
+        setCadObjectsToCurrentTab(event.cad)
 
     /**
      * Adds a tab to the [mainTabPane] and selects it.
      */
     fun addTab(tab: Tab) {
-        mainTabPane.tabs.add(mainTabPane.tabs.size - 1, tab)
-        mainTabPane.selectionModel.select(tab)
+        runLater {
+            mainTabPane.tabs.add(mainTabPane.tabs.size - 1, tab)
+            mainTabPane.selectionModel.select(tab)
+        }
     }
 
     /**
@@ -129,21 +176,36 @@ class MainWindowView : View() {
      */
     fun closeTabByContent(cmp: Node) {
         val matches = mainTabPane.tabs.filter { it.content == cmp }
-        mainTabPane.tabs.removeAll(matches)
+        runLater { mainTabPane.tabs.removeAll(matches) }
     }
 
     /**
-     * Opens a [CadView] in a splitpane with the current view.
+     * Adds the [cad] objects to the current CAD editor. Does nothing if there is no editor
+     * selected.
      */
-    fun openCadViewIntoCurrentView(): CadView {
+    fun addCadObjectsToCurrentTab(cad: ImmutableSet<CSG>) {
         val selection = mainTabPane.selectionModel.selectedItem
-        val cadView = find<CadView>()
-        selection.content = splitpane(
-            orientation = Orientation.HORIZONTAL,
-            nodes = *arrayOf(selection.content, cadView.root)
-        )
-        return cadView
+        if (selection is CadScriptEditorTab) {
+            selection.editor.cadView.engine.addAllCSGs(cad)
+        }
     }
+
+    /**
+     * Sets the [cad] objects to the current CAD editor. Does nothing if there is no editor
+     * selected.
+     */
+    fun setCadObjectsToCurrentTab(cad: ImmutableSet<CSG>) {
+        val selection = mainTabPane.selectionModel.selectedItem
+        if (selection is CadScriptEditorTab) {
+            selection.editor.cadView.engine.clearCSGs()
+            selection.editor.cadView.engine.addAllCSGs(cad)
+        }
+    }
+
+    /**
+     * Returns the currently selected tab.
+     */
+    fun getSelectedTab() = mainTabPane.selectionModel.selectedItem
 
     /**
      * Reloads the git-dependent menus.
@@ -217,5 +279,14 @@ class MainWindowView : View() {
                 }
             }
         }
+    }
+
+    companion object {
+        val injector: Injector = Guice.createInjector(module {
+            bind<MainWindowView>().`in`(Scopes.SINGLETON)
+            bind<MainWindowController>().`in`(Scopes.SINGLETON)
+            bind<CadScriptEditorFactory>().to<AceCadScriptEditorFactory>()
+            bind<ScriptRunner>().to<BowlerScriptRunner>()
+        })
     }
 }
