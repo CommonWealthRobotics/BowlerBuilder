@@ -13,6 +13,5 @@ data class GistFile(
     val filename: String
 ) {
     constructor(gitUrl: String, filename: String) : this(Gist(gitUrl, ""), filename)
-    companion object {
-    }
+    companion object
 }

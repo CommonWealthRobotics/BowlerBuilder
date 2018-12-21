@@ -4,17 +4,18 @@ plugins {
     `java-library`
     application
     id("org.jetbrains.kotlin.kapt")
-    `idea`
+    idea
 }
 
 application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 
 object Verions {
-    const val arrow_version = "0.7.3"
+    const val arrow_version = "0.8.1"
 }
 
 repositories {
     maven(url = "https://dl.bintray.com/commonwealthrobotics/maven-artifacts")
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
