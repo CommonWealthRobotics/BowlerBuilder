@@ -9,6 +9,8 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScript
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerbuilder.model.filename
+import com.neuronrobotics.bowlerbuilder.model.gistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import javafx.collections.FXCollections
@@ -57,7 +59,7 @@ class WebBrowserController
                     }
 
                     files.map {
-                        script.copy(gistFile = script.gistFile.copy(filename = it))
+                        WebBrowserScript.gistFile.filename.modify(script) { it }
                     }
                 }.filter {
                     it.gistFile.filename != "csgDatabase.json"

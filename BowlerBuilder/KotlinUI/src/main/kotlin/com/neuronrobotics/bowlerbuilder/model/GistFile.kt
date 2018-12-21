@@ -5,9 +5,13 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
+import arrow.optics.optics
+
+@optics
 data class GistFile(
     val gist: Gist,
     val filename: String
 ) {
     constructor(gitUrl: String, filename: String) : this(Gist(gitUrl, ""), filename)
+    companion object
 }

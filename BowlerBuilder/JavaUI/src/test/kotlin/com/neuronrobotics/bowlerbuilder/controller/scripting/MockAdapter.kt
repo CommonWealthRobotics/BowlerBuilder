@@ -22,6 +22,7 @@ class MockAdapter : WebEngineAdapter {
         return null
     }
 
+    @SuppressWarnings("ComplexMethod", "ForbiddenVoid")
     override fun getLoadWorker(): Worker<Void> {
         return object : Worker<Void> {
             override fun getState(): Worker.State {
