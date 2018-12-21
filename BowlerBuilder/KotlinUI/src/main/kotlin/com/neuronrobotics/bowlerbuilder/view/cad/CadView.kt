@@ -7,36 +7,62 @@ package com.neuronrobotics.bowlerbuilder.view.cad
 
 import com.neuronrobotics.bowlerbuilder.controller.cad.CadController
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine.BowlerCadEngine
+import javafx.geometry.Insets
 import tornadofx.*
 
 /**
  * A view containing the [BowlerCadEngine] and basic engine controls.
  */
-class CadView(
-    val engine: BowlerCadEngine
-) : Fragment() {
+class CadView : Fragment() {
 
     private val controller = CadController()
+    val engine
+        get() = controller.engine
 
     override val root = borderpane {
         id = "CadView"
-        center = anchorpane(
-            nodes = *arrayOf(engine)
-        ) {
-            val subScene = engine.getSubScene()
-            subScene.isFocusTraversable = false
-            subScene.widthProperty().bind(this@borderpane.widthProperty())
-            subScene.heightProperty().bind(this@borderpane.widthProperty())
 
-            engine.anchorpaneConstraints {
-                topAnchor = 0.0
-                rightAnchor = 0.0
-                leftAnchor = 0.0
-                bottomAnchor = 0.0
-            }
+        val subScene = engine.getSubScene()
+        subScene.isFocusTraversable = false
+        subScene.widthProperty().bind(this@borderpane.widthProperty())
+        subScene.heightProperty().bind(this@borderpane.heightProperty())
+        subScene.anchorpaneConstraints {
+            topAnchor = 0.0
+            rightAnchor = 0.0
+            leftAnchor = 0.0
+            bottomAnchor = 0.0
         }
 
+        center = engine.getView()
+
         bottom = hbox {
+            padding = Insets(5.0)
+            spacing = 5.0
+            useMaxWidth = true
+
+            button("Home Camera") {
+                action {
+                    controller.homeCamera()
+                }
+            }
+
+            button("Show/Hide Axis") {
+                action {
+                    controller.showHideAxis()
+                }
+            }
+
+            button("Show/Hide Hand") {
+                action {
+                    controller.showHideHand()
+                }
+            }
+
+            button("Clear Objects") {
+                action {
+                    controller.clearObjects()
+                }
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ class CadScriptEditor
     val editor: VisualScriptEditor
 ) : Fragment() {
 
-    val cadView = CadView(BowlerCadEngine())
+    val cadView = CadView()
 
     override val root = splitpane(
         orientation = Orientation.HORIZONTAL,
