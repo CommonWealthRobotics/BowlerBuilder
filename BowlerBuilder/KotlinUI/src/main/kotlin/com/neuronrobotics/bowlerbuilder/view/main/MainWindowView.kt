@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.neuronrobotics.bowlerbuilder.view
+package com.neuronrobotics.bowlerbuilder.view.main
 
 import com.google.common.collect.ImmutableSet
 import com.google.inject.Guice
@@ -20,6 +20,10 @@ import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.CreatureConfigurationView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
+import com.neuronrobotics.bowlerbuilder.view.main.event.AddCadObjectsToCurrentTabEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
@@ -41,22 +45,6 @@ import tornadofx.*
 import javax.inject.Singleton
 import kotlin.concurrent.thread
 
-data class AddTabEvent(
-    val tab: Tab
-)
-
-data class CloseTabByContentEvent(
-    val tabContent: Node
-)
-
-data class AddCadObjectsToCurrentTabEvent(
-    val cad: ImmutableSet<CSG>
-)
-
-data class SetCadObjectsToCurrentTabEvent(
-    val cad: ImmutableSet<CSG>
-)
-
 @Singleton
 class MainWindowView : View() {
 
@@ -76,7 +64,7 @@ class MainWindowView : View() {
                 item("Exit") {
                     action {
                         close()
-                        thread { controller.beginForceQuit() }
+                        thread { MainWindowController.beginForceQuit() }
                     }
                 }
             }

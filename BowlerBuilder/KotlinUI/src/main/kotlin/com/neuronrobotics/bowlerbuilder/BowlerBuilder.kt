@@ -6,7 +6,8 @@
 package com.neuronrobotics.bowlerbuilder
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.view.MainWindowView
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import tornadofx.*
 
 fun main(args: Array<String>) {
@@ -26,6 +27,11 @@ class BowlerBuilder : App(MainWindowView::class) {
         Thread.setDefaultUncaughtExceptionHandler { _, exception ->
             LOGGER.severe(Throwables.getStackTraceAsString(exception))
         }
+    }
+
+    override fun stop() {
+        super.stop()
+        MainWindowController.beginForceQuit()
     }
 
     companion object {

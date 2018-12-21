@@ -7,7 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
 import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerbuilder.view.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.beans.property.SimpleObjectProperty
@@ -108,12 +108,14 @@ class WebBrowserView(
             padding = Insets(5.0)
             spacing = 5.0
 
-            this += ThreadMonitoringButton.create(
-                "Run" to AssetFactory.loadIcon("Run.png"),
-                "Stop" to AssetFactory.loadIcon("Stop.png")
-            ) {
-                controller.runScript(currentScript)
-            }
+            add(
+                ThreadMonitoringButton.create(
+                    "Run" to AssetFactory.loadIcon("Run.png"),
+                    "Stop" to AssetFactory.loadIcon("Stop.png")
+                ) {
+                    controller.runScript(currentScript)
+                }
+            )
 
             val cloneButton = button()
                 .modifyIntoCloneButton(WebBrowserScript.empty)

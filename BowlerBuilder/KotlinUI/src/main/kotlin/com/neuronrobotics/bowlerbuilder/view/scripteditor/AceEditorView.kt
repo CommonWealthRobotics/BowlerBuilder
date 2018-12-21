@@ -9,7 +9,7 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorControl
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
-import com.neuronrobotics.bowlerbuilder.view.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -46,12 +46,14 @@ class AceEditorView
             spacing = 5.0
             useMaxWidth = true
 
-            this += ThreadMonitoringButton.create(
-                "Run" to AssetFactory.loadIcon("Run.png"),
-                "Stop" to AssetFactory.loadIcon("Stop.png")
-            ) {
-                controller.runScript(FxUtil.returnFX { getFullText() })
-            }
+            add(
+                ThreadMonitoringButton.create(
+                    "Run" to AssetFactory.loadIcon("Run.png"),
+                    "Stop" to AssetFactory.loadIcon("Stop.png")
+                ) {
+                    controller.runScript(FxUtil.returnFX { getFullText() })
+                }
+            )
 
             button("Publish", AssetFactory.loadIcon("Publish.png")) {
                 action {

@@ -10,9 +10,9 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEdit
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
-import com.neuronrobotics.bowlerbuilder.view.CloseTabByContentEvent
-import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
@@ -45,12 +45,14 @@ class AceScratchpadView
             spacing = 5.0
             useMaxWidth = true
 
-            this += ThreadMonitoringButton.create(
-                "Run" to AssetFactory.loadIcon("Run.png"),
-                "Stop" to AssetFactory.loadIcon("Stop.png")
-            ) {
-                controller.runScript(FxUtil.returnFX { getFullText() })
-            }
+            add(
+                ThreadMonitoringButton.create(
+                    "Run" to AssetFactory.loadIcon("Run.png"),
+                    "Stop" to AssetFactory.loadIcon("Stop.png")
+                ) {
+                    controller.runScript(FxUtil.returnFX { getFullText() })
+                }
+            )
 
             button("Publish", AssetFactory.loadIcon("Publish.png")) {
                 action {
@@ -65,7 +67,9 @@ class AceScratchpadView
                             )
                         }
 
-                        MainWindowView.mainUIEventBus.post(CloseTabByContentEvent(this@borderpane))
+                        MainWindowView.mainUIEventBus.post(
+                            CloseTabByContentEvent(this@borderpane)
+                        )
                     }
                 }
             }

@@ -5,9 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
-import com.neuronrobotics.bowlerbuilder.view.AddTabEvent
-import com.neuronrobotics.bowlerbuilder.view.MainWindowView
-import com.neuronrobotics.bowlerbuilder.view.SetCadObjectsToCurrentTabEvent
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
 import com.neuronrobotics.kinematicschef.util.immutableSetOf
 import com.neuronrobotics.kinematicschef.util.toImmutableSet
@@ -53,5 +53,7 @@ class ScriptResultHandler {
             )
         )
 
-    private fun handleTab(result: Tab) = MainWindowView.mainUIEventBus.post(AddTabEvent(result))
+    private fun handleTab(result: Tab) = MainWindowView.mainUIEventBus.post(
+        AddTabEvent(result)
+    )
 }

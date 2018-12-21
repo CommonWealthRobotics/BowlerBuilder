@@ -6,6 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.view.creatureeditor
 
 import com.google.common.collect.ImmutableList
+import com.neuronrobotics.bowlerbuilder.model.LimbData
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.configuration.AddLimbWizard
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics
@@ -87,12 +89,13 @@ class CreatureConfigurationView(
     }
 
     private fun generateConfigurationTabContent(limbs: ImmutableList<DHParameterKinematics>): Node {
-        return vbox {
-            hbox {
-                limbs.forEach {
-                    button(it.scriptingName) {
-                        action {
-                        }
+        return button("Add Limb") {
+            action {
+                AddLimbWizard().apply {
+                    scope.set(LimbData())
+                    openModal()
+                    onComplete {
+                        println(limbData)
                     }
                 }
             }

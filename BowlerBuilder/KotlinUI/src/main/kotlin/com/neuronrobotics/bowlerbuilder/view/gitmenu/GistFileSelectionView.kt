@@ -7,7 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.GistFileSelectionController
 import com.neuronrobotics.bowlerbuilder.model.GistFile
-import com.neuronrobotics.bowlerbuilder.view.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
 import javafx.geometry.Orientation
