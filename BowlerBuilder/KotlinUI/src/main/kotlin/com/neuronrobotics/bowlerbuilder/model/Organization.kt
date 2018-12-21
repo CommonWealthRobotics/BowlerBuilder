@@ -13,4 +13,6 @@ data class Organization(
     val gitUrl: String,
     val name: String,
     val repositories: ImmutableList<Repository>
-)
+) {
+    companion object
+}

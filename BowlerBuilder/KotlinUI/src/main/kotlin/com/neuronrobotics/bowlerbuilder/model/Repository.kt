@@ -11,4 +11,6 @@ import arrow.optics.optics
 data class Repository(
     val gitUrl: String,
     val name: String
-)
+) {
+    companion object
+}
