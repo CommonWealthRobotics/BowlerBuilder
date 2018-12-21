@@ -48,7 +48,7 @@ class GistFileSelectionView : Fragment() {
                 button("Load") {
                     action {
                         runAsync {
-                            controller.openGistFile(GistFile(gistUrl, gistFileSelection))
+                            controller.openGistFile(GistFile.create(gistUrl, gistFileSelection))
                         }
                         close()
                     }

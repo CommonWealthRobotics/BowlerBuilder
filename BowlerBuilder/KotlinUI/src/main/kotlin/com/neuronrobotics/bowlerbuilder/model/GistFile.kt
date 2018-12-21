@@ -12,6 +12,8 @@ data class GistFile(
     val gist: Gist,
     val filename: String
 ) {
-    constructor(gitUrl: String, filename: String) : this(Gist(gitUrl, ""), filename)
-    companion object
+    companion object {
+        // This is not a secondary constructor because of https://github.com/arrow-kt/arrow/issues/1211
+        fun create(gitUrl: String, filename: String) = GistFile(Gist(gitUrl, ""), filename)
+    }
 }

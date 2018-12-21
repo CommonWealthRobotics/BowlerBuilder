@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Scopes
+import com.neuronrobotics.bowlerbuilder.controller.BowlerEventBusLogger
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
@@ -140,7 +141,7 @@ class MainWindowView : View() {
     }
 
     init {
-        EventBus.getDefault().register(this)
+        mainUIEventBus.register(this)
         reloadMenus()
     }
 
@@ -288,5 +289,10 @@ class MainWindowView : View() {
             bind<CadScriptEditorFactory>().to<AceCadScriptEditorFactory>()
             bind<ScriptRunner>().to<BowlerScriptRunner>()
         })
+
+        val mainUIEventBus = EventBus.builder()
+            .sendNoSubscriberEvent(false)
+            .logger(BowlerEventBusLogger("MainUIEventBus"))
+            .build()
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
@@ -36,36 +37,36 @@ class WebBrowserController
      */
     @SuppressWarnings("TooGenericExceptionCaught")
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
+        LOGGER.fine("Loading items for: $currentUrl")
         if (currentUrl.split("//").size < 2) {
             // Don't call ScriptingEngine.getCurrentGist() with less than two elements because it
             // throws an exception
             itemsOnPageProperty.clear()
         } else {
-            ScriptingEngine.getCurrentGist(currentUrl, engine)
-                .map {
-                    WebBrowserScript(
-                        currentUrl,
-                        GistFile(
-                            Gist(getGitUrlFromPageUrl(currentUrl, it), ""),
-                            ""
-                        )
+            ScriptingEngine.getCurrentGist(currentUrl, engine).map {
+                WebBrowserScript(
+                    currentUrl,
+                    GistFile(
+                        Gist(getGitUrlFromPageUrl(currentUrl, it), ""),
+                        ""
                     )
-                }.flatMap { script ->
-                    val files = try {
-                        ScriptingEngine.filesInGit(script.gistFile.gist.gitUrl)
-                    } catch (ex: Exception) {
-                        // This is the ScriptingEngine login manager being unhappy
-                        emptyList<String>()
-                    }
-
-                    files.map {
-                        WebBrowserScript.gistFile.filename.modify(script) { it }
-                    }
-                }.filter {
-                    it.gistFile.filename != "csgDatabase.json"
-                }.let {
-                    itemsOnPageProperty.setAll(it)
+                )
+            }.flatMap { script ->
+                val files = try {
+                    ScriptingEngine.filesInGit(script.gistFile.gist.gitUrl)
+                } catch (ex: Exception) {
+                    // This is the ScriptingEngine login manager being unhappy
+                    emptyList<String>()
                 }
+
+                files.map {
+                    WebBrowserScript.gistFile.filename.modify(script) { it }
+                }
+            }.filter {
+                it.gistFile.filename != "csgDatabase.json"
+            }.let {
+                itemsOnPageProperty.setAll(it)
+            }
         }
     }
 
@@ -86,6 +87,13 @@ class WebBrowserController
         if (currentScript == WebBrowserScript.empty) {
             return
         }
+
+        LOGGER.fine(
+            """
+            |Running script:
+            |$currentScript
+            """.trimMargin()
+        )
 
         scriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.gistFile.filename)
     }
@@ -115,6 +123,13 @@ class WebBrowserController
             return WebBrowserScript.empty
         }
 
+        LOGGER.fine(
+            """
+            |Cloning script:
+            |$currentScript
+            """.trimMargin()
+        )
+
         val gist = ScriptingEngine.fork(
             ScriptingEngine.urlToGist(currentScript.gistFile.gist.gitUrl)
         ) ?: throw IllegalStateException("Failed to fork script.")
@@ -127,6 +142,12 @@ class WebBrowserController
                 )
             )
         ).also {
+            LOGGER.fine(
+                """
+                |Cloned to:
+                |$it
+                """.trimMargin()
+            )
             editScript(it)
         }
     }
@@ -138,6 +159,13 @@ class WebBrowserController
         if (currentScript == WebBrowserScript.empty) {
             return
         }
+
+        LOGGER.fine(
+            """
+            |Editing script:
+            |$currentScript
+            """.trimMargin()
+        )
 
         cadScriptEditorFactory
             .createAndOpenScriptEditor(currentScript.gistFile)
@@ -169,5 +197,9 @@ class WebBrowserController
         } else {
             "https://gist.github.com/$gist.git"
         }
+    }
+
+    companion object {
+        private val LOGGER = LoggerUtilities.getLogger(WebBrowserController::class.java.simpleName)
     }
 }

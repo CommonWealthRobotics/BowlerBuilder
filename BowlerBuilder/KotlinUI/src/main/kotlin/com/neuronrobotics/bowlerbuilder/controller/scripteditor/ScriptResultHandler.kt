@@ -6,6 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.view.AddTabEvent
+import com.neuronrobotics.bowlerbuilder.view.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.SetCadObjectsToCurrentTabEvent
 import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
 import com.neuronrobotics.kinematicschef.util.immutableSetOf
@@ -13,7 +14,6 @@ import com.neuronrobotics.kinematicschef.util.toImmutableSet
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
-import org.greenrobot.eventbus.EventBus
 
 /**
  * A utility class to interpret the result from running a script.
@@ -47,11 +47,11 @@ class ScriptResultHandler {
     private fun handleCsg(result: CSG) = handleCsg(immutableSetOf(result))
 
     private fun handleCsg(result: Iterable<CSG>) =
-        EventBus.getDefault().post(
+        MainWindowView.mainUIEventBus.post(
             SetCadObjectsToCurrentTabEvent(
                 result.toImmutableSet()
             )
         )
 
-    private fun handleTab(result: Tab) = EventBus.getDefault().post(AddTabEvent(result))
+    private fun handleTab(result: Tab) = MainWindowView.mainUIEventBus.post(AddTabEvent(result))
 }

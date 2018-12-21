@@ -17,7 +17,6 @@ import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import javafx.geometry.Insets
-import org.greenrobot.eventbus.EventBus
 import org.jlleitschuh.guice.key
 import tornadofx.*
 import javax.inject.Inject
@@ -62,11 +61,11 @@ class AceScratchpadView
                     if (view.publishSuccessful) {
                         runAsync {
                             cadScriptEditorFactory.createAndOpenScriptEditor(
-                                GistFile(view.gitUrl, view.gistFilename)
+                                GistFile.create(view.gitUrl, view.gistFilename)
                             )
                         }
 
-                        EventBus.getDefault().post(CloseTabByContentEvent(this@borderpane))
+                        MainWindowView.mainUIEventBus.post(CloseTabByContentEvent(this@borderpane))
                     }
                 }
             }
