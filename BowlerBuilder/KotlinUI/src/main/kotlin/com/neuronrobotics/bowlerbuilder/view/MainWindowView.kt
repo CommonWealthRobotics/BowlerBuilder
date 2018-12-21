@@ -17,11 +17,14 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScript
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScriptRunner
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
+import com.neuronrobotics.bowlerbuilder.view.creatureeditor.CreatureConfigurationView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
+import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
+import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.geometry.Orientation
 import javafx.scene.Node
@@ -142,6 +145,18 @@ class MainWindowView : View() {
 
     init {
         mainUIEventBus.register(this)
+        addTab(
+            Tab(
+                "",
+                CreatureConfigurationView(
+                    (ScriptingEngine.gitScriptRun(
+                        "https://gist.github.com/65ac76aeb898d2c00867b7b8397367e9.git",
+                        "HephaestusWorkCell_copy.xml",
+                        null
+                    ) as MobileBaseLoader).base
+                ).root
+            )
+        )
         reloadMenus()
     }
 
