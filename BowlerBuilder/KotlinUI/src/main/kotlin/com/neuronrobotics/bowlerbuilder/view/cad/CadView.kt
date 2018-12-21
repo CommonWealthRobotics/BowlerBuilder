@@ -19,6 +19,7 @@ class CadView : Fragment() {
     val engine
         get() = controller.engine
 
+    @SuppressWarnings("LabeledExpression")
     override val root = borderpane {
         id = "CadView"
 

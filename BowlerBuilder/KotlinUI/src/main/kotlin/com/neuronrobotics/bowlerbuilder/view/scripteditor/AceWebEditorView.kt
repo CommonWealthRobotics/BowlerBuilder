@@ -6,7 +6,6 @@
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceWebEditorController
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import javafx.concurrent.Worker
 import tornadofx.*

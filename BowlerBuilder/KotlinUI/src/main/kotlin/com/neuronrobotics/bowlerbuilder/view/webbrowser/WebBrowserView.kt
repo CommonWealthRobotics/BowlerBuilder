@@ -62,19 +62,19 @@ class WebBrowserView(
             hbox {
                 spacing = 5.0
 
-                button(graphic = Glyph("FontAwesome", "ARROW_LEFT")) {
+                button(graphic = Glyph(FONT_AWESOME, "ARROW_LEFT")) {
                     action { webview.engine.executeScript("history.back();") }
                 }
 
-                button(graphic = Glyph("FontAwesome", "ARROW_RIGHT")) {
+                button(graphic = Glyph(FONT_AWESOME, "ARROW_RIGHT")) {
                     action { webview.engine.executeScript("history.forward();") }
                 }
 
-                button(graphic = Glyph("FontAwesome", "REFRESH")) {
+                button(graphic = Glyph(FONT_AWESOME, "REFRESH")) {
                     action { webview.engine.reload() }
                 }
 
-                button(graphic = Glyph("FontAwesome", "HOME")) {
+                button(graphic = Glyph(FONT_AWESOME, "HOME")) {
                     action { webview.engine.load(config.string(HOME_PAGE)) }
                 }
             }
@@ -92,7 +92,7 @@ class WebBrowserView(
                 }
             }
 
-            button(graphic = Glyph("FontAwesome", "STAR")) {
+            button(graphic = Glyph(FONT_AWESOME, "STAR")) {
                 tooltip("Set Home Page")
 
                 action {
@@ -183,6 +183,7 @@ class WebBrowserView(
         const val HOME_PAGE = "webview_home_page"
         const val DEFAULT_HOME_PAGE =
             "http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/"
+        private const val FONT_AWESOME = "FontAwesome"
 
         fun create(urlToLoad: String? = null) = WebBrowserView(
             MainWindowView.injector.getInstance(key<WebBrowserController>()),
