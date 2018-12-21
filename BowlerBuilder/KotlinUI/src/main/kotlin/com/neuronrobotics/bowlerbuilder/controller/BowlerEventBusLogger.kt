@@ -15,7 +15,7 @@ class BowlerEventBusLogger(
 ) : Logger {
 
     private val internalLogger = LoggerUtilities.getLogger(
-        "${BowlerEventBusLogger::class.simpleName}$eventBusName"
+        "${BowlerEventBusLogger::class.java.simpleName}$eventBusName"
     )
 
     override fun log(level: Level, msg: String) {

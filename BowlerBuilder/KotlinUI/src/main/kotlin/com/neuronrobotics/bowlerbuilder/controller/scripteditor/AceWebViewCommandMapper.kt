@@ -5,9 +5,19 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
-import tornadofx.*
+class AceWebViewCommandMapper {
 
-class AceWebEditorController : Controller() {
+    fun insertAtCursor(text: String) = "editor.insert(\"${escape(text)}\");"
+
+    fun setText(text: String) = "editor.setValue(\"${escape(text)}\");"
+
+    fun getFullText() = "editor.getValue();"
+
+    fun getSelectedText() = "editor.session.getTextRange(editor.getSelectionRange());"
+
+    fun gotoLine(lineNumber: Int) = "editor.gotoLine($lineNumber);"
+
+    fun getCursorPosition() = "editor.session.doc.positionToIndex(editor.selection.getCursor());"
 
     /**
      * Escape text so it gets inserted properly.

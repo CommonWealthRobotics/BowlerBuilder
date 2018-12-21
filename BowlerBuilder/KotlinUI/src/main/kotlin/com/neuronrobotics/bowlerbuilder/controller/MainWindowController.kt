@@ -15,8 +15,9 @@ import com.neuronrobotics.bowlerbuilder.model.Organization
 import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.kinematicschef.util.toImmutableList
+import javafx.application.Platform
 import org.apache.commons.io.FileUtils
-import tornadofx.Controller
+import tornadofx.*
 import java.io.File
 import java.io.IOException
 import java.util.Timer
@@ -91,6 +92,7 @@ class MainWindowController
                 File(ScriptingEngine.getWorkspace().absolutePath + "/gistcache/")
             )
 
+            Platform.exit()
             beginForceQuit()
         } catch (e: IOException) {
             LOGGER.severe {

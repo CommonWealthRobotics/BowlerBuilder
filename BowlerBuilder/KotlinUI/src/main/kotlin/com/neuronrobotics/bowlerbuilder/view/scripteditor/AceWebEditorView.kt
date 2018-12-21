@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceWebEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceWebViewCommandMapper
 import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import javafx.concurrent.Worker
 import tornadofx.*
@@ -16,7 +16,7 @@ import tornadofx.*
  */
 class AceWebEditorView : Fragment(), ScriptEditor {
 
-    private val controller = AceWebEditorController()
+    private val mapper = AceWebViewCommandMapper()
     val engineInitializingLatch = Latch(1)
 
     override val root = webview {
@@ -30,24 +30,20 @@ class AceWebEditorView : Fragment(), ScriptEditor {
     }
 
     override fun insertAtCursor(text: String) {
-        root.engine.executeScript("editor.insert(\"${controller.escape(text)}\");")
+        root.engine.executeScript(mapper.insertAtCursor(text))
     }
 
     override fun setText(text: String) {
-        root.engine.executeScript("editor.setValue(\"${controller.escape(text)}\");")
+        root.engine.executeScript(mapper.setText(text))
     }
 
-    override fun getFullText() = root.engine.executeScript("editor.getValue();") as String
+    override fun getFullText() = root.engine.executeScript(mapper.getFullText()) as String
 
-    override fun getSelectedText() = root.engine.executeScript(
-        "editor.session.getTextRange(editor.getSelectionRange());"
-    ) as String
+    override fun getSelectedText() = root.engine.executeScript(mapper.getSelectedText()) as String
 
     override fun gotoLine(lineNumber: Int) {
-        root.engine.executeScript("editor.gotoLine($lineNumber);")
+        root.engine.executeScript(mapper.gotoLine(lineNumber))
     }
 
-    override fun getCursorPosition() = root.engine.executeScript(
-        "editor.session.doc.positionToIndex(editor.selection.getCursor());"
-    ) as Int
+    override fun getCursorPosition() = root.engine.executeScript(mapper.getCursorPosition()) as Int
 }
