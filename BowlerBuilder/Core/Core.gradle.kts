@@ -17,7 +17,7 @@ dependencies {
     api(
         group = "com.neuronrobotics",
         name = "kinematicschef-core",
-        version = "0.0.10"
+        version = "0.0.14"
     )
 
     implementation(group = "org.apache.ivy", name = "ivy", version = "2.2.0")
