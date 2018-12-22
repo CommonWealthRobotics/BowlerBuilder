@@ -329,44 +329,6 @@ configure(kotlinProjects.intersect(javafxProjects)) {
     }
 }
 
-val jacocoTestResultTaskName = "jacocoTestReport"
-
-val jacocoRootReport = task<JacocoReport>("jacocoRootReport") {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Generates code coverage report for all sub-projects."
-
-    val jacocoReportTasks =
-            javaProjects
-                    .filter {
-                        // Filter out source sets that don't have tests in them
-                        // Otherwise, Jacoco tries to generate coverage data for tests that don't exist
-                        !it.java.sourceSets["test"].allSource.isEmpty
-                    }
-                    .map { it.tasks[jacocoTestResultTaskName] as JacocoReport }
-    dependsOn(jacocoReportTasks)
-
-    val allExecutionData = jacocoReportTasks.map { it.executionData }
-    executionData(*allExecutionData.toTypedArray())
-
-    // Pre-initialize these to empty collections to prevent NPE on += call below.
-    additionalSourceDirs = files()
-    sourceDirectories = files()
-    classDirectories = files()
-
-    javaProjects.forEach { testedProject ->
-        val sourceSets = testedProject.java.sourceSets
-        this@task.additionalSourceDirs = this@task.additionalSourceDirs?.plus(files(sourceSets["main"].allSource.srcDirs))
-        this@task.sourceDirectories += files(sourceSets["main"].allSource.srcDirs)
-        this@task.classDirectories += files(sourceSets["main"].output)
-    }
-
-    reports {
-        html.isEnabled = true
-        xml.isEnabled = true
-        csv.isEnabled = false
-    }
-}
-
 val checkTask = tasks.maybeCreate("check", Task::class.java).apply {
     description = "Check all sub-projects"
     group = LifecycleBasePlugin.VERIFICATION_GROUP
@@ -383,8 +345,8 @@ configure(javaProjects + kotlinProjects) {
     buildTask.dependsOn(tasks.getByName("build"))
 }
 
-task<Wrapper>("wrapper") {
-    gradleVersion = "4.10"
+tasks.wrapper {
+    gradleVersion = "5.0"
     distributionType = Wrapper.DistributionType.ALL
 
     doLast {

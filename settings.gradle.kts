@@ -28,13 +28,15 @@ fun configureGradleBuild(project: ProjectDescriptor) {
     val kotlinBuild = File(project.projectDir, "$projectBuildFileBaseName.gradle.kts")
     assert(!(gradleBuild.exists() && kotlinBuild.exists())) {
         "Project ${project.name} can not have both a ${gradleBuild.name} and a ${kotlinBuild.name} file. " +
-                "Rename one so that the other can serve as the base for the project's build"
+            "Rename one so that the other can serve as the base for the project's build"
     }
     project.buildFileName = when {
         gradleBuild.exists() -> gradleBuild.name
         kotlinBuild.exists() -> kotlinBuild.name
-        else -> throw AssertionError("Project `${project.name}` must have a either a file " +
-                "containing ${gradleBuild.name} or ${kotlinBuild.name}")
+        else -> throw AssertionError(
+            "Project `${project.name}` must have a either a file " +
+                "containing ${gradleBuild.name} or ${kotlinBuild.name}"
+        )
     }
 
     // Any nested children projects also get configured.

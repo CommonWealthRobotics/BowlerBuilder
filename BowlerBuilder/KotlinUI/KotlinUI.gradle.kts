@@ -30,6 +30,7 @@ dependencies {
         name = "guice-assistedinject",
         version = "4.1.0"
     )
+    implementation(group = "org.jlleitschuh.guice", name = "kotlin-guiced-core", version = "0.0.5")
     implementation(group = "org.greenrobot", name = "eventbus", version = "3.1.1")
     implementation(group = "org.apache.commons", name = "commons-text", version = "1.2")
     implementation(group = "commons-io", name = "commons-io", version = "2.6")
