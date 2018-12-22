@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
@@ -33,6 +34,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void basicTest() throws ExecutionException, InterruptedException {
     FxHelper.runAndWait(
         () ->

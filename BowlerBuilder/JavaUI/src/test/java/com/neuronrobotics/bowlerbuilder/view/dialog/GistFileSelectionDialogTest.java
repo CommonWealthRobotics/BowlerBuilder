@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.dialog;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class GistFileSelectionDialogTest extends AbstractAutoClosingApplicationTest {
@@ -19,6 +20,7 @@ public class GistFileSelectionDialogTest extends AbstractAutoClosingApplicationT
   }
 
   @Test
+  @Disabled
   void basicTest() {
     // TODO: Maybe have to mock ScriptingEngine.filesInGit
   }

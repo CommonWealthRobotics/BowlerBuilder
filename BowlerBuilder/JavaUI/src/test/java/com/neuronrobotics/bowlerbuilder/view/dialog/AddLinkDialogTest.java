@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AddLinkDialogTest extends AbstractAutoClosingApplicationTest {
@@ -32,6 +33,7 @@ public class AddLinkDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void normalTest() {
     clickOn("#linkNameField").write("name");
     clickOn("#hwIndexField").write("3");
@@ -44,6 +46,7 @@ public class AddLinkDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void emptyNameTest() {
     doubleClickOn("#linkNameField").type(KeyCode.BACK_SPACE);
     clickOn("#hwIndexField").write("3");
@@ -52,6 +55,7 @@ public class AddLinkDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void invalidHWIndicesTest1() {
     clickOn("#linkNameField").write("name");
     clickOn("#hwIndexField").write("1");
@@ -60,6 +64,7 @@ public class AddLinkDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void invalidHWIndicesTest2() {
     doubleClickOn("#linkNameField").type(KeyCode.BACK_SPACE);
     clickOn("#hwIndexField").write("1");

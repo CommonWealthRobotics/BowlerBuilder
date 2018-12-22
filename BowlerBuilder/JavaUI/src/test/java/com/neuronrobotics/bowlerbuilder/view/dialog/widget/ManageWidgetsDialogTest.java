@@ -12,6 +12,7 @@ import com.neuronrobotics.bowlerbuilder.plugin.Plugin;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ManageWidgetsDialogTest extends AbstractAutoClosingApplicationTest {
@@ -26,6 +27,7 @@ public class ManageWidgetsDialogTest extends AbstractAutoClosingApplicationTest 
   }
 
   @Test
+  @Disabled
   void addWidgetTest() {
     dialog.setWidgets(FXCollections.observableArrayList(new Plugin("url", "name")));
     clickOn("OK");
@@ -34,6 +36,7 @@ public class ManageWidgetsDialogTest extends AbstractAutoClosingApplicationTest 
   }
 
   @Test
+  @Disabled
   void removeWidgetTest() {
     dialog.setWidgets(FXCollections.observableArrayList(new Plugin("url", "name")));
     ((ListView<Plugin>) lookup("#widgetList").query()).getSelectionModel().selectFirst();

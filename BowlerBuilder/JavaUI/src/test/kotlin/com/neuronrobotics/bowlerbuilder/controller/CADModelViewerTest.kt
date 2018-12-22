@@ -19,6 +19,7 @@ import javafx.stage.Stage
 import javafx.util.Callback
 import org.junit.Assert.assertTrue
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.io.IOException
@@ -30,9 +31,13 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
     @Throws(IOException::class)
     override fun start(stage: Stage) {
         val loader = FXMLLoader(
-                javaClass.getResource("../view/DefaultCADModelViewer.fxml"),
-                null, null,
-                Callback<Class<*>, Any> { BowlerBuilder.injector.createChildInjector(DefaultCADModelViewerControllerModule()).getInstance(it) })
+            javaClass.getResource("../view/DefaultCADModelViewer.fxml"),
+            null, null,
+            Callback<Class<*>, Any> {
+                BowlerBuilder.injector.createChildInjector(
+                    DefaultCADModelViewerControllerModule()
+                ).getInstance(it)
+            })
         val mainWindow = loader.load<BorderPane>()
         controller = loader.getController<DefaultCADModelViewerController>()
         stage.scene = Scene(mainWindow)
@@ -45,6 +50,7 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
     }
 
     @Test
+    @Disabled
     fun addCSGTest() {
         val foo = Cube(1.0, 1.0, 1.0).toCSG()
         controller!!.addCSG(foo)
@@ -53,6 +59,7 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
     }
 
     @Test
+    @Disabled
     fun addCSGsTest() {
         val foo = Cube(1.0, 1.0, 1.0).toCSG()
         val bar = Cube(2.0, 1.0, 1.0).toCSG()
@@ -60,12 +67,13 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
 
         val keys = controller!!.csgMap.keys
         assertAll(
-                { assertThat(keys, hasElement(foo)) },
-                { assertThat(keys, hasElement(bar)) }
+            { assertThat(keys, hasElement(foo)) },
+            { assertThat(keys, hasElement(bar)) }
         )
     }
 
     @Test
+    @Disabled
     fun addCSGs2Test() {
         val foo = Cube(1.0, 1.0, 1.0).toCSG()
         val bar = Cube(2.0, 1.0, 1.0).toCSG()
@@ -73,8 +81,8 @@ class CADModelViewerTest : AbstractAutoClosingApplicationTest() {
 
         val keys = controller!!.csgMap.keys
         assertAll(
-                { assertThat(keys, hasElement(foo)) },
-                { assertThat(keys, hasElement(bar)) }
+            { assertThat(keys, hasElement(foo)) },
+            { assertThat(keys, hasElement(bar)) }
         )
     }
 }

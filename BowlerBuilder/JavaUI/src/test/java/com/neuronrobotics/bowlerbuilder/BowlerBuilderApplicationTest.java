@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
@@ -33,6 +34,7 @@ class BowlerBuilderApplicationTest extends FxRobot {
   }
 
   @Test
+  @Disabled
   void testStart() {
     // Nothing here, just test to make sure we start without exceptions
   }

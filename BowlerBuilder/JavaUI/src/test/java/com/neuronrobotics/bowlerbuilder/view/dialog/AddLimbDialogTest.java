@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
@@ -32,6 +33,7 @@ public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void emptyNameTest() {
     doubleClickOn("#linkNameField").type(KeyCode.BACK_SPACE);
     clickOn("#hwIndexField1").write("3");
@@ -41,6 +43,7 @@ public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void validHWIndicesTest1() {
     clickOn("#hwIndexField1").write("3");
     clickOn("#hwIndexField2").write("4");
@@ -49,6 +52,7 @@ public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void validHWIndicesTest2() {
     clickOn("#hwIndexField1").write("1");
     clickOn("#hwIndexField2").write("4");
@@ -57,6 +61,7 @@ public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void validHWIndicesTest3() {
     clickOn("#hwIndexField1").write("1");
     clickOn("#hwIndexField2").write("2");
@@ -65,6 +70,7 @@ public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void validHWIndicesTest4() {
     clickOn("#hwIndexField1").write("3");
     clickOn("#hwIndexField2").write("3");
@@ -73,6 +79,7 @@ public class AddLimbDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void cancelTest() {
     doubleClickOn("#linkNameField").write("a");
     clickOn("#hwIndexField1").write("3");

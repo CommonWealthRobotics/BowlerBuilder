@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class LoginDialogTest extends AbstractAutoClosingApplicationTest {
@@ -25,6 +26,7 @@ public class LoginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void basicTest() {
     clickOn("#loginNameField").write("a");
     clickOn("#loginPassField").write("b");
@@ -36,6 +38,7 @@ public class LoginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void cancelTest() {
     clickOn("#loginNameField").write("a");
     clickOn("#loginPassField").write("b");
@@ -45,6 +48,7 @@ public class LoginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void nameOnlyTest() {
     clickOn("#loginNameField").write("a");
 
@@ -52,6 +56,7 @@ public class LoginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void passOnlyTest() {
     clickOn("#loginPassField").write("b");
 

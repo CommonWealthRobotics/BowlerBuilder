@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import java.util.Arrays;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
@@ -26,6 +27,7 @@ public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void basicTest() {
     clickOn("#nameField").write("a.b");
     clickOn("#descField").write("b");
@@ -41,6 +43,7 @@ public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void onlyNameTest() {
     clickOn("#nameField").write("a");
 
@@ -48,6 +51,7 @@ public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void onlyDescTest() {
     clickOn("#descField").write("b");
 
@@ -55,6 +59,7 @@ public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void invalidNameTest1() {
     clickOn("#nameField").write("a");
     clickOn("#descField").write("b");
@@ -63,6 +68,7 @@ public class NewGistDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void invalidNameTest2() {
     clickOn("#nameField").write("a.");
     clickOn("#descField").write("b");

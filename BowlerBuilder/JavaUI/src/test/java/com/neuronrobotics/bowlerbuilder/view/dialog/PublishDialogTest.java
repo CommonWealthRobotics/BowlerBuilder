@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PublishDialogTest extends AbstractAutoClosingApplicationTest {
@@ -24,6 +25,7 @@ public class PublishDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void commitMsgTest() {
     clickOn("#commitMessageTextArea").write("a").clickOn("OK");
 
@@ -32,6 +34,7 @@ public class PublishDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void cancelTest() {
     clickOn("#commitMessageTextArea").write("a").clickOn("Cancel");
 

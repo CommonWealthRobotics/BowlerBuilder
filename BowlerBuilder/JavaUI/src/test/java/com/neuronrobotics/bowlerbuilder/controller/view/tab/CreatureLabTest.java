@@ -9,6 +9,7 @@ import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import com.neuronrobotics.bowlerbuilder.view.tab.CreatureLabTab;
 import java.io.IOException;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class CreatureLabTest extends AbstractAutoClosingApplicationTest {
@@ -21,6 +22,7 @@ public class CreatureLabTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void testStart() {
     // Nothing here, just test to make sure we start without exceptions
   }

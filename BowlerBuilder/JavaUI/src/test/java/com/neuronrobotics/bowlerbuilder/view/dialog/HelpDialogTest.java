@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class HelpDialogTest extends AbstractAutoClosingApplicationTest {
@@ -25,6 +26,7 @@ public class HelpDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void showTest() {
     assertTrue(lookup("#editorGuide").tryQuery().isPresent());
   }

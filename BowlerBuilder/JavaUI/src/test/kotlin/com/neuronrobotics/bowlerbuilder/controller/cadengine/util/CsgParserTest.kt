@@ -14,11 +14,13 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import eu.mihosoft.vrl.v3d.CSG
 import eu.mihosoft.vrl.v3d.Sphere
 import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class CsgParserTest {
 
     @Test
+    @Disabled
     fun `simple one line parse should return the csg`() {
         val script = "CSG foo = new Cube(1,1,1).toCSG();"
         val result = ScriptingEngine.inlineScriptStringRun(script, null, "Groovy") as CSG
@@ -30,6 +32,7 @@ class CsgParserTest {
     }
 
     @Test
+    @Disabled
     fun `multiple csg parse should return the one csg`() {
         val script = """
             CSG foo = new Cube(1,1,1).toCSG();
@@ -48,6 +51,7 @@ class CsgParserTest {
     }
 
     @Test
+    @Disabled
     fun `empty script with no input csgs should return nothing`() {
         val script = ""
         ScriptingEngine.inlineScriptStringRun(script, null, "Groovy")
@@ -59,6 +63,7 @@ class CsgParserTest {
     }
 
     @Test
+    @Disabled
     fun `empty script with some input csgs should return nothing`() {
         val script = ""
         @Suppress("UNUSED_VARIABLE")

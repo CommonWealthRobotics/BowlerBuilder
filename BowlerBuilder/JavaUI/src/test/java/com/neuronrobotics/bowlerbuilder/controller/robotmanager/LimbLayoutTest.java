@@ -37,6 +37,7 @@ public class LimbLayoutTest extends AbstractAutoClosingApplicationTest {
   }
 
   /*@Test
+  @Disabled
   void testButtonPresence() {
     assertTrue(lookup("#leg1").tryQuery().isPresent());
   }*/

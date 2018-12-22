@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import javafx.stage.Stage;
 import org.junit.Assert;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
@@ -33,6 +34,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void basicTest() throws ExecutionException, InterruptedException {
     FxHelper.runAndWait(
         () ->
@@ -42,7 +44,7 @@ public class AceCadEditorTabTest extends AbstractAutoClosingApplicationTest {
                 .insertAtCursor("return new Cube(1,1,1).toCSG();"));
 
     final Object result =
-        FxUtil.INSTANCE.returnFX(
+        FxUtil.returnFX(
             () ->
                 tab.getController()
                     .getDefaultScriptEditorController()

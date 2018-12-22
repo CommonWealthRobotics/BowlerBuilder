@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AddPluginDialogTest extends AbstractAutoClosingApplicationTest {
@@ -25,6 +26,7 @@ public class AddPluginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void basicEntryTest() {
     clickOn("#sourceField").write("url");
     clickOn("#displayNameField").write("name");
@@ -39,11 +41,13 @@ public class AddPluginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void disabledTest1() {
     assertTrue(lookup("OK").query().isDisabled());
   }
 
   @Test
+  @Disabled
   void disabledTest2() {
     clickOn("#sourceField").write("url");
 
@@ -51,6 +55,7 @@ public class AddPluginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void disabledTest3() {
     clickOn("#displayNameField").write("name");
 
@@ -58,6 +63,7 @@ public class AddPluginDialogTest extends AbstractAutoClosingApplicationTest {
   }
 
   @Test
+  @Disabled
   void cancelTest() {
     clickOn("#sourceField").write("url");
     clickOn("#displayNameField").write("name");

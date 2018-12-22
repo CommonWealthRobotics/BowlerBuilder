@@ -15,6 +15,7 @@ import com.neuronrobotics.bowlerbuilder.controller.module.DefaultCADModelViewerC
 import eu.mihosoft.vrl.v3d.Cube
 import javafx.stage.Stage
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.testfx.util.WaitForAsyncUtils
@@ -26,8 +27,8 @@ class BowlerMobileBaseUITest : AbstractAutoClosingApplicationTest() {
 
     override fun start(stage: Stage) {
         controller = BowlerBuilder.injector
-                .createChildInjector(DefaultCADModelViewerControllerModule())
-                .getInstance(BowlerMobileBaseUI::class.java)
+            .createChildInjector(DefaultCADModelViewerControllerModule())
+            .getInstance(BowlerMobileBaseUI::class.java)
     }
 
     @AfterEach
@@ -36,6 +37,7 @@ class BowlerMobileBaseUITest : AbstractAutoClosingApplicationTest() {
     }
 
     @Test
+    @Disabled
     fun addCSGTest() {
         val foo = Cube(1.0, 1.0, 1.0).toCSG()
         controller!!.addCSG(setOf(foo), null)
@@ -45,6 +47,7 @@ class BowlerMobileBaseUITest : AbstractAutoClosingApplicationTest() {
     }
 
     @Test
+    @Disabled
     fun addCSGsTest() {
         val foo = Cube(1.0, 1.0, 1.0).toCSG()
         val bar = Cube(2.0, 1.0, 1.0).toCSG()
@@ -52,8 +55,8 @@ class BowlerMobileBaseUITest : AbstractAutoClosingApplicationTest() {
         WaitForAsyncUtils.waitForFxEvents()
 
         assertAll(
-                { assertThat(controller!!.visibleCSGs, hasElement(foo)) },
-                { assertThat(controller!!.visibleCSGs, hasElement(bar)) }
+            { assertThat(controller!!.visibleCSGs, hasElement(foo)) },
+            { assertThat(controller!!.visibleCSGs, hasElement(bar)) }
         )
     }
 }

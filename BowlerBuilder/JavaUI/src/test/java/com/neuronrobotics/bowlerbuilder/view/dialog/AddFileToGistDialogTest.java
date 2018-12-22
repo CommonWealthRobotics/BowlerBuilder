@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.neuronrobotics.bowlerbuilder.AbstractAutoClosingApplicationTest;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testfx.util.WaitForAsyncUtils;
@@ -29,6 +30,7 @@ public class AddFileToGistDialogTest extends AbstractAutoClosingApplicationTest 
   }
 
   @Test
+  @Disabled
   void validFileNameTest() {
     clickOn("#nameField").write("a");
 
@@ -37,6 +39,7 @@ public class AddFileToGistDialogTest extends AbstractAutoClosingApplicationTest 
   }
 
   @Test
+  @Disabled
   @Tag("RunMe")
   void validFileNameTest2() {
     ((TextField) lookup("#nameField").query()).setText("a.");
@@ -47,6 +50,7 @@ public class AddFileToGistDialogTest extends AbstractAutoClosingApplicationTest 
   }
 
   @Test
+  @Disabled
   void validFileNameTest3() {
     clickOn("#nameField").write("a.b");
 
@@ -60,6 +64,7 @@ public class AddFileToGistDialogTest extends AbstractAutoClosingApplicationTest 
   }
 
   @Test
+  @Disabled
   void cancelTest() {
     clickOn("#nameField").write("a.b").clickOn("Cancel");
 

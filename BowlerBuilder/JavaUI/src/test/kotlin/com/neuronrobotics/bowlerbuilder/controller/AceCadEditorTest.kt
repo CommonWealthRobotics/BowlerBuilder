@@ -24,6 +24,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.io.IOException
@@ -36,15 +37,17 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
     @Throws(IOException::class)
     override fun start(stage: Stage) {
         val loader = FXMLLoader(
-                javaClass.getResource("../view/DefaultScriptEditor.fxml"), null, null,
-                Callback<Class<*>, Any> {
-                    Guice.createInjector(
-                            DefaultCadEditorControllerModule(
-                                    BowlerBuilder
-                                            .injector
-                                            .getInstance(AceEditorView::class.java)))
-                            .getInstance(it)
-                })
+            javaClass.getResource("../view/DefaultScriptEditor.fxml"), null, null,
+            Callback<Class<*>, Any> {
+                Guice.createInjector(
+                    DefaultCadEditorControllerModule(
+                        BowlerBuilder
+                            .injector
+                            .getInstance(AceEditorView::class.java)
+                    )
+                )
+                    .getInstance(it)
+            })
         val mainWindow = loader.load<SplitPane>()
         controller = loader.getController<DefaultScriptEditorController>()
         stage.scene = Scene(mainWindow)
@@ -52,29 +55,32 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
     }
 
     @Test
+    @Disabled
     fun runEmptyFileTest() {
         FxHelper.runAndWait { controller.runEditorContent() }
 
         assertAll(
-                { assertTrue(controller.scriptRunner.getResult().isSuccess()) },
-                { assertNull(controller.scriptRunner.getResult().getSuccess()) }
+            { assertTrue(controller.scriptRunner.getResult().isSuccess()) },
+            { assertNull(controller.scriptRunner.getResult().getSuccess()) }
         )
     }
 
     @Test
+    @Disabled
     fun basicRunButtonTest() {
         FxHelper.runAndWait { controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()") }
         FxHelper.runAndWait { controller.runEditorContent() }
 
         val result = controller.scriptRunner.getResult()
         assertAll(
-                { assertTrue(result.isSuccess()) },
-                { assertNotNull(result.getSuccess()) },
-                { assertThat(result.getSuccess()!!, isA<CSG>()) }
+            { assertTrue(result.isSuccess()) },
+            { assertNotNull(result.getSuccess()) },
+            { assertThat(result.getSuccess()!!, isA<CSG>()) }
         )
     }
 
     @Test
+    @Disabled
     fun runCubeTest() {
         FxHelper.runAndWait { controller.insertAtCursor("CSG foo=new Cube(10,10,10).toCSG()") }
         controller.runEditorContent()
@@ -83,18 +89,20 @@ class AceCadEditorTest : AbstractAutoClosingApplicationTest() {
     }
 
     @Test
+    @Disabled
     fun runStringScriptTest() {
         controller.runStringScript("CSG foo = new Sphere(10).toCSG();", null, "BowlerGroovy")
         val result = controller.scriptRunner.getResult()
 
         assertAll(
-                { assertTrue(result.isSuccess()) },
-                { assertNotNull(result.getSuccess()) },
-                { assertThat(result.getSuccess()!!, isA<CSG>()) }
+            { assertTrue(result.isSuccess()) },
+            { assertNotNull(result.getSuccess()) },
+            { assertThat(result.getSuccess()!!, isA<CSG>()) }
         )
     }
 
     @Test
+    @Disabled
     @Throws(ExecutionException::class, InterruptedException::class)
     fun getTextTest() {
         FxHelper.runAndWait { controller.scriptEditor.insertAtCursor("foo\nbar") }

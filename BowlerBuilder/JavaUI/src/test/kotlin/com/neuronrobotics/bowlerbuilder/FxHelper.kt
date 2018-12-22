@@ -55,12 +55,12 @@ object FxHelper {
 
         runAndWait(Runnable {
             Thread.currentThread()
-                    .setUncaughtExceptionHandler { _, throwable ->
-                        if (throwable::class.java == exceptionClass) {
-                            exceptionWasThrown = true
-                            latch.countDown()
-                        }
+                .setUncaughtExceptionHandler { _, throwable ->
+                    if (throwable::class.java == exceptionClass) {
+                        exceptionWasThrown = true
+                        latch.countDown()
                     }
+                }
         })
 
         runnable.run()
