@@ -411,7 +411,7 @@ class BowlerCadEngine : Pane() {
                                     .options
                                     .forEach { option ->
                                         val customMenuItem = MenuItem(option)
-                                        customMenuItem.setOnAction { event ->
+                                        customMenuItem.setOnAction {
                                             param.strValue = option
                                             CSGDatabase.get(param.name).strValue = option
                                             CSGDatabase.getParamListeners(param.name)
