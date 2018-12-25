@@ -13,6 +13,6 @@ data class WebBrowserScript(
     val gistFile: GistFile
 ) {
     companion object {
-        val empty = WebBrowserScript("", GistFile(Gist("", ""), ""))
+        val empty = WebBrowserScript("", GistFile(Gist("", 0, ""), ""))
     }
 }

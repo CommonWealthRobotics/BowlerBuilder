@@ -9,7 +9,8 @@ import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserControll
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory
+import com.neuronrobotics.bowlerbuilder.view.util.getFontAwesomeGlyph
+import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
@@ -18,7 +19,7 @@ import javafx.geometry.Insets
 import javafx.scene.control.Button
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
-import org.controlsfx.glyphfont.Glyph
+import org.controlsfx.glyphfont.FontAwesome
 import org.jlleitschuh.guice.key
 import tornadofx.*
 
@@ -62,19 +63,19 @@ class WebBrowserView(
             hbox {
                 spacing = 5.0
 
-                button(graphic = Glyph(FONT_AWESOME, "ARROW_LEFT")) {
+                button(graphic = getFontAwesomeGlyph(FontAwesome.Glyph.ARROW_LEFT)) {
                     action { webview.engine.executeScript("history.back();") }
                 }
 
-                button(graphic = Glyph(FONT_AWESOME, "ARROW_RIGHT")) {
+                button(graphic = getFontAwesomeGlyph(FontAwesome.Glyph.ARROW_RIGHT)) {
                     action { webview.engine.executeScript("history.forward();") }
                 }
 
-                button(graphic = Glyph(FONT_AWESOME, "REFRESH")) {
+                button(graphic = getFontAwesomeGlyph(FontAwesome.Glyph.REFRESH)) {
                     action { webview.engine.reload() }
                 }
 
-                button(graphic = Glyph(FONT_AWESOME, "HOME")) {
+                button(graphic = getFontAwesomeGlyph(FontAwesome.Glyph.HOME)) {
                     action { webview.engine.load(config.string(HOME_PAGE)) }
                 }
             }
@@ -92,7 +93,7 @@ class WebBrowserView(
                 }
             }
 
-            button(graphic = Glyph(FONT_AWESOME, "STAR")) {
+            button(graphic = getFontAwesomeGlyph(FontAwesome.Glyph.STAR)) {
                 tooltip("Set Home Page")
 
                 action {
@@ -110,8 +111,8 @@ class WebBrowserView(
 
             add(
                 ThreadMonitoringButton.create(
-                    "Run" to AssetFactory.loadIcon("Run.png"),
-                    "Stop" to AssetFactory.loadIcon("Stop.png")
+                    "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
+                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
                 ) {
                     controller.runScript(currentScript)
                 }
@@ -160,7 +161,7 @@ class WebBrowserView(
      */
     private fun Button.modifyIntoCloneButton(script: WebBrowserScript): Button {
         text = "Clone"
-        graphic = AssetFactory.loadIcon("Make-Copy-Script.png")
+        graphic = loadImageAsset("Make-Copy-Script.png", FontAwesome.Glyph.COPY)
         isDisable = false
         action { runAsync { controller.cloneScript(script) } }
         return this
@@ -171,7 +172,7 @@ class WebBrowserView(
      */
     private fun Button.modifyIntoEditButton(script: WebBrowserScript): Button {
         text = "Edit"
-        graphic = AssetFactory.loadIcon("Edit-Script.png")
+        graphic = loadImageAsset("Edit-Script.png", FontAwesome.Glyph.EDIT)
         isDisable = false
         action { runAsync { controller.editScript(script) } }
         return this
@@ -185,7 +186,6 @@ class WebBrowserView(
         const val HOME_PAGE = "webview_home_page"
         const val DEFAULT_HOME_PAGE =
             "http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/"
-        private const val FONT_AWESOME = "FontAwesome"
 
         fun create(urlToLoad: String? = null) = WebBrowserView(
             MainWindowView.injector.getInstance(key<WebBrowserController>()),

@@ -8,13 +8,14 @@ package com.neuronrobotics.bowlerbuilder.view.creatureeditor
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.model.LimbData
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.configuration.AddLimbWizard
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory
+import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
 import javafx.scene.Node
+import org.controlsfx.glyphfont.FontAwesome
 import tornadofx.*
 
 class CreatureConfigurationView(
@@ -36,19 +37,22 @@ class CreatureConfigurationView(
             hbox {
                 spacing = 5.0
 
-                button("Regen CAD", AssetFactory.loadIcon("Generate-Cad.png")) {
+                button("Regen CAD", loadImageAsset("Generate-Cad.png", FontAwesome.Glyph.PLUS)) {
                     tooltip("Regenerate CAD")
                     action {
                     }
                 }
 
-                button("Print CAD", AssetFactory.loadIcon("Printable-Cad.png")) {
+                button("Print CAD", loadImageAsset("Printable-Cad.png", FontAwesome.Glyph.PLUS)) {
                     tooltip("Export printable STLs")
                     action {
                     }
                 }
 
-                button("Kinematic STL", AssetFactory.loadIcon("Printable-Cad.png")) {
+                button(
+                    "Kinematic STL",
+                    loadImageAsset("Printable-Cad.png", FontAwesome.Glyph.PLUS)
+                ) {
                     tooltip("Export kinematics STLs")
                     action {
                     }
@@ -63,25 +67,25 @@ class CreatureConfigurationView(
                 device.steerable).toImmutableList()
 
             tab("") {
-                graphic = AssetFactory.loadIcon("creature.png")
+                graphic = loadImageAsset("creature.png", FontAwesome.Glyph.COGS)
                 tooltip("Limb/Link Configuration")
                 content = generateConfigurationTabContent(limbs)
             }
 
             tab("") {
-                graphic = AssetFactory.loadIcon("Move-Limb.png")
+                graphic = loadImageAsset("Move-Limb.png", FontAwesome.Glyph.ARROWS_ALT)
                 tooltip("Movement Controls")
                 content = generateMovementTabContent(limbs)
             }
 
             tab("") {
-                graphic = AssetFactory.loadIcon("Advanced-Configuration.png")
+                graphic = loadImageAsset("Advanced-Configuration.png", FontAwesome.Glyph.COGS)
                 tooltip("Hardware Configuration")
                 content = generateHardwareTabContent(limbs)
             }
 
             tab("") {
-                graphic = AssetFactory.loadIcon("Edit-Script.png")
+                graphic = loadImageAsset("Edit-Script.png", FontAwesome.Glyph.EDIT)
                 tooltip("Scripting")
                 content = generateScriptingTabContent(limbs)
             }

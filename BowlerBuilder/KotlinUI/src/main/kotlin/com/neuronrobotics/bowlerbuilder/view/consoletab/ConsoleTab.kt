@@ -5,9 +5,10 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.consoletab
 
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory
+import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import javafx.scene.control.Tab
 import javafx.scene.control.TextArea
+import org.controlsfx.glyphfont.FontAwesome
 import tornadofx.*
 import java.io.OutputStream
 import java.io.PrintStream
@@ -21,7 +22,7 @@ import java.util.Locale
 class ConsoleTab : Tab("Terminal") {
 
     init {
-        graphic = AssetFactory.loadIcon("Command-Line.png")
+        graphic = loadImageAsset("Command-Line.png", FontAwesome.Glyph.TERMINAL)
 
         val textArea = textarea {
             text = SimpleDateFormat(
@@ -34,7 +35,8 @@ class ConsoleTab : Tab("Terminal") {
         PrintStream(
             TextAreaPrintStream(
                 textArea
-            ), true, "UTF-8").let {
+            ), true, "UTF-8"
+        ).let {
             System.setOut(it)
             System.setErr(it)
         }

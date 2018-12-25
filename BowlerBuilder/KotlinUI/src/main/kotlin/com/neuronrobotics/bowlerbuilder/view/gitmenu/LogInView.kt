@@ -5,8 +5,12 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import javafx.beans.property.SimpleStringProperty
+import org.controlsfx.control.Notifications
+import org.jlleitschuh.guice.key
 import tornadofx.*
 
 /**
@@ -14,7 +18,7 @@ import tornadofx.*
  */
 class LogInView : Fragment() {
 
-    private val loginManager = LoginManager()
+    private val loginManager = MainWindowView.injector.getInstance(key<LoginManager>())
     private val usernameProperty = SimpleStringProperty("")
     private val username by usernameProperty
     private val passwordProperty = SimpleStringProperty("")
@@ -50,13 +54,14 @@ class LogInView : Fragment() {
         runAsync {
             loginManager.login(username, password)
         } success {
+            MainWindowView.injector.getInstance(key<MainWindowController>()).apply {
+                gitHub = it
+                credentials = username to password
+            }
+
             if (loginManager.isLoggedIn) {
                 close()
             }
         }
-    }
-
-    companion object {
-        fun create() = LogInView()
     }
 }

@@ -10,6 +10,7 @@ import arrow.optics.optics
 @optics
 data class Gist(
     val gitUrl: String,
+    val id: Long,
     val description: String
 ) {
     companion object

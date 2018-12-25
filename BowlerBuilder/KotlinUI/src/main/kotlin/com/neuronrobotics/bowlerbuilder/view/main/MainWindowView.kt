@@ -49,7 +49,7 @@ import kotlin.concurrent.thread
 class MainWindowView : View() {
 
     private val controller = injector.getInstance(key<MainWindowController>())
-    private val loginManager = LoginManager()
+    private val loginManager = injector.getInstance(key<LoginManager>())
     private val scriptEditorFactory = injector.getInstance(key<CadScriptEditorFactory>())
     private var mainTabPane: TabPane by singleAssign()
     private var logInMenu: MenuItem by singleAssign()
@@ -71,7 +71,7 @@ class MainWindowView : View() {
 
             menu("Git") {
                 logInMenu = item("Log In") {
-                    action { LogInView.create().openModal() }
+                    action { LogInView().openModal() }
                     enableWhen(!loginManager.isLoggedInProperty)
                 }
 
@@ -133,18 +133,18 @@ class MainWindowView : View() {
 
     init {
         mainUIEventBus.register(this)
-        addTab(
-            Tab(
-                "",
-                CreatureConfigurationView(
-                    (ScriptingEngine.gitScriptRun(
-                        "https://gist.github.com/65ac76aeb898d2c00867b7b8397367e9.git",
-                        "HephaestusWorkCell_copy.xml",
-                        null
-                    ) as MobileBaseLoader).base
-                ).root
-            )
-        )
+//        addTab(
+//            Tab(
+//                "",
+//                CreatureConfigurationView(
+//                    (ScriptingEngine.gitScriptRun(
+//                        "https://gist.github.com/65ac76aeb898d2c00867b7b8397367e9.git",
+//                        "HephaestusWorkCell_copy.xml",
+//                        null
+//                    ) as MobileBaseLoader).base
+//                ).root
+//            )
+//        )
         reloadMenus()
     }
 
@@ -289,6 +289,7 @@ class MainWindowView : View() {
         val injector: Injector = Guice.createInjector(module {
             bind<MainWindowView>().`in`(Scopes.SINGLETON)
             bind<MainWindowController>().`in`(Scopes.SINGLETON)
+            bind<LoginManager>().`in`(Scopes.SINGLETON)
             bind<CadScriptEditorFactory>().to<AceCadScriptEditorFactory>()
             bind<ScriptRunner>().to<BowlerScriptRunner>()
         })

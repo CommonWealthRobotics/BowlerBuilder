@@ -13,10 +13,11 @@ import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory
+import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import javafx.geometry.Insets
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import org.controlsfx.glyphfont.FontAwesome
 import org.jlleitschuh.guice.key
 import tornadofx.*
 import javax.inject.Inject
@@ -48,14 +49,14 @@ class AceEditorView
 
             add(
                 ThreadMonitoringButton.create(
-                    "Run" to AssetFactory.loadIcon("Run.png"),
-                    "Stop" to AssetFactory.loadIcon("Stop.png")
+                    "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
+                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
                 ) {
                     controller.runScript(FxUtil.returnFX { getFullText() })
                 }
             )
 
-            button("Publish", AssetFactory.loadIcon("Publish.png")) {
+            button("Publish", loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)) {
                 action {
                     PublishView.create(gitUrl, filename, getFullText()).openModal()
                 }

@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.loadBowlerAsset
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsSliderWidget
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
@@ -15,7 +16,6 @@ import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.XForm
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.element.Axis3D
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.util.VirtualCameraMobileBaseFactory
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
-import com.neuronrobotics.bowlerstudio.assets.AssetFactory
 import com.neuronrobotics.imageprovider.VirtualCameraFactory
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR
@@ -34,6 +34,7 @@ import javafx.scene.control.ContextMenu
 import javafx.scene.control.CustomMenuItem
 import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
+import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
@@ -170,8 +171,24 @@ class BowlerCadEngine : Pane() {
     /** Builds the axes.  */
     private fun buildAxes() {
         try {
-            val ruler = AssetFactory.loadAsset("ruler.png")
-            val groundLocal = AssetFactory.loadAsset("ground.png")
+            val ruler = loadBowlerAsset("ruler.png").fold(
+                {
+                    throw it
+                },
+                {
+                    Image(it.toURI().toString())
+                }
+            )
+
+            val groundLocal = loadBowlerAsset("ground.png").fold(
+                {
+                    throw it
+                },
+                {
+                    Image(it.toURI().toString())
+                }
+            )
+
             val groundMove = Affine()
             groundMove.tx = -groundLocal.height / 2
             groundMove.ty = -groundLocal.width / 2

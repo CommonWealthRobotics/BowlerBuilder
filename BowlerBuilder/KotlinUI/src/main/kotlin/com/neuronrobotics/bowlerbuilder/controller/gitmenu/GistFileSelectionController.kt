@@ -5,12 +5,18 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
+import com.google.common.base.Throwables
+import com.neuronrobotics.bowlerbuilder.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.cloneRepo
+import com.neuronrobotics.bowlerbuilder.controller.filesInRepo
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import tornadofx.*
+import java.nio.file.Files
 import javax.inject.Inject
 
 class GistFileSelectionController
@@ -23,16 +29,28 @@ class GistFileSelectionController
     /**
      * Loads the files in a gist by [gistUrl] into [filesInGist].
      */
-    @SuppressWarnings("TooGenericExceptionCaught")
     fun loadFilesInGist(gistUrl: String) {
-        try {
-            ScriptingEngine.filesInGit(gistUrl)
-        } catch (ex: IndexOutOfBoundsException) {
-            // This is the ScriptingEngine getting an invalid url
-            emptyList<String>()
-        }.let {
-            filesInGist.setAll(it)
-        }
+        LOGGER.info("Loading files for: $gistUrl")
+        filesInRepo(gistUrl).toEither().bimap(
+            {
+                LOGGER.warning(
+                    """
+                    |Failed to clone repo from: $gistUrl
+                    |${it.localizedMessage}
+                    """.trimMargin()
+                )
+
+                LOGGER.fine(
+                    """
+                    |Failed to clone repo from: $gistUrl
+                    |${Throwables.getStackTraceAsString(it)}
+                    """.trimMargin()
+                )
+            },
+            {
+                filesInGist.setAll(it.map { it.name })
+            }
+        )
     }
 
     /**
@@ -40,5 +58,10 @@ class GistFileSelectionController
      */
     fun openGistFile(gistFile: GistFile) {
         cadScriptEditorFactory.createAndOpenScriptEditor(gistFile)
+    }
+
+    companion object {
+        private val LOGGER =
+            LoggerUtilities.getLogger(GistFileSelectionController::class.java.simpleName)
     }
 }

@@ -5,7 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
+import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.filesInRepo
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
@@ -14,11 +16,19 @@ import com.neuronrobotics.bowlerbuilder.model.filename
 import com.neuronrobotics.bowlerbuilder.model.gistFile
 import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.kinematicschef.util.emptyImmutableList
+import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
+import org.jsoup.Jsoup
 import tornadofx.*
+import java.io.File
+import java.io.StringWriter
 import javax.inject.Inject
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 
 class WebBrowserController
 @Inject constructor(
@@ -39,28 +49,25 @@ class WebBrowserController
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
         LOGGER.fine("Loading items for: $currentUrl")
         if (currentUrl.split("//").size < 2) {
-            // Don't call ScriptingEngine.getCurrentGist() with less than two elements because it
-            // throws an exception
+            // Don't call getCurrentGistId() with less than two elements because it throws an
+            // exception
             itemsOnPageProperty.clear()
         } else {
-            ScriptingEngine.getCurrentGist(currentUrl, engine).map {
-                WebBrowserScript(
-                    currentUrl,
-                    GistFile(
-                        Gist(getGitUrlFromPageUrl(currentUrl, it), ""),
-                        ""
-                    )
+            getCurrentGistId(engine).flatMap { gistId ->
+                val url = getGitUrlFromPageUrl(currentUrl, gistId)
+                val files = filesInRepo(url).fold(
+                    { emptyImmutableList<File>() },
+                    { it }
                 )
-            }.flatMap { script ->
-                val files = try {
-                    ScriptingEngine.filesInGit(script.gistFile.gist.gitUrl)
-                } catch (ex: Exception) {
-                    // This is the ScriptingEngine login manager being unhappy
-                    emptyList<String>()
-                }
 
                 files.map {
-                    WebBrowserScript.gistFile.filename.modify(script) { it }
+                    WebBrowserScript(
+                        currentUrl,
+                        GistFile(
+                            Gist(url, 0, ""),
+                            it.name
+                        )
+                    )
                 }
             }.filter {
                 it.gistFile.filename != "csgDatabase.json"
@@ -106,13 +113,14 @@ class WebBrowserController
             return false
         }
 
-        val currentFile = ScriptingEngine.fileFromGit(
-            currentScript.gistFile.gist.gitUrl,
-            currentScript.gistFile.filename
-        )
-
-        // TODO: checkOwner() doesn't return true when it should
-        return ScriptingEngine.checkOwner(currentFile)
+//        val currentFile = ScriptingEngine.fileFromGit(
+//            currentScript.gistFile.gist.gitUrl,
+//            currentScript.gistFile.filename
+//        )
+//
+//        // TODO: checkOwner() doesn't return true when it should
+//        return ScriptingEngine.checkOwner(currentFile)
+        return false
     }
 
     /**
@@ -178,10 +186,10 @@ class WebBrowserController
      * Maps the URL for a page containing a Git resource to the URL for that resource.
      *
      * @param pageUrl The page URL.
-     * @param gist The gist on the page, empty if no gist.
+     * @param gistId The gistId on the page, empty if no gistId.
      * @return A Git URL.
      */
-    private fun getGitUrlFromPageUrl(pageUrl: String, gist: String): String {
+    private fun getGitUrlFromPageUrl(pageUrl: String, gistId: String): String {
         return if (pageUrl.contains("https://github.com/")) {
             if (pageUrl.endsWith("/")) {
                 if (pageUrl.endsWith(".git/")) {
@@ -195,8 +203,40 @@ class WebBrowserController
                 "$pageUrl.git"
             }
         } else {
-            "https://gist.github.com/$gist.git"
+            "https://gist.github.com/$gistId.git"
         }
+    }
+
+    private fun getCurrentGistId(engine: WebEngine): ImmutableList<String> {
+        val sw = StringWriter()
+
+        TransformerFactory.newInstance().newTransformer().transform(
+            DOMSource(engine.document),
+            StreamResult(sw)
+        )
+
+        return returnFirstGistId(sw.buffer.toString())
+    }
+
+    private fun returnFirstGistId(html: String): ImmutableList<String> {
+        val ret = mutableListOf<String>()
+        val doc = Jsoup.parse(html)
+        val links = doc.select("script")
+
+        for (i in links.indices) {
+            val e = links[i]
+            val n = e.attributes()
+            val jSSource = n.get("src")
+            if (jSSource.contains("https://gist.github.com/")) {
+                val js =
+                    jSSource.split(".js".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
+                val id =
+                    js.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                ret.add(id[id.size - 1])
+            }
+        }
+
+        return ret.toImmutableList()
     }
 
     companion object {

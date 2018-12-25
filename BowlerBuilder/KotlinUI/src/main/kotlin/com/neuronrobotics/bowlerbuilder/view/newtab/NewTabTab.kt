@@ -6,14 +6,14 @@
 package com.neuronrobotics.bowlerbuilder.view.newtab
 
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
+import com.neuronrobotics.bowlerbuilder.view.util.getFontAwesomeGlyph
 import javafx.scene.control.Tab
-import org.controlsfx.glyphfont.Glyph
-import tornadofx.*
+import org.controlsfx.glyphfont.FontAwesome
 
 class NewTabTab : Tab("New...") {
 
     init {
-        graphic = Glyph("FontAwesome", "PLUS")
+        graphic = getFontAwesomeGlyph(FontAwesome.Glyph.PLUS)
         content = FxUtil.returnFX { NewTabView.create() }.root
     }
 }

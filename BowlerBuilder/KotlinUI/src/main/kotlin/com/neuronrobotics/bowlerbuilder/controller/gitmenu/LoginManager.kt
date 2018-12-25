@@ -5,56 +5,77 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
+import arrow.core.Try
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.bowlerbuilder.controller.cloneAssetRepo
 import javafx.beans.property.SimpleBooleanProperty
+import org.kohsuke.github.GitHub
 import tornadofx.*
-import java.io.IOException
+import java.nio.file.Paths
 import javax.inject.Singleton
+import kotlin.concurrent.thread
 
 /**
- * Manages logging in & out.
+ * Manages logging in and out from GitHub.
  */
 @Singleton
 class LoginManager {
+
+    private var github: Try<GitHub>? = null
+    private var credentials: Pair<String, String>? = null
+    private val credentialFile by lazy {
+        Paths.get(System.getProperty("user.home"), ".github").toFile()
+    }
 
     val isLoggedInProperty = SimpleBooleanProperty(false)
     var isLoggedIn by isLoggedInProperty
 
     init {
-        isLoggedIn = try {
-            ScriptingEngine.runLogin()
-            ScriptingEngine.isLoginSuccess() && ScriptingEngine.hasNetwork()
-        } catch (ex: IOException) {
-            false
+        isLoggedInProperty.addListener { _, _, new ->
+            if (new) {
+                credentials?.let {
+                    thread { cloneAssetRepo(it) }
+                }
+            }
+        }
+
+        github = login()
+    }
+
+    /**
+     * Log in using credentials from the default file or the environment.
+     */
+    fun login(): Try<GitHub> {
+        return Try {
+            GitHub.connect().also {
+                isLoggedIn = true
+                LOGGER.info("Logged in.")
+            }
+        }
+    }
+
+    /**
+     * Log in using an OAuth token.
+     */
+    fun login(oauthToken: String): Try<GitHub> {
+        return Try {
+            GitHub.connectUsingOAuth(oauthToken).also {
+                isLoggedIn = true
+                LOGGER.info("Logged in.")
+            }
         }
     }
 
     /**
      * Log in with a [username] and [password].
      */
-    fun login(username: String, password: String) {
-        var failedLastTry = false
-        ScriptingEngine.setLoginManager {
-            if (!failedLastTry) {
-                failedLastTry = true
-                arrayOf(username, password)
-            } else {
-                arrayOf("", "")
-            }
-        }
-
-        ScriptingEngine.waitForLogin()
-
-        if (ScriptingEngine.isLoginSuccess() && ScriptingEngine.hasNetwork()) {
-            isLoggedIn = true
-            LOGGER.info {
-                "Login as $username successful."
-            }
-        } else {
-            isLoggedIn = false
-            LOGGER.severe {
-                "Login as $username not successful."
+    fun login(username: String, password: String): Try<GitHub> {
+        return Try {
+            GitHub.connectUsingPassword(username, password).also {
+                isLoggedIn = true
+                credentials = username to password
+                writeCredentials(username, password)
+                LOGGER.info("Logged in $username.")
             }
         }
     }
@@ -63,8 +84,19 @@ class LoginManager {
      * Logout the currently logged in user.
      */
     fun logout() {
-        ScriptingEngine.logout()
         isLoggedIn = false
+        credentialFile.delete()
+        LOGGER.info("Logged out.")
+    }
+
+    private fun writeCredentials(username: String, password: String) {
+        credentialFile.writeText(
+            """
+            |login=$username
+            |password=$password
+            |
+            """.trimMargin()
+        )
     }
 
     companion object {

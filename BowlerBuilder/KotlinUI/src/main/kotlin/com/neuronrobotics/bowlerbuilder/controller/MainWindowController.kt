@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller
 
+import arrow.core.Try
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.LoggerUtilities
@@ -16,10 +17,12 @@ import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.kinematicschef.util.emptyImmutableList
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import com.neuronrobotics.sdk.common.DeviceManager
 import javafx.application.Platform
 import org.apache.commons.io.FileUtils
+import org.kohsuke.github.GitHub
 import tornadofx.*
 import java.io.File
 import java.io.IOException
@@ -32,50 +35,71 @@ class MainWindowController
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Controller() {
 
+    var credentials: Pair<String, String> = "" to ""
+    var gitHub: Try<GitHub> = Try.raise(IllegalStateException("Not logged in."))
+
     /**
      * Load the authenticated user's gists.
      */
     fun loadUserGists(): ImmutableList<Gist> {
-        return ScriptingEngine.getGithub()
-            .myself
-            .listGists()
-            .map {
-                Gist(
-                    gitUrl = it.gitPushUrl,
-                    description = it.description
-                )
-            }.toImmutableList()
+        return gitHub.fold(
+            { emptyImmutableList() },
+            {
+                it.myself
+                    .listGists()
+                    .map {
+                        Gist(
+                            gitUrl = it.gitPushUrl,
+                            id = it.id.toLong(),
+                            description = it.description
+                        )
+                    }.toImmutableList()
+            }
+        )
     }
 
     /**
      * Load the authenticated user's organizations.
      */
     fun loadUserOrgs(): ImmutableList<Organization> {
-        return ScriptingEngine.getGithub()
-            .myOrganizations
-            .map {
-                Organization(
-                    gitUrl = it.value.htmlUrl,
-                    name = it.key,
-                    repositories = it.value.repositories
-                        .map {
-                            Repository(
-                                gitUrl = it.value.gitTransportUrl,
-                                name = it.key
-                            )
-                        }.toImmutableList()
-                )
-            }.toImmutableList()
+        return gitHub.fold(
+            { emptyImmutableList() },
+            {
+                it.myOrganizations
+                    .map {
+                        Organization(
+                            gitUrl = it.value.htmlUrl,
+                            name = it.key,
+                            repositories = it.value.repositories
+                                .map {
+                                    Repository(
+                                        gitUrl = it.value.gitTransportUrl,
+                                        name = it.key
+                                    )
+                                }.toImmutableList()
+                        )
+                    }.toImmutableList()
+            }
+        )
     }
 
     /**
      * Load the files in the [gist].
      */
     fun loadFilesInGist(gist: Gist): ImmutableList<GistFile> {
-        return ScriptingEngine.filesInGit(gist.gitUrl)
-            .map {
-                GistFile(gist, it)
-            }.toImmutableList()
+        return gitHub.fold(
+            { emptyImmutableList() },
+            {
+                it.getGist(gist.id.toString()).let { gist ->
+                    gist.files.values.map {
+                        GistFile(
+                            Gist(gist.htmlUrl, gist.id.toLong(), gist.description),
+                            it.fileName
+                        )
+                    }.toImmutableList()
+                }
+            }
+        )
     }
 
     /**
@@ -107,6 +131,7 @@ class MainWindowController
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(MainWindowController::class.java.simpleName)
+        const val BOWLERBUILDER_DIRECTORY = "BowlerBuilder"
 
         /**
          * Try to close gracefully and start a scheduled task to forcibly close the application.

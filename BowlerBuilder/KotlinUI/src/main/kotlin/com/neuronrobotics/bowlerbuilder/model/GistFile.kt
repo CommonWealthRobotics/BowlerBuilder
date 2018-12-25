@@ -14,6 +14,6 @@ data class GistFile(
 ) {
     companion object {
         // This is not a secondary constructor because of https://github.com/arrow-kt/arrow/issues/1211
-        fun create(gitUrl: String, filename: String) = GistFile(Gist(gitUrl, ""), filename)
+        fun create(gitUrl: String, filename: String) = GistFile(Gist(gitUrl, 0, ""), filename)
     }
 }
