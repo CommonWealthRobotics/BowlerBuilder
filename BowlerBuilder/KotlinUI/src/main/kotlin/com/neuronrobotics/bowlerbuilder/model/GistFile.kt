@@ -6,14 +6,15 @@
 package com.neuronrobotics.bowlerbuilder.model
 
 import arrow.optics.optics
+import java.io.File
 
 @optics
 data class GistFile(
     val gist: Gist,
-    val filename: String
+    val file: File
 ) {
     companion object {
         // This is not a secondary constructor because of https://github.com/arrow-kt/arrow/issues/1211
-        fun create(gitUrl: String, filename: String) = GistFile(Gist(gitUrl, 0, ""), filename)
+        fun create(gitUrl: String, file: File) = GistFile(Gist(gitUrl, 0, ""), file)
     }
 }

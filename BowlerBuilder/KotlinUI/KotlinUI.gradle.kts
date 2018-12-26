@@ -1,10 +1,8 @@
-import KotlinUI_gradle.Versions.arrow_version
+
 
 plugins {
     `java-library`
     application
-    id("org.jetbrains.kotlin.kapt")
-    idea
 }
 
 application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
@@ -19,16 +17,21 @@ repositories {
 }
 
 dependencies {
-    api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
-    kapt(group = "io.arrow-kt", name = "arrow-annotations-processor", version = arrow_version)
-    api(group = "io.arrow-kt", name = "arrow-syntax", version = arrow_version)
-    api(group = "io.arrow-kt", name = "arrow-data", version = arrow_version)
-    api(group = "io.arrow-kt", name = "arrow-optics", version = arrow_version)
-    api(group = "org.kohsuke", name = "github-api", version = "1.95")
-
-    implementation(project(":BowlerBuilder:Core")) {
+    api(project(":BowlerKernel:Core"))
+    api(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.34.1") {
+        exclude(group = "org.slf4j")
         exclude(group = "com.google.guava")
+        exclude(group = "org.kohsuke")
+        exclude(group = "org.eclipse.jgit")
     }
+
+    implementation(
+        group = "org.eclipse.jgit",
+        name = "org.eclipse.jgit",
+        version = "5.2.0.201812061821-r"
+    )
+
+    implementation(group = "org.jsoup", name = "jsoup", version = "1.11.3")
     implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
     implementation(group = "org.controlsfx", name = "controlsfx", version = "8.40.14")
     implementation(group = "com.google.inject", name = "guice", version = "4.1.0")
@@ -45,35 +48,4 @@ dependencies {
     implementation(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     implementation(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
     implementation(group = "com.beust", name = "klaxon", version = "3.0.1")
-
-    implementation(
-        group = "org.eclipse.jgit",
-        name = "org.eclipse.jgit",
-        version = "5.2.0.201812061821-r"
-    )
-}
-
-idea {
-    module {
-        sourceDirs = sourceDirs + files(
-            "build/generated/source/kapt/main",
-            "build/generated/source/kapt/debug",
-            "build/generated/source/kapt/release",
-            "build/generated/source/kaptKotlin/main",
-            "build/generated/source/kaptKotlin/debug",
-            "build/generated/source/kaptKotlin/release",
-            "build/tmp/kapt/main/kotlinGenerated"
-        )
-
-        @Suppress("UnstableApiUsage")
-        generatedSourceDirs = generatedSourceDirs + files(
-            "build/generated/source/kapt/main",
-            "build/generated/source/kapt/debug",
-            "build/generated/source/kapt/release",
-            "build/generated/source/kaptKotlin/main",
-            "build/generated/source/kaptKotlin/debug",
-            "build/generated/source/kaptKotlin/release",
-            "build/tmp/kapt/main/kotlinGenerated"
-        )
-    }
 }

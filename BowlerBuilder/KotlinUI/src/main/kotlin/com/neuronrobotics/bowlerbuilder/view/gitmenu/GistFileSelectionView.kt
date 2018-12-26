@@ -5,24 +5,25 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.GistFileSelectionController
 import com.neuronrobotics.bowlerbuilder.model.GistFile
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
 import javafx.geometry.Orientation
-import org.jlleitschuh.guice.key
 import tornadofx.*
+import java.io.File
 
 /**
  * A form to select a file in a gist via url.
  */
 class GistFileSelectionView : Fragment() {
 
-    private val controller = MainWindowView.injector.getInstance(key<GistFileSelectionController>())
+    private val controller = getInstanceOf<GistFileSelectionController>()
     private val gistUrlProperty = SimpleStringProperty("")
     private var gistUrl by gistUrlProperty
-    private val gistFileSelectionProperty = SimpleStringProperty("")
+    private val gistFileSelectionProperty = SimpleObjectProperty<File>()
     private var gistFileSelection by gistFileSelectionProperty
 
     override val root = form {

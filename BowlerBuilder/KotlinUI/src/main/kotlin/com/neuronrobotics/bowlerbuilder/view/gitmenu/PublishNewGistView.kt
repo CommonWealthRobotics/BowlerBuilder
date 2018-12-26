@@ -5,15 +5,19 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
+import arrow.core.Try
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.GistUtilities
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.gitmenu.PublishController
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.gistFileToFile
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import tornadofx.*
+import java.io.File
 
 /**
  * A form to create a new gist and push the initial commit.
@@ -22,20 +26,21 @@ class PublishNewGistView(
     private val scriptContent: String
 ) : Fragment() {
 
-    private val controller = PublishController()
-
     private val commitMessageProperty = SimpleStringProperty("")
     private var commitMessage by commitMessageProperty
-    val gistFilenameProperty = SimpleStringProperty("")
-    var gistFilename by gistFilenameProperty
     private val gistDescriptionProperty = SimpleStringProperty("")
     private var gistDescription by gistDescriptionProperty
     private val gistIsPublicProperty = SimpleBooleanProperty(true)
     private var gistIsPublic by gistIsPublicProperty
+
+    val gistFilenameProperty = SimpleStringProperty("")
+    var gistFilename by gistFilenameProperty
     val gitUrlProperty = SimpleStringProperty("")
     var gitUrl by gitUrlProperty
     val publishSuccessfulProperty = SimpleBooleanProperty(false)
     var publishSuccessful by publishSuccessfulProperty
+    val publishedFileProperty = SimpleObjectProperty<File>()
+    var publishedFile by publishedFileProperty
 
     override val root = form {
         fieldset("Gist Configuration", labelPosition = Orientation.VERTICAL) {
@@ -65,24 +70,23 @@ class PublishNewGistView(
             button("Publish") {
                 action {
                     runAsync {
-                        GistUtilities.createNewGist(
-                            gistFilename,
-                            gistDescription,
-                            gistIsPublic
-                        ).handle(
-                            {
-                                gitUrl = it.gitPushUrl
-                                controller.publish(
-                                    gitUrl = it.gitPushUrl,
-                                    filename = gistFilename,
-                                    fileContent = scriptContent,
-                                    commitMessage = commitMessage
-                                )
-                            },
-                            {
-                                throw it
+                        getInstanceOf<MainWindowController>().gitHub.flatMap {
+                            Try {
+                                val gist = it.createGist()
+                                    .file(gistFilename, scriptContent)
+                                    .description(gistDescription)
+                                    .public_(gistIsPublic)
+                                    .create()
+
+                                publishedFile =
+                                    gistFileToFile(
+                                        gist,
+                                        gist.getFile(gistFilename)
+                                    )
+
+                                gist
                             }
-                        )
+                        }
                     } success {
                         publishSuccessful = true
                         close()

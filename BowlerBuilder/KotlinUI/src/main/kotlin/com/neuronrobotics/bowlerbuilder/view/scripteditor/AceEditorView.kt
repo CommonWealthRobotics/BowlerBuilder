@@ -5,11 +5,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.model.GistFile
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -18,8 +18,8 @@ import javafx.geometry.Insets
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import org.controlsfx.glyphfont.FontAwesome
-import org.jlleitschuh.guice.key
 import tornadofx.*
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -31,7 +31,7 @@ class AceEditorView
     private val editor: AceWebEditorView,
     private val controller: AceEditorController,
     private val gitUrl: String,
-    private val filename: String
+    private val file: File
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
 
     private var urlTextField: TextField by singleAssign()
@@ -58,7 +58,7 @@ class AceEditorView
 
             button("Publish", loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)) {
                 action {
-                    PublishView.create(gitUrl, filename, getFullText()).openModal()
+                    PublishView.create(gitUrl, file, getFullText()).openModal()
                 }
             }
 
@@ -75,31 +75,33 @@ class AceEditorView
             urlTextField.text = gitUrl
 
             runAsync {
-                val text = controller.getTextForGitResource(gitUrl, filename)
+                val text = controller.getTextForGitResource(gitUrl, file.name)
 
                 engineInitializingLatch.await()
 
-                runLater {
-                    setText(text)
-                    gotoLine(0)
+                text.map {
+                    runLater {
+                        setText(it)
+                        gotoLine(0)
+                    }
                 }
             }
         }
     }
 
     companion object {
-        fun create(url: String, filename: String) = AceEditorView(
+        fun create(url: String, file: File) = AceEditorView(
             AceWebEditorView(),
-            MainWindowView.injector.getInstance(key<AceEditorController>()),
+            getInstanceOf<AceEditorController>(),
             url,
-            filename
+            file
         )
 
         fun create(gistFile: GistFile) = AceEditorView(
             AceWebEditorView(),
-            MainWindowView.injector.getInstance(key<AceEditorController>()),
+            getInstanceOf<AceEditorController>(),
             gistFile.gist.gitUrl,
-            gistFile.filename
+            gistFile.file
         )
     }
 }

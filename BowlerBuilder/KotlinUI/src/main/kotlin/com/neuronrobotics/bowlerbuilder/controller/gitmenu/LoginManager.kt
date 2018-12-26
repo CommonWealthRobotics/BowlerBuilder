@@ -6,8 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import arrow.core.Try
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.cloneAssetRepo
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
 import tornadofx.*

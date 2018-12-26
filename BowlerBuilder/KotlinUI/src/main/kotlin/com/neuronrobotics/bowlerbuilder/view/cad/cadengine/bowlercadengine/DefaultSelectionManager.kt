@@ -5,7 +5,6 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
-import com.neuronrobotics.bowlerbuilder.cad.CsgParser
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
 import com.neuronrobotics.bowlerstudio.physics.TransformFactory
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR

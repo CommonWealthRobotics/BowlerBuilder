@@ -6,7 +6,6 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory
 
 import com.neuronrobotics.bowlerbuilder.model.GistFile
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditor
 
 interface CadScriptEditorFactory {

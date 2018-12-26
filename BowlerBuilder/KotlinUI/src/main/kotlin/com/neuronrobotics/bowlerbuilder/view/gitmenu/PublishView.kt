@@ -6,19 +6,20 @@
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.PublishController
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import tornadofx.*
+import java.io.File
 
 /**
  * A form to commit and push changes to a file.
  */
 class PublishView(
     private val gitUrl: String,
-    private val filename: String,
+    private val file: File,
     private val scriptContent: String
 ) : Fragment() {
 
@@ -40,7 +41,7 @@ class PublishView(
             button("Push") {
                 action {
                     runAsync {
-                        controller.publish(gitUrl, filename, scriptContent, commitMessage)
+                        controller.publish(file, scriptContent, commitMessage)
                     } success {
                         close()
                     } fail {
@@ -62,8 +63,8 @@ class PublishView(
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(PublishView::class.java.simpleName)
 
-        fun create(gitUrl: String, filename: String, fullText: String) = PublishView(
-            gitUrl, filename, fullText
+        fun create(gitUrl: String, file: File, fullText: String) = PublishView(
+            gitUrl, file, fullText
         )
     }
 }

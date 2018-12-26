@@ -5,7 +5,6 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import javafx.scene.Parent
 
 /**

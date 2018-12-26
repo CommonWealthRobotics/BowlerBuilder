@@ -6,7 +6,10 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.RepositoryBuilder
 import tornadofx.*
+import java.io.File
 
 class PublishController : Controller() {
 
@@ -35,5 +38,26 @@ class PublishController : Controller() {
             fileContent,
             commitMessage
         )
+    }
+
+    fun publish(
+        file: File,
+        content: String,
+        commitMessage: String
+    ) {
+        val repo = RepositoryBuilder()
+            .findGitDir(file)
+            .build()
+
+        file.writeText(content)
+
+        val git = Git(repo)
+        git.commit()
+            .setMessage(commitMessage)
+            .setOnly(file.path)
+            .call()
+
+        git.close()
+        repo.close()
     }
 }

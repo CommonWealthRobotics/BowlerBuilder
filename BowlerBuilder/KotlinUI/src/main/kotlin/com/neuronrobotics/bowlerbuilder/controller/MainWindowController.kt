@@ -8,24 +8,32 @@ package com.neuronrobotics.bowlerbuilder.controller
 import arrow.core.Try
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
+import com.google.inject.Guice
+import com.google.inject.Injector
+import com.google.inject.Scopes
+import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
+import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.gistFileToFile
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.Organization
 import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.bowlerkernel.scripting.DefaultScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.ScriptFactory
 import com.neuronrobotics.kinematicschef.util.emptyImmutableList
 import com.neuronrobotics.kinematicschef.util.toImmutableList
-import com.neuronrobotics.sdk.common.DeviceManager
 import javafx.application.Platform
 import org.apache.commons.io.FileUtils
+import org.jlleitschuh.guice.key
+import org.jlleitschuh.guice.module
 import org.kohsuke.github.GitHub
 import tornadofx.*
-import java.io.File
 import java.io.IOException
+import java.nio.file.Paths
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
@@ -49,8 +57,8 @@ class MainWindowController
                     .listGists()
                     .map {
                         Gist(
-                            gitUrl = it.gitPushUrl,
-                            id = it.id.toLong(),
+                            gitUrl = it.gitPullUrl,
+                            id = it.id,
                             description = it.description
                         )
                     }.toImmutableList()
@@ -68,7 +76,7 @@ class MainWindowController
                 it.myOrganizations
                     .map {
                         Organization(
-                            gitUrl = it.value.htmlUrl,
+                            gitUrl = it.value.htmlUrl.toString(),
                             name = it.key,
                             repositories = it.value.repositories
                                 .map {
@@ -93,8 +101,11 @@ class MainWindowController
                 it.getGist(gist.id.toString()).let { gist ->
                     gist.files.values.map {
                         GistFile(
-                            Gist(gist.htmlUrl, gist.id.toLong(), gist.description),
-                            it.fileName
+                            Gist(gist.htmlUrl.toString(), gist.id, gist.description),
+                            gistFileToFile(
+                                gist,
+                                it
+                            )
                         )
                     }.toImmutableList()
                 }
@@ -115,7 +126,11 @@ class MainWindowController
     fun deleteLocalCache() {
         try {
             FileUtils.deleteDirectory(
-                File(ScriptingEngine.getWorkspace().absolutePath + "/gistcache/")
+                Paths.get(
+                    System.getProperty("user.home"),
+                    BOWLERBUILDER_DIRECTORY,
+                    GIT_CACHE_DIRECTORY
+                ).toFile()
             )
 
             beginForceQuit()
@@ -132,6 +147,19 @@ class MainWindowController
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(MainWindowController::class.java.simpleName)
         const val BOWLERBUILDER_DIRECTORY = "BowlerBuilder"
+        const val LOGS_DIRECTORY = "git-cache"
+        const val PREFERENCES_DIRECTORY = "preferences"
+        const val GIT_CACHE_DIRECTORY = "logs"
+
+        val injector: Injector = Guice.createInjector(module {
+            bind<MainWindowView>().`in`(Scopes.SINGLETON)
+            bind<MainWindowController>().`in`(Scopes.SINGLETON)
+            bind<LoginManager>().`in`(Scopes.SINGLETON)
+            bind<CadScriptEditorFactory>().to<AceCadScriptEditorFactory>()
+            bind<ScriptFactory>().to<DefaultScriptFactory>()
+        })
+
+        inline fun <reified T> getInstanceOf() = injector.getInstance(key<T>())
 
         /**
          * Try to close gracefully and start a scheduled task to forcibly close the application.
@@ -167,21 +195,9 @@ class MainWindowController
                 10000
             )
 
+            // TODO: Disconnect all devices
             MainWindowView.mainUIEventBus.post(ApplicationClosingEvent)
-            disconnectAllDevices()
             Platform.exit()
-        }
-
-        private fun disconnectAllDevices() {
-            DeviceManager.listConnectedDevice().forEach {
-                val device = DeviceManager.getSpecificDevice(it)
-
-                if (device.isAvailable) {
-                    device.disconnect()
-                }
-
-                DeviceManager.remove(device)
-            }
         }
     }
 }

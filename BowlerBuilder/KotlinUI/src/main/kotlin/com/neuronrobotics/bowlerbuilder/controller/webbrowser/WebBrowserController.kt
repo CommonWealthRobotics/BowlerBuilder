@@ -5,17 +5,20 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
+import arrow.core.Try
+import arrow.core.recoverWith
+import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.filesInRepo
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
+import com.neuronrobotics.bowlerbuilder.controller.util.forkGist
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerbuilder.model.filename
-import com.neuronrobotics.bowlerbuilder.model.gistFile
-import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import com.neuronrobotics.bowlerkernel.scripting.ScriptFactory
 import com.neuronrobotics.kinematicschef.util.emptyImmutableList
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.collections.FXCollections
@@ -32,7 +35,7 @@ import javax.xml.transform.stream.StreamResult
 
 class WebBrowserController
 @Inject constructor(
-    private val scriptRunner: ScriptRunner,
+    private val scriptFactory: ScriptFactory,
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Controller() {
 
@@ -55,7 +58,10 @@ class WebBrowserController
         } else {
             getCurrentGistId(engine).flatMap { gistId ->
                 val url = getGitUrlFromPageUrl(currentUrl, gistId)
-                val files = filesInRepo(url).fold(
+                val files = filesInRepo(
+                    getInstanceOf<MainWindowController>().credentials,
+                    url
+                ).fold(
                     { emptyImmutableList<File>() },
                     { it }
                 )
@@ -65,12 +71,12 @@ class WebBrowserController
                         currentUrl,
                         GistFile(
                             Gist(url, 0, ""),
-                            it.name
+                            it
                         )
                     )
                 }
             }.filter {
-                it.gistFile.filename != "csgDatabase.json"
+                it.gistFile.file.name != "csgDatabase.json"
             }.let {
                 itemsOnPageProperty.setAll(it)
             }
@@ -102,61 +108,78 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        scriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.gistFile.filename)
+        scriptFactory.createScriptFromGist(
+            currentScript.gistFile.gist.id.toString(),
+            currentScript.gistFile.file.name
+        ).map {
+            it.runScript(emptyImmutableList())
+        }
     }
 
     /**
      * Returns whether the currently logged in user owns the [currentScript].
      */
-    fun doesUserOwnScript(currentScript: WebBrowserScript): Boolean {
+    fun doesUserOwnScript(currentScript: WebBrowserScript): Try<Boolean> {
         if (currentScript == WebBrowserScript.empty) {
-            return false
+            return Try.just(false)
         }
 
-//        val currentFile = ScriptingEngine.fileFromGit(
-//            currentScript.gistFile.gist.gitUrl,
-//            currentScript.gistFile.filename
-//        )
-//
-//        // TODO: checkOwner() doesn't return true when it should
-//        return ScriptingEngine.checkOwner(currentFile)
-        return false
+        return getInstanceOf<MainWindowController>().gitHub.map { gitHub ->
+            gitHub.myself.listRepositories()
+                .first {
+                    it.gitTransportUrl == currentScript.gistFile.gist.gitUrl
+                }.hasPushAccess()
+        }
     }
 
     /**
      * Clones the [currentScript] and opens it in an editor.
      */
-    fun cloneScript(currentScript: WebBrowserScript): WebBrowserScript {
+    fun forkScript(currentScript: WebBrowserScript): Try<WebBrowserScript> {
         if (currentScript == WebBrowserScript.empty) {
-            return WebBrowserScript.empty
+            return Try.just(WebBrowserScript.empty)
         }
 
         LOGGER.fine(
             """
-            |Cloning script:
+            |Forking gist:
             |$currentScript
             """.trimMargin()
         )
 
-        val gist = ScriptingEngine.fork(
-            ScriptingEngine.urlToGist(currentScript.gistFile.gist.gitUrl)
-        ) ?: throw IllegalStateException("Failed to fork script.")
-
-        return currentScript.copy(
-            pageUrl = gist.htmlUrl,
-            gistFile = currentScript.gistFile.copy(
-                gist = currentScript.gistFile.gist.copy(
-                    gitUrl = gist.gitPushUrl
-                )
+        val gist = getInstanceOf<MainWindowController>().gitHub.flatMap {
+            forkGist(
+                it,
+                currentScript.gistFile.gist.id.toString()
             )
-        ).also {
-            LOGGER.fine(
+        }.recoverWith {
+            LOGGER.severe(
                 """
-                |Cloned to:
-                |$it
+                |Failed to fork gist:
+                |${Throwables.getStackTraceAsString(it)}
                 """.trimMargin()
             )
-            editScript(it)
+            Try.raise(it)
+        }
+
+        return gist.map {
+            val scriptClone = currentScript.copy(
+                pageUrl = it.htmlUrl.toString(),
+                gistFile = currentScript.gistFile.copy(
+                    gist = currentScript.gistFile.gist.copy(
+                        gitUrl = it.gitPullUrl
+                    )
+                )
+            )
+
+            LOGGER.fine(
+                """
+                |Forked to:
+                |$scriptClone
+                """.trimMargin()
+            )
+
+            scriptClone
         }
     }
 

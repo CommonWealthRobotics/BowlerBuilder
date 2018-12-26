@@ -5,9 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.getFontAwesomeGlyph
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
@@ -20,7 +20,6 @@ import javafx.scene.control.Button
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
 import org.controlsfx.glyphfont.FontAwesome
-import org.jlleitschuh.guice.key
 import tornadofx.*
 
 /**
@@ -126,7 +125,7 @@ class WebBrowserView(
 
             combobox<WebBrowserScript> {
                 cellFormat {
-                    text = it.gistFile.filename
+                    text = it.gistFile.file.name
                 }
 
                 valueProperty().addListener { _, _, new ->
@@ -136,10 +135,12 @@ class WebBrowserView(
                     runAsync {
                         controller.doesUserOwnScript(nonNullValue)
                     } success {
-                        if (it) {
-                            cloneButton.modifyIntoEditButton(nonNullValue)
-                        } else {
-                            cloneButton.modifyIntoCloneButton(nonNullValue)
+                        it.map {
+                            if (it) {
+                                cloneButton.modifyIntoEditButton(nonNullValue)
+                            } else {
+                                cloneButton.modifyIntoCloneButton(nonNullValue)
+                            }
                         }
                     }
                 }
@@ -163,7 +164,7 @@ class WebBrowserView(
         text = "Clone"
         graphic = loadImageAsset("Make-Copy-Script.png", FontAwesome.Glyph.COPY)
         isDisable = false
-        action { runAsync { controller.cloneScript(script) } }
+        action { runAsync { controller.forkScript(script) } }
         return this
     }
 
@@ -188,7 +189,7 @@ class WebBrowserView(
             "http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/"
 
         fun create(urlToLoad: String? = null) = WebBrowserView(
-            MainWindowView.injector.getInstance(key<WebBrowserController>()),
+            getInstanceOf<WebBrowserController>(),
             urlToLoad
         )
     }

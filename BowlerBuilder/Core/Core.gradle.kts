@@ -9,7 +9,6 @@ repositories {
 }
 
 dependencies {
-    // api(project(":bowler-script-kernel")) {
     api(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.32.4") {
         exclude(group = "org.slf4j", module = "slf4j-simple")
         exclude(group = "com.google.guava")
@@ -20,8 +19,8 @@ dependencies {
         name = "kinematicschef-core",
         version = "0.0.14"
     ) {
-        exclude(group = "com.google.guava")
         exclude(group = "org.slf4j", module = "slf4j-simple")
+        exclude(group = "com.google.guava")
     }
 
     implementation(group = "org.apache.ivy", name = "ivy", version = "2.2.0")

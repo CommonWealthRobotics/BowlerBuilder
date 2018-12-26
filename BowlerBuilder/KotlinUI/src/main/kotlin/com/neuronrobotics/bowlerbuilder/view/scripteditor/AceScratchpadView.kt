@@ -5,11 +5,12 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.model.GistFile
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
@@ -18,7 +19,6 @@ import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import javafx.geometry.Insets
 import org.controlsfx.glyphfont.FontAwesome
-import org.jlleitschuh.guice.key
 import tornadofx.*
 import javax.inject.Inject
 
@@ -64,7 +64,7 @@ class AceScratchpadView
                     if (view.publishSuccessful) {
                         runAsync {
                             cadScriptEditorFactory.createAndOpenScriptEditor(
-                                GistFile.create(view.gitUrl, view.gistFilename)
+                                GistFile.create(view.gitUrl, view.publishedFile)
                             )
                         }
 
@@ -80,8 +80,8 @@ class AceScratchpadView
     companion object {
         fun create() = AceScratchpadView(
             AceWebEditorView(),
-            MainWindowView.injector.getInstance(key<AceEditorController>()),
-            MainWindowView.injector.getInstance(key<CadScriptEditorFactory>())
+            getInstanceOf<AceEditorController>(),
+            getInstanceOf<CadScriptEditorFactory>()
         )
     }
 }

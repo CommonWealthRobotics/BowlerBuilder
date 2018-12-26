@@ -6,6 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.model
 
 import arrow.optics.optics
+import java.io.File
 
 @optics
 data class WebBrowserScript(
@@ -13,6 +14,6 @@ data class WebBrowserScript(
     val gistFile: GistFile
 ) {
     companion object {
-        val empty = WebBrowserScript("", GistFile(Gist("", 0, ""), ""))
+        val empty = WebBrowserScript("", GistFile(Gist("", 0, ""), File("")))
     }
 }

@@ -6,7 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.controller
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import org.greenrobot.eventbus.Logger
 import java.util.logging.Level
 

@@ -6,17 +6,16 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.cloneRepo
-import com.neuronrobotics.bowlerbuilder.controller.filesInRepo
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.GistFile
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
-import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import tornadofx.*
-import java.nio.file.Files
+import java.io.File
 import javax.inject.Inject
 
 class GistFileSelectionController
@@ -24,14 +23,17 @@ class GistFileSelectionController
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Controller() {
 
-    val filesInGist: ObservableList<String> = FXCollections.observableArrayList<String>()
+    val filesInGist: ObservableList<File> = FXCollections.observableArrayList<File>()
 
     /**
      * Loads the files in a gist by [gistUrl] into [filesInGist].
      */
     fun loadFilesInGist(gistUrl: String) {
         LOGGER.info("Loading files for: $gistUrl")
-        filesInRepo(gistUrl).toEither().bimap(
+        filesInRepo(
+            getInstanceOf<MainWindowController>().credentials,
+            gistUrl
+        ).toEither().bimap(
             {
                 LOGGER.warning(
                     """
@@ -48,7 +50,7 @@ class GistFileSelectionController
                 )
             },
             {
-                filesInGist.setAll(it.map { it.name })
+                filesInGist.setAll(it)
             }
         )
     }

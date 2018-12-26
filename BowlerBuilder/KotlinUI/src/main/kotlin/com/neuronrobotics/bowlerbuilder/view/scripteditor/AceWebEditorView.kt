@@ -6,7 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceWebViewCommandMapper
-import com.neuronrobotics.bowlerbuilder.scripting.scripteditor.ScriptEditor
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import javafx.concurrent.Worker
 import tornadofx.*
 

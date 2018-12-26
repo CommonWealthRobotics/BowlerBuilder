@@ -22,7 +22,7 @@ class AceCadScriptEditorFactory : CadScriptEditorFactory {
             val cadEditor = CadScriptEditor(editor)
             MainWindowView.mainUIEventBus.post(
                 AddTabEvent(
-                    CadScriptEditorTab(gistFile.filename, editor)
+                    CadScriptEditorTab(gistFile.file.name, editor)
                 )
             )
             cadEditor to editor

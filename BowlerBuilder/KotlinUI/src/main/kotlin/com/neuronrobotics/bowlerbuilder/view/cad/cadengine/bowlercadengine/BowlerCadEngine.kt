@@ -6,8 +6,10 @@
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.loadBowlerAsset
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsSliderWidget
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
@@ -55,10 +57,10 @@ import org.apache.commons.io.FileUtils
 import tornadofx.*
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
 import java.util.logging.Level
+import kotlin.concurrent.thread
 
 /**
  * CAD Engine from BowlerStudio.
@@ -171,7 +173,10 @@ class BowlerCadEngine : Pane() {
     /** Builds the axes.  */
     private fun buildAxes() {
         try {
-            val ruler = loadBowlerAsset("ruler.png").fold(
+            val ruler = loadBowlerAsset(
+                getInstanceOf<MainWindowController>().credentials,
+                "ruler.png"
+            ).fold(
                 {
                     throw it
                 },
@@ -180,7 +185,10 @@ class BowlerCadEngine : Pane() {
                 }
             )
 
-            val groundLocal = loadBowlerAsset("ground.png").fold(
+            val groundLocal = loadBowlerAsset(
+                getInstanceOf<MainWindowController>().credentials,
+                "ground.png"
+            ).fold(
                 {
                     throw it
                 },
@@ -490,9 +498,9 @@ class BowlerCadEngine : Pane() {
 
         // TODO: Figure out how to cancel selection on a key press
         mesh.addEventFilter(KeyEvent.KEY_PRESSED) { keyEvent ->
-            LOGGER.info("key event: " + keyEvent.code.getName())
+            LOGGER.info { "key event: " + keyEvent.code.getName() }
             if (KeyCode.ESCAPE == keyEvent.code) {
-                LOGGER.info("hit escape")
+                LOGGER.info { "hit escape" }
                 selectionManager.cancelSelection()
             }
         }
@@ -503,13 +511,13 @@ class BowlerCadEngine : Pane() {
                     meshViewGroup.children.add(mesh)
                 }
             } catch (e: IllegalArgumentException) {
-                LOGGER.warning("Possible duplicate child added to CAD engine.")
-                LOGGER.fine(Throwables.getStackTraceAsString(e))
+                LOGGER.warning { "Possible duplicate child added to CAD engine." }
+                LOGGER.fine { Throwables.getStackTraceAsString(e) }
             }
         }
 
         csgManager.addCSG(csg, mesh)
-        LOGGER.log(Level.FINE, "Added CSG with name: " + csg.name)
+        LOGGER.fine { "Added CSG with name: " + csg.name }
     }
 
     fun addAllCSGs(vararg csgs: CSG) = csgs.forEach { addCSG(it) }
@@ -537,9 +545,9 @@ class BowlerCadEngine : Pane() {
     fun getSubScene() = scene
 
     private fun fireRegenerate(key: String, currentObjectsToCheck: Set<CSG>) {
-        val thread = LoggerUtilities.newLoggingThread(LOGGER) {
-            val toAdd = ArrayList<CSG>()
-            val toRemove = ArrayList<CSG>()
+        thread(isDaemon = true, name = "CAD Regenerate Thread") {
+            val toAdd = mutableListOf<CSG>()
+            val toRemove = mutableListOf<CSG>()
 
             // For each parameter of each object
             currentObjectsToCheck.forEach {
@@ -554,17 +562,15 @@ class BowlerCadEngine : Pane() {
                 }
             }
 
-            runLater { toRemove.forEach { meshViewGroup.children.remove(it.mesh) } }
-
-            runLater { addAllCSGs(toAdd) }
+            runLater {
+                toRemove.forEach { meshViewGroup.children.remove(it.mesh) }
+                addAllCSGs(toAdd)
+            }
 
             LOGGER.info { "Saving CSG database" }
             CSGDatabase.saveDatabase()
-            LOGGER.log(Level.INFO, "Done saving CSG database")
+            LOGGER.info { "Done saving CSG database" }
         }
-
-        thread.name = "CAD Regenerate Thread"
-        thread.start()
     }
 
     companion object {

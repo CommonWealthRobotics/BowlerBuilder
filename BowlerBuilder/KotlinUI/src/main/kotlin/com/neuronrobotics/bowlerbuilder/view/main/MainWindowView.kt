@@ -6,18 +6,12 @@
 package com.neuronrobotics.bowlerbuilder.view.main
 
 import com.google.common.collect.ImmutableSet
-import com.google.inject.Guice
-import com.google.inject.Injector
-import com.google.inject.Scopes
 import com.neuronrobotics.bowlerbuilder.controller.BowlerEventBusLogger
 import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
-import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
-import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.ScriptRunner
-import com.neuronrobotics.bowlerbuilder.scripting.scriptrunner.bowler.BowlerScriptRunner
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
-import com.neuronrobotics.bowlerbuilder.view.creatureeditor.CreatureConfigurationView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddCadObjectsToCurrentTabEvent
@@ -27,8 +21,6 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTa
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
-import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
-import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.geometry.Orientation
 import javafx.scene.Node
@@ -39,8 +31,6 @@ import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.jlleitschuh.guice.key
-import org.jlleitschuh.guice.module
 import tornadofx.*
 import javax.inject.Singleton
 import kotlin.concurrent.thread
@@ -48,9 +38,9 @@ import kotlin.concurrent.thread
 @Singleton
 class MainWindowView : View() {
 
-    private val controller = injector.getInstance(key<MainWindowController>())
-    private val loginManager = injector.getInstance(key<LoginManager>())
-    private val scriptEditorFactory = injector.getInstance(key<CadScriptEditorFactory>())
+    private val controller = getInstanceOf<MainWindowController>()
+    private val loginManager = getInstanceOf<LoginManager>()
+    private val scriptEditorFactory = getInstanceOf<CadScriptEditorFactory>()
     private var mainTabPane: TabPane by singleAssign()
     private var logInMenu: MenuItem by singleAssign()
     private var logOutMenu: MenuItem by singleAssign()
@@ -235,7 +225,7 @@ class MainWindowView : View() {
                                 controller.loadFilesInGist(gist)
                             } success { gistFiles ->
                                 gistFiles.forEach { file ->
-                                    item(file.filename) {
+                                    item(file.file.name) {
                                         action {
                                             runAsync {
                                                 controller.openGistFile(file)
@@ -286,14 +276,6 @@ class MainWindowView : View() {
     }
 
     companion object {
-        val injector: Injector = Guice.createInjector(module {
-            bind<MainWindowView>().`in`(Scopes.SINGLETON)
-            bind<MainWindowController>().`in`(Scopes.SINGLETON)
-            bind<LoginManager>().`in`(Scopes.SINGLETON)
-            bind<CadScriptEditorFactory>().to<AceCadScriptEditorFactory>()
-            bind<ScriptRunner>().to<BowlerScriptRunner>()
-        })
-
         val mainUIEventBus = EventBus.builder()
             .sendNoSubscriberEvent(false)
             .logger(BowlerEventBusLogger("MainUIEventBus"))
