@@ -209,7 +209,7 @@ class MainWindowView : View() {
      */
     fun reloadMenus() {
         reloadGists()
-//        reloadOrgs()
+        reloadOrgs()
     }
 
     /**
@@ -248,10 +248,6 @@ class MainWindowView : View() {
                                     }
                                 }
                             }
-
-                            action {
-                                addTab(WebBrowserTab(gist.htmlUrl.toString()))
-                            }
                         }
                     }
                 }
@@ -267,20 +263,18 @@ class MainWindowView : View() {
             orgsMenu.items.clear()
             with(orgsMenu) {
                 runAsync {
-                    controller.loadUserOrgs()
-                } success { orgs ->
-                    orgs.forEach { org ->
-                        menu(org.name) {
-                            org.repositories.forEach { repo ->
-                                item(repo.name) {
-                                    action {
-                                        addTab(WebBrowserTab(repo.gitUrl))
+                    controller.gitHub.map {
+                        it.myself.organizations
+                    }
+                } success {
+                    it.map {
+                        it.forEach { org ->
+                            menu(org.login) {
+                                org.repositories.values.forEach { repo ->
+                                    item(repo.name).action {
+                                        addTab(WebBrowserTab(repo.httpTransportUrl))
                                     }
                                 }
-                            }
-
-                            action {
-                                addTab(WebBrowserTab(org.gitUrl))
                             }
                         }
                     }
