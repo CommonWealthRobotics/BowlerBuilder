@@ -21,7 +21,6 @@ import kotlin.concurrent.thread
 @Singleton
 class LoginManager {
 
-    private var github: Try<GitHub>? = null
     private var credentials: Pair<String, String>? = null
     private val credentialFile by lazy {
         Paths.get(System.getProperty("user.home"), ".github").toFile()
@@ -38,8 +37,6 @@ class LoginManager {
                 }
             }
         }
-
-        github = login()
     }
 
     /**

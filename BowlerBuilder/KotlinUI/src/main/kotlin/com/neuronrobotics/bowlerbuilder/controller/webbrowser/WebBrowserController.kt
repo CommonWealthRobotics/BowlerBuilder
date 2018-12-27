@@ -6,17 +6,20 @@
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
 import arrow.core.Try
+import arrow.core.flatMap
+import arrow.core.getOrElse
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptResultHandler
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
+import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
 import com.neuronrobotics.bowlerbuilder.controller.util.forkGist
 import com.neuronrobotics.bowlerbuilder.model.Gist
-import com.neuronrobotics.bowlerbuilder.model.GistFile
+import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerkernel.scripting.DefaultGistScriptFactory
 import com.neuronrobotics.kinematicschef.util.emptyImmutableList
@@ -36,7 +39,8 @@ import javax.xml.transform.stream.StreamResult
 class WebBrowserController
 @Inject constructor(
     private val scriptFactory: DefaultGistScriptFactory.Factory,
-    private val cadScriptEditorFactory: CadScriptEditorFactory
+    private val cadScriptEditorFactory: CadScriptEditorFactory,
+    private val scriptResultHandler: ScriptResultHandler
 ) : Controller() {
 
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
@@ -58,7 +62,7 @@ class WebBrowserController
         } else {
             getCurrentGistId(engine).flatMap { gistId ->
                 val url = getGitUrlFromPageUrl(currentUrl, gistId)
-                val files = filesInRepo(
+                val files = cloneRepoAndGetFiles(
                     getInstanceOf<MainWindowController>().credentials,
                     url
                 ).fold(
@@ -69,8 +73,8 @@ class WebBrowserController
                 files.map {
                     WebBrowserScript(
                         currentUrl,
-                        GistFile(
-                            Gist(url, 0, ""),
+                        GistFileOnDisk(
+                            Gist(url, "", ""),
                             it
                         )
                     )
@@ -114,9 +118,30 @@ class WebBrowserController
             ).createScriptFromGist(
                 currentScript.gistFile.gist.id.toString(),
                 currentScript.gistFile.file.name
-            ).map {
+            ).flatMap {
                 it.runScript(emptyImmutableList())
+            }.bimap(
+                {
+                    LOGGER.warning {
+                        """
+                        |Error while running script:
+                        |$it
+                        """.trimMargin()
+                    }
+                    it
+                },
+                {
+                    scriptResultHandler.handleResult(it)
+                }
+            )
+        }.recoverWith {
+            LOGGER.warning {
+                """
+                |Error while retrieving GitHub:
+                |$it
+                """.trimMargin()
             }
+            Try.raise(it)
         }
     }
 
@@ -128,11 +153,12 @@ class WebBrowserController
             return Try.just(false)
         }
 
-        return getInstanceOf<MainWindowController>().gitHub.map { gitHub ->
-            gitHub.myself.listRepositories()
-                .first {
+        return getInstanceOf<MainWindowController>().gitHub.flatMap { gitHub ->
+            Try {
+                gitHub.myself.listRepositories().first {
                     it.gitTransportUrl == currentScript.gistFile.gist.gitUrl
                 }.hasPushAccess()
+            }
         }
     }
 
@@ -203,8 +229,10 @@ class WebBrowserController
         )
 
         cadScriptEditorFactory
-            .createAndOpenScriptEditor(currentScript.gistFile)
-            .apply {
+            .createAndOpenScriptEditor(
+                currentScript.gistFile.gist.gitUrl, // TODO: Wrong URL
+                currentScript.gistFile.file
+            ).apply {
                 runLater { editor.gotoLine(0) }
             }
     }
@@ -246,24 +274,27 @@ class WebBrowserController
     }
 
     private fun returnFirstGistId(html: String): ImmutableList<String> {
-        val ret = mutableListOf<String>()
-        val doc = Jsoup.parse(html)
-        val links = doc.select("script")
-
-        for (i in links.indices) {
-            val e = links[i]
-            val n = e.attributes()
-            val jSSource = n.get("src")
-            if (jSSource.contains("https://gist.github.com/")) {
-                val js =
-                    jSSource.split(".js".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-                val id =
-                    js.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                ret.add(id[id.size - 1])
+        return Try {
+            Jsoup.parse(html)
+                .select("script")
+                .mapNotNull {
+                    val srcElement = it.attributes()["src"]
+                    if (srcElement.contains("https://gist.github.com/")) {
+                        srcElement.removePrefix("https://gist.github.com/")
+                            .removeSuffix(".js")
+                    } else {
+                        null
+                    }
+                }.toImmutableList()
+        }.getOrElse {
+            LOGGER.warning {
+                """
+                |Failure while parsing gist id's from document:
+                |${Throwables.getStackTraceAsString(it)}
+                """.trimMargin()
             }
+            emptyImmutableList()
         }
-
-        return ret.toImmutableList()
     }
 
     companion object {

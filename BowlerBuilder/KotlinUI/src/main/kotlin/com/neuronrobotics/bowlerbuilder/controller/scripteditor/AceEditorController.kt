@@ -5,12 +5,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
-import arrow.core.Try
 import arrow.core.flatMap
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
 import com.neuronrobotics.bowlerkernel.scripting.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
 import tornadofx.*
@@ -49,18 +46,6 @@ class AceEditorController
                 scriptResultHandler.handleResult(it)
             }
         )
-    }
-
-    /**
-     * Get the content of a file from git.
-     */
-    fun getTextForGitResource(gitUrl: String, filename: String): Try<String> {
-        return filesInRepo(
-            getInstanceOf<MainWindowController>().credentials,
-            gitUrl
-        ).map {
-            it.first { it.name == filename }.readText()
-        }
     }
 
     companion object {

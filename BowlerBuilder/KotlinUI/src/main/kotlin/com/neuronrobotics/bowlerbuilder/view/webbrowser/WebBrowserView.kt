@@ -34,12 +34,12 @@ class WebBrowserView(
         urlToLoad ?: config.string(HOME_PAGE, DEFAULT_HOME_PAGE)
     )
     private var currentUrl by currentUrlProperty
-
-    private val currentScriptProperty =
-        SimpleObjectProperty<WebBrowserScript>(WebBrowserScript.empty)
+    private val currentScriptProperty = SimpleObjectProperty<WebBrowserScript>(
+        WebBrowserScript.empty
+    )
     private var currentScript by currentScriptProperty
-
     private var webview: WebView by singleAssign()
+    private var cloneButton: Button by singleAssign()
 
     override val root = borderpane {
         webview = webview {
@@ -117,7 +117,7 @@ class WebBrowserView(
                 }
             )
 
-            val cloneButton = button()
+            cloneButton = button()
                 .modifyIntoCloneButton(WebBrowserScript.empty)
                 .apply {
                     isDisable = true
@@ -129,20 +129,7 @@ class WebBrowserView(
                 }
 
                 valueProperty().addListener { _, _, new ->
-                    val nonNullValue = new ?: WebBrowserScript.empty
-                    currentScript = nonNullValue
-
-                    runAsync {
-                        controller.doesUserOwnScript(nonNullValue)
-                    } success {
-                        it.map {
-                            if (it) {
-                                cloneButton.modifyIntoEditButton(nonNullValue)
-                            } else {
-                                cloneButton.modifyIntoCloneButton(nonNullValue)
-                            }
-                        }
-                    }
+                    refreshCloneButton(new)
                 }
 
                 controller.itemsOnPageProperty.addListener(ListChangeListener {
@@ -153,6 +140,27 @@ class WebBrowserView(
                         }
                     }
                 })
+            }
+        }
+    }
+
+    init {
+        refreshCloneButton(controller.itemsOnPageProperty.firstOrNull())
+    }
+
+    private fun refreshCloneButton(new: WebBrowserScript?) {
+        val nonNullValue = new ?: WebBrowserScript.empty
+        currentScript = nonNullValue
+
+        runAsync {
+            controller.doesUserOwnScript(nonNullValue)
+        } success {
+            it.map {
+                if (it) {
+                    cloneButton.modifyIntoEditButton(nonNullValue)
+                } else {
+                    cloneButton.modifyIntoCloneButton(nonNullValue)
+                }
             }
         }
     }

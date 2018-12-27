@@ -5,12 +5,16 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
+import arrow.core.Try
+import arrow.core.recoverWith
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.main.BowlerEventBusLogger
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
+import com.neuronrobotics.bowlerbuilder.controller.util.mapGistFileToFileOnDisk
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
@@ -21,6 +25,7 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTa
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
+import com.neuronrobotics.bowlerkernel.util.toImmutableList
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.geometry.Orientation
 import javafx.scene.Node
@@ -76,7 +81,7 @@ class MainWindowView : View() {
 
                 menu("My Repos")
 
-                item("Reload Menus") { action { reloadMenus() } }
+                item("Reload Menus").action { reloadMenus() }
 
                 item("Delete local cache") {
                     action {
@@ -93,21 +98,18 @@ class MainWindowView : View() {
             }
 
             menu("3D CAD") {
-                item("Scratchpad") {
-                    action {
-                        runAsync { scriptEditorFactory.createAndOpenScratchpad() }
-                    }
+                item("Scratchpad").action {
+                    runAsync { scriptEditorFactory.createAndOpenScratchpad() }
                 }
 
-                item("Load File from Git") {
-                    action {
-                        GistFileSelectionView.create().openModal()
-                    }
+                item("Load File from Git").action {
+                    GistFileSelectionView.create().openModal()
                 }
             }
         }
 
-        center = splitpane(orientation = Orientation.VERTICAL) {
+        center = splitpane(orientation = Orientation.VERTICAL)
+        {
             setDividerPositions(0.9)
 
             mainTabPane = tabpane {
@@ -123,6 +125,7 @@ class MainWindowView : View() {
 
     init {
         mainUIEventBus.register(this)
+        controller.gitHub = loginManager.login()
 //        addTab(
 //            Tab(
 //                "",
@@ -206,7 +209,7 @@ class MainWindowView : View() {
      */
     fun reloadMenus() {
         reloadGists()
-        reloadOrgs()
+//        reloadOrgs()
     }
 
     /**
@@ -217,18 +220,29 @@ class MainWindowView : View() {
             gistsMenu.items.clear()
             with(gistsMenu) {
                 runAsync {
-                    controller.loadUserGists()
-                } success { gists ->
-                    gists.forEach { gist ->
-                        menu(gist.description) {
-                            runAsync {
-                                controller.loadFilesInGist(gist)
-                            } success { gistFiles ->
-                                gistFiles.forEach { file ->
-                                    item(file.file.name) {
-                                        action {
-                                            runAsync {
-                                                controller.openGistFile(file)
+                    controller.gitHub.map {
+                        it.myself.listGists().toImmutableList()
+                    }
+                } success {
+                    it.map {
+                        it.forEach { gist ->
+                            menu(gist.description) {
+                                gist.files.values.forEach { gistFile ->
+                                    item(gistFile.fileName).action {
+                                        thread(isDaemon = true) {
+                                            mapGistFileToFileOnDisk(
+                                                gist, gistFile
+                                            ).recoverWith {
+                                                cloneRepoAndGetFiles(
+                                                    controller.credentials,
+                                                    gist.gitPullUrl
+                                                ).flatMap {
+                                                    Try {
+                                                        it.first { it.name == gistFile.fileName }
+                                                    }
+                                                }
+                                            }.map {
+                                                controller.openGistFile(gist.gitPullUrl, it)
                                             }
                                         }
                                     }
@@ -236,7 +250,7 @@ class MainWindowView : View() {
                             }
 
                             action {
-                                addTab(WebBrowserTab(gist.gitUrl))
+                                addTab(WebBrowserTab(gist.htmlUrl.toString()))
                             }
                         }
                     }

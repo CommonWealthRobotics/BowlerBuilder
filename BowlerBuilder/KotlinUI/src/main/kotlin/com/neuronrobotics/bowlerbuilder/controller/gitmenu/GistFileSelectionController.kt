@@ -8,10 +8,9 @@ package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.model.GistFile
+import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import tornadofx.*
@@ -30,7 +29,7 @@ class GistFileSelectionController
      */
     fun loadFilesInGist(gistUrl: String) {
         LOGGER.info("Loading files for: $gistUrl")
-        filesInRepo(
+        cloneRepoAndGetFiles(
             getInstanceOf<MainWindowController>().credentials,
             gistUrl
         ).toEither().bimap(
@@ -56,10 +55,10 @@ class GistFileSelectionController
     }
 
     /**
-     * Opens a [gistFile] with the injected [CadScriptEditorFactory].
+     * Opens a [file] with the injected [CadScriptEditorFactory].
      */
-    fun openGistFile(gistFile: GistFile) {
-        cadScriptEditorFactory.createAndOpenScriptEditor(gistFile)
+    fun openGistFile(url: String, file: File) {
+        cadScriptEditorFactory.createAndOpenScriptEditor(url, file)
     }
 
     companion object {

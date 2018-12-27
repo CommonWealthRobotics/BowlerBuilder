@@ -33,7 +33,7 @@ private constructor(
 
                 managedThread = thread { onRun() }
 
-                thread {
+                thread(isDaemon = true) {
                     try {
                         managedThread?.join()
                     } catch (ex: InterruptedException) {

@@ -5,22 +5,22 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory
 
-import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditor
+import java.io.File
 
 interface CadScriptEditorFactory {
 
     /**
-     * Creates a new [CadScriptEditor] and opens it.
+     * Creates a new [CadScriptEditor] and opens it. Do not call from the FX thread.
      *
-     * @param gistFile The file to edit.
-     *
+     * @param url The url of the gist which is being edited.
+     * @param file The file on disk where the gist file is cloned.
      * @return The [CadScriptEditor] which was created.
      */
-    fun createAndOpenScriptEditor(gistFile: GistFile): CadScriptEditor
+    fun createAndOpenScriptEditor(url: String, file: File): CadScriptEditor
 
     /**
-     * Creates a new scratchpad [CadScriptEditor] and opens it.
+     * Creates a new scratchpad [CadScriptEditor] and opens it. Do not call from the FX thread.
      *
      * @return The [CadScriptEditor] which was created.
      */

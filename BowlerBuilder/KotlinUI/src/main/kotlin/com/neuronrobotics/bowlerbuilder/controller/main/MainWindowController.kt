@@ -16,9 +16,8 @@ import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.gistFileToFile
+import com.neuronrobotics.bowlerbuilder.controller.util.gistUrlToGistId
 import com.neuronrobotics.bowlerbuilder.model.Gist
-import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.Organization
 import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
@@ -37,6 +36,7 @@ import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
 import org.kohsuke.github.GitHub
 import tornadofx.*
+import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
 import java.util.Timer
@@ -61,11 +61,13 @@ class MainWindowController
                 gitHub.myself
                     .listGists()
                     .map {
-                        Gist(
+                        val out = Gist(
                             gitUrl = it.gitPullUrl,
-                            id = it.id,
+                            id = gistUrlToGistId(it.gitPullUrl),
                             description = it.description
                         )
+                        println(out)
+                        out
                     }.toImmutableList()
             }
         )
@@ -97,32 +99,10 @@ class MainWindowController
     }
 
     /**
-     * Load the files in the [gist].
-     */
-    fun loadFilesInGist(gist: Gist): ImmutableList<GistFile> {
-        return gitHub.fold(
-            { emptyImmutableList() },
-            { gitHub ->
-                gitHub.getGist(gist.id.toString()).let { gist ->
-                    gist.files.values.map {
-                        GistFile(
-                            Gist(gist.htmlUrl.toString(), gist.id, gist.description),
-                            gistFileToFile(
-                                gist,
-                                it
-                            )
-                        )
-                    }.toImmutableList()
-                }
-            }
-        )
-    }
-
-    /**
      * Open the [file] in an editor.
      */
-    fun openGistFile(file: GistFile) {
-        cadScriptEditorFactory.createAndOpenScriptEditor(file)
+    fun openGistFile(url: String, file: File) {
+        cadScriptEditorFactory.createAndOpenScriptEditor(url, file)
     }
 
     /**

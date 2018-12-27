@@ -9,11 +9,12 @@ import arrow.optics.optics
 import java.io.File
 
 @optics
-data class WebBrowserScript(
-    val pageUrl: String,
-    val gistFile: GistFileOnDisk
+data class GistFileOnDisk(
+    val gist: Gist,
+    val file: File
 ) {
     companion object {
-        val empty = WebBrowserScript("", GistFileOnDisk(Gist("", "", ""), File("")))
+        // This is not a secondary constructor because of https://github.com/arrow-kt/arrow/issues/1211
+        fun create(gitUrl: String, file: File) = GistFileOnDisk(Gist(gitUrl, "", ""), file)
     }
 }

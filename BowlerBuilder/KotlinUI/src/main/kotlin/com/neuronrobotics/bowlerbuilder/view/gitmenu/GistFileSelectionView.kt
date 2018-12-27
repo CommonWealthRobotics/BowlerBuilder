@@ -5,9 +5,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.GistFileSelectionController
-import com.neuronrobotics.bowlerbuilder.model.GistFile
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
@@ -49,7 +48,7 @@ class GistFileSelectionView : Fragment() {
                 button("Load") {
                     action {
                         runAsync {
-                            controller.openGistFile(GistFile.create(gistUrl, gistFileSelection))
+                            controller.openGistFile(gistUrl, gistFileSelection)
                         }
                         close()
                     }

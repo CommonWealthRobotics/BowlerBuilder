@@ -9,7 +9,6 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Com
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
-import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -75,15 +74,13 @@ class AceEditorView
             urlTextField.text = gitUrl
 
             runAsync {
-                val text = controller.getTextForGitResource(gitUrl, file.name)
+                val text = file.readText()
 
                 engineInitializingLatch.await()
 
-                text.map {
-                    runLater {
-                        setText(it)
-                        gotoLine(0)
-                    }
+                runLater {
+                    setText(text)
+                    gotoLine(0)
                 }
             }
         }
@@ -92,16 +89,9 @@ class AceEditorView
     companion object {
         fun create(url: String, file: File) = AceEditorView(
             AceWebEditorView(),
-            getInstanceOf<AceEditorController>(),
+            getInstanceOf(),
             url,
             file
-        )
-
-        fun create(gistFile: GistFile) = AceEditorView(
-            AceWebEditorView(),
-            getInstanceOf<AceEditorController>(),
-            gistFile.gist.gitUrl,
-            gistFile.file
         )
     }
 }

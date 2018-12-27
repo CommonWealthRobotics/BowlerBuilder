@@ -10,7 +10,7 @@ import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.gistFileToFile
+import com.neuronrobotics.bowlerbuilder.controller.util.mapGistFileToFileOnDisk
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -78,11 +78,18 @@ class PublishNewGistView(
                                     .public_(gistIsPublic)
                                     .create()
 
-                                publishedFile =
-                                    gistFileToFile(
-                                        gist,
-                                        gist.getFile(gistFilename)
-                                    )
+                                publishedFile = mapGistFileToFileOnDisk(
+                                    gist,
+                                    gist.getFile(gistFilename)
+                                ).fold(
+                                    {
+                                        throw IllegalStateException(
+                                            "Failed to get files in gist.",
+                                            it
+                                        )
+                                    },
+                                    { it }
+                                )
 
                                 gist
                             }

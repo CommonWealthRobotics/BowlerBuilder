@@ -27,7 +27,7 @@ const val BOWLER_ASSET_REPO = "https://github.com/madhephaestus/BowlerStudioImag
  * @return The asset file.
  */
 fun loadBowlerAsset(credentials: Pair<String, String>, filename: String): Try<File> =
-    filesInRepo(
+    cloneRepoAndGetFiles(
         credentials,
         BOWLER_ASSET_REPO
     ).flatMap {
@@ -45,26 +45,18 @@ fun cloneAssetRepo(credentials: Pair<String, String>) {
 }
 
 /**
- * Clones a repository and returns the files in it, excluding the `.git` files.
+ * Maps a [gistUrl] to its id.
  *
- * @param gitUrl The `.git` URL to clone from, i.e.
- * `https://github.com/CommonWealthRobotics/BowlerBuilder.git` or
+ * @param gistUrl The gist URL, i.e.
  * `https://gist.github.com/5681d11165708c3aec1ed5cf8cf38238.git`.
- * @param branch The branch to checkout.
- * @return The files in the repository.
  */
-fun filesInRepo(
-    credentials: Pair<String, String>,
-    gitUrl: String,
-    branch: String = "HEAD"
-): Try<ImmutableList<File>> =
-    cloneRepo(credentials, gitUrl, branch).map {
-        it.walkTopDown()
-            .filter { file -> file.path != it.path }
-            .filter { !it.path.contains(".git") }
-            .toList()
-            .toImmutableList()
-    }
+fun gistUrlToGistId(gistUrl: String): String =
+    gistUrl
+        .removePrefix("http://github.com/")
+        .removePrefix("https://github.com/")
+        .removePrefix("http://gist.github.com/")
+        .removePrefix("https://gist.github.com/")
+        .removeSuffix(".git")
 
 /**
  * Maps a [gitUrl] to its directory on disk. The directory does not necessarily exist.
@@ -92,17 +84,42 @@ fun gitUrlToDirectory(gitUrl: String): File {
 }
 
 /**
- * Maps a file in a gist to its file on disk.
+ * Maps a file in a gist to its file on disk. Fails if the file is not on disk.
  *
  * @param gist The gist.
  * @param gistFile The file in the gist.
  * @return The file on disk.
  */
-fun gistFileToFile(gist: GHGist, gistFile: GHGistFile): File {
+fun mapGistFileToFileOnDisk(gist: GHGist, gistFile: GHGistFile): Try<File> {
     val directory =
         gitUrlToDirectory(gist.gitPullUrl)
-    return directory.walkTopDown().first { it.name == gistFile.fileName }
+
+    return Try {
+        directory.walkTopDown().first { it.name == gistFile.fileName }
+    }
 }
+
+/**
+ * Clones a repository and returns the files in it, excluding the `.git` files.
+ *
+ * @param gitUrl The `.git` URL to clone from, i.e.
+ * `https://github.com/CommonWealthRobotics/BowlerBuilder.git` or
+ * `https://gist.github.com/5681d11165708c3aec1ed5cf8cf38238.git`.
+ * @param branch The branch to checkout.
+ * @return The files in the repository.
+ */
+fun cloneRepoAndGetFiles(
+    credentials: Pair<String, String>,
+    gitUrl: String,
+    branch: String = "HEAD"
+): Try<ImmutableList<File>> =
+    cloneRepo(credentials, gitUrl, branch).map {
+        it.walkTopDown()
+            .filter { file -> file.path != it.path }
+            .filter { !it.path.contains(".git") }
+            .toList()
+            .toImmutableList()
+    }
 
 /**
  * Clones a repository to the local cache.

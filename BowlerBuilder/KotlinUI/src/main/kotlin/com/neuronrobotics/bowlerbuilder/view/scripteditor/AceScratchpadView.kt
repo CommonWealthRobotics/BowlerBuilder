@@ -10,7 +10,6 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorControl
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
-import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
@@ -64,7 +63,7 @@ class AceScratchpadView
                     if (view.publishSuccessful) {
                         runAsync {
                             cadScriptEditorFactory.createAndOpenScriptEditor(
-                                GistFile.create(view.gitUrl, view.publishedFile)
+                                view.gitUrl, view.publishedFile
                             )
                         }
 

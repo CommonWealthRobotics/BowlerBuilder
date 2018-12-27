@@ -5,7 +5,6 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory
 
-import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.AceEditorView
@@ -13,16 +12,17 @@ import com.neuronrobotics.bowlerbuilder.view.scripteditor.AceScratchpadView
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
+import java.io.File
 
 class AceCadScriptEditorFactory : CadScriptEditorFactory {
 
-    override fun createAndOpenScriptEditor(gistFile: GistFile): CadScriptEditor {
+    override fun createAndOpenScriptEditor(url: String, file: File): CadScriptEditor {
         return FxUtil.returnFX {
-            val editor = AceEditorView.create(gistFile)
+            val editor = AceEditorView.create(url, file)
             val cadEditor = CadScriptEditor(editor)
             MainWindowView.mainUIEventBus.post(
                 AddTabEvent(
-                    CadScriptEditorTab(gistFile.file.name, editor)
+                    CadScriptEditorTab(file.name, editor)
                 )
             )
             cadEditor to editor
