@@ -52,6 +52,7 @@ class MainWindowView : View() {
 
     private var gistsMenu: Menu by singleAssign()
     private var orgsMenu: Menu by singleAssign()
+    private var reposMenu: Menu by singleAssign()
 
     override val root = borderpane {
         top = menubar {
@@ -79,7 +80,7 @@ class MainWindowView : View() {
 
                 orgsMenu = menu("My Orgs")
 
-                menu("My Repos")
+                reposMenu = menu("My Repos")
 
                 item("Reload Menus").action { reloadMenus() }
 
@@ -210,6 +211,7 @@ class MainWindowView : View() {
     fun reloadMenus() {
         reloadGists()
         reloadOrgs()
+        reloadRepos()
     }
 
     /**
@@ -275,6 +277,30 @@ class MainWindowView : View() {
                                         addTab(WebBrowserTab(repo.httpTransportUrl))
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Reloads the repositories menu.
+     */
+    fun reloadRepos() {
+        runLater {
+            reposMenu.items.clear()
+            with(reposMenu) {
+                runAsync {
+                    controller.gitHub.map {
+                        it.myself.listRepositories().toImmutableList()
+                    }
+                } success {
+                    it.map {
+                        it.forEach { repo ->
+                            item(repo.name).action {
+                                addTab(WebBrowserTab(repo.httpTransportUrl))
                             }
                         }
                     }
