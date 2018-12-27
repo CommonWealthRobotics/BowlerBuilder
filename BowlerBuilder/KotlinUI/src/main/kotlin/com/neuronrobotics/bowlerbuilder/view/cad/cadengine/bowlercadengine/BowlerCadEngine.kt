@@ -12,9 +12,9 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsSliderWidget
+import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.TransformableGroup
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraMobileBase
-import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.XForm
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.element.Axis3D
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.util.VirtualCameraMobileBaseFactory
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
@@ -71,7 +71,7 @@ class BowlerCadEngine : Pane() {
     private val csgManager = CSGManager()
     private val selectionManagerFactory = SelectionManagerFactory()
     private val scene: SubScene
-    private val world = XForm()
+    private val world = TransformableGroup()
     private val camera = PerspectiveCamera(true)
 
     private val root = Group()

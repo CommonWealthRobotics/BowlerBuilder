@@ -31,7 +31,6 @@ class ScriptResultHandler {
         }
     }
 
-    // return new Cube(5).toCSG()
     private fun handleIterable(result: Iterable<*>) {
         @Suppress("UNCHECKED_CAST")
         when (result.first()) {
