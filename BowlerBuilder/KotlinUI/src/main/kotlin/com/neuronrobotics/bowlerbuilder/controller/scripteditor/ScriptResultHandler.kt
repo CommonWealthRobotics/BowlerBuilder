@@ -8,7 +8,6 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
-import com.neuronrobotics.bowlerstudio.creature.MobileBaseLoader
 import com.neuronrobotics.kinematicschef.util.immutableSetOf
 import com.neuronrobotics.kinematicschef.util.toImmutableSet
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase
@@ -25,7 +24,6 @@ class ScriptResultHandler {
      */
     fun handleResult(result: Any?) {
         when (result) {
-            is MobileBaseLoader -> handleMobileBase(result.base)
             is MobileBase -> handleMobileBase(result)
             is CSG -> handleCsg(result)
             is Iterable<*> -> handleIterable(result)
@@ -35,6 +33,7 @@ class ScriptResultHandler {
 
     // return new Cube(5).toCSG()
     private fun handleIterable(result: Iterable<*>) {
+        @Suppress("UNCHECKED_CAST")
         when (result.first()) {
             is CSG -> handleCsg(result as Iterable<CSG>)
         }

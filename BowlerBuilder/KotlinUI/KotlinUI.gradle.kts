@@ -1,5 +1,3 @@
-
-
 plugins {
     `java-library`
     application
@@ -18,12 +16,8 @@ repositories {
 
 dependencies {
     api(project(":BowlerKernel:Core"))
-    api(group = "com.neuronrobotics", name = "BowlerScriptingKernel", version = "0.34.1") {
-        exclude(group = "org.slf4j")
-        exclude(group = "com.google.guava")
-        exclude(group = "org.kohsuke")
-        exclude(group = "org.eclipse.jgit")
-    }
+    api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
+    api(group = "com.neuronrobotics", name = "JavaCad", version = "0.17.1")
 
     implementation(
         group = "org.eclipse.jgit",

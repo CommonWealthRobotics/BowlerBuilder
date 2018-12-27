@@ -293,7 +293,7 @@ class BowlerCadEngine : Pane() {
     /** Home the camera to its default view.  */
     fun homeCamera() {
         flyingCamera!!.setGlobalToFiducialTransform(defaultCameraView)
-        virtualCam!!.zoomDepth = VirtualCameraDevice.getDefaultZoomDepth().toDouble()
+        virtualCam!!.zoomDepth = VirtualCameraDevice.defaultZoomDepth.toDouble()
         flyingCamera!!.updatePositions()
     }
 

@@ -6,7 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.VirtualCameraDevice
-import com.neuronrobotics.bowlerstudio.physics.TransformFactory
+import com.neuronrobotics.sdk.addons.kinematics.TransformFactory
 import com.neuronrobotics.sdk.addons.kinematics.math.RotationNR
 import com.neuronrobotics.sdk.addons.kinematics.math.TransformNR
 import eu.mihosoft.vrl.v3d.CSG
@@ -19,10 +19,8 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.transform.Affine
-import org.reactfx.util.FxTimer
 import tornadofx.*
 import java.io.File
-import java.time.Duration
 import java.util.Optional
 import java.util.function.BiConsumer
 
@@ -149,9 +147,9 @@ class DefaultSelectionManager
         selection.forEach { csg ->
             val meshView = csgManager.getMeshView(csg)
             if (meshView != null) {
-                FxTimer.runLater(
-                    Duration.ofMillis(20)
-                ) { meshView.material = PhongMaterial(Color.GOLD) }
+                runLater(javafx.util.Duration.millis(20.0)) {
+                    meshView.material = PhongMaterial(Color.GOLD)
+                }
             }
         }
     }
@@ -281,9 +279,9 @@ class DefaultSelectionManager
         }
 
         if (depth < targetDepth) {
-            FxTimer.runLater(
-                Duration.ofMillis(16)
-            ) { focusInterpolate(start, target, depth + 1, targetDepth, interpolator) }
+            runLater(javafx.util.Duration.millis(20.0)) {
+                focusInterpolate(start, target, depth + 1, targetDepth, interpolator)
+            }
         } else {
             runLater {
                 focusGroup.transforms.remove(interpolator)
