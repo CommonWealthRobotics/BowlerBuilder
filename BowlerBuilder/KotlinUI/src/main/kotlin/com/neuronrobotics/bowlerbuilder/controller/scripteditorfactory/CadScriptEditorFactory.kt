@@ -11,18 +11,18 @@ import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditor
 interface CadScriptEditorFactory {
 
     /**
-     * Creates a new [ScriptEditor] and opens it.
+     * Creates a new [CadScriptEditor] and opens it.
      *
      * @param gistFile The file to edit.
      *
-     * @return The [ScriptEditor] which was created.
+     * @return The [CadScriptEditor] which was created.
      */
     fun createAndOpenScriptEditor(gistFile: GistFile): CadScriptEditor
 
     /**
-     * Creates a new scratchpad [ScriptEditor] and opens it.
+     * Creates a new scratchpad [CadScriptEditor] and opens it.
      *
-     * @return The [ScriptEditor] which was created.
+     * @return The [CadScriptEditor] which was created.
      */
     fun createAndOpenScratchpad(): CadScriptEditor
 }

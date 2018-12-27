@@ -6,7 +6,7 @@
 package com.neuronrobotics.bowlerbuilder
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import tornadofx.*

@@ -56,13 +56,9 @@ class VirtualCameraDevice(
         manipulationFrame.transforms.add(affine)
     }
 
-    override fun captureNewImage(imageData: BufferedImage): Boolean {
-        return false
-    }
+    override fun captureNewImage(imageData: BufferedImage): Boolean = false
 
-    override fun captureNewImage(): BufferedImage? {
-        return null
-    }
+    override fun captureNewImage(): BufferedImage? = null
 
     /** Nothing to disconnect.  */
     override fun disconnectDeviceImp() {

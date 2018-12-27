@@ -9,16 +9,16 @@ import arrow.core.Try
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
-import com.neuronrobotics.bowlerbuilder.controller.util.forkGist
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
+import com.neuronrobotics.bowlerbuilder.controller.util.forkGist
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerkernel.scripting.ScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.DefaultGistScriptFactory
 import com.neuronrobotics.kinematicschef.util.emptyImmutableList
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.collections.FXCollections
@@ -35,7 +35,7 @@ import javax.xml.transform.stream.StreamResult
 
 class WebBrowserController
 @Inject constructor(
-    private val scriptFactory: ScriptFactory,
+    private val scriptFactory: DefaultGistScriptFactory.Factory,
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Controller() {
 
@@ -108,11 +108,15 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        scriptFactory.createScriptFromGist(
-            currentScript.gistFile.gist.id.toString(),
-            currentScript.gistFile.file.name
-        ).map {
-            it.runScript(emptyImmutableList())
+        getInstanceOf<MainWindowController>().gitHub.map {
+            scriptFactory.create(
+                it
+            ).createScriptFromGist(
+                currentScript.gistFile.gist.id.toString(),
+                currentScript.gistFile.file.name
+            ).map {
+                it.runScript(emptyImmutableList())
+            }
         }
     }
 

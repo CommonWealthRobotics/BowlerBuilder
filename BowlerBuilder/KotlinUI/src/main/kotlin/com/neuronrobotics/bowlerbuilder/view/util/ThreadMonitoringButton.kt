@@ -16,6 +16,7 @@ import kotlin.concurrent.thread
  * running. Switches back to [primaryState] when [onRun] stops or is interrupted with
  * [Thread.interrupt].
  */
+@SuppressWarnings("SwallowedException")
 class ThreadMonitoringButton
 private constructor(
     primaryState: Pair<String, Node>,

@@ -14,7 +14,6 @@ include(":BowlerBuilder:KotlinUI")
 include(":BowlerBuilder:Core")
 include(":BowlerKernel")
 include(":BowlerKernel:Core")
-include(":BowlerKernel:KernelTest")
 
 /**
  * This configures the gradle build so we can use non-standard build file names.

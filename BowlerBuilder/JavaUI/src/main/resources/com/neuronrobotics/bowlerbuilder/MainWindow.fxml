@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<SplitPane fx:id="mainSplitPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.MainWindowController">
+<SplitPane fx:id="mainSplitPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController">
     <!--<TreeView fx:id="fileTreeView" showRoot="false" />-->
     <BorderPane id="root" fx:id="root">
         <top>

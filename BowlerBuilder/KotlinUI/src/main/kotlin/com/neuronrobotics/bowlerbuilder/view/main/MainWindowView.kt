@@ -6,10 +6,10 @@
 package com.neuronrobotics.bowlerbuilder.view.main
 
 import com.google.common.collect.ImmutableSet
-import com.neuronrobotics.bowlerbuilder.controller.BowlerEventBusLogger
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
+import com.neuronrobotics.bowlerbuilder.controller.main.BowlerEventBusLogger
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView

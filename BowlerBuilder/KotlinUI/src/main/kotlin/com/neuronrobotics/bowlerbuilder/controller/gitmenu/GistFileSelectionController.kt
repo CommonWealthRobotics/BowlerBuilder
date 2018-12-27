@@ -6,8 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities

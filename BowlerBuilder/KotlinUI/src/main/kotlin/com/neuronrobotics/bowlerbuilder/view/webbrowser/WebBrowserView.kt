@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton

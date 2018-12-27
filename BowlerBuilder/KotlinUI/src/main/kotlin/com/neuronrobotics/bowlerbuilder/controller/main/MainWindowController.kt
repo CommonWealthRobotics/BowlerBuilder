@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.neuronrobotics.bowlerbuilder.controller
+package com.neuronrobotics.bowlerbuilder.controller.main
 
 import arrow.core.Try
 import com.google.common.base.Throwables
@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableList
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Scopes
+import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
@@ -22,8 +23,12 @@ import com.neuronrobotics.bowlerbuilder.model.Organization
 import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
-import com.neuronrobotics.bowlerkernel.scripting.DefaultScriptFactory
-import com.neuronrobotics.bowlerkernel.scripting.ScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.DefaultGistScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.DefaultScriptLanguageParser
+import com.neuronrobotics.bowlerkernel.scripting.DefaultTextScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.GistScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.ScriptLanguageParser
+import com.neuronrobotics.bowlerkernel.scripting.TextScriptFactory
 import com.neuronrobotics.kinematicschef.util.emptyImmutableList
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.application.Platform
@@ -52,8 +57,8 @@ class MainWindowController
     fun loadUserGists(): ImmutableList<Gist> {
         return gitHub.fold(
             { emptyImmutableList() },
-            {
-                it.myself
+            { gitHub ->
+                gitHub.myself
                     .listGists()
                     .map {
                         Gist(
@@ -72,13 +77,13 @@ class MainWindowController
     fun loadUserOrgs(): ImmutableList<Organization> {
         return gitHub.fold(
             { emptyImmutableList() },
-            {
-                it.myOrganizations
-                    .map {
+            { gitHub ->
+                gitHub.myOrganizations
+                    .map { entry ->
                         Organization(
-                            gitUrl = it.value.htmlUrl.toString(),
-                            name = it.key,
-                            repositories = it.value.repositories
+                            gitUrl = entry.value.htmlUrl.toString(),
+                            name = entry.key,
+                            repositories = entry.value.repositories
                                 .map {
                                     Repository(
                                         gitUrl = it.value.gitTransportUrl,
@@ -97,8 +102,8 @@ class MainWindowController
     fun loadFilesInGist(gist: Gist): ImmutableList<GistFile> {
         return gitHub.fold(
             { emptyImmutableList() },
-            {
-                it.getGist(gist.id.toString()).let { gist ->
+            { gitHub ->
+                gitHub.getGist(gist.id.toString()).let { gist ->
                     gist.files.values.map {
                         GistFile(
                             Gist(gist.htmlUrl.toString(), gist.id, gist.description),
@@ -147,19 +152,35 @@ class MainWindowController
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(MainWindowController::class.java.simpleName)
         const val BOWLERBUILDER_DIRECTORY = "BowlerBuilder"
-        const val LOGS_DIRECTORY = "git-cache"
+        const val GIT_CACHE_DIRECTORY = "git-cache"
         const val PREFERENCES_DIRECTORY = "preferences"
-        const val GIT_CACHE_DIRECTORY = "logs"
+        const val LOGS_DIRECTORY = "logs"
 
-        val injector: Injector = Guice.createInjector(module {
+        internal fun mainModule() = module {
+            // KotlinUI dependencies
             bind<MainWindowView>().`in`(Scopes.SINGLETON)
             bind<MainWindowController>().`in`(Scopes.SINGLETON)
             bind<LoginManager>().`in`(Scopes.SINGLETON)
             bind<CadScriptEditorFactory>().to<AceCadScriptEditorFactory>()
-            bind<ScriptFactory>().to<DefaultScriptFactory>()
-        })
 
-        inline fun <reified T> getInstanceOf() = injector.getInstance(key<T>())
+            // Kernel dependencies
+            bind<ScriptLanguageParser>().to<DefaultScriptLanguageParser>()
+            bind<TextScriptFactory>().to<DefaultTextScriptFactory>()
+            install(
+                FactoryModuleBuilder()
+                    .implement(
+                        GistScriptFactory::class.java,
+                        DefaultGistScriptFactory::class.java
+                    )
+                    .build(
+                        DefaultGistScriptFactory.Factory::class.java
+                    )
+            )
+        }
+
+        val injector: Injector = Guice.createInjector(mainModule())
+
+        inline fun <reified T> getInstanceOf(): T = injector.getInstance(key<T>())
 
         /**
          * Try to close gracefully and start a scheduled task to forcibly close the application.
@@ -179,13 +200,13 @@ class MainWindowController
                         LOGGER.fine {
                             Thread.getAllStackTraces().entries.joinToString("\n\n") {
                                 """
-                            |Thread: ${it.key}
-                            |Stacktrace:
-                            |${it.value.joinToString(
+                                |Thread: ${it.key}
+                                |Stacktrace:
+                                |${it.value.joinToString(
                                     separator = "\n\t",
                                     prefix = "\t"
                                 )}
-                            """.trimMargin()
+                                """.trimMargin()
                             }
                         }
 

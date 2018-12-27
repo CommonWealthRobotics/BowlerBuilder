@@ -7,8 +7,8 @@ package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import arrow.core.Try
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.gistFileToFile
 import javafx.beans.property.SimpleBooleanProperty

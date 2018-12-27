@@ -6,8 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
@@ -102,7 +102,7 @@ class BowlerCadEngine : Pane() {
         buildCamera() // Initializes virtualCam which we need for selectionManager
         buildAxes()
 
-        this.selectionManager = selectionManagerFactory.create(
+        selectionManager = selectionManagerFactory.create(
             csgManager,
             focusGroup,
             virtualCam!!,
@@ -150,6 +150,8 @@ class BowlerCadEngine : Pane() {
                 hideHand()
             }
         }
+
+        homeCamera()
     }
 
     /** Build the scene. Setup camera angle and add world to the root.  */
@@ -295,6 +297,7 @@ class BowlerCadEngine : Pane() {
         flyingCamera!!.setGlobalToFiducialTransform(defaultCameraView)
         virtualCam!!.zoomDepth = VirtualCameraDevice.defaultZoomDepth.toDouble()
         flyingCamera!!.updatePositions()
+        moveCamera(TransformNR(0.0, 0.0, 0.0, RotationNR((90 - 127).toDouble(), 24.0, 0.0)), 0.0)
     }
 
     fun getCsgMap() = csgManager.getCsgToMeshView()
@@ -522,9 +525,7 @@ class BowlerCadEngine : Pane() {
 
     fun addAllCSGs(vararg csgs: CSG) = csgs.forEach { addCSG(it) }
 
-    fun addAllCSGs(csgs: Iterable<CSG>) = csgs.forEach { addCSG(it) }.also {
-        println(getCsgMap().keys.joinToString { it.name })
-    }
+    fun addAllCSGs(csgs: Iterable<CSG>) = csgs.forEach { addCSG(it) }
 
     fun clearCSGs() {
         try {

@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor

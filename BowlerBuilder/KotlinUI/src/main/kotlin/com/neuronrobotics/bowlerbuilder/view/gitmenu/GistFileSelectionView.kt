@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.GistFileSelectionController
 import com.neuronrobotics.bowlerbuilder.model.GistFile
 import javafx.beans.property.SimpleObjectProperty

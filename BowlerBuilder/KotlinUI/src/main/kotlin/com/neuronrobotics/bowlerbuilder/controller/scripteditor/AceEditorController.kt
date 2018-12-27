@@ -7,39 +7,42 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import arrow.core.Try
 import arrow.core.flatMap
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerkernel.scripting.ScriptFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.filesInRepo
+import com.neuronrobotics.bowlerkernel.scripting.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
 import tornadofx.*
 import javax.inject.Inject
 
 class AceEditorController
 @Inject constructor(
-    private val scriptRunner: ScriptFactory,
+    private val scriptFactory: TextScriptFactory,
     private val scriptResultHandler: ScriptResultHandler
 ) : Controller() {
 
     /**
-     * Runs a script by text using the injected [ScriptRunner].
+     * Runs a script by text using the injected [scriptFactory].
      *
      * @param scriptText The full text of the script.
      */
     fun runScript(scriptText: String) {
-        scriptRunner.createScriptFromText(
+        val result = scriptFactory.createScriptFromText(
             "groovy",
             scriptText
         ).flatMap {
+            it.addToInjector(MainWindowController.mainModule())
             it.runScript(emptyImmutableList())
-        }.bimap(
+        }
+
+        result.bimap(
             {
                 LOGGER.warning {
                     """
-                |Error running script:
-                |$it
-                """.trimMargin()
+                    |Error running script:
+                    |$it
+                    """.trimMargin()
                 }
             },
             {

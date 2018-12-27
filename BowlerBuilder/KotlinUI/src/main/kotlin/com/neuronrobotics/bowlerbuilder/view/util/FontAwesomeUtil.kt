@@ -6,8 +6,8 @@
 package com.neuronrobotics.bowlerbuilder.view.util
 
 import com.neuronrobotics.bowlerbuilder.controller.util.BOWLER_ASSET_REPO
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController.Companion.getInstanceOf
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
 import javafx.scene.Node
 import javafx.scene.image.Image

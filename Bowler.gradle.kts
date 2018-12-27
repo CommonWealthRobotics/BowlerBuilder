@@ -12,7 +12,7 @@ plugins {
     id("com.diffplug.gradle.spotless") version "3.16.0"
     id("org.jlleitschuh.gradle.ktlint") version "6.2.1"
     id("com.github.spotbugs") version "1.6.4"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0.RC9.2"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
 }
 
 allprojects {
@@ -27,7 +27,6 @@ val bowlerBuilderKotlinUIProject = project(":BowlerBuilder:KotlinUI")
 val bowlerBuilderCoreProject = project(":BowlerBuilder:Core")
 val bowlerKernelProject = project(":BowlerKernel")
 val bowlerKernelCoreProject = project(":BowlerKernel:Core")
-val bowlerKernelKernelTestProject = project(":BowlerKernel:KernelTest")
 
 val kotlinProjects = setOf(
         bowlerBuilderProject,
@@ -35,8 +34,7 @@ val kotlinProjects = setOf(
         bowlerBuilderKotlinUIProject,
         bowlerBuilderCoreProject,
         bowlerKernelProject,
-        bowlerKernelCoreProject,
-        bowlerKernelKernelTestProject
+        bowlerKernelCoreProject
 )
 
 val javaProjects = setOf<Project>(
@@ -310,7 +308,7 @@ configure(kotlinProjects) {
     }
 
     detekt {
-        toolVersion = "1.0.0.RC9.2"
+        toolVersion = "1.0.0-RC12"
         input = files(
                 "src/main/kotlin",
                 "src/test/kotlin"

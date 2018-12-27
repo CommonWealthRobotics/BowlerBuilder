@@ -7,7 +7,7 @@ package com.neuronrobotics.bowlerbuilder.controller.util
 
 import arrow.core.Try
 import com.google.common.collect.ImmutableList
-import com.neuronrobotics.bowlerbuilder.controller.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
