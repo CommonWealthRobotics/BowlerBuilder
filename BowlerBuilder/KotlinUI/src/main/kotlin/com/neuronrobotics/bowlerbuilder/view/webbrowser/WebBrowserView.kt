@@ -165,6 +165,8 @@ class WebBrowserView(
         }
     }
 
+    // TODO: Just have an edit button
+
     /**
      * Modify a button into a clone button.
      */

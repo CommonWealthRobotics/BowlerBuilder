@@ -74,7 +74,7 @@ class WebBrowserController
                     WebBrowserScript(
                         currentUrl,
                         GistFileOnDisk(
-                            Gist(url, "", ""),
+                            Gist(url, gistId, ""),
                             it
                         )
                     )
@@ -98,7 +98,7 @@ class WebBrowserController
         }
 
     /**
-     * Runs the [currentScript] with the injected [ScriptRunner].
+     * Runs the [currentScript] with the injected [scriptFactory].
      */
     fun runScript(currentScript: WebBrowserScript) {
         if (currentScript == WebBrowserScript.empty) {
@@ -116,7 +116,7 @@ class WebBrowserController
             scriptFactory.create(
                 it
             ).createScriptFromGist(
-                currentScript.gistFile.gist.id.toString(),
+                currentScript.gistFile.gist.id,
                 currentScript.gistFile.file.name
             ).flatMap {
                 it.runScript(emptyImmutableList())
@@ -180,7 +180,7 @@ class WebBrowserController
         val gist = getInstanceOf<MainWindowController>().gitHub.flatMap {
             forkGist(
                 it,
-                currentScript.gistFile.gist.id.toString()
+                currentScript.gistFile.gist.id
             )
         }.recoverWith {
             LOGGER.severe(
@@ -280,8 +280,11 @@ class WebBrowserController
                 .mapNotNull {
                     val srcElement = it.attributes()["src"]
                     if (srcElement.contains("https://gist.github.com/")) {
-                        srcElement.removePrefix("https://gist.github.com/")
+                        srcElement
+                            .removePrefix("https://gist.github.com/")
                             .removeSuffix(".js")
+                            .split("/")
+                            .lastOrNull()
                     } else {
                         null
                     }
