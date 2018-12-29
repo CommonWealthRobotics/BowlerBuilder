@@ -21,21 +21,7 @@ import javafx.scene.control.Button
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
 import org.controlsfx.glyphfont.FontAwesome
-import tornadofx.Fragment
-import tornadofx.action
-import tornadofx.borderpane
-import tornadofx.button
-import tornadofx.combobox
-import tornadofx.getValue
-import tornadofx.hbox
-import tornadofx.hboxConstraints
-import tornadofx.runLater
-import tornadofx.setValue
-import tornadofx.singleAssign
-import tornadofx.textfield
-import tornadofx.tooltip
-import tornadofx.useMaxWidth
-import tornadofx.webview
+import tornadofx.*
 import kotlin.collections.set
 
 /**

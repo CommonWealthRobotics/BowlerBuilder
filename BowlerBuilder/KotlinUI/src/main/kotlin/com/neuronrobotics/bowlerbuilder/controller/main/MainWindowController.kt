@@ -30,7 +30,7 @@ import org.apache.commons.io.FileUtils
 import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
 import org.kohsuke.github.GitHub
-import tornadofx.Controller
+import tornadofx.*
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths

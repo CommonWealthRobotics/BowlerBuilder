@@ -28,8 +28,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
 import org.jsoup.Jsoup
-import tornadofx.Controller
-import tornadofx.runLater
+import tornadofx.*
 import java.io.File
 import java.io.StringWriter
 import javax.inject.Inject

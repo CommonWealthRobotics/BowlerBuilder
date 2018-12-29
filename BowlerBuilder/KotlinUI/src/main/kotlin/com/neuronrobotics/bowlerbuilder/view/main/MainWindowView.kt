@@ -37,19 +37,7 @@ import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import tornadofx.View
-import tornadofx.action
-import tornadofx.borderpane
-import tornadofx.confirmation
-import tornadofx.enableWhen
-import tornadofx.item
-import tornadofx.menu
-import tornadofx.menubar
-import tornadofx.runLater
-import tornadofx.singleAssign
-import tornadofx.splitpane
-import tornadofx.success
-import tornadofx.tabpane
+import tornadofx.*
 import javax.inject.Singleton
 import kotlin.concurrent.thread
 
