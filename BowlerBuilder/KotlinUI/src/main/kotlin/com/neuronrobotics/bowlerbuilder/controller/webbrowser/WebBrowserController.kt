@@ -28,7 +28,8 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
 import org.jsoup.Jsoup
-import tornadofx.*
+import tornadofx.Controller
+import tornadofx.runLater
 import java.io.File
 import java.io.StringWriter
 import javax.inject.Inject
@@ -149,18 +150,33 @@ class WebBrowserController
      * Returns whether the currently logged in user owns the [currentScript].
      */
     fun doesUserOwnScript(currentScript: WebBrowserScript): Try<Boolean> {
-        if (currentScript == WebBrowserScript.empty) {
-            return Try.just(false)
-        }
-
         return getInstanceOf<MainWindowController>().gitHub.flatMap { gitHub ->
             Try {
-                gitHub.myself.listRepositories().first {
-                    it.gitTransportUrl == currentScript.gistFile.gist.gitUrl
-                }.hasPushAccess()
+                gitHub.myself.listGists().firstOrNull {
+                    it.gitPullUrl == currentScript.gistFile.gist.gitUrl
+                } != null
+            }.recoverWith {
+                Try {
+                    gitHub.myself.listRepositories().first {
+                        it.gitTransportUrl == currentScript.gistFile.gist.gitUrl
+                    }.hasPushAccess()
+                }
             }
         }
     }
+
+    /**
+     * Maps a [gistUrl] to its id.
+     *
+     * @param gistUrl The gist URL, i.e.
+     * `https://gist.github.com/5681d11165708c3aec1ed5cf8cf38238.git`.
+     */
+    private fun gistUrlToId(gistUrl: String): String =
+        gistUrl
+            .removePrefix("http://gist.github.com/")
+            .removePrefix("https://gist.github.com/")
+            .removeSuffix(".git/")
+            .removeSuffix(".git")
 
     /**
      * Clones the [currentScript] and opens it in an editor.

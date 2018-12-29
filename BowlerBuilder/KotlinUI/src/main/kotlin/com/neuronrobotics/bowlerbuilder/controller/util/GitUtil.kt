@@ -7,7 +7,8 @@ package com.neuronrobotics.bowlerbuilder.controller.util
 
 import arrow.core.Try
 import com.google.common.collect.ImmutableList
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
+import com.neuronrobotics.bowlerkernel.util.GIT_CACHE_DIRECTORY
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
@@ -77,8 +78,8 @@ fun gitUrlToDirectory(gitUrl: String): File {
 
     return Paths.get(
         System.getProperty("user.home"),
-        MainWindowController.BOWLERBUILDER_DIRECTORY,
-        MainWindowController.GIT_CACHE_DIRECTORY,
+        BOWLERBUILDER_DIRECTORY,
+        GIT_CACHE_DIRECTORY,
         *subDirs.toTypedArray()
     ).toFile()
 }

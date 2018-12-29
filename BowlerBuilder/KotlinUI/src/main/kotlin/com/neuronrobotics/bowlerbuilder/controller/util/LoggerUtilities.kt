@@ -5,8 +5,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.util
 
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
-
+import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
+import com.neuronrobotics.bowlerkernel.util.LOGS_DIRECTORY
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -32,8 +32,8 @@ class LoggerUtilities private constructor() {
         // Log file parent directory path
         private val logFileDirPath: String = Paths.get(
             System.getProperty("user.home"),
-            MainWindowController.BOWLERBUILDER_DIRECTORY,
-            MainWindowController.LOGS_DIRECTORY
+            BOWLERBUILDER_DIRECTORY,
+            LOGS_DIRECTORY
         ).toAbsolutePath().toString()
 
         // Log file path

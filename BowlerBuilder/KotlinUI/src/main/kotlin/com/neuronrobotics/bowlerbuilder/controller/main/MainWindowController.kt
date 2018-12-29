@@ -7,7 +7,6 @@ package com.neuronrobotics.bowlerbuilder.controller.main
 
 import arrow.core.Try
 import com.google.common.base.Throwables
-import com.google.common.collect.ImmutableList
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Scopes
@@ -16,10 +15,6 @@ import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.gistUrlToGistId
-import com.neuronrobotics.bowlerbuilder.model.Gist
-import com.neuronrobotics.bowlerbuilder.model.Organization
-import com.neuronrobotics.bowlerbuilder.model.Repository
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.scripting.DefaultGistScriptFactory
@@ -28,14 +23,14 @@ import com.neuronrobotics.bowlerkernel.scripting.DefaultTextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.GistScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.ScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.scripting.TextScriptFactory
-import com.neuronrobotics.kinematicschef.util.emptyImmutableList
-import com.neuronrobotics.kinematicschef.util.toImmutableList
+import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
+import com.neuronrobotics.bowlerkernel.util.GIT_CACHE_DIRECTORY
 import javafx.application.Platform
 import org.apache.commons.io.FileUtils
 import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
 import org.kohsuke.github.GitHub
-import tornadofx.*
+import tornadofx.Controller
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -50,53 +45,6 @@ class MainWindowController
 
     var credentials: Pair<String, String> = "" to ""
     var gitHub: Try<GitHub> = Try.raise(IllegalStateException("Not logged in."))
-
-    /**
-     * Load the authenticated user's gists.
-     */
-    fun loadUserGists(): ImmutableList<Gist> {
-        return gitHub.fold(
-            { emptyImmutableList() },
-            { gitHub ->
-                gitHub.myself
-                    .listGists()
-                    .map {
-                        val out = Gist(
-                            gitUrl = it.gitPullUrl,
-                            id = gistUrlToGistId(it.gitPullUrl),
-                            description = it.description
-                        )
-                        println(out)
-                        out
-                    }.toImmutableList()
-            }
-        )
-    }
-
-    /**
-     * Load the authenticated user's organizations.
-     */
-    fun loadUserOrgs(): ImmutableList<Organization> {
-        return gitHub.fold(
-            { emptyImmutableList() },
-            { gitHub ->
-                gitHub.myOrganizations
-                    .map { entry ->
-                        Organization(
-                            gitUrl = entry.value.htmlUrl.toString(),
-                            name = entry.key,
-                            repositories = entry.value.repositories
-                                .map {
-                                    Repository(
-                                        gitUrl = it.value.gitTransportUrl,
-                                        name = it.key
-                                    )
-                                }.toImmutableList()
-                        )
-                    }.toImmutableList()
-            }
-        )
-    }
 
     /**
      * Open the [file] in an editor.
@@ -131,10 +79,6 @@ class MainWindowController
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(MainWindowController::class.java.simpleName)
-        const val BOWLERBUILDER_DIRECTORY = "BowlerBuilder"
-        const val GIT_CACHE_DIRECTORY = "git-cache"
-        const val PREFERENCES_DIRECTORY = "preferences"
-        const val LOGS_DIRECTORY = "logs"
 
         internal fun mainModule() = module {
             // KotlinUI dependencies

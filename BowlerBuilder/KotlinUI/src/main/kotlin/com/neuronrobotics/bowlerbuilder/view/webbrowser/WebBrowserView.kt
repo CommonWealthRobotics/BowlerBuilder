@@ -11,6 +11,7 @@ import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.getFontAwesomeGlyph
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
@@ -20,7 +21,22 @@ import javafx.scene.control.Button
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
 import org.controlsfx.glyphfont.FontAwesome
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.combobox
+import tornadofx.getValue
+import tornadofx.hbox
+import tornadofx.hboxConstraints
+import tornadofx.runLater
+import tornadofx.setValue
+import tornadofx.singleAssign
+import tornadofx.textfield
+import tornadofx.tooltip
+import tornadofx.useMaxWidth
+import tornadofx.webview
+import kotlin.collections.set
 
 /**
  * A view which has a web browser and script run/clone/edit controls.
@@ -40,6 +56,8 @@ class WebBrowserView(
     private var currentScript by currentScriptProperty
     private var webview: WebView by singleAssign()
     private var cloneButton: Button by singleAssign()
+    private val userOwnsCurrentScriptProperty = SimpleBooleanProperty()
+    private var userOwnsCurrentScript by userOwnsCurrentScriptProperty
 
     override val root = borderpane {
         webview = webview {
@@ -117,11 +135,13 @@ class WebBrowserView(
                 }
             )
 
-            cloneButton = button()
-                .modifyIntoCloneButton(WebBrowserScript.empty)
-                .apply {
-                    isDisable = true
-                }
+            cloneButton = button(
+                "Edit",
+                loadImageAsset("Edit-Script.png", FontAwesome.Glyph.EDIT)
+            ) {
+                disableProperty().bind(userOwnsCurrentScriptProperty)
+                action { runAsync { controller.editScript(currentScript) } }
+            }
 
             combobox<WebBrowserScript> {
                 cellFormat {
@@ -129,7 +149,11 @@ class WebBrowserView(
                 }
 
                 valueProperty().addListener { _, _, new ->
-                    refreshCloneButton(new)
+                    currentScript = new ?: WebBrowserScript.empty
+                    userOwnsCurrentScript = controller.doesUserOwnScript(currentScript).fold(
+                        { false },
+                        { it }
+                    )
                 }
 
                 controller.itemsOnPageProperty.addListener(ListChangeListener {
@@ -145,51 +169,6 @@ class WebBrowserView(
     }
 
     init {
-        refreshCloneButton(controller.itemsOnPageProperty.firstOrNull())
-    }
-
-    private fun refreshCloneButton(new: WebBrowserScript?) {
-        val nonNullValue = new ?: WebBrowserScript.empty
-        currentScript = nonNullValue
-
-        runAsync {
-            controller.doesUserOwnScript(nonNullValue)
-        } success {
-            it.map {
-                if (it) {
-                    cloneButton.modifyIntoEditButton(nonNullValue)
-                } else {
-                    cloneButton.modifyIntoCloneButton(nonNullValue)
-                }
-            }
-        }
-    }
-
-    // TODO: Just have an edit button
-
-    /**
-     * Modify a button into a clone button.
-     */
-    private fun Button.modifyIntoCloneButton(script: WebBrowserScript): Button {
-        text = "Clone"
-        graphic = loadImageAsset("Make-Copy-Script.png", FontAwesome.Glyph.COPY)
-        isDisable = false
-        action { runAsync { controller.forkScript(script) } }
-        return this
-    }
-
-    /**
-     * Modify a button into an edit button.
-     */
-    private fun Button.modifyIntoEditButton(script: WebBrowserScript): Button {
-        text = "Edit"
-        graphic = loadImageAsset("Edit-Script.png", FontAwesome.Glyph.EDIT)
-        isDisable = false
-        action { runAsync { controller.editScript(script) } }
-        return this
-    }
-
-    init {
         webview.engine.load(currentUrl)
     }
 
@@ -199,7 +178,7 @@ class WebBrowserView(
             "http://commonwealthrobotics.com/BowlerStudio/Welcome-To-BowlerStudio/"
 
         fun create(urlToLoad: String? = null) = WebBrowserView(
-            getInstanceOf<WebBrowserController>(),
+            getInstanceOf(),
             urlToLoad
         )
     }

@@ -15,6 +15,7 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Com
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
 import com.neuronrobotics.bowlerbuilder.controller.util.mapGistFileToFileOnDisk
+import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
@@ -36,7 +37,19 @@ import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.confirmation
+import tornadofx.enableWhen
+import tornadofx.item
+import tornadofx.menu
+import tornadofx.menubar
+import tornadofx.runLater
+import tornadofx.singleAssign
+import tornadofx.splitpane
+import tornadofx.success
+import tornadofx.tabpane
 import javax.inject.Singleton
 import kotlin.concurrent.thread
 
@@ -178,25 +191,37 @@ class MainWindowView : View() {
     }
 
     /**
-     * Adds the [cad] objects to the current CAD editor. Does nothing if there is no editor
-     * selected.
+     * Adds the [cad] objects to the current CAD editor. If there is no CAD viewer open, then a
+     * new one is opened.
      */
     fun addCadObjectsToCurrentTab(cad: ImmutableSet<CSG>) {
         val selection = mainTabPane.selectionModel.selectedItem
-        if (selection is CadScriptEditorTab) {
-            selection.editor.cadView.engine.addAllCSGs(cad)
+        when (selection) {
+            is CadScriptEditorTab -> selection.editor.cadView.engine.addAllCSGs(cad)
+            else -> addTab(Tab("CAD", CadView().let {
+                it.engine.addAllCSGs(cad)
+                it.root
+            }))
         }
     }
 
     /**
-     * Sets the [cad] objects to the current CAD editor. Does nothing if there is no editor
-     * selected.
+     * Sets the [cad] objects to the current CAD editor. If there is no CAD viewer open, then a
+     * new one is opened.
      */
     fun setCadObjectsToCurrentTab(cad: ImmutableSet<CSG>) {
         val selection = mainTabPane.selectionModel.selectedItem
-        if (selection is CadScriptEditorTab) {
-            selection.editor.cadView.engine.clearCSGs()
-            selection.editor.cadView.engine.addAllCSGs(cad)
+        when (selection) {
+            is CadScriptEditorTab -> {
+                selection.editor.cadView.engine.clearCSGs()
+                selection.editor.cadView.engine.addAllCSGs(cad)
+            }
+
+            else -> addTab(Tab("CAD", CadView().let {
+                it.engine.clearCSGs()
+                it.engine.addAllCSGs(cad)
+                it.root
+            }))
         }
     }
 

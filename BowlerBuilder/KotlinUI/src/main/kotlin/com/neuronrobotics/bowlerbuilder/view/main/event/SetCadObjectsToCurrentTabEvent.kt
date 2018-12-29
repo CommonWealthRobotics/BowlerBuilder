@@ -9,7 +9,8 @@ import com.google.common.collect.ImmutableSet
 import eu.mihosoft.vrl.v3d.CSG
 
 /**
- * Clear the CAD objects from the current tab's CAD viewer and add [cad].
+ * Clears the CAD objects from the current tab's CAD viewer and add [cad]. If there is no CAD
+ * viewer open, then a new one is opened.
  */
 data class SetCadObjectsToCurrentTabEvent(
     val cad: ImmutableSet<CSG>
