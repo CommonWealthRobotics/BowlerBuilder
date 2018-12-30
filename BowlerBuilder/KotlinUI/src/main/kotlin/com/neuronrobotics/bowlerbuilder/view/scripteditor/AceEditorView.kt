@@ -17,6 +17,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import javafx.scene.text.Text
 import org.controlsfx.glyphfont.FontAwesome
 import tornadofx.*
 import java.io.File
@@ -66,6 +67,13 @@ class AceEditorView
             urlTextField = textfield {
                 hboxConstraints {
                     hGrow = Priority.ALWAYS
+                }
+
+                textProperty().addListener { _, _, newValue ->
+                    val textWidth = Text(newValue).layoutBounds.width
+                    val paddingWidth = padding.left + padding.right
+                    val fontPadding = font.size * 1.5
+                    maxWidth = textWidth + paddingWidth + fontPadding
                 }
             }
         }
