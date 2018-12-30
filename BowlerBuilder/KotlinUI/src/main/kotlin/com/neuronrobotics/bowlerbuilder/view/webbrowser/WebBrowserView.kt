@@ -17,7 +17,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ListChangeListener
 import javafx.concurrent.Worker
 import javafx.geometry.Insets
-import javafx.scene.control.Button
+import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.web.WebView
 import org.controlsfx.glyphfont.FontAwesome
@@ -41,7 +41,6 @@ class WebBrowserView(
     )
     private var currentScript by currentScriptProperty
     private var webview: WebView by singleAssign()
-    private var cloneButton: Button by singleAssign()
     private val userOwnsCurrentScriptProperty = SimpleBooleanProperty()
     private var userOwnsCurrentScript by userOwnsCurrentScriptProperty
 
@@ -111,6 +110,7 @@ class WebBrowserView(
         bottom = hbox {
             padding = Insets(5.0)
             spacing = 5.0
+            alignment = Pos.CENTER_LEFT
 
             add(
                 ThreadMonitoringButton.create(
@@ -121,11 +121,10 @@ class WebBrowserView(
                 }
             )
 
-            cloneButton = button(
-                "Edit",
+            button(
+                "Fork",
                 loadImageAsset("Edit-Script.png", FontAwesome.Glyph.EDIT)
             ) {
-                disableProperty().bind(userOwnsCurrentScriptProperty)
                 action { runAsync { controller.editScript(currentScript) } }
             }
 

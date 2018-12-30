@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import javafx.geometry.Insets
+import javafx.geometry.Pos
 import org.controlsfx.glyphfont.FontAwesome
 import tornadofx.*
 import javax.inject.Inject
@@ -44,6 +45,7 @@ class AceScratchpadView
             padding = Insets(5.0)
             spacing = 5.0
             useMaxWidth = true
+            alignment = Pos.CENTER_LEFT
 
             add(
                 ThreadMonitoringButton.create(
@@ -79,8 +81,8 @@ class AceScratchpadView
     companion object {
         fun create() = AceScratchpadView(
             AceWebEditorView(),
-            getInstanceOf<AceEditorController>(),
-            getInstanceOf<CadScriptEditorFactory>()
+            getInstanceOf(),
+            getInstanceOf()
         )
     }
 }

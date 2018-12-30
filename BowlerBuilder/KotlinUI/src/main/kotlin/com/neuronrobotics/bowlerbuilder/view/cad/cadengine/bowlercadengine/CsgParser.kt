@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
+import arrow.core.Try
 import com.google.common.collect.ImmutableCollection
 import com.google.common.collect.ImmutableList
 import eu.mihosoft.vrl.v3d.CSG
@@ -36,12 +37,10 @@ class CsgParser {
                         .contains(scriptName.toLowerCase(Locale.US).trim())
                 }
                 .forEach {
-                    try {
-                        val num = Integer.parseInt(it[1].trim())
-                        if (num == lineNumber) {
+                    Try { it[1].trim().toInt() }.map {
+                        if (it == lineNumber) {
                             csgsFromScriptLine.add(testCSG)
                         }
-                    } catch (ignored: NumberFormatException) {
                     }
                 }
         }

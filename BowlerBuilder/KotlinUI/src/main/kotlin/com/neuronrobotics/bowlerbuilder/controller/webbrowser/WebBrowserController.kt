@@ -146,6 +146,34 @@ class WebBrowserController
     }
 
     /**
+     * Opens the [currentScript] in an editor.
+     */
+    fun editScript(currentScript: WebBrowserScript) {
+        if (currentScript == WebBrowserScript.empty) {
+            return
+        }
+
+        val scriptFork = forkScript(currentScript)
+
+        scriptFork.map {
+            LOGGER.info(
+                """
+                |Editing script:
+                |$it
+                """.trimMargin()
+            )
+
+            cadScriptEditorFactory
+                .createAndOpenScriptEditor(
+                    it.gistFile.gist.gitUrl,
+                    it.gistFile.file
+                ).apply {
+                    runLater { editor.gotoLine(0) }
+                }
+        }
+    }
+
+    /**
      * Returns whether the currently logged in user owns the [currentScript].
      */
     fun doesUserOwnScript(currentScript: WebBrowserScript): Try<Boolean> {
@@ -165,22 +193,9 @@ class WebBrowserController
     }
 
     /**
-     * Maps a [gistUrl] to its id.
-     *
-     * @param gistUrl The gist URL, i.e.
-     * `https://gist.github.com/5681d11165708c3aec1ed5cf8cf38238.git`.
-     */
-    private fun gistUrlToId(gistUrl: String): String =
-        gistUrl
-            .removePrefix("http://gist.github.com/")
-            .removePrefix("https://gist.github.com/")
-            .removeSuffix(".git/")
-            .removeSuffix(".git")
-
-    /**
      * Clones the [currentScript] and opens it in an editor.
      */
-    fun forkScript(currentScript: WebBrowserScript): Try<WebBrowserScript> {
+    private fun forkScript(currentScript: WebBrowserScript): Try<WebBrowserScript> {
         if (currentScript == WebBrowserScript.empty) {
             return Try.just(WebBrowserScript.empty)
         }
@@ -217,7 +232,7 @@ class WebBrowserController
                 )
             )
 
-            LOGGER.fine(
+            LOGGER.info(
                 """
                 |Forked to:
                 |$scriptClone
@@ -226,30 +241,6 @@ class WebBrowserController
 
             scriptClone
         }
-    }
-
-    /**
-     * Opens the [currentScript] in an editor.
-     */
-    fun editScript(currentScript: WebBrowserScript) {
-        if (currentScript == WebBrowserScript.empty) {
-            return
-        }
-
-        LOGGER.fine(
-            """
-            |Editing script:
-            |$currentScript
-            """.trimMargin()
-        )
-
-        cadScriptEditorFactory
-            .createAndOpenScriptEditor(
-                currentScript.gistFile.gist.gitUrl, // TODO: Wrong URL
-                currentScript.gistFile.file
-            ).apply {
-                runLater { editor.gotoLine(0) }
-            }
     }
 
     /**

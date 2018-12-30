@@ -367,12 +367,16 @@ class BowlerCadEngine : Pane() {
 
                 // Set the onAction of the MenuItem to flip the draw state
                 wireframe.setOnAction {
-                    if (mesh.drawMode == DrawMode.FILL) {
-                        mesh.drawMode = DrawMode.LINE
-                        wireframe.text = "Show As Solid"
-                    } else {
-                        mesh.drawMode = DrawMode.FILL
-                        wireframe.text = "Show As Wireframe"
+                    mesh.drawMode = when (mesh.drawMode) {
+                        DrawMode.FILL -> {
+                            wireframe.text = "Show as Solid"
+                            DrawMode.LINE
+                        }
+
+                        else -> {
+                            wireframe.text = "Show as Wireframe"
+                            DrawMode.FILL
+                        }
                     }
                 }
 

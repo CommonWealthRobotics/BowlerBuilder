@@ -14,6 +14,7 @@ import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
 import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import org.controlsfx.glyphfont.FontAwesome
@@ -45,6 +46,7 @@ class AceEditorView
             padding = Insets(5.0)
             spacing = 5.0
             useMaxWidth = true
+            alignment = Pos.CENTER_LEFT
 
             add(
                 ThreadMonitoringButton.create(

@@ -51,12 +51,11 @@ fun cloneAssetRepo(credentials: Pair<String, String>) {
  * @param gistUrl The gist URL, i.e.
  * `https://gist.github.com/5681d11165708c3aec1ed5cf8cf38238.git`.
  */
-fun gistUrlToGistId(gistUrl: String): String =
+fun gistUrlToId(gistUrl: String): String =
     gistUrl
-        .removePrefix("http://github.com/")
-        .removePrefix("https://github.com/")
-        .removePrefix("http://gist.github.com/")
         .removePrefix("https://gist.github.com/")
+        .removePrefix("http://gist.github.com/")
+        .removeSuffix(".git/")
         .removeSuffix(".git")
 
 /**
