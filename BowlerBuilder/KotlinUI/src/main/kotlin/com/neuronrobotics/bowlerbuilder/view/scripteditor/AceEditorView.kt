@@ -58,10 +58,11 @@ class AceEditorView
                 }
             )
 
-            button("Publish", loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)) {
-                action {
-                    PublishView.create(gitUrl, file, getFullText()).openModal()
-                }
+            button(
+                "Publish",
+                loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)
+            ).action {
+                PublishView.create(gitUrl, file, getFullText()).openModal()
             }
 
             urlTextField = textfield {
@@ -75,6 +76,10 @@ class AceEditorView
                     val fontPadding = font.size * 1.5
                     maxWidth = textWidth + paddingWidth + fontPadding
                 }
+            }
+
+            button("Copy URL").action {
+                clipboard.putString(urlTextField.text)
             }
         }
     }
