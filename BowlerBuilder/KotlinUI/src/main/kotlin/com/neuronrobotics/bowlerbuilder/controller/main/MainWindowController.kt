@@ -140,7 +140,6 @@ class MainWindowController
                 10000
             )
 
-            // TODO: Disconnect all devices
             MainWindowView.mainUIEventBus.post(ApplicationClosingEvent)
             Platform.exit()
         }

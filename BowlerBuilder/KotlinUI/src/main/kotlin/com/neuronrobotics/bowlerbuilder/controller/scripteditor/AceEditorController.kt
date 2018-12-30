@@ -5,11 +5,17 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
+import arrow.core.Either
 import arrow.core.flatMap
+import arrow.core.left
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
+import com.neuronrobotics.bowlerkernel.scripting.Script
 import com.neuronrobotics.bowlerkernel.scripting.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
+import org.greenrobot.eventbus.Subscribe
 import tornadofx.*
 import javax.inject.Inject
 
@@ -19,16 +25,24 @@ class AceEditorController
     private val scriptResultHandler: ScriptResultHandler
 ) : Controller() {
 
+    private var currentScript: Either<String, Script> = "Not initialized.".left()
+
+    init {
+        MainWindowView.mainUIEventBus.register(this)
+    }
+
     /**
      * Runs a script by text using the injected [scriptFactory].
      *
      * @param scriptText The full text of the script.
      */
     fun runScript(scriptText: String) {
-        val result = scriptFactory.createScriptFromText(
+        currentScript = scriptFactory.createScriptFromText(
             "groovy",
             scriptText
-        ).flatMap {
+        )
+
+        val result = currentScript.flatMap {
             it.addToInjector(MainWindowController.mainModule())
             it.runScript(emptyImmutableList())
         }
@@ -46,6 +60,12 @@ class AceEditorController
                 scriptResultHandler.handleResult(it)
             }
         )
+    }
+
+    @Subscribe
+    @Suppress("UNUSED_PARAMETER")
+    fun onApplicationClosing(event: ApplicationClosingEvent) {
+        currentScript.map { it.stopAndCleanUp() }
     }
 
     companion object {
