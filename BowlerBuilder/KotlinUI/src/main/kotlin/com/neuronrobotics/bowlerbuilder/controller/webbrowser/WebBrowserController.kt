@@ -21,7 +21,7 @@ import com.neuronrobotics.bowlerbuilder.controller.util.forkGist
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerkernel.scripting.DefaultGistScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGistScriptFactory
 import com.neuronrobotics.kinematicschef.util.emptyImmutableList
 import com.neuronrobotics.kinematicschef.util.toImmutableList
 import javafx.collections.FXCollections

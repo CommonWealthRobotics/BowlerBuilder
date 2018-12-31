@@ -13,7 +13,7 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.scripting.Script
-import com.neuronrobotics.bowlerkernel.scripting.TextScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
 import org.greenrobot.eventbus.Subscribe
 import tornadofx.*
