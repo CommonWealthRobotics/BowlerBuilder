@@ -88,7 +88,7 @@ class MainWindowView : View() {
                             content = "This will delete all local assets and unsaved work."
                         ) {
                             if (it == ButtonType.OK) {
-                                runAsync { controller.deleteLocalCache() }
+                                runAsync { controller.deleteGitCache() }
                             }
                         }
                     }

@@ -3,11 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.neuronrobotics.bowlerbuilder.controller.util
+package com.neuronrobotics.bowlerkernel.util
 
-import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
-import com.neuronrobotics.bowlerkernel.util.BOWLER_DIRECTORY
-import com.neuronrobotics.bowlerkernel.util.LOGS_DIRECTORY
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
@@ -34,7 +31,7 @@ internal class LoggerUtilities private constructor() {
         private val logFileDirPath: String = Paths.get(
             System.getProperty("user.home"),
             BOWLER_DIRECTORY,
-            BOWLERBUILDER_DIRECTORY,
+            BOWLERKERNEL_DIRECTORY,
             LOGS_DIRECTORY
         ).toAbsolutePath().toString()
 

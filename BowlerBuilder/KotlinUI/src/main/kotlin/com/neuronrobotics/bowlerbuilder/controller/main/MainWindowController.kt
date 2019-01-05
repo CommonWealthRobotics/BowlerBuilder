@@ -7,6 +7,7 @@ package com.neuronrobotics.bowlerbuilder.controller.main
 
 import arrow.core.Try
 import arrow.core.recoverWith
+import arrow.instances.`try`.applicativeError.handleError
 import com.google.common.base.Throwables
 import com.google.inject.Guice
 import com.google.inject.Injector
@@ -26,18 +27,13 @@ import com.neuronrobotics.bowlerkernel.scripting.factory.GistScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.scripting.parser.ScriptLanguageParser
-import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
-import com.neuronrobotics.bowlerkernel.util.GIT_CACHE_DIRECTORY
 import javafx.application.Platform
-import org.apache.commons.io.FileUtils
 import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
 import org.kohsuke.github.GHGist
 import org.kohsuke.github.GHGistFile
 import org.kohsuke.github.GitHub
 import tornadofx.*
-import java.io.IOException
-import java.nio.file.Paths
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
@@ -75,22 +71,15 @@ class MainWindowController
     /**
      * Clear the local git cache.
      */
-    fun deleteLocalCache() {
-        try {
-            FileUtils.deleteDirectory(
-                Paths.get(
-                    System.getProperty("user.home"),
-                    BOWLERBUILDER_DIRECTORY,
-                    GIT_CACHE_DIRECTORY
-                ).toFile()
-            )
-
+    fun deleteGitCache() {
+        gitFS.map {
+            it.deleteCache()
             beginForceQuit()
-        } catch (e: IOException) {
-            LOGGER.severe {
+        }.handleError {
+            LOGGER.warning {
                 """
-                |Unable to delete cache.
-                |${Throwables.getStackTraceAsString(e)}
+                |Cannot delete Git cache:
+                |${Throwables.getStackTraceAsString(it)}
                 """.trimMargin()
             }
         }
