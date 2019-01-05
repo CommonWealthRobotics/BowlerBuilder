@@ -44,6 +44,7 @@ class MainWindowView : View() {
     private val loginManager = getInstanceOf<LoginManager>()
     private val scriptEditorFactory = getInstanceOf<CadScriptEditorFactory>()
     private var mainTabPane: TabPane by singleAssign()
+    private var bottomTabPane: TabPane by singleAssign()
     private var logInMenu: MenuItem by singleAssign()
     private var logOutMenu: MenuItem by singleAssign()
 
@@ -52,6 +53,10 @@ class MainWindowView : View() {
     private var reposMenu: Menu by singleAssign()
 
     override val root = borderpane {
+        setPrefSize(800.0, 600.0)
+        usePrefHeight = true
+        usePrefWidth = true
+
         top = menubar {
             menu("File") {
                 item("Exit") {
@@ -106,24 +111,22 @@ class MainWindowView : View() {
             }
         }
 
-        center = splitpane(orientation = Orientation.VERTICAL)
-        {
-            setDividerPositions(0.9)
-
-            mainTabPane = tabpane {
-                tabs += WebBrowserTab()
-                tabs += NewTabTab().apply { isClosable = false }
-            }
-
-            tabpane {
-                tabs += ConsoleTab().apply { isClosable = false }
-            }
+        center = splitpane(orientation = Orientation.VERTICAL) {
+            setDividerPositions(0.8)
+            mainTabPane = tabpane {}
+            bottomTabPane = tabpane {}
         }
     }
 
     init {
         mainUIEventBus.register(this)
         controller.gitHub = loginManager.login()
+
+        runLater { mainTabPane.tabs += NewTabTab().apply { isClosable = false } }
+        addTab(WebBrowserTab())
+        addBottomTab(ConsoleTab().apply { isClosable = false })
+
+        reloadMenus()
 //        addTab(
 //            Tab(
 //                "",
@@ -136,7 +139,6 @@ class MainWindowView : View() {
 //                ).root
 //            )
 //        )
-        reloadMenus()
     }
 
     @Subscribe
@@ -165,13 +167,28 @@ class MainWindowView : View() {
     }
 
     /**
+     * Adds a tab to the [bottomTabPane] and selects it.
+     */
+    fun addBottomTab(tab: Tab) {
+        runLater {
+            bottomTabPane.tabs.add(tab)
+            bottomTabPane.selectionModel.select(tab)
+        }
+    }
+
+    /**
      * Searches for tabs by their [Tab.content] and removes all matches.
      *
      * @param cmp The [Tab.content] to search for.
      */
     fun closeTabByContent(cmp: Node) {
-        val matches = mainTabPane.tabs.filter { it.content == cmp }
-        runLater { mainTabPane.tabs.removeAll(matches) }
+        fun removeMatches(tabPane: TabPane) {
+            val matches = tabPane.tabs.filter { it.content == cmp }
+            runLater { tabPane.tabs.removeAll(matches) }
+        }
+
+        removeMatches(mainTabPane)
+        removeMatches(bottomTabPane)
     }
 
     /**
