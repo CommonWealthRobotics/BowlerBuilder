@@ -7,11 +7,8 @@ buildCache {
 
 rootProject.name = "Bowler"
 
-// include(":bowler-script-kernel")
 include(":BowlerBuilder")
-include(":BowlerBuilder:JavaUI")
 include(":BowlerBuilder:KotlinUI")
-include(":BowlerBuilder:Core")
 include(":BowlerKernel")
 include(":BowlerKernel:Core")
 

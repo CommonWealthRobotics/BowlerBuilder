@@ -22,17 +22,13 @@ allprojects {
 
 // val bowlerScriptKernelProject = project(":bowler-script-kernel")
 val bowlerBuilderProject = project(":BowlerBuilder")
-val bowlerBuilderJavaUIProject = project(":BowlerBuilder:JavaUI")
 val bowlerBuilderKotlinUIProject = project(":BowlerBuilder:KotlinUI")
-val bowlerBuilderCoreProject = project(":BowlerBuilder:Core")
 val bowlerKernelProject = project(":BowlerKernel")
 val bowlerKernelCoreProject = project(":BowlerKernel:Core")
 
 val kotlinProjects = setOf(
         bowlerBuilderProject,
-        bowlerBuilderJavaUIProject,
         bowlerBuilderKotlinUIProject,
-        bowlerBuilderCoreProject,
         bowlerKernelProject,
         bowlerKernelCoreProject
 )
@@ -43,7 +39,6 @@ val javaProjects = setOf<Project>(
 
 val javafxProjects = setOf(
         bowlerBuilderProject,
-        bowlerBuilderJavaUIProject,
         bowlerBuilderKotlinUIProject
 )
 
