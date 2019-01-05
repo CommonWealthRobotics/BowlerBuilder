@@ -16,8 +16,6 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Com
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptResultHandler
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
-import com.neuronrobotics.bowlerbuilder.controller.util.forkGist
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
@@ -62,10 +60,9 @@ class WebBrowserController
         } else {
             getCurrentGistId(engine).flatMap { gistId ->
                 val url = getGitUrlFromPageUrl(currentUrl, gistId)
-                val files = cloneRepoAndGetFiles(
-                    getInstanceOf<MainWindowController>().credentials,
-                    url
-                ).fold(
+                val files = getInstanceOf<MainWindowController>().gitFS.flatMap {
+                    it.cloneRepoAndGetFiles(url)
+                }.fold(
                     { emptyImmutableList<File>() },
                     { it }
                 )
@@ -112,9 +109,9 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        getInstanceOf<MainWindowController>().gitHub.map {
+        getInstanceOf<MainWindowController>().gitHub.map { gitHub ->
             scriptFactory.create(
-                it
+                gitHub
             ).createScriptFromGist(
                 currentScript.gistFile.gist.id,
                 currentScript.gistFile.file.name
@@ -174,25 +171,6 @@ class WebBrowserController
     }
 
     /**
-     * Returns whether the currently logged in user owns the [currentScript].
-     */
-    fun doesUserOwnScript(currentScript: WebBrowserScript): Try<Boolean> {
-        return getInstanceOf<MainWindowController>().gitHub.flatMap { gitHub ->
-            Try {
-                gitHub.myself.listGists().firstOrNull {
-                    it.gitPullUrl == currentScript.gistFile.gist.gitUrl
-                } != null
-            }.recoverWith {
-                Try {
-                    gitHub.myself.listRepositories().first {
-                        it.gitTransportUrl == currentScript.gistFile.gist.gitUrl
-                    }.hasPushAccess()
-                }
-            }
-        }
-    }
-
-    /**
      * Clones the [currentScript] and opens it in an editor.
      */
     private fun forkScript(currentScript: WebBrowserScript): Try<WebBrowserScript> {
@@ -207,11 +185,26 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        val gist = getInstanceOf<MainWindowController>().gitHub.flatMap {
-            forkGist(
-                it,
-                currentScript.gistFile.gist.id
-            )
+        return getInstanceOf<MainWindowController>().gitFS.flatMap {
+            it.forkRepo(currentScript.gistFile.gist.gitUrl).map { gistForkUrl ->
+                val scriptClone = currentScript.copy(
+                    pageUrl = gistForkUrl,
+                    gistFile = currentScript.gistFile.copy(
+                        gist = currentScript.gistFile.gist.copy(
+                            gitUrl = gistForkUrl
+                        )
+                    )
+                )
+
+                LOGGER.info(
+                    """
+                    |Forked to:
+                    |$scriptClone
+                    """.trimMargin()
+                )
+
+                scriptClone
+            }
         }.recoverWith {
             LOGGER.severe(
                 """
@@ -220,26 +213,6 @@ class WebBrowserController
                 """.trimMargin()
             )
             Try.raise(it)
-        }
-
-        return gist.map {
-            val scriptClone = currentScript.copy(
-                pageUrl = it.htmlUrl.toString(),
-                gistFile = currentScript.gistFile.copy(
-                    gist = currentScript.gistFile.gist.copy(
-                        gitUrl = it.gitPullUrl
-                    )
-                )
-            )
-
-            LOGGER.info(
-                """
-                |Forked to:
-                |$scriptClone
-                """.trimMargin()
-            )
-
-            scriptClone
         }
     }
 

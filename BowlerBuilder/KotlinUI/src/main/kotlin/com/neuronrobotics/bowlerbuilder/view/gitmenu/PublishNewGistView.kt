@@ -10,7 +10,7 @@ import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.mapGistFileToFileOnDisk
+import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -78,7 +78,7 @@ class PublishNewGistView(
                                     .public_(gistIsPublic)
                                     .create()
 
-                                publishedFile = mapGistFileToFileOnDisk(
+                                publishedFile = GitHubFS.mapGistFileToFileOnDisk(
                                     gist,
                                     gist.getFile(gistFilename)
                                 ).fold(

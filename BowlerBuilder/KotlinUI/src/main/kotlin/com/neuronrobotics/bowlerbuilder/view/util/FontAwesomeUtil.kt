@@ -6,13 +6,12 @@
 package com.neuronrobotics.bowlerbuilder.view.util
 
 import com.neuronrobotics.bowlerbuilder.controller.util.BOWLER_ASSET_REPO
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
 import javafx.scene.Node
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import org.controlsfx.glyphfont.FontAwesome
+import org.controlsfx.glyphfont.Glyph
 import org.controlsfx.glyphfont.GlyphFontRegistry
 
 /**
@@ -23,10 +22,7 @@ import org.controlsfx.glyphfont.GlyphFontRegistry
  * @return The image asset.
  */
 fun loadImageAsset(filename: String, glyph: FontAwesome.Glyph): Node =
-    loadBowlerAsset(
-        getInstanceOf<MainWindowController>().credentials,
-        filename
-    ).fold(
+    loadBowlerAsset(filename).fold(
         {
             getFontAwesomeGlyph(glyph)
         },
@@ -35,5 +31,5 @@ fun loadImageAsset(filename: String, glyph: FontAwesome.Glyph): Node =
         }
     )
 
-fun getFontAwesomeGlyph(glyph: FontAwesome.Glyph) =
+fun getFontAwesomeGlyph(glyph: FontAwesome.Glyph): Glyph =
     GlyphFontRegistry.font("FontAwesome").create(glyph)

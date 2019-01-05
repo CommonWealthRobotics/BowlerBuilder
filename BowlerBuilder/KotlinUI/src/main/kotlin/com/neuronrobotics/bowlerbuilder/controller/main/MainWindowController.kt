@@ -6,6 +6,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.main
 
 import arrow.core.Try
+import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.inject.Guice
 import com.google.inject.Injector
@@ -17,21 +18,24 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScript
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
+import com.neuronrobotics.bowlerkernel.gitfs.GitFS
+import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGistScriptFactory
-import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultTextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.GistScriptFactory
-import com.neuronrobotics.bowlerkernel.scripting.parser.ScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguageParser
+import com.neuronrobotics.bowlerkernel.scripting.parser.ScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
 import com.neuronrobotics.bowlerkernel.util.GIT_CACHE_DIRECTORY
 import javafx.application.Platform
 import org.apache.commons.io.FileUtils
 import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
+import org.kohsuke.github.GHGist
+import org.kohsuke.github.GHGistFile
 import org.kohsuke.github.GitHub
 import tornadofx.*
-import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
 import java.util.Timer
@@ -45,12 +49,27 @@ class MainWindowController
 
     var credentials: Pair<String, String> = "" to ""
     var gitHub: Try<GitHub> = Try.raise(IllegalStateException("Not logged in."))
+    var gitFS: Try<GitFS> = Try.raise(IllegalStateException("Not logged in."))
 
     /**
-     * Open the [file] in an editor.
+     * Opens a Gist file in an editor.
      */
-    fun openGistFile(url: String, file: File) {
-        cadScriptEditorFactory.createAndOpenScriptEditor(url, file)
+    fun openGistFile(gist: GHGist, gistFile: GHGistFile) {
+        GitHubFS.mapGistFileToFileOnDisk(
+            gist, gistFile
+        ).recoverWith {
+            gitFS.flatMap { gitFS ->
+                gitFS.cloneRepoAndGetFiles(
+                    gist.gitPullUrl
+                ).flatMap { files ->
+                    Try {
+                        files.first { it.name == gistFile.fileName }
+                    }
+                }
+            }
+        }.map {
+            cadScriptEditorFactory.createAndOpenScriptEditor(gist.gitPullUrl, it)
+        }
     }
 
     /**

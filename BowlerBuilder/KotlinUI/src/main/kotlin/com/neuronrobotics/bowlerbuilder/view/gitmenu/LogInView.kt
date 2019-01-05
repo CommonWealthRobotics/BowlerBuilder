@@ -5,9 +5,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 
@@ -52,11 +51,6 @@ class LogInView : Fragment() {
         runAsync {
             loginManager.login(username, password)
         } success {
-            getInstanceOf<MainWindowController>().apply {
-                gitHub = it
-                credentials = username to password
-            }
-
             if (loginManager.isLoggedIn) {
                 close()
             }

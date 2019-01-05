@@ -5,16 +5,12 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
-import arrow.core.Try
-import arrow.core.recoverWith
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.main.BowlerEventBusLogger
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
-import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
-import com.neuronrobotics.bowlerbuilder.controller.util.mapGistFileToFileOnDisk
 import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
@@ -239,26 +235,13 @@ class MainWindowView : View() {
                         it.myself.listGists().toImmutableList()
                     }
                 } success {
-                    it.map {
-                        it.forEach { gist ->
+                    it.map { gists ->
+                        gists.forEach { gist ->
                             menu(gist.description) {
                                 gist.files.values.forEach { gistFile ->
                                     item(gistFile.fileName).action {
                                         thread(isDaemon = true) {
-                                            mapGistFileToFileOnDisk(
-                                                gist, gistFile
-                                            ).recoverWith {
-                                                cloneRepoAndGetFiles(
-                                                    controller.credentials,
-                                                    gist.gitPullUrl
-                                                ).flatMap {
-                                                    Try {
-                                                        it.first { it.name == gistFile.fileName }
-                                                    }
-                                                }
-                                            }.map {
-                                                controller.openGistFile(gist.gitPullUrl, it)
-                                            }
+                                            controller.openGistFile(gist, gistFile)
                                         }
                                     }
                                 }

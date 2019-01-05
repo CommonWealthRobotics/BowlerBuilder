@@ -6,8 +6,11 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import arrow.core.Try
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
+import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
 import tornadofx.*
@@ -21,7 +24,6 @@ import kotlin.concurrent.thread
 @Singleton
 class LoginManager {
 
-    private var credentials: Pair<String, String>? = null
     private val credentialFile by lazy {
         Paths.get(System.getProperty("user.home"), ".github").toFile()
     }
@@ -32,35 +34,16 @@ class LoginManager {
     init {
         isLoggedInProperty.addListener { _, _, new ->
             if (new) {
-                credentials?.let {
-                    thread { cloneAssetRepo(it) }
-                }
+                thread { cloneAssetRepo() }
             }
         }
     }
 
     /**
-     * Log in using credentials from the default file or the environment.
+     * Log in using credentials from the default file.
      */
     fun login(): Try<GitHub> {
-        return Try {
-            GitHub.connect().also {
-                isLoggedIn = true
-                LOGGER.info("Logged in.")
-            }
-        }
-    }
-
-    /**
-     * Log in using an OAuth token.
-     */
-    fun login(oauthToken: String): Try<GitHub> {
-        return Try {
-            GitHub.connectUsingOAuth(oauthToken).also {
-                isLoggedIn = true
-                LOGGER.info("Logged in.")
-            }
-        }
+        return readCredentials().run { login(first, second) }
     }
 
     /**
@@ -69,9 +52,15 @@ class LoginManager {
     fun login(username: String, password: String): Try<GitHub> {
         return Try {
             GitHub.connectUsingPassword(username, password).also {
-                isLoggedIn = true
-                credentials = username to password
+                getInstanceOf<MainWindowController>().apply {
+                    gitHub = Try.just(it)
+                    credentials = username to password
+                    gitFS = Try.just(GitHubFS(it, credentials))
+                }
+
                 writeCredentials(username, password)
+
+                isLoggedIn = true
                 LOGGER.info("Logged in $username.")
             }
         }
@@ -84,6 +73,11 @@ class LoginManager {
         isLoggedIn = false
         credentialFile.delete()
         LOGGER.info("Logged out.")
+    }
+
+    private fun readCredentials(): Pair<String, String> {
+        val (username, password) = credentialFile.readText().split("\n")
+        return username.trim().removePrefix("login=") to password.trim().removePrefix("password=")
     }
 
     private fun writeCredentials(username: String, password: String) {

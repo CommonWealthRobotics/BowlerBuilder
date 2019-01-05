@@ -10,7 +10,6 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.cloneRepoAndGetFiles
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import tornadofx.*
@@ -29,10 +28,9 @@ class GistFileSelectionController
      */
     fun loadFilesInGist(gistUrl: String) {
         LOGGER.info("Loading files for: $gistUrl")
-        cloneRepoAndGetFiles(
-            getInstanceOf<MainWindowController>().credentials,
-            gistUrl
-        ).toEither().bimap(
+        getInstanceOf<MainWindowController>().gitFS.flatMap {
+            it.cloneRepoAndGetFiles(gistUrl)
+        }.toEither().bimap(
             {
                 LOGGER.warning(
                     """

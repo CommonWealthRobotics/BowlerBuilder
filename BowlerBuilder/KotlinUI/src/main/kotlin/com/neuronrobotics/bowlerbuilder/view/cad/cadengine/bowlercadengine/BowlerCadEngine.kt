@@ -6,8 +6,6 @@
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
 import com.google.common.base.Throwables
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
-import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
@@ -175,10 +173,7 @@ class BowlerCadEngine : Pane() {
     /** Builds the axes.  */
     private fun buildAxes() {
         try {
-            val ruler = loadBowlerAsset(
-                getInstanceOf<MainWindowController>().credentials,
-                "ruler.png"
-            ).fold(
+            val ruler = loadBowlerAsset("ruler.png").fold(
                 {
                     throw it
                 },
@@ -187,10 +182,7 @@ class BowlerCadEngine : Pane() {
                 }
             )
 
-            val groundLocal = loadBowlerAsset(
-                getInstanceOf<MainWindowController>().credentials,
-                "ground.png"
-            ).fold(
+            val groundLocal = loadBowlerAsset("ground.png").fold(
                 {
                     throw it
                 },

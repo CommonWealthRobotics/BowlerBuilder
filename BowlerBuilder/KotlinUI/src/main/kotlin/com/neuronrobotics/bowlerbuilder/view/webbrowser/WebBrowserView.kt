@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.webbrowser
 
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.webbrowser.WebBrowserController
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
@@ -135,9 +136,14 @@ class WebBrowserView(
 
                 valueProperty().addListener { _, _, new ->
                     currentScript = new ?: WebBrowserScript.empty
-                    userOwnsCurrentScript = controller.doesUserOwnScript(currentScript).fold(
+                    userOwnsCurrentScript = getInstanceOf<MainWindowController>().gitFS.fold(
                         { false },
-                        { it }
+                        { gitFS ->
+                            gitFS.isOwner(currentScript.gistFile.gist.gitUrl).fold(
+                                { false },
+                                { it }
+                            )
+                        }
                     )
                 }
 
