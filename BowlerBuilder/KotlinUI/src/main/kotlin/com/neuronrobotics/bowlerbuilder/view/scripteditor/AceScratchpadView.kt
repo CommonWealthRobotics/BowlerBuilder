@@ -5,13 +5,13 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishNewGistView
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -69,7 +69,7 @@ class AceScratchpadView
                             )
                         }
 
-                        MainWindowView.mainUIEventBus.post(
+                        MainWindowController.mainUIEventBus.post(
                             CloseTabByContentEvent(this@borderpane)
                         )
                     }

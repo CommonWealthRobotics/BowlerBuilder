@@ -7,7 +7,6 @@ package com.neuronrobotics.bowlerbuilder.view.main
 
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
-import com.neuronrobotics.bowlerbuilder.controller.main.BowlerEventBusLogger
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
@@ -31,7 +30,6 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import tornadofx.*
 import javax.inject.Singleton
@@ -62,7 +60,7 @@ class MainWindowView : View() {
                 item("Exit") {
                     action {
                         close()
-                        thread { MainWindowController.beginForceQuit() }
+                        thread(isDaemon = true) { MainWindowController.beginForceQuit() }
                     }
                 }
             }
@@ -119,7 +117,7 @@ class MainWindowView : View() {
     }
 
     init {
-        mainUIEventBus.register(this)
+        MainWindowController.mainUIEventBus.register(this)
         controller.gitHub = loginManager.login()
 
         runLater { mainTabPane.tabs += NewTabTab().apply { isClosable = false } }
@@ -320,12 +318,5 @@ class MainWindowView : View() {
                 }
             }
         }
-    }
-
-    companion object {
-        val mainUIEventBus = EventBus.builder()
-            .sendNoSubscriberEvent(false)
-            .logger(BowlerEventBusLogger("MainUIEventBus"))
-            .build()
     }
 }

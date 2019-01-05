@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.newtab
 
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import javafx.geometry.Insets
@@ -24,7 +24,7 @@ class NewTabView : View() {
         ).forEach { (tabName, tabGenerator) ->
             button(tabName) {
                 action {
-                    MainWindowView.mainUIEventBus.post(
+                    MainWindowController.mainUIEventBus.post(
                         AddTabEvent(tabGenerator())
                     )
                 }

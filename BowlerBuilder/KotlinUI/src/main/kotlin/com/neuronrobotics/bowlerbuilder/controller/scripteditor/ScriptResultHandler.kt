@@ -5,12 +5,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
 import com.neuronrobotics.kinematicschef.util.immutableSetOf
 import com.neuronrobotics.kinematicschef.util.toImmutableSet
-import com.neuronrobotics.sdk.addons.kinematics.MobileBase
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
 
@@ -24,7 +23,6 @@ class ScriptResultHandler {
      */
     fun handleResult(result: Any?) {
         when (result) {
-            is MobileBase -> handleMobileBase(result)
             is CSG -> handleCsg(result)
             is Iterable<*> -> handleIterable(result)
             is Tab -> handleTab(result)
@@ -38,20 +36,16 @@ class ScriptResultHandler {
         }
     }
 
-    private fun handleMobileBase(base: MobileBase) {
-        TODO("not implemented")
-    }
-
     private fun handleCsg(result: CSG) = handleCsg(immutableSetOf(result))
 
     private fun handleCsg(result: Iterable<CSG>) =
-        MainWindowView.mainUIEventBus.post(
+        MainWindowController.mainUIEventBus.post(
             SetCadObjectsToCurrentTabEvent(
                 result.toImmutableSet()
             )
         )
 
-    private fun handleTab(result: Tab) = MainWindowView.mainUIEventBus.post(
+    private fun handleTab(result: Tab) = MainWindowController.mainUIEventBus.post(
         AddTabEvent(result)
     )
 }

@@ -5,7 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory
 
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.AceEditorView
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.AceScratchpadView
@@ -20,7 +20,7 @@ class AceCadScriptEditorFactory : CadScriptEditorFactory {
         return FxUtil.returnFX {
             val editor = AceEditorView.create(url, file)
             val cadEditor = CadScriptEditor(editor)
-            MainWindowView.mainUIEventBus.post(
+            MainWindowController.mainUIEventBus.post(
                 AddTabEvent(
                     CadScriptEditorTab(file.name, editor)
                 )
@@ -37,7 +37,7 @@ class AceCadScriptEditorFactory : CadScriptEditorFactory {
         return FxUtil.returnFX {
             val scratchpad = AceScratchpadView.create()
             val cadEditor = CadScriptEditor(scratchpad)
-            MainWindowView.mainUIEventBus.post(
+            MainWindowController.mainUIEventBus.post(
                 AddTabEvent(
                     CadScriptEditorTab("Scratchpad", scratchpad)
                 )

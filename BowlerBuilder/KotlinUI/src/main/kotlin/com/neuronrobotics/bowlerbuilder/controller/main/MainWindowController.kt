@@ -28,6 +28,7 @@ import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.scripting.parser.ScriptLanguageParser
 import javafx.application.Platform
+import org.greenrobot.eventbus.EventBus
 import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
 import org.kohsuke.github.GHGist
@@ -111,12 +112,16 @@ class MainWindowController
         }
 
         val injector: Injector = Guice.createInjector(mainModule())
-
         inline fun <reified T> getInstanceOf(): T = injector.getInstance(key<T>())
+
+        val mainUIEventBus = EventBus.builder()
+            .sendNoSubscriberEvent(false)
+            .logger(BowlerEventBusLogger("MainUIEventBus"))
+            .build()
 
         /**
          * Try to close gracefully and start a scheduled task to forcibly close the application.
-         * Publishes a [ApplicationClosingEvent] on the [MainWindowView.mainUIEventBus].
+         * Publishes a [ApplicationClosingEvent] on the [MainWindowController.mainUIEventBus].
          */
         fun beginForceQuit() {
             // Need to make sure the VM exits; sometimes a rouge thread is running
@@ -148,7 +153,7 @@ class MainWindowController
                 10000
             )
 
-            MainWindowView.mainUIEventBus.post(ApplicationClosingEvent)
+            mainUIEventBus.post(ApplicationClosingEvent)
             Platform.exit()
         }
     }

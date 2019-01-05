@@ -10,7 +10,6 @@ import arrow.core.flatMap
 import arrow.core.left
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.scripting.Script
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
@@ -28,7 +27,7 @@ class AceEditorController
     private var currentScript: Either<String, Script> = "Not initialized.".left()
 
     init {
-        MainWindowView.mainUIEventBus.register(this)
+        MainWindowController.mainUIEventBus.register(this)
     }
 
     /**
