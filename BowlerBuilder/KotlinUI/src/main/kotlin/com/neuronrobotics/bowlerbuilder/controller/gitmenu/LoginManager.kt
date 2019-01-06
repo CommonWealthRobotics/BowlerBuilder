@@ -43,7 +43,7 @@ class LoginManager {
      * Log in using credentials from the default file.
      */
     fun login(): Try<GitHub> {
-        return readCredentials().run { login(first, second) }
+        return readCredentials().flatMap { it.run { login(first, second) } }
     }
 
     /**
@@ -75,9 +75,9 @@ class LoginManager {
         LOGGER.info("Logged out.")
     }
 
-    private fun readCredentials(): Pair<String, String> {
+    private fun readCredentials(): Try<Pair<String, String>> = Try {
         val (username, password) = credentialFile.readText().split("\n")
-        return username.trim().removePrefix("login=") to password.trim().removePrefix("password=")
+        username.trim().removePrefix("login=") to password.trim().removePrefix("password=")
     }
 
     private fun writeCredentials(username: String, password: String) {
