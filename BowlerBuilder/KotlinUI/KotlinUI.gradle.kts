@@ -11,13 +11,14 @@ object Versions {
 
 repositories {
     maven(url = "https://dl.bintray.com/commonwealthrobotics/maven-artifacts")
+    maven(url = "https://oss.sonatype.org/content/repositories/staging/")
     maven(url = "https://jitpack.io")
 }
 
 dependencies {
     api(project(":BowlerKernel:Core"))
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
-    api(group = "com.neuronrobotics", name = "JavaCad", version = "0.17.1")
+    api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
 
     implementation(
         group = "org.eclipse.jgit",
