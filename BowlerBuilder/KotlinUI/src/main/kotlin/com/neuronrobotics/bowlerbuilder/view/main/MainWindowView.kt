@@ -10,6 +10,7 @@ import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
 import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
@@ -119,6 +120,11 @@ class MainWindowView : View() {
     init {
         MainWindowController.mainUIEventBus.register(this)
         controller.gitHub = loginManager.login()
+
+        // Clone the asset repo before anything else loads if the user is logged in
+        controller.gitHub.map {
+            cloneAssetRepo()
+        }
 
         runLater { mainTabPane.tabs += NewTabTab().apply { isClosable = false } }
         addTab(WebBrowserTab())

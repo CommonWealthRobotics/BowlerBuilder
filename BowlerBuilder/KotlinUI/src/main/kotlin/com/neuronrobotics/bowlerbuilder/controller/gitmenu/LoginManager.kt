@@ -31,14 +31,6 @@ class LoginManager {
     val isLoggedInProperty = SimpleBooleanProperty(false)
     var isLoggedIn by isLoggedInProperty
 
-    init {
-        isLoggedInProperty.addListener { _, _, new ->
-            if (new) {
-                thread { cloneAssetRepo() }
-            }
-        }
-    }
-
     /**
      * Log in using credentials from the default file.
      */
