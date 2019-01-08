@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
-import javafx.scene.layout.Priority
 import tornadofx.*
 import java.io.File
 
@@ -26,8 +25,6 @@ class PublishNewGistView(
     private val scriptContent: String
 ) : Fragment() {
 
-    private val commitMessageProperty = SimpleStringProperty("")
-    private var commitMessage by commitMessageProperty
     private val gistDescriptionProperty = SimpleStringProperty("")
     private var gistDescription by gistDescriptionProperty
     private val gistIsPublicProperty = SimpleBooleanProperty(true)
@@ -54,15 +51,6 @@ class PublishNewGistView(
 
             field("Public", Orientation.VERTICAL) {
                 checkbox(property = gistIsPublicProperty)
-            }
-        }
-
-        fieldset("Commit", labelPosition = Orientation.VERTICAL) {
-            field("Commit Message", Orientation.VERTICAL) {
-                textarea(commitMessageProperty) {
-                    prefRowCount = 3
-                    vgrow = Priority.ALWAYS
-                }
             }
         }
 

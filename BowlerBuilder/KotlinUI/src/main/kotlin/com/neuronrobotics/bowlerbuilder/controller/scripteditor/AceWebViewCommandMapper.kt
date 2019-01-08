@@ -11,12 +11,15 @@ class AceWebViewCommandMapper {
 
     fun setText(text: String) = "editor.setValue(\"${escape(text)}\");"
 
+    @SuppressWarnings("FunctionOnlyReturningConstant")
     fun getFullText() = "editor.getValue();"
 
+    @SuppressWarnings("FunctionOnlyReturningConstant")
     fun getSelectedText() = "editor.session.getTextRange(editor.getSelectionRange());"
 
     fun gotoLine(lineNumber: Int) = "editor.gotoLine($lineNumber);"
 
+    @SuppressWarnings("FunctionOnlyReturningConstant")
     fun getCursorPosition() = "editor.session.doc.positionToIndex(editor.selection.getCursor());"
 
     /**

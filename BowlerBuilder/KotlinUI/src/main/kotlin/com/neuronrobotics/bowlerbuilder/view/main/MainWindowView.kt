@@ -11,8 +11,9 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
+import com.neuronrobotics.bowlerbuilder.view.ConsoleTab
+import com.neuronrobotics.bowlerbuilder.view.ReportIssueView
 import com.neuronrobotics.bowlerbuilder.view.cad.CadView
-import com.neuronrobotics.bowlerbuilder.view.consoletab.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddCadObjectsToCurrentTabEvent
@@ -106,6 +107,12 @@ class MainWindowView : View() {
 
                 item("Load File from Git").action {
                     GistFileSelectionView.create().openModal()
+                }
+            }
+
+            menu("Help") {
+                item("Report Issue").action {
+                    ReportIssueView().openModal()
                 }
             }
         }

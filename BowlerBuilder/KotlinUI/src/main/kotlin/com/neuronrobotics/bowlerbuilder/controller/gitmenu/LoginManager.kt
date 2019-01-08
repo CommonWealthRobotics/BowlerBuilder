@@ -9,14 +9,12 @@ import arrow.core.Try
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
-import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
 import tornadofx.*
 import java.nio.file.Paths
 import javax.inject.Singleton
-import kotlin.concurrent.thread
 
 /**
  * Manages logging in and out from GitHub.
@@ -34,9 +32,7 @@ class LoginManager {
     /**
      * Log in using credentials from the default file.
      */
-    fun login(): Try<GitHub> {
-        return readCredentials().flatMap { it.run { login(first, second) } }
-    }
+    fun login(): Try<GitHub> = readCredentials().flatMap { it.run { login(first, second) } }
 
     /**
      * Log in with a [username] and [password].
@@ -44,16 +40,28 @@ class LoginManager {
     fun login(username: String, password: String): Try<GitHub> {
         return Try {
             GitHub.connectUsingPassword(username, password).also {
-                getInstanceOf<MainWindowController>().apply {
-                    gitHub = Try.just(it)
-                    credentials = username to password
-                    gitFS = Try.just(GitHubFS(it, credentials))
+                if (it.isCredentialValid) {
+                    writeCredentials(username, password)
+                    getInstanceOf<MainWindowController>().apply {
+                        gitHub = Try.just(it)
+                        credentials = username to password
+                        gitFS = Try.just(GitHubFS(it, credentials))
+                    }
+
+                    isLoggedIn = true
+
+                    LOGGER.info {
+                        "Logged in $username."
+                    }
+                } else {
+                    getInstanceOf<MainWindowController>().gitHub = Try.raise(
+                        IllegalStateException("Invalid login credentials.")
+                    )
+
+                    LOGGER.warning {
+                        "Failed to log in to GitHub."
+                    }
                 }
-
-                writeCredentials(username, password)
-
-                isLoggedIn = true
-                LOGGER.info("Logged in $username.")
             }
         }
     }
@@ -64,6 +72,11 @@ class LoginManager {
     fun logout() {
         isLoggedIn = false
         credentialFile.delete()
+
+        getInstanceOf<MainWindowController>().gitHub = Try.raise(
+            IllegalStateException("User is logged out.")
+        )
+
         LOGGER.info("Logged out.")
     }
 

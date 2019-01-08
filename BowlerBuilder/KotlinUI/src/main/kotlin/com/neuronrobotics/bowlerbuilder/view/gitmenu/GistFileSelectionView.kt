@@ -45,18 +45,14 @@ class GistFileSelectionView : Fragment() {
             }
 
             buttonbar {
-                button("Load") {
-                    action {
-                        runAsync {
-                            controller.openGistFile(gistUrl, gistFileSelection)
-                        }
-                        close()
+                button("Load").action {
+                    runAsync {
+                        controller.openGistFile(gistUrl, gistFileSelection)
                     }
+                    close()
                 }
 
-                button("Cancel") {
-                    action { close() }
-                }
+                button("Cancel").action { close() }
             }
         }
     }

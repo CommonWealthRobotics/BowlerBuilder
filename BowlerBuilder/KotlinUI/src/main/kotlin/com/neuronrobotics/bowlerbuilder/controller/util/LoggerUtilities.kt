@@ -41,8 +41,7 @@ internal class LoggerUtilities private constructor() {
         // Log file path
         private val logFilePath: String = Paths.get(
             logFileDirPath,
-            SimpleDateFormat("yyyyMMddHHmmss'.txt'", Locale("en", "US"))
-                .format(Date())
+            SimpleDateFormat("yyyyMMddHHmmss'.txt'", Locale("en", "US")).format(Date())
         ).toAbsolutePath().toString()
 
         // FileHandler that saves to the log file
@@ -86,5 +85,12 @@ internal class LoggerUtilities private constructor() {
                 level = Level.ALL
             }
         }
+
+        /**
+         * Returns the content of the current session's log file.
+         *
+         * @return The log file contents.
+         */
+        internal fun readCurrentLogFile() = File(logFilePath).readText()
     }
 }
