@@ -5,6 +5,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.util.GFileUtils
+import java.nio.file.Paths
+import java.util.Properties
 
 plugins {
     jacoco
@@ -27,10 +29,10 @@ val bowlerKernelProject = project(":BowlerKernel")
 val bowlerKernelCoreProject = project(":BowlerKernel:Core")
 
 val kotlinProjects = setOf(
-        bowlerBuilderProject,
-        bowlerBuilderKotlinUIProject,
-        bowlerKernelProject,
-        bowlerKernelCoreProject
+    bowlerBuilderProject,
+    bowlerBuilderKotlinUIProject,
+    bowlerKernelProject,
+    bowlerKernelCoreProject
 )
 
 val javaProjects = setOf<Project>(
@@ -38,8 +40,8 @@ val javaProjects = setOf<Project>(
 ) + kotlinProjects
 
 val javafxProjects = setOf(
-        bowlerBuilderProject,
-        bowlerBuilderKotlinUIProject
+    bowlerBuilderProject,
+    bowlerBuilderKotlinUIProject
 )
 
 object Versions {
@@ -120,10 +122,10 @@ configure(javaProjects) {
 
     dependencies {
         fun junitJupiter(name: String, version: String = "5.2.0") =
-                create(group = "org.junit.jupiter", name = name, version = version)
+            create(group = "org.junit.jupiter", name = name, version = version)
 
         fun testFx(name: String, version: String = "4.0.+") =
-                create(group = "org.testfx", name = name, version = version)
+            create(group = "org.testfx", name = name, version = version)
 
         "testCompile"(junitJupiter(name = "junit-jupiter-api"))
         "testCompile"(junitJupiter(name = "junit-jupiter-engine"))
@@ -131,7 +133,11 @@ configure(javaProjects) {
         "testCompile"(testFx(name = "testfx-core", version = "4.0.7-alpha"))
         "testCompile"(testFx(name = "testfx-junit5", version = "4.0.6-alpha"))
 
-        "testRuntime"(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.0.0")
+        "testRuntime"(
+            group = "org.junit.platform",
+            name = "junit-platform-launcher",
+            version = "1.0.0"
+        )
         "testRuntime"(testFx(name = "openjfx-monocle", version = "8u76-b04"))
     }
 
@@ -170,16 +176,21 @@ configure(javaProjects) {
 
         if (project.hasProperty("jenkinsBuild") || project.hasProperty("headless")) {
             jvmArgs = listOf(
-                    "-Djava.awt.headless=true",
-                    "-Dtestfx.robot=glass",
-                    "-Dtestfx.headless=true",
-                    "-Dprism.order=sw",
-                    "-Dprism.text=t2k"
+                "-Djava.awt.headless=true",
+                "-Dtestfx.robot=glass",
+                "-Dtestfx.headless=true",
+                "-Dprism.order=sw",
+                "-Dprism.text=t2k"
             )
         }
 
         testLogging {
-            events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.STARTED)
+            events(
+                TestLogEvent.FAILED,
+                TestLogEvent.PASSED,
+                TestLogEvent.SKIPPED,
+                TestLogEvent.STARTED
+            )
             displayGranularity = 0
             showExceptions = true
             showCauses = true
@@ -254,7 +265,11 @@ configure(kotlinProjects) {
         // Weird syntax, see: https://github.com/gradle/kotlin-dsl/issues/894
         "compile"(kotlin("stdlib-jdk8", kotlinVersion))
         "compile"(kotlin("reflect", kotlinVersion))
-        "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.0.0")
+        "compile"(
+            group = "org.jetbrains.kotlinx",
+            name = "kotlinx-coroutines-core",
+            version = "1.0.0"
+        )
 
         "testCompile"(kotlin("test", kotlinVersion))
         "testCompile"(kotlin("test-junit", kotlinVersion))
@@ -278,13 +293,15 @@ configure(kotlinProjects) {
             configurations {
                 "apiElements" {
                     outgoing
-                            .variants
-                            .getByName("classes")
-                            .artifact(mapOf(
-                                    "file" to compileKotlin.destinationDir,
-                                    "type" to "java-classes-directory",
-                                    "builtBy" to compileKotlin
-                            ))
+                        .variants
+                        .getByName("classes")
+                        .artifact(
+                            mapOf(
+                                "file" to compileKotlin.destinationDir,
+                                "type" to "java-classes-directory",
+                                "builtBy" to compileKotlin
+                            )
+                        )
                 }
             }
         }
@@ -305,8 +322,8 @@ configure(kotlinProjects) {
     detekt {
         toolVersion = "1.0.0-RC12"
         input = files(
-                "src/main/kotlin",
-                "src/test/kotlin"
+            "src/main/kotlin",
+            "src/test/kotlin"
         )
         parallel = true
         config = files("${rootProject.rootDir}/config/detekt/config.yml")
@@ -315,25 +332,41 @@ configure(kotlinProjects) {
 
 configure(kotlinProjects.intersect(javafxProjects)) {
     dependencies {
-        "compile"(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-javafx", version = "1.0.0")
+        "compile"(
+            group = "org.jetbrains.kotlinx",
+            name = "kotlinx-coroutines-javafx",
+            version = "1.0.0"
+        )
         "compile"(group = "no.tornado", name = "tornadofx", version = "1.7.17")
     }
 }
 
-val checkTask = tasks.maybeCreate("check", Task::class.java).apply {
-    description = "Check all sub-projects"
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-}
-
-val buildTask = tasks.maybeCreate("build", Task::class.java).apply {
-    description = "Build all sub-projects"
-    group = LifecycleBasePlugin.BUILD_GROUP
-    dependsOn(checkTask)
-}
-
 configure(javaProjects + kotlinProjects) {
-    checkTask.dependsOn(tasks.getByName("check"))
-    buildTask.dependsOn(tasks.getByName("build"))
+    val createPropertiesTask = tasks.register("createProperties") {
+        dependsOn("processResources")
+        doLast {
+            val propFileDir = Paths.get(
+                buildDir.path,
+                "resources",
+                "main"
+            ).toFile().apply {
+                mkdirs()
+            }
+
+            val propFile = Paths.get(
+                propFileDir.path,
+                "version.properties"
+            ).toFile()
+
+            val prop = Properties()
+            prop["version"] = version as String
+            prop.store(propFile.outputStream(), null)
+        }
+    }
+
+    tasks.named("classes") {
+        dependsOn(createPropertiesTask)
+    }
 }
 
 tasks.wrapper {
@@ -362,19 +395,19 @@ tasks.wrapper {
  * Configures the [publishing][org.gradle.api.publish.PublishingExtension] project extension.
  */
 fun Project.`publishing`(configure: org.gradle.api.publish.PublishingExtension.() -> Unit) =
-        extensions.configure("publishing", configure)
+    extensions.configure("publishing", configure)
 
 /**
  * Configures the [checkstyle][org.gradle.api.plugins.quality.CheckstyleExtension] project extension.
  */
 fun Project.`checkstyle`(configure: org.gradle.api.plugins.quality.CheckstyleExtension.() -> Unit) =
-        extensions.configure("checkstyle", configure)
+    extensions.configure("checkstyle", configure)
 
 /**
  * Configures the [findbugs][org.gradle.api.plugins.quality.FindBugsExtension] project extension.
  */
 fun Project.`findbugs`(configure: org.gradle.api.plugins.quality.FindBugsExtension.() -> Unit) =
-        extensions.configure("findbugs", configure)
+    extensions.configure("findbugs", configure)
 
 /**
  * Retrieves the [java][org.gradle.api.plugins.JavaPluginConvention] project convention.
@@ -386,10 +419,10 @@ val Project.`java`: org.gradle.api.plugins.JavaPluginConvention
  * Configures the [kotlin][org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension] project extension.
  */
 fun Project.`kotlin`(configure: org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension.() -> Unit): Unit =
-        extensions.configure("kotlin", configure)
+    extensions.configure("kotlin", configure)
 
 /**
  * Configures the [detekt][io.gitlab.arturbosch.detekt.extensions.DetektExtension] extension.
  */
 fun org.gradle.api.Project.`detekt`(configure: io.gitlab.arturbosch.detekt.extensions.DetektExtension.() -> Unit): Unit =
-        (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("detekt", configure)
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("detekt", configure)

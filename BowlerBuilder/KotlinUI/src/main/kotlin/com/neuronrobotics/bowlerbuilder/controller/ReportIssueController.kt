@@ -21,14 +21,7 @@ class ReportIssueController : Controller() {
      */
     fun reportIssue(title: String, text: String, attachLogFile: Boolean) {
         getInstanceOf<MainWindowController>().gitHub.map {
-            val bodyText = if (attachLogFile) {
-                text +
-                    """<details><summary>Log file:</summary><pre>""" +
-                    LoggerUtilities.readCurrentLogFile() +
-                    """</pre></details>"""
-            } else {
-                text
-            }
+            val bodyText = text + getIssueBodyFooter(attachLogFile)
 
             val newIssue = it.getOrganization("CommonWealthRobotics")
                 .getRepository("BowlerBuilder")
@@ -43,6 +36,18 @@ class ReportIssueController : Controller() {
                 """.trimMargin()
             }
         }
+    }
+
+    private fun getIssueBodyFooter(attachLogFile: Boolean): String {
+        var footer = "\nBowlerBuilder Version: ${LoggerUtilities.getApplicationVersion()}"
+
+        if (attachLogFile) {
+            footer += "\n<details><summary>Log file:</summary><pre>" +
+                LoggerUtilities.readCurrentLogFile() +
+                "</pre></details>"
+        }
+
+        return footer
     }
 
     companion object {

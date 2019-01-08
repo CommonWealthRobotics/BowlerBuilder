@@ -14,6 +14,7 @@ import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Properties
 import java.util.logging.ConsoleHandler
 import java.util.logging.FileHandler
 import java.util.logging.Level
@@ -92,5 +93,23 @@ internal class LoggerUtilities private constructor() {
          * @return The log file contents.
          */
         internal fun readCurrentLogFile() = File(logFilePath).readText()
+
+        /**
+         * Returns the current application version string.
+         *
+         * @return The application version.
+         */
+        fun getApplicationVersion(): String {
+            val prop = Properties().apply {
+                load(
+                    File(
+                        LoggerUtilities::class.java.classLoader
+                            .getResource("version.properties").toURI()
+                    ).reader()
+                )
+            }
+
+            return prop["version"] as String
+        }
     }
 }

@@ -52,6 +52,8 @@ class ReportIssueView : Fragment() {
                 button("Report").action {
                     runAsync {
                         controller.reportIssue(issueTitle, issueBody, attachLogFile)
+                    } success {
+                        close()
                     }
                 }
 
