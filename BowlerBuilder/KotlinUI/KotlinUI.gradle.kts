@@ -13,6 +13,7 @@ repositories {
     maven(url = "https://dl.bintray.com/commonwealthrobotics/maven-artifacts")
     maven(url = "https://oss.sonatype.org/content/repositories/staging/")
     maven(url = "https://jitpack.io")
+    jcenter()
 }
 
 dependencies {
@@ -43,4 +44,12 @@ dependencies {
     implementation(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     implementation(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
     implementation(group = "com.beust", name = "klaxon", version = "3.0.1")
+
+    implementation(group = "org.bouncycastle", name = "bcprov-jdk15on", version = "1.60")
+    implementation(group = "org.bouncycastle", name = "bcpg-jdk15on", version = "1.60")
+    implementation(
+        group = "name.neuhalfen.projects.crypto.bouncycastle.openpgp",
+        name = "bouncy-gpg",
+        version = "2.1.2"
+    )
 }

@@ -21,6 +21,8 @@ class ReportIssueView : Fragment() {
     private var issueBody by issueBodyProperty
     private val attachLogFileProperty = SimpleBooleanProperty()
     private var attachLogFile by attachLogFileProperty
+    private val encryptLogFileProperty = SimpleBooleanProperty()
+    private var encryptLogFile by encryptLogFileProperty
 
     override val root = form {
         fieldset(labelPosition = Orientation.VERTICAL) {
@@ -48,10 +50,14 @@ class ReportIssueView : Fragment() {
                 checkbox(property = attachLogFileProperty)
             }
 
+            field("Encrypt log file so only the BowlerBuilder team may read it") {
+                checkbox(property = encryptLogFileProperty)
+            }
+
             buttonbar {
                 button("Report").action {
                     runAsync {
-                        controller.reportIssue(issueTitle, issueBody, attachLogFile)
+                        controller.reportIssue(issueTitle, issueBody, attachLogFile, encryptLogFile)
                     } success {
                         close()
                     }

@@ -95,6 +95,13 @@ internal class LoggerUtilities private constructor() {
         internal fun readCurrentLogFile() = File(logFilePath).readText()
 
         /**
+         * Returns a file input stream for the current session's log file.
+         *
+         * @return A log file stream.
+         */
+        internal fun currentLogFileStream() = File(logFilePath).inputStream()
+
+        /**
          * Returns the current application version string.
          *
          * @return The application version.

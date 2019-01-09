@@ -8,8 +8,16 @@ package com.neuronrobotics.bowlerbuilder.controller
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import name.neuhalfen.projects.crypto.bouncycastle.openpgp.BouncyGPG
+import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.callbacks.KeyringConfigCallbacks
+import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfigs
 import org.apache.commons.lang3.SystemUtils
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.bouncycastle.util.io.Streams
 import tornadofx.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.security.Security
 
 class ReportIssueController : Controller() {
 
@@ -20,9 +28,14 @@ class ReportIssueController : Controller() {
      * @param text The text body of the issue.
      * @param attachLogFile Whether to attach the current log file to the issue.
      */
-    fun reportIssue(title: String, text: String, attachLogFile: Boolean) {
+    fun reportIssue(
+        title: String,
+        text: String,
+        attachLogFile: Boolean,
+        encryptLogFile: Boolean
+    ) {
         getInstanceOf<MainWindowController>().gitHub.map {
-            val bodyText = text + getIssueBodyFooter(attachLogFile)
+            val bodyText = text + getIssueBodyFooter(attachLogFile, encryptLogFile)
 
             val newIssue = it.getOrganization("CommonWealthRobotics")
                 .getRepository("BowlerBuilder")
@@ -39,7 +52,7 @@ class ReportIssueController : Controller() {
         }
     }
 
-    private fun getIssueBodyFooter(attachLogFile: Boolean): String {
+    private fun getIssueBodyFooter(attachLogFile: Boolean, encryptLogFile: Boolean): String {
         var footer = """
             |
             |
@@ -48,8 +61,41 @@ class ReportIssueController : Controller() {
             """.trimMargin()
 
         if (attachLogFile) {
+            val logFileContent = if (encryptLogFile) {
+                val keyfile = File(
+                    ReportIssueController::class.java
+                        .getResource("../bowlerbuilderteam-public.gpg").toURI()
+                )
+
+                if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                    Security.addProvider(BouncyCastleProvider())
+                }
+
+                val encryptedLogFileStream = ByteArrayOutputStream()
+
+                BouncyGPG.encryptToStream()
+                    .withConfig(
+                        KeyringConfigs.forGpgExportedKeys(
+                            KeyringConfigCallbacks.withUnprotectedKeys()
+                        ).apply {
+                            addPublicKey(keyfile.readBytes())
+                        }
+                    )
+                    .withStrongAlgorithms()
+                    .toRecipient("kharrington@commonwealthrobotics.com")
+                    .andDoNotSign()
+                    .armorAsciiOutput()
+                    .andWriteTo(encryptedLogFileStream).use {
+                        Streams.pipeAll(LoggerUtilities.currentLogFileStream(), it)
+                    }
+
+                encryptedLogFileStream.toString()
+            } else {
+                LoggerUtilities.readCurrentLogFile()
+            }
+
             footer += "\n<details><summary>Log file:</summary><pre>" +
-                LoggerUtilities.readCurrentLogFile() +
+                logFileContent +
                 "</pre></details>"
         }
 
