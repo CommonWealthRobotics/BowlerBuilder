@@ -8,6 +8,7 @@ package com.neuronrobotics.bowlerbuilder.controller
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import org.apache.commons.lang3.SystemUtils
 import tornadofx.*
 
 class ReportIssueController : Controller() {
@@ -39,7 +40,12 @@ class ReportIssueController : Controller() {
     }
 
     private fun getIssueBodyFooter(attachLogFile: Boolean): String {
-        var footer = "\nBowlerBuilder Version: ${LoggerUtilities.getApplicationVersion()}"
+        var footer = """
+            |
+            |
+            |BowlerBuilder Version: ${LoggerUtilities.getApplicationVersion()}
+            |OS: ${SystemUtils.OS_NAME}, ${SystemUtils.OS_ARCH}, ${SystemUtils.OS_VERSION}
+            """.trimMargin()
 
         if (attachLogFile) {
             footer += "\n<details><summary>Log file:</summary><pre>" +
