@@ -12,7 +12,8 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import tornadofx.*
 
-class ReportIssueView : Fragment() {
+internal class ReportIssueView
+internal constructor() : Fragment() {
 
     private val controller = getInstanceOf<ReportIssueController>()
     private val issueTitleProperty = SimpleStringProperty()
@@ -23,11 +24,20 @@ class ReportIssueView : Fragment() {
     private var attachLogFile by attachLogFileProperty
     private val encryptLogFileProperty = SimpleBooleanProperty()
     private var encryptLogFile by encryptLogFileProperty
+    private val context = ValidationContext()
 
     override val root = form {
         fieldset(labelPosition = Orientation.VERTICAL) {
             field("Issue Title") {
-                textfield(issueTitleProperty)
+                textfield(issueTitleProperty) {
+                    context.addValidator(this, this.textProperty()) {
+                        if (it.isNullOrBlank() || it.isNullOrEmpty()) {
+                            error("Issue title is required")
+                        } else {
+                            null
+                        }
+                    }
+                }
             }
 
             field("Issue Description") {
@@ -43,6 +53,14 @@ class ReportIssueView : Fragment() {
                         **Expected behavior**
                         A clear and concise description of what you expected to happen.
                         """.trimIndent()
+
+                    context.addValidator(this, this.textProperty()) {
+                        if (it.isNullOrBlank() || it.isNullOrEmpty()) {
+                            error("Issue title is required")
+                        } else {
+                            null
+                        }
+                    }
                 }
             }
 
@@ -50,16 +68,35 @@ class ReportIssueView : Fragment() {
                 checkbox(property = attachLogFileProperty)
             }
 
-            field("Encrypt log file so only the BowlerBuilder team may read it") {
-                checkbox(property = encryptLogFileProperty)
+            field("Encrypt log file so only the BowlerBuilder team can read it") {
+                checkbox(property = encryptLogFileProperty) {
+                    enableWhen(attachLogFileProperty)
+                }
             }
 
             buttonbar {
-                button("Report").action {
-                    runAsync {
-                        controller.reportIssue(issueTitle, issueBody, attachLogFile, encryptLogFile)
-                    } success {
-                        close()
+                button("Report") {
+                    enableWhen(context.valid)
+
+                    action {
+                        runAsync {
+                            controller.reportIssue(
+                                issueTitle,
+                                issueBody,
+                                attachLogFile,
+                                encryptLogFile
+                            )
+                        } success { overflow ->
+                            if (overflow != null) {
+                                ReportIssueOverflowView(
+                                    overflow.second,
+                                    overflow.first,
+                                    controller
+                                ).openModal(block = true)
+                            }
+
+                            close()
+                        }
                     }
                 }
 

@@ -39,10 +39,13 @@ internal class LoggerUtilities private constructor() {
             LOGS_DIRECTORY
         ).toAbsolutePath().toString()
 
+        private val logFileName =
+            SimpleDateFormat("yyyyMMddHHmmss'.txt'", Locale("en", "US")).format(Date())
+
         // Log file path
         private val logFilePath: String = Paths.get(
             logFileDirPath,
-            SimpleDateFormat("yyyyMMddHHmmss'.txt'", Locale("en", "US")).format(Date())
+            logFileName
         ).toAbsolutePath().toString()
 
         // FileHandler that saves to the log file
@@ -100,6 +103,13 @@ internal class LoggerUtilities private constructor() {
          * @return A log file stream.
          */
         internal fun currentLogFileStream() = File(logFilePath).inputStream()
+
+        /**
+         * Returns the current session's log file name.
+         *
+         * @return The log file name.
+         */
+        internal fun currentLogFileName() = logFileName
 
         /**
          * Returns the current application version string.
