@@ -9,8 +9,6 @@ rootProject.name = "BowlerBuilder"
 
 include(":BowlerBuilder")
 include(":BowlerBuilder:KotlinUI")
-include(":BowlerKernel")
-include(":BowlerKernel:Core")
 
 /**
  * This configures the gradle build so we can use non-standard build file names.

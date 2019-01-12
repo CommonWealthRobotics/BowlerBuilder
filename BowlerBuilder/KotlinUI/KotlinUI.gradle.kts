@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":BowlerKernel:Core"))
+    api("com.neuronrobotics:bowlerkernel-core:0.0.0")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
 

@@ -1,4 +1,4 @@
-import Bowler_gradle.Strings.spotlessLicenseHeaderDelimiter
+import BowlerBuilder_gradle.Strings.spotlessLicenseHeaderDelimiter
 import com.github.spotbugs.SpotBugsTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -22,22 +22,15 @@ allprojects {
     group = "com.neuronrobotics"
 }
 
-// val bowlerScriptKernelProject = project(":bowler-script-kernel")
 val bowlerBuilderProject = project(":BowlerBuilder")
 val bowlerBuilderKotlinUIProject = project(":BowlerBuilder:KotlinUI")
-val bowlerKernelProject = project(":BowlerKernel")
-val bowlerKernelCoreProject = project(":BowlerKernel:Core")
 
 val kotlinProjects = setOf(
     bowlerBuilderProject,
-    bowlerBuilderKotlinUIProject,
-    bowlerKernelProject,
-    bowlerKernelCoreProject
+    bowlerBuilderKotlinUIProject
 )
 
-val javaProjects = setOf<Project>(
-//        bowlerScriptKernelProject
-) + kotlinProjects
+val javaProjects = setOf<Project>() + kotlinProjects
 
 val javafxProjects = setOf(
     bowlerBuilderProject,
