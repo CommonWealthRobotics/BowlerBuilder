@@ -5,7 +5,7 @@ buildCache {
     }
 }
 
-rootProject.name = "Bowler"
+rootProject.name = "BowlerBuilder"
 
 include(":BowlerBuilder")
 include(":BowlerBuilder:KotlinUI")
