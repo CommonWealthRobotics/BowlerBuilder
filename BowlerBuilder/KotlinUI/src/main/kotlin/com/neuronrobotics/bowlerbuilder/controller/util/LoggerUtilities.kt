@@ -5,7 +5,6 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.util
 
-import com.neuronrobotics.bowlerkernel.util.BOWLERBUILDER_DIRECTORY
 import com.neuronrobotics.bowlerkernel.util.BOWLER_DIRECTORY
 import com.neuronrobotics.bowlerkernel.util.LOGS_DIRECTORY
 import java.io.File
@@ -30,6 +29,8 @@ internal class LoggerUtilities private constructor() {
     // We can'translate call a logger here instead because we are the logger!
     @SuppressWarnings("PrintStackTrace")
     companion object {
+
+        const val BOWLERBUILDER_DIRECTORY = "BowlerBuilder"
 
         // Log file parent directory path
         private val logFileDirPath: String = Paths.get(
