@@ -56,7 +56,7 @@ internal constructor() : Controller() {
 
                         text to logFile
                     } else {
-                        (text + footer + wrappedLogFile) to null
+                        text + footer + wrappedLogFile to null
                     }
 
                 val newIssue = it.getOrganization("CommonWealthRobotics")
