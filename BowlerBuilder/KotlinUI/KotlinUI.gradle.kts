@@ -17,16 +17,16 @@ repositories {
 }
 
 dependencies {
-    api("com.neuronrobotics:bowlerkernel-core:0.0.0")
+    api("com.neuronrobotics:bowler-kernel-core:0.0.3")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
 
+    implementation("com.neuronrobotics:bowler-kernel-config:0.0.3")
     implementation(
         group = "org.eclipse.jgit",
         name = "org.eclipse.jgit",
         version = "5.2.0.201812061821-r"
     )
-
     implementation(group = "org.jsoup", name = "jsoup", version = "1.11.3")
     implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
     implementation(group = "org.controlsfx", name = "controlsfx", version = "8.40.14")

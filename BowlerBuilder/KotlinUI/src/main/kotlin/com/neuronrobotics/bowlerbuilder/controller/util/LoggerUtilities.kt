@@ -5,8 +5,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.util
 
-import com.neuronrobotics.bowlerkernel.util.BOWLER_DIRECTORY
-import com.neuronrobotics.bowlerkernel.util.LOGS_DIRECTORY
+import com.neuronrobotics.bowlerkernel.settings.BOWLER_DIRECTORY
+import com.neuronrobotics.bowlerkernel.settings.LOGS_DIRECTORY
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths

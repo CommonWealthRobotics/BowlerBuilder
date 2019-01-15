@@ -23,7 +23,7 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTa
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
-import com.neuronrobotics.bowlerkernel.util.toImmutableList
+import com.neuronrobotics.kinematicschef.util.toImmutableList
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.geometry.Orientation
 import javafx.scene.Node
