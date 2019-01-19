@@ -6,12 +6,14 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import arrow.core.Try
+import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
+import org.kohsuke.github.HttpException
 import tornadofx.*
 import java.nio.file.Paths
 import javax.inject.Singleton
@@ -23,44 +25,83 @@ import javax.inject.Singleton
 class LoginManager {
 
     private val credentialFile by lazy {
-        Paths.get(System.getProperty("user.home"), ".github").toFile()
+        Paths.get(System.getProperty("user.home"), ".bowler-github").toFile()
     }
 
     val isLoggedInProperty = SimpleBooleanProperty(false)
     var isLoggedIn by isLoggedInProperty
 
     /**
-     * Log in using credentials from the default file.
+     * Log in using the token from the default file.
      */
-    fun login(): Try<GitHub> = readCredentials().flatMap { it.run { login(first, second) } }
+    fun login(): Try<GitHub> = readCredentials().flatMap { it.run { loginToken(first, second) } }
 
     /**
-     * Log in with a [username] and [password].
+     * Log in with a [username] and [password]. Creates a token with repo and gist scopes.
      */
     fun login(username: String, password: String): Try<GitHub> {
         return Try {
             GitHub.connectUsingPassword(username, password).also {
+                val token = try {
+                    it.createToken(
+                        setOf(
+                            "repo",
+                            "gist"
+                        ),
+                        "BowlerBuilder",
+                        ""
+                    )
+                } catch (ex: HttpException) {
+                    LOGGER.warning {
+                        """
+                        |Failed to generate token:
+                        |${Throwables.getStackTraceAsString(ex)}
+                        """.trimMargin()
+                    }
+
+                    throw ex
+                }
+
+                loginToken(username, token.token)
+            }
+        }.also {
+            if (it is HttpException) {
+                LOGGER.warning {
+                    """
+                    |Failed to generate token:
+                    |${Throwables.getStackTraceAsString(it)}
+                    """.trimMargin()
+                }
+            }
+        }
+    }
+
+    /**
+     * Log in using a token.
+     */
+    fun loginToken(username: String, token: String): Try<GitHub> {
+        if (username.isEmpty() || token.isEmpty()) {
+            return Try.raise(IllegalStateException("Invalid login credentials."))
+        }
+
+        return Try {
+            GitHub.connectUsingOAuth(token).also {
                 if (it.isCredentialValid) {
-                    writeCredentials(username, password)
+                    writeCredentials(username, token)
                     getInstanceOf<MainWindowController>().apply {
                         gitHub = Try.just(it)
-                        credentials = username to password
+                        credentials = username to token
                         gitFS = Try.just(GitHubFS(it, credentials))
                     }
 
                     isLoggedIn = true
-
-                    LOGGER.info {
-                        "Logged in $username."
-                    }
+                    LOGGER.info { "Logged in." }
                 } else {
                     getInstanceOf<MainWindowController>().gitHub = Try.raise(
                         IllegalStateException("Invalid login credentials.")
                     )
 
-                    LOGGER.warning {
-                        "Failed to log in to GitHub."
-                    }
+                    LOGGER.warning { "Failed to log in to GitHub." }
                 }
             }
         }
@@ -82,14 +123,14 @@ class LoginManager {
 
     private fun readCredentials(): Try<Pair<String, String>> = Try {
         val (username, password) = credentialFile.readText().split("\n")
-        username.trim().removePrefix("login=") to password.trim().removePrefix("password=")
+        username.trim().removePrefix("username=") to password.trim().removePrefix("token=")
     }
 
-    private fun writeCredentials(username: String, password: String) {
+    private fun writeCredentials(username: String, token: String) {
         credentialFile.writeText(
             """
-            |login=$username
-            |password=$password
+            |username=$username
+            |token=$token
             |
             """.trimMargin()
         )

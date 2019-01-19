@@ -21,27 +21,59 @@ class LogInView : Fragment() {
     private val passwordProperty = SimpleStringProperty("")
     private val password by passwordProperty
 
-    override val root = form {
-        fieldset("Log In") {
-            field("Username") {
-                textfield(usernameProperty) {
-                    action { tryLogin() }
+    override val root = tabpane {
+        tab("Username & Password") {
+            form {
+                fieldset("Log In") {
+                    field("Username") {
+                        textfield(usernameProperty) {
+                            action { tryLogin() }
+                        }
+                    }
+
+                    field("Password") {
+                        passwordfield(passwordProperty) {
+                            action { tryLogin() }
+                        }
+                    }
+
+                    buttonbar {
+                        button("Log In") {
+                            action { tryLogin() }
+                        }
+
+                        button("Cancel") {
+                            action { close() }
+                        }
+                    }
                 }
             }
+        }
 
-            field("Password") {
-                passwordfield(passwordProperty) {
-                    action { tryLogin() }
-                }
-            }
+        tab("Personal Access Token") {
+            form {
+                fieldset("Log In") {
+                    field("Username") {
+                        textfield(usernameProperty) {
+                            action { tryLoginToken() }
+                        }
+                    }
 
-            buttonbar {
-                button("Log In") {
-                    action { tryLogin() }
-                }
+                    field("Personal Access Token") {
+                        passwordfield(passwordProperty) {
+                            action { tryLoginToken() }
+                        }
+                    }
 
-                button("Cancel") {
-                    action { close() }
+                    buttonbar {
+                        button("Log In") {
+                            action { tryLoginToken() }
+                        }
+
+                        button("Cancel") {
+                            action { close() }
+                        }
+                    }
                 }
             }
         }
@@ -50,6 +82,16 @@ class LogInView : Fragment() {
     private fun tryLogin() {
         runAsync {
             loginManager.login(username, password)
+        } success {
+            if (loginManager.isLoggedIn) {
+                close()
+            }
+        }
+    }
+
+    private fun tryLoginToken() {
+        runAsync {
+            loginManager.loginToken(username, password)
         } success {
             if (loginManager.isLoggedIn) {
                 close()

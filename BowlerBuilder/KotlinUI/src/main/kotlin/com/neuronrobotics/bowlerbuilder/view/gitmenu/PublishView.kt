@@ -43,6 +43,7 @@ class PublishView(
                     runAsync {
                         controller.publish(file, scriptContent, commitMessage)
                     } success {
+                        LOGGER.info { "Push successful." }
                         close()
                     } fail {
                         LOGGER.severe {

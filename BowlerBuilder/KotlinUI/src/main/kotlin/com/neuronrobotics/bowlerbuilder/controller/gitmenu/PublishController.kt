@@ -5,8 +5,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.RepositoryBuilder
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import tornadofx.*
 import java.io.File
 
@@ -32,8 +35,16 @@ class PublishController : Controller() {
 
         val git = Git(repo)
         git.commit()
+            .setAll(true)
             .setMessage(commitMessage)
-            .setOnly(file.path)
+            .call()
+
+        git.push()
+            .setCredentialsProvider(
+                getInstanceOf<MainWindowController>().credentials.run {
+                    UsernamePasswordCredentialsProvider(first, second)
+                }
+            )
             .call()
 
         git.close()
