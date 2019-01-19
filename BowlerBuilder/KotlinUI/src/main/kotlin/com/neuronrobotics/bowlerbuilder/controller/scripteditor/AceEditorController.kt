@@ -13,8 +13,8 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.hardware.Script
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
-import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
 import org.greenrobot.eventbus.Subscribe
+import org.octogonapus.guavautil.collections.emptyImmutableList
 import tornadofx.*
 import javax.inject.Inject
 

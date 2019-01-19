@@ -20,12 +20,12 @@ import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGistScriptFactory
-import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
-import com.neuronrobotics.bowlerkernel.util.toImmutableList
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
 import org.jsoup.Jsoup
+import org.octogonapus.guavautil.collections.emptyImmutableList
+import org.octogonapus.guavautil.collections.toImmutableList
 import tornadofx.*
 import java.io.File
 import java.io.StringWriter

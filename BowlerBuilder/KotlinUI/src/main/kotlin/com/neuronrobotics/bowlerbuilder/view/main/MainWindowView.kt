@@ -23,7 +23,6 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTa
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
-import com.neuronrobotics.bowlerkernel.util.toImmutableList
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.geometry.Orientation
 import javafx.scene.Node
@@ -33,6 +32,7 @@ import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import org.greenrobot.eventbus.Subscribe
+import org.octogonapus.guavautil.collections.toImmutableList
 import tornadofx.*
 import javax.inject.Singleton
 import kotlin.concurrent.thread

@@ -9,13 +9,13 @@ import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.model.LimbData
 import com.neuronrobotics.bowlerbuilder.view.creatureeditor.configuration.AddLimbWizard
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
-import com.neuronrobotics.bowlerkernel.util.toImmutableList
 import com.neuronrobotics.sdk.addons.kinematics.DHParameterKinematics
 import com.neuronrobotics.sdk.addons.kinematics.MobileBase
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
 import javafx.scene.Node
 import org.controlsfx.glyphfont.FontAwesome
+import org.octogonapus.guavautil.collections.toImmutableList
 import tornadofx.*
 
 class CreatureConfigurationView(

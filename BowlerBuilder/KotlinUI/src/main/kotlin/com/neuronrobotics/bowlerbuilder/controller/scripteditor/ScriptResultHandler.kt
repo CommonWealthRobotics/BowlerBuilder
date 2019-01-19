@@ -8,10 +8,10 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
-import com.neuronrobotics.bowlerkernel.util.immutableSetOf
-import com.neuronrobotics.bowlerkernel.util.toImmutableSet
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
+import org.octogonapus.guavautil.collections.immutableSetOf
+import org.octogonapus.guavautil.collections.toImmutableSet
 
 /**
  * A utility class to interpret the result from running a script.
