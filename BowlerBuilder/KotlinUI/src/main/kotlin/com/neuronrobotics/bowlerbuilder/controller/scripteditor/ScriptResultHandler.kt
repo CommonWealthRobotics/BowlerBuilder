@@ -8,8 +8,8 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
-import com.neuronrobotics.kinematicschef.util.immutableSetOf
-import com.neuronrobotics.kinematicschef.util.toImmutableSet
+import com.neuronrobotics.bowlerkernel.util.immutableSetOf
+import com.neuronrobotics.bowlerkernel.util.toImmutableSet
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
 

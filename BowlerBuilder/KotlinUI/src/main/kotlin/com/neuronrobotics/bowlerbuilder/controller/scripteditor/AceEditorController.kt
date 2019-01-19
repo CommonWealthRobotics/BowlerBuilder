@@ -11,9 +11,9 @@ import arrow.core.left
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
-import com.neuronrobotics.bowlerkernel.scripting.Script
+import com.neuronrobotics.bowlerkernel.hardware.Script
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
-import com.neuronrobotics.kinematicschef.util.emptyImmutableList
+import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
 import org.greenrobot.eventbus.Subscribe
 import tornadofx.*
 import javax.inject.Inject

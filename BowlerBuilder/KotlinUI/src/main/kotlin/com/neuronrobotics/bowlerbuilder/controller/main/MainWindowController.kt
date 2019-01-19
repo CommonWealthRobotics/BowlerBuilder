@@ -7,7 +7,6 @@ package com.neuronrobotics.bowlerbuilder.controller.main
 
 import arrow.core.Try
 import arrow.core.recoverWith
-import arrow.instances.`try`.applicativeError.handleError
 import com.google.common.base.Throwables
 import com.google.inject.Guice
 import com.google.inject.Injector
@@ -73,16 +72,16 @@ class MainWindowController
      * Clear the local git cache.
      */
     fun deleteGitCache() {
-        gitFS.map {
-            it.deleteCache()
-            beginForceQuit()
-        }.handleError {
+        gitFS.toEither {
             LOGGER.warning {
                 """
                 |Cannot delete Git cache:
                 |${Throwables.getStackTraceAsString(it)}
                 """.trimMargin()
             }
+        }.map {
+            it.deleteCache()
+            beginForceQuit()
         }
     }
 

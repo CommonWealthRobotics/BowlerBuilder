@@ -1,3 +1,5 @@
+import KotlinUI_gradle.Versions.arrow_version
+
 plugins {
     `java-library`
     application
@@ -13,15 +15,20 @@ repositories {
     maven(url = "https://dl.bintray.com/commonwealthrobotics/maven-artifacts")
     maven(url = "https://oss.sonatype.org/content/repositories/staging/")
     maven(url = "https://jitpack.io")
+    maven(url = "https://dl.bintray.com/s1m0nw1/KtsRunner")
     jcenter()
 }
 
 dependencies {
-    api("com.neuronrobotics:bowler-kernel-core:0.0.3")
+    api("com.neuronrobotics:bowler-kernel-scripting:0.0.4")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
+    api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 
-    implementation("com.neuronrobotics:bowler-kernel-config:0.0.3")
+    implementation("com.neuronrobotics:bowler-kernel-config:0.0.4")
+    implementation("com.neuronrobotics:bowler-kernel-gitfs:0.0.4")
+    implementation("com.neuronrobotics:bowler-kernel-util:0.0.4")
+
     implementation(
         group = "org.eclipse.jgit",
         name = "org.eclipse.jgit",

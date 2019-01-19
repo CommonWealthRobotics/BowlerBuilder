@@ -20,8 +20,8 @@ import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGistScriptFactory
-import com.neuronrobotics.kinematicschef.util.emptyImmutableList
-import com.neuronrobotics.kinematicschef.util.toImmutableList
+import com.neuronrobotics.bowlerkernel.util.emptyImmutableList
+import com.neuronrobotics.bowlerkernel.util.toImmutableList
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
