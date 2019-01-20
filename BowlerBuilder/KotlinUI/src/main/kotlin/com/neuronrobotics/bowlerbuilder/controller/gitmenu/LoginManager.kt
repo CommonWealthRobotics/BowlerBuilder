@@ -40,6 +40,10 @@ class LoginManager {
      * Log in with a [username] and [password]. Creates a token with repo and gist scopes.
      */
     fun login(username: String, password: String): Try<GitHub> {
+        if (precheckCredentials(username, password)) {
+            return Try.raise(IllegalStateException("Invalid login credentials."))
+        }
+
         return Try {
             GitHub.connectUsingPassword(username, password).also {
                 val token = try {
@@ -80,7 +84,7 @@ class LoginManager {
      * Log in using a token.
      */
     fun loginToken(username: String, token: String): Try<GitHub> {
-        if (username.isEmpty() || token.isEmpty()) {
+        if (precheckCredentials(username, token)) {
             return Try.raise(IllegalStateException("Invalid login credentials."))
         }
 
@@ -106,6 +110,9 @@ class LoginManager {
             }
         }
     }
+
+    private fun precheckCredentials(username: String, token: String) =
+        username.isEmpty() || token.isEmpty()
 
     /**
      * Logout the currently logged in user.
