@@ -9,6 +9,8 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Com
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
+import com.neuronrobotics.bowlerbuilder.model.WatchedFile
+import com.neuronrobotics.bowlerbuilder.model.WatchedFileChange
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
@@ -18,10 +20,12 @@ import javafx.geometry.Pos
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.text.Text
+import javafx.stage.Modality
 import org.controlsfx.glyphfont.FontAwesome
 import tornadofx.*
 import java.io.File
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 /**
  * An editor which operates on a specific file and contains the controls to run the script and
@@ -35,6 +39,7 @@ class AceEditorView
     private val file: File
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
 
+    private val watchedFile = WatchedFile(file)
     private var urlTextField: TextField by singleAssign()
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
@@ -100,6 +105,34 @@ class AceEditorView
                 runLater {
                     setText(text)
                     gotoLine(0)
+                }
+
+                thread(isDaemon = true) {
+                    while (true) {
+                        when (watchedFile.wasFileChangedSinceLastCheck()) {
+                            WatchedFileChange.MODIFIED -> runLater {
+                                FileModifiedOnDiskView(
+                                    {
+                                        val text = getFullText()
+                                        runAsync { file.writeText(text) }
+                                    },
+                                    {
+                                        setText(file.readText())
+                                    }
+                                ).openModal(
+                                    modality = Modality.WINDOW_MODAL,
+                                    escapeClosesWindow = false
+                                )
+                            }
+
+                            WatchedFileChange.DELETED -> runLater {
+                                FileDeletedOnDiskView().openModal(
+                                    modality = Modality.WINDOW_MODAL,
+                                    escapeClosesWindow = false
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
