@@ -16,7 +16,6 @@ repositories {
     maven(url = "https://oss.sonatype.org/content/repositories/staging/")
     maven(url = "https://jitpack.io")
     maven(url = "https://dl.bintray.com/s1m0nw1/KtsRunner")
-    maven(url = "https://dl.bintray.com/octogonapus/maven-artifacts")
     jcenter()
 }
 

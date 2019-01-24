@@ -43,7 +43,7 @@ class LogInView : Fragment() {
                         }
 
                         button("Cancel") {
-                            action { close() }
+                            action { this@LogInView.close() }
                         }
                     }
                 }
@@ -71,7 +71,7 @@ class LogInView : Fragment() {
                         }
 
                         button("Cancel") {
-                            action { close() }
+                            action { this@LogInView.close() }
                         }
                     }
                 }
