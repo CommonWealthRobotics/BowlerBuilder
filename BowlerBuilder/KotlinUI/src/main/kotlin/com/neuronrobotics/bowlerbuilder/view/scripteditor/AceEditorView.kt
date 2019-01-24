@@ -81,6 +81,10 @@ class AceEditorView
             button("Copy URL").action {
                 clipboard.putString(urlTextField.text)
             }
+
+            button("Copy Path").action {
+                clipboard.putString(file.absolutePath)
+            }
         }
     }
 
