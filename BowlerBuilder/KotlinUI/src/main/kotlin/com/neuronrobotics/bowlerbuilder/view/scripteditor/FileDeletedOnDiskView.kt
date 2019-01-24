@@ -7,17 +7,22 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import tornadofx.*
 
-class FileDeletedOnDiskView : Fragment() {
+class FileDeletedOnDiskView(
+    onKeepFile: () -> Unit,
+    onRemoveFile: () -> Unit
+) : Fragment() {
 
     override val root = form {
         fieldset("File deleted on disk.") {
             field("The file open in the editor was deleted on disk.") {
                 button("Keep file").action {
-                    TODO()
+                    onKeepFile()
+                    close()
                 }
 
                 button("Remove file").action {
-                    TODO()
+                    onRemoveFile()
+                    close()
                 }
             }
         }

@@ -5,6 +5,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
@@ -12,6 +13,7 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEdit
 import com.neuronrobotics.bowlerbuilder.model.WatchedFile
 import com.neuronrobotics.bowlerbuilder.model.WatchedFileChange
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
+import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
@@ -128,7 +130,17 @@ class AceEditorView
                     }
 
                     WatchedFileChange.DELETED -> runLater {
-                        FileDeletedOnDiskView().openModal(
+                        FileDeletedOnDiskView(
+                            {
+                                val text = getFullText()
+                                runAsync { watchedFile.writeText(text) }
+                            },
+                            {
+                                MainWindowController.mainUIEventBus.post(
+                                    CloseTabByContentEvent(root)
+                                )
+                            }
+                        ).openModal(
                             modality = Modality.WINDOW_MODAL,
                             escapeClosesWindow = false
                         )
