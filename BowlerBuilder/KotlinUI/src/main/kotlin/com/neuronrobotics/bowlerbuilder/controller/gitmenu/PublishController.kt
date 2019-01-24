@@ -19,19 +19,12 @@ class PublishController : Controller() {
      * Publish updates to a file.
      *
      * @param file The file on disk to the updated [content] to.
-     * @param content The new file contents.
      * @param commitMessage The commit message.
      */
-    fun publish(
-        file: File,
-        content: String,
-        commitMessage: String
-    ) {
+    fun publish(file: File, commitMessage: String) {
         val repo = RepositoryBuilder()
             .findGitDir(file)
             .build()
-
-        file.writeText(content)
 
         val git = Git(repo)
         git.commit()

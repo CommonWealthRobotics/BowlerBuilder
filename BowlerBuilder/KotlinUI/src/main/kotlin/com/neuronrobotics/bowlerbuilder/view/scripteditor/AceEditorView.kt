@@ -67,7 +67,7 @@ class AceEditorView
                 "Publish",
                 loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)
             ).action {
-                PublishView.create(gitUrl, file, getFullText()).openModal()
+                PublishView.create(file).openModal()
             }
 
             urlTextField = textfield {
@@ -96,44 +96,48 @@ class AceEditorView
     init {
         runLater {
             urlTextField.text = gitUrl
+        }
 
-            runAsync {
-                val text = file.readText()
+        thread(isDaemon = true) {
+            val text = file.readText()
 
-                engineInitializingLatch.await()
+            engineInitializingLatch.await()
+            runLater {
+                setText(text)
+                gotoLine(0)
+            }
+        }
 
-                runLater {
-                    setText(text)
-                    gotoLine(0)
-                }
-
-                thread(isDaemon = true) {
-                    while (true) {
-                        when (watchedFile.wasFileChangedSinceLastCheck()) {
-                            WatchedFileChange.MODIFIED -> runLater {
-                                FileModifiedOnDiskView(
-                                    {
-                                        val text = getFullText()
-                                        runAsync { file.writeText(text) }
-                                    },
-                                    {
-                                        setText(file.readText())
-                                    }
-                                ).openModal(
-                                    modality = Modality.WINDOW_MODAL,
-                                    escapeClosesWindow = false
-                                )
+        thread(isDaemon = true) {
+            while (true) {
+                when (watchedFile.wasFileChangedSinceLastCheck()) {
+                    WatchedFileChange.MODIFIED -> runLater {
+                        FileModifiedOnDiskView(
+                            {
+                                val text = getFullText()
+                                runAsync { watchedFile.writeText(text) }
+                            },
+                            {
+                                // TODO: Put cursor back in the same position
+                                setText(file.readText())
                             }
-
-                            WatchedFileChange.DELETED -> runLater {
-                                FileDeletedOnDiskView().openModal(
-                                    modality = Modality.WINDOW_MODAL,
-                                    escapeClosesWindow = false
-                                )
-                            }
-                        }
+                        ).openModal(
+                            modality = Modality.WINDOW_MODAL,
+                            escapeClosesWindow = false
+                        )
                     }
+
+                    WatchedFileChange.DELETED -> runLater {
+                        FileDeletedOnDiskView().openModal(
+                            modality = Modality.WINDOW_MODAL,
+                            escapeClosesWindow = false
+                        )
+                    }
+
+                    else -> Unit
                 }
+
+                Thread.sleep(10)
             }
         }
     }

@@ -5,8 +5,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
-import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import java.io.File
+import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
@@ -79,8 +79,31 @@ internal constructor(
                             """.trimMargin()
                         )
                     }
+
+                    Thread.sleep(10)
                 }
             }
+        }
+    }
+
+    /**
+     * Sets the content of this file as [text] encoded using UTF-8 or specified [charset]. If
+     * this file exists, it becomes overwritten. Does not generate a [WatchedFileChange].
+     *
+     * @param text text to write into file.
+     * @param charset character set to use.
+     */
+    fun writeText(text: String, charset: Charset = Charsets.UTF_8) {
+        synchronized(file) {
+            lastEvent = null
+
+            file.writeText(text, charset)
+
+            while (lastEvent == null) {
+                Thread.sleep(1)
+            }
+
+            lastEvent = null
         }
     }
 
@@ -90,20 +113,18 @@ internal constructor(
      * @return The most recent file change event.
      */
     fun wasFileChangedSinceLastCheck(): WatchedFileChange =
-        when (lastEvent?.kind()) {
-            ENTRY_CREATE, ENTRY_MODIFY -> {
-                lastEvent = null
-                WatchedFileChange.MODIFIED
+        synchronized(file) {
+            when (lastEvent?.kind()) {
+                ENTRY_CREATE, ENTRY_MODIFY -> {
+                    lastEvent = null
+                    WatchedFileChange.MODIFIED
+                }
+                ENTRY_DELETE -> {
+                    lastEvent = null
+                    WatchedFileChange.DELETED
+                }
+                null -> WatchedFileChange.NOTHING
+                else -> throw IllegalStateException("Unknown event: $lastEvent")
             }
-            ENTRY_DELETE -> {
-                lastEvent = null
-                WatchedFileChange.DELETED
-            }
-            null -> WatchedFileChange.NOTHING
-            else -> throw IllegalStateException("Unknown event: $lastEvent")
         }
-
-    companion object {
-        private val LOGGER = LoggerUtilities.getLogger(WatchedFile::class.java.simpleName)
-    }
 }
