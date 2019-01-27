@@ -125,7 +125,8 @@ class AceEditorView
                             }
                         ).openModal(
                             modality = Modality.WINDOW_MODAL,
-                            escapeClosesWindow = false
+                            escapeClosesWindow = false,
+                            block = true
                         )
                     }
 
@@ -142,7 +143,8 @@ class AceEditorView
                             }
                         ).openModal(
                             modality = Modality.WINDOW_MODAL,
-                            escapeClosesWindow = false
+                            escapeClosesWindow = false,
+                            block = true
                         )
                     }
 
