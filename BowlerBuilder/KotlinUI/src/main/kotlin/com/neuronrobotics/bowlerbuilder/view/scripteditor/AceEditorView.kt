@@ -17,6 +17,7 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
+import javafx.beans.property.ReadOnlyBooleanProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.TextField
@@ -45,10 +46,12 @@ class AceEditorView
     private var urlTextField: TextField by singleAssign()
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
+    private var rootHoverProperty: ReadOnlyBooleanProperty by singleAssign()
 
     override val root = borderpane {
         id = "AceEditorView"
         center = editor.root
+        rootHoverProperty = hoverProperty()
 
         bottom = hbox {
             padding = Insets(5.0)
@@ -112,43 +115,45 @@ class AceEditorView
 
         thread(isDaemon = true) {
             while (true) {
-                when (watchedFile.wasFileChangedSinceLastCheck()) {
-                    WatchedFileChange.MODIFIED -> runLater {
-                        FileModifiedOnDiskView(
-                            {
-                                val text = getFullText()
-                                runAsync { watchedFile.writeText(text) }
-                            },
-                            {
-                                // TODO: Put cursor back in the same position
-                                setText(file.readText())
-                            }
-                        ).openModal(
-                            modality = Modality.WINDOW_MODAL,
-                            escapeClosesWindow = false,
-                            block = true
-                        )
-                    }
+                if (rootHoverProperty.value) {
+                    when (watchedFile.wasFileChangedSinceLastCheck()) {
+                        WatchedFileChange.MODIFIED -> runLater {
+                            FileModifiedOnDiskView(
+                                {
+                                    val text = getFullText()
+                                    runAsync { watchedFile.writeText(text) }
+                                },
+                                {
+                                    // TODO: Put cursor back in the same position
+                                    setText(file.readText())
+                                }
+                            ).openModal(
+                                modality = Modality.WINDOW_MODAL,
+                                escapeClosesWindow = false,
+                                block = true
+                            )
+                        }
 
-                    WatchedFileChange.DELETED -> runLater {
-                        FileDeletedOnDiskView(
-                            {
-                                val text = getFullText()
-                                runAsync { watchedFile.writeText(text) }
-                            },
-                            {
-                                MainWindowController.mainUIEventBus.post(
-                                    CloseTabByContentEvent(root)
-                                )
-                            }
-                        ).openModal(
-                            modality = Modality.WINDOW_MODAL,
-                            escapeClosesWindow = false,
-                            block = true
-                        )
-                    }
+                        WatchedFileChange.DELETED -> runLater {
+                            FileDeletedOnDiskView(
+                                {
+                                    val text = getFullText()
+                                    runAsync { watchedFile.writeText(text) }
+                                },
+                                {
+                                    MainWindowController.mainUIEventBus.post(
+                                        CloseTabByContentEvent(root)
+                                    )
+                                }
+                            ).openModal(
+                                modality = Modality.WINDOW_MODAL,
+                                escapeClosesWindow = false,
+                                block = true
+                            )
+                        }
 
-                    else -> Unit
+                        else -> Unit
+                    }
                 }
 
                 Thread.sleep(10)
