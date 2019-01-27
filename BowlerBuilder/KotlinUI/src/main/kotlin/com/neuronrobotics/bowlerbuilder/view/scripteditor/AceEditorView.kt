@@ -47,11 +47,19 @@ class AceEditorView
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
     private var rootHoverProperty: ReadOnlyBooleanProperty by singleAssign()
+    private var lastEditTime = Long.MAX_VALUE
+    private var fileIsDirty = false
 
     override val root = borderpane {
         id = "AceEditorView"
         center = editor.root
         rootHoverProperty = hoverProperty()
+
+        editor.root.setOnKeyPressed {
+            // Keep track of time for autosave
+            lastEditTime = System.nanoTime()
+            fileIsDirty = true
+        }
 
         bottom = hbox {
             padding = Insets(5.0)
@@ -113,7 +121,7 @@ class AceEditorView
             }
         }
 
-        thread(isDaemon = true) {
+        thread(isDaemon = true, name = "Editor FileWatcher") {
             while (true) {
                 if (rootHoverProperty.value) {
                     when (watchedFile.wasFileChangedSinceLastCheck()) {
@@ -157,6 +165,19 @@ class AceEditorView
                 }
 
                 Thread.sleep(10)
+            }
+        }
+
+        thread(isDaemon = true, name = "Editor Autosave") {
+            while (true) {
+                // If the user has not typed a key for a half second
+                if (System.nanoTime() - lastEditTime >= 5e+8 && fileIsDirty) {
+                    val text = FxUtil.returnFX { getFullText() }
+                    watchedFile.writeText(text)
+                    fileIsDirty = false
+                }
+
+                Thread.sleep(100)
             }
         }
     }
