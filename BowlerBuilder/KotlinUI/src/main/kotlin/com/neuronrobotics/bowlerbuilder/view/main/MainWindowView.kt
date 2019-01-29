@@ -188,13 +188,19 @@ class MainWindowView : View() {
     }
 
     /**
-     * Searches for tabs by their [Tab.content] and removes all matches.
+     * Searches for tabs by their [Tab.content] and all of the content's children and removes all
+     * matches.
      *
      * @param cmp The [Tab.content] to search for.
      */
     fun closeTabByContent(cmp: Node) {
         fun removeMatches(tabPane: TabPane) {
-            val matches = tabPane.tabs.filter { it.content == cmp }
+            fun findMatchInChildren(node: Node): Boolean =
+                node == cmp || node.getChildList()?.fold(false) { acc, elem ->
+                    acc || findMatchInChildren(elem)
+                } ?: false
+
+            val matches = tabPane.tabs.filter { findMatchInChildren(it.content) }
             runLater { tabPane.tabs.removeAll(matches) }
         }
 

@@ -18,9 +18,7 @@ import java.io.File
  * A form to commit and push changes to a file.
  */
 class PublishView(
-    private val gitUrl: String,
-    private val file: File,
-    private val scriptContent: String
+    private val file: File
 ) : Fragment() {
 
     private val controller: PublishController by inject()
@@ -41,7 +39,7 @@ class PublishView(
             button("Push") {
                 action {
                     runAsync {
-                        controller.publish(file, scriptContent, commitMessage)
+                        controller.publish(file, commitMessage)
                     } success {
                         LOGGER.info { "Push successful." }
                         close()
@@ -64,8 +62,6 @@ class PublishView(
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(PublishView::class.java.simpleName)
 
-        fun create(gitUrl: String, file: File, fullText: String) = PublishView(
-            gitUrl, file, fullText
-        )
+        fun create(file: File) = PublishView(file)
     }
 }
