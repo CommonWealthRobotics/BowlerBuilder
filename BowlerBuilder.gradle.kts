@@ -2,9 +2,8 @@ import BowlerBuilder_gradle.Strings.spotlessLicenseHeaderDelimiter
 import com.github.spotbugs.SpotBugsTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.api.tasks.testing.Test
 import org.gradle.util.GFileUtils
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Paths
 import java.util.Properties
 
@@ -206,7 +205,7 @@ configure(javaProjects) {
             endWithNewline()
             @Suppress("INACCESSIBLE_TYPE")
             licenseHeaderFile(
-                "${rootProject.rootDir}/config/spotless/bowler.license",
+                "${rootProject.rootDir}/config/spotless/bowlerbuilder.license",
                 spotlessLicenseHeaderDelimiter
             )
         }
@@ -304,7 +303,7 @@ configure(kotlinProjects) {
             endWithNewline()
             @Suppress("INACCESSIBLE_TYPE")
             licenseHeaderFile(
-                "${rootProject.rootDir}/config/spotless/bowler.license",
+                "${rootProject.rootDir}/config/spotless/bowlerbuilder.license",
                 spotlessLicenseHeaderDelimiter
             )
         }
