@@ -30,6 +30,7 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -120,9 +121,10 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        getInstanceOf<MainWindowController>().gitHub.map { gitHub ->
+        val mwc = getInstanceOf<MainWindowController>()
+        mwc.gitHub.map { gitHub ->
             scriptFactory.create(
-                gitHub
+                GitHubFS(gitHub, mwc.credentials)
             ).createScriptFromGit(
                 currentScript.gistFile.gist.id,
                 currentScript.gistFile.file.name

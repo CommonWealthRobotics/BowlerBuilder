@@ -19,12 +19,12 @@ repositories {
 }
 
 dependencies {
-    api("com.neuronrobotics:bowler-kernel-kinematics:0.0.8")
+    api("com.neuronrobotics:bowler-kernel-kinematics:0.0.9")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 
-    implementation("com.neuronrobotics:bowler-kernel-config:0.0.5")
+    implementation("com.neuronrobotics:bowler-kernel-config:0.0.9")
     implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.1")
 
     implementation(
