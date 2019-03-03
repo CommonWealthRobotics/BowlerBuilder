@@ -31,9 +31,9 @@ import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.gitfs.GitFS
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
-import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGistScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultTextScriptFactory
-import com.neuronrobotics.bowlerkernel.scripting.factory.GistScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.factory.GitScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguageParser
 import com.neuronrobotics.bowlerkernel.scripting.parser.ScriptLanguageParser
@@ -112,11 +112,11 @@ class MainWindowController
             install(
                 FactoryModuleBuilder()
                     .implement(
-                        GistScriptFactory::class.java,
-                        DefaultGistScriptFactory::class.java
+                        GitScriptFactory::class.java,
+                        DefaultGitScriptFactory::class.java
                     )
                     .build(
-                        DefaultGistScriptFactory.Factory::class.java
+                        DefaultGitScriptFactory.Factory::class.java
                     )
             )
         }

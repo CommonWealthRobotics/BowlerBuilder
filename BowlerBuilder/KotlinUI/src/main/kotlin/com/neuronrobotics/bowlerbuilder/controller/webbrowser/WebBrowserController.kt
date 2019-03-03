@@ -30,7 +30,7 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGistScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
@@ -47,7 +47,7 @@ import javax.xml.transform.stream.StreamResult
 
 class WebBrowserController
 @Inject constructor(
-    private val scriptFactory: DefaultGistScriptFactory.Factory,
+    private val scriptFactory: DefaultGitScriptFactory.Factory,
     private val cadScriptEditorFactory: CadScriptEditorFactory,
     private val scriptResultHandler: ScriptResultHandler
 ) : Controller() {
@@ -123,7 +123,7 @@ class WebBrowserController
         getInstanceOf<MainWindowController>().gitHub.map { gitHub ->
             scriptFactory.create(
                 gitHub
-            ).createScriptFromGist(
+            ).createScriptFromGit(
                 currentScript.gistFile.gist.id,
                 currentScript.gistFile.file.name
             ).flatMap {
