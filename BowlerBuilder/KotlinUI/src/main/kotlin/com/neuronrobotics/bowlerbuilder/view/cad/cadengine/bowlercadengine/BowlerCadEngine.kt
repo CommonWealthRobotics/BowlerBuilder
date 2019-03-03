@@ -342,6 +342,10 @@ class BowlerCadEngine : Pane() {
         mesh.material = PhongMaterial(csg.color)
         mesh.depthTest = DepthTest.ENABLE
         mesh.cullFace = CullFace.BACK
+        mesh.transforms.apply {
+            clear()
+            add(csg.manipulator)
+        }
 
         if (csg.name != null && "" != csg.name && csgManager.has(csg.name)) {
             val meshView = csgManager.getMeshView(csg.name)
