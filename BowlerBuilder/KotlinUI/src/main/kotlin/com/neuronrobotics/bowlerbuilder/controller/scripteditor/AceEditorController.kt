@@ -19,10 +19,12 @@ package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
+import arrow.core.right
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.hardware.Script
+import com.neuronrobotics.bowlerkernel.scripting.ScriptLanguage
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import org.greenrobot.eventbus.Subscribe
 import org.octogonapus.guavautil.collections.emptyImmutableList
@@ -45,14 +47,34 @@ class AceEditorController
      * Runs a script by text using the injected [scriptFactory].
      *
      * @param scriptText The full text of the script.
+     * @param language A string representing the script language.
      */
-    fun runScript(scriptText: String) {
+    fun runScript(scriptText: String, language: String) {
         currentScript = scriptFactory.createScriptFromText(
-            "groovy",
+            language,
             scriptText
         )
 
-        val result = currentScript.flatMap {
+        runAndHandleScript(currentScript)
+    }
+
+    /**
+     * Runs a script by text using the injected [scriptFactory].
+     *
+     * @param scriptText The full text of the script.
+     * @param language The language of the script.
+     */
+    fun runScript(scriptText: String, language: ScriptLanguage) {
+        currentScript = scriptFactory.createScriptFromText(
+            language,
+            scriptText
+        ).right()
+
+        runAndHandleScript(currentScript)
+    }
+
+    private fun runAndHandleScript(script: Either<String, Script>) {
+        val result = script.flatMap {
             it.addToInjector(MainWindowController.mainModule())
             it.runScript(emptyImmutableList())
         }

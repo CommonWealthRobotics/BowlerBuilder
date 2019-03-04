@@ -1,4 +1,5 @@
 import KotlinUI_gradle.Versions.arrow_version
+import KotlinUI_gradle.Versions.kernel_version
 
 plugins {
     `java-library`
@@ -9,6 +10,7 @@ application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 
 object Versions {
     const val arrow_version = "0.8.1"
+    const val kernel_version = "0.0.10"
 }
 
 repositories {
@@ -19,12 +21,12 @@ repositories {
 }
 
 dependencies {
-    api("com.neuronrobotics:bowler-kernel-kinematics:0.0.9")
+    api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 
-    implementation("com.neuronrobotics:bowler-kernel-config:0.0.9")
+    api(group = "com.neuronrobotics", name = "bowler-kernel-config", version = kernel_version)
     implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.2")
 
     implementation(

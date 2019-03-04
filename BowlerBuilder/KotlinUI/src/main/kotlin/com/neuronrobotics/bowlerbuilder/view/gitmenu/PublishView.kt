@@ -72,7 +72,5 @@ class PublishView(
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(PublishView::class.java.simpleName)
-
-        fun create(file: File) = PublishView(file)
     }
 }

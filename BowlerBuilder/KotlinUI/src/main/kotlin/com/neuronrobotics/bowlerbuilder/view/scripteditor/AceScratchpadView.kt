@@ -27,9 +27,11 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import org.controlsfx.glyphfont.FontAwesome
+import org.octogonapus.guavautil.collections.immutableListOf
 import tornadofx.*
 import javax.inject.Inject
 
@@ -43,6 +45,9 @@ class AceScratchpadView
     private val controller: AceEditorController,
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
+
+    private val languageChoiceProperty = SimpleStringProperty("Groovy")
+    private var languageChoice by languageChoiceProperty
 
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
@@ -63,9 +68,11 @@ class AceScratchpadView
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
                     "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
                 ) {
-                    controller.runScript(FxUtil.returnFX { getFullText() })
+                    controller.runScript(FxUtil.returnFX { getFullText() }, languageChoice)
                 }
             )
+
+            choicebox(languageChoiceProperty, immutableListOf("Groovy", "Kotlin"))
 
             button("Publish", loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)) {
                 action {

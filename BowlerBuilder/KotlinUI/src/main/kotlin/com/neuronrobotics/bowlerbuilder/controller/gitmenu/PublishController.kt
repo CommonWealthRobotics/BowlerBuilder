@@ -43,6 +43,8 @@ class PublishController : Controller() {
             .setMessage(commitMessage)
             .call()
 
+        git.pull().call()
+
         git.push()
             .setCredentialsProvider(
                 getInstanceOf<MainWindowController>().credentials.run {

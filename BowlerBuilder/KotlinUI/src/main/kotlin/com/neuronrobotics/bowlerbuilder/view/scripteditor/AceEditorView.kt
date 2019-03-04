@@ -83,7 +83,7 @@ class AceEditorView
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
                     "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
                 ) {
-                    controller.runScript(FxUtil.returnFX { getFullText() })
+                    controller.runScript(FxUtil.returnFX { getFullText() }, file.extension)
                 }
             )
 
@@ -91,7 +91,8 @@ class AceEditorView
                 "Publish",
                 loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)
             ).action {
-                PublishView.create(file).openModal()
+                writeContentToFile()
+                PublishView(file).openModal()
             }
 
             urlTextField = textfield {
@@ -183,13 +184,19 @@ class AceEditorView
             while (true) {
                 // If the user has not typed a key for a half second
                 if (System.nanoTime() - lastEditTime >= 5e+8 && fileIsDirty) {
-                    val text = FxUtil.returnFX { getFullText() }
-                    watchedFile.writeText(text)
-                    fileIsDirty = false
+                    writeContentToFile()
                 }
 
                 Thread.sleep(100)
             }
+        }
+    }
+
+    private fun writeContentToFile() {
+        synchronized(watchedFile) {
+            val text = FxUtil.returnFX { getFullText() }
+            watchedFile.writeText(text)
+            fileIsDirty = false
         }
     }
 
