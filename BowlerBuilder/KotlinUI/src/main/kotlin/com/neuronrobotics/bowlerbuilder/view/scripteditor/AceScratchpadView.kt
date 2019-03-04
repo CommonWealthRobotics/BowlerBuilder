@@ -69,7 +69,7 @@ class AceScratchpadView
 
             button("Publish", loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)) {
                 action {
-                    val view = PublishNewGistView.create(getFullText()).apply {
+                    val view = PublishNewGistView(getFullText()).apply {
                         openModal(block = true)
                     }
 

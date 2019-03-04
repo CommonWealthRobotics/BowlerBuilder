@@ -16,7 +16,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
-import arrow.core.Try
+import arrow.core.getOrElse
+import arrow.core.recover
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
@@ -35,6 +36,14 @@ import java.io.File
 class PublishNewGistView(
     private val scriptContent: String
 ) : Fragment() {
+
+    init {
+        require(scriptContent.isNotEmpty()) {
+            // Can't make a gist with an empty body
+            LOGGER.severe { "scriptContent must not be empty" }
+            "scriptContent must not be empty"
+        }
+    }
 
     private val gistDescriptionProperty = SimpleStringProperty("")
     private var gistDescription by gistDescriptionProperty
@@ -69,29 +78,28 @@ class PublishNewGistView(
             button("Publish") {
                 action {
                     runAsync {
-                        getInstanceOf<MainWindowController>().gitHub.flatMap {
-                            Try {
-                                val gist = it.createGist()
-                                    .file(gistFilename, scriptContent)
-                                    .description(gistDescription)
-                                    .public_(gistIsPublic)
-                                    .create()
+                        val mwc = getInstanceOf<MainWindowController>()
+                        mwc.gitHub.map {
+                            val gist = it.createGist()
+                                .file(gistFilename, scriptContent)
+                                .description(gistDescription)
+                                .public_(gistIsPublic)
+                                .create()
 
-                                publishedFile = GitHubFS.mapGistFileToFileOnDisk(
-                                    gist,
-                                    gist.getFile(gistFilename)
-                                ).fold(
-                                    {
-                                        throw IllegalStateException(
-                                            "Failed to get files in gist.",
-                                            it
-                                        )
-                                    },
-                                    { it }
-                                )
-
-                                gist
+                            mwc.gitFS.map {
+                                it.cloneRepo(gist.gitPullUrl)
+                            }.recover {
+                                throw IllegalStateException("Failed to clone the gist.", it)
                             }
+
+                            publishedFile = GitHubFS.mapGistFileToFileOnDisk(
+                                gist,
+                                gist.getFile(gistFilename)
+                            ).getOrElse {
+                                throw IllegalStateException("Failed to get files in gist.", it)
+                            }
+
+                            gist
                         }
                     } success {
                         publishSuccessful = true
@@ -115,9 +123,5 @@ class PublishNewGistView(
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(PublishNewGistView::class.java.simpleName)
-
-        fun create(scriptContent: String) = PublishNewGistView(
-            scriptContent
-        )
     }
 }

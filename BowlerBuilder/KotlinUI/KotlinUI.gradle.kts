@@ -25,7 +25,7 @@ dependencies {
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 
     implementation("com.neuronrobotics:bowler-kernel-config:0.0.9")
-    implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.1")
+    implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.2")
 
     implementation(
         group = "org.eclipse.jgit",
