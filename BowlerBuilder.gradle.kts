@@ -1,4 +1,6 @@
 import BowlerBuilder_gradle.Strings.spotlessLicenseHeaderDelimiter
+import BowlerBuilder_gradle.Versions.ktlintVersion
+import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.github.spotbugs.SpotBugsTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -14,6 +16,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "6.2.1"
     id("com.github.spotbugs") version "1.6.4"
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
+    id("com.adarshr.test-logger") version "1.6.0"
 }
 
 allprojects {
@@ -58,6 +61,7 @@ buildscript {
 allprojects {
     apply {
         plugin("com.diffplug.gradle.spotless")
+        plugin("com.adarshr.test-logger")
     }
 
     repositories {
@@ -81,13 +85,17 @@ allprojects {
         }
     }
 
+    testlogger {
+        theme = ThemeType.STANDARD_PARALLEL
+    }
+
     spotless {
         /*
          * We use spotless to lint the Gradle Kotlin DSL files that make up the build.
          * These checks are dependencies of the `check` task.
          */
         kotlinGradle {
-            ktlint(Versions.ktlintVersion)
+            ktlint(ktlintVersion)
             trimTrailingWhitespace()
         }
         freshmark {
@@ -242,7 +250,6 @@ configure(kotlinProjects) {
 
     apply {
         plugin("kotlin")
-//        plugin("org.jlleitschuh.gradle.ktlint")
         plugin("io.gitlab.arturbosch.detekt")
     }
 
