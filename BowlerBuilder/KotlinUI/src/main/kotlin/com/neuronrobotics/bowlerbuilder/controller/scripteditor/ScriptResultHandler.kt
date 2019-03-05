@@ -57,9 +57,7 @@ interface CadGenerator {
 
 class DefaultCadGenerator : CadGenerator {
 
-    override fun generateBody(base: KinematicBase): CSG {
-        return Cube(10.0, 10.0, 10.0).toCSG()
-    }
+    override fun generateBody(base: KinematicBase): CSG = Cube(10.0, 10.0, 10.0).toCSG()
 
     override fun generateLimbs(base: KinematicBase): ImmutableSetMultimap<LimbId, ImmutableSet<CSG>> {
         return base.limbs.map {

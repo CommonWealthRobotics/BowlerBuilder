@@ -17,20 +17,19 @@
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
 import arrow.core.Try
-import arrow.core.flatMap
 import arrow.core.getOrElse
+import arrow.core.recover
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptResultHandler
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.GitScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -50,7 +49,7 @@ class WebBrowserController
 @Inject constructor(
     private val scriptFactory: DefaultGitScriptFactory.Factory,
     private val cadScriptEditorFactory: CadScriptEditorFactory,
-    private val scriptResultHandler: ScriptResultHandler
+    private val gitScriptRunner: GitScriptRunner
 ) : Controller() {
 
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
@@ -123,36 +122,17 @@ class WebBrowserController
 
         val mwc = getInstanceOf<MainWindowController>()
         mwc.gitHub.map { gitHub ->
-            scriptFactory.create(
-                GitHubFS(gitHub, mwc.credentials)
-            ).createScriptFromGit(
+            gitScriptRunner.runScript(
                 currentScript.gistFile.gist.gitUrl,
                 currentScript.gistFile.file.name
-            ).flatMap {
-                it.addToInjector(MainWindowController.mainModule())
-                it.runScript(emptyImmutableList())
-            }.bimap(
-                {
-                    LOGGER.warning {
-                        """
-                        |Error while running script:
-                        |$it
-                        """.trimMargin()
-                    }
-                    it
-                },
-                {
-                    scriptResultHandler.handleResult(it)
-                }
             )
-        }.recoverWith {
+        }.recover {
             LOGGER.warning {
                 """
                 |Error while retrieving GitHub:
                 |$it
                 """.trimMargin()
             }
-            Try.raise(it)
         }
     }
 

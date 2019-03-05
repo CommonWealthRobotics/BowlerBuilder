@@ -18,7 +18,7 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TextScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.model.WatchedFile
@@ -48,7 +48,7 @@ import kotlin.concurrent.thread
 class AceEditorView
 @Inject constructor(
     private val editor: AceWebEditorView,
-    private val controller: AceEditorController,
+    private val controller: TextScriptRunner,
     private val gitUrl: String,
     private val file: File
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {

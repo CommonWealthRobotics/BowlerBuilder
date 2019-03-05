@@ -16,8 +16,10 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.main
 
+import arrow.core.Either
 import arrow.core.Try
 import arrow.core.getOrElse
+import arrow.core.left
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.inject.AbstractModule
@@ -36,6 +38,7 @@ import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.gitfs.GitFS
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
+import com.neuronrobotics.bowlerkernel.hardware.Script
 import com.neuronrobotics.bowlerkernel.kinematics.base.DefaultKinematicBaseFactory
 import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBaseFactory
 import com.neuronrobotics.bowlerkernel.kinematics.limb.DefaultLimbFactory
@@ -149,7 +152,16 @@ class MainWindowController
             fun provideGitScriptFactory(): GitScriptFactory {
                 return getInstanceOf<MainWindowController>().gitFS.map {
                     injector.getInstance<DefaultGitScriptFactory.Factory>().create(it)
-                }.getOrElse { throw it }
+                }.getOrElse {
+                    object : GitScriptFactory {
+                        override fun createScriptFromGit(
+                            gitUrl: String,
+                            filename: String
+                        ): Either<String, Script> =
+                            ("Please log in and restart." +
+                                "If you have just logged in, please restart.").left()
+                    }
+                }
             }
         }
 
