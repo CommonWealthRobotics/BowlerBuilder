@@ -30,12 +30,12 @@ import java.io.PrintWriter;
  */
 public class GuiceGrapher {
 
-  public static void graph(String filename, Injector inj) throws Exception {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  public static void graph(final String filename, final Injector inj) throws Exception {
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PrintWriter out = new PrintWriter(baos);
 
-    Injector injector = Guice.createInjector(new GraphvizModule());
-    GraphvizGrapher renderer = injector.getInstance(GraphvizGrapher.class);
+    final Injector injector = Guice.createInjector(new GraphvizModule());
+    final GraphvizGrapher renderer = injector.getInstance(GraphvizGrapher.class);
     renderer.setOut(out);
     renderer.setRankdir("TB");
     renderer.graph(inj);
