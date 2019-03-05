@@ -17,9 +17,11 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import arrow.core.Either
-import arrow.core.flatMap
+import arrow.core.Try
 import arrow.core.left
+import arrow.core.recover
 import arrow.core.right
+import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
@@ -55,7 +57,17 @@ class AceEditorController
             scriptText
         )
 
-        runAndHandleScript(currentScript)
+        currentScript.fold(
+            {
+                LOGGER.warning {
+                    """
+                    |Error creating script:
+                    |$it
+                    """.trimMargin()
+                }
+            },
+            { runAndHandleScript(it) }
+        )
     }
 
     /**
@@ -70,28 +82,36 @@ class AceEditorController
             scriptText
         ).right()
 
-        runAndHandleScript(currentScript)
-    }
-
-    private fun runAndHandleScript(script: Either<String, Script>) {
-        val result = script.flatMap {
-            it.addToInjector(MainWindowController.mainModule())
-            it.runScript(emptyImmutableList())
-        }
-
-        result.bimap(
+        currentScript.fold(
             {
                 LOGGER.warning {
                     """
-                    |Error running script:
+                    |Error creating script:
                     |$it
                     """.trimMargin()
                 }
             },
-            {
-                scriptResultHandler.handleResult(it)
-            }
+            { runAndHandleScript(it) }
         )
+    }
+
+    private fun runAndHandleScript(script: Script) {
+        script.addToInjector(MainWindowController.mainModule())
+
+        val result = Try {
+            script.runScript(emptyImmutableList())
+        }
+
+        result.map {
+            scriptResultHandler.handleResult(it)
+        }.recover {
+            LOGGER.warning {
+                """
+                |Error running script:
+                |${Throwables.getStackTraceAsString(it)}
+                """.trimMargin()
+            }
+        }
     }
 
     @Subscribe
