@@ -126,9 +126,10 @@ class WebBrowserController
             scriptFactory.create(
                 GitHubFS(gitHub, mwc.credentials)
             ).createScriptFromGit(
-                currentScript.gistFile.gist.id,
+                currentScript.gistFile.gist.gitUrl,
                 currentScript.gistFile.file.name
             ).flatMap {
+                it.addToInjector(MainWindowController.mainModule())
                 it.runScript(emptyImmutableList())
             }.bimap(
                 {
