@@ -98,7 +98,7 @@ class AceScratchpadView
 
     companion object {
         fun create() = AceScratchpadView(
-            AceWebEditorView(),
+            FxUtil.returnFX { AceWebEditorView() },
             getInstanceOf(),
             getInstanceOf()
         )
