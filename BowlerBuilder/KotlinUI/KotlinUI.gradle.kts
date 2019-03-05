@@ -26,7 +26,11 @@ dependencies {
     api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 
-    api(group = "com.neuronrobotics", name = "bowler-kernel-config", version = kernel_version)
+    implementation(
+        group = "com.neuronrobotics",
+        name = "bowler-kernel-config",
+        version = kernel_version
+    )
     implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.2")
 
     implementation(
@@ -55,7 +59,7 @@ dependencies {
     implementation(group = "commons-validator", name = "commons-validator", version = "1.6")
     implementation(group = "com.google.code.findbugs", name = "annotations", version = "3.0.1")
     implementation(group = "com.natpryce", name = "hamkrest", version = "1.4.2.2")
-    implementation(group = "com.beust", name = "klaxon", version = "3.0.1")
+    implementation(group = "com.beust", name = "klaxon", version = "5.0.5")
 
     implementation(group = "org.bouncycastle", name = "bcprov-jdk15on", version = "1.60")
     implementation(group = "org.bouncycastle", name = "bcpg-jdk15on", version = "1.60")
