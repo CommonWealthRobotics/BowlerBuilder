@@ -17,13 +17,18 @@
 package com.neuronrobotics.bowlerbuilder.controller.main
 
 import arrow.core.Try
+import arrow.core.getOrElse
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
+import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Injector
+import com.google.inject.Provides
 import com.google.inject.Scopes
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
+import com.neuronrobotics.bowlerbuilder.controller.robot.DefaultRobotFactory
+import com.neuronrobotics.bowlerbuilder.controller.robot.RobotFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
@@ -31,6 +36,12 @@ import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.gitfs.GitFS
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
+import com.neuronrobotics.bowlerkernel.kinematics.base.DefaultKinematicBaseFactory
+import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBaseFactory
+import com.neuronrobotics.bowlerkernel.kinematics.limb.DefaultLimbFactory
+import com.neuronrobotics.bowlerkernel.kinematics.limb.LimbFactory
+import com.neuronrobotics.bowlerkernel.kinematics.limb.link.DefaultLinkFactory
+import com.neuronrobotics.bowlerkernel.kinematics.limb.link.LinkFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultTextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.GitScriptFactory
@@ -39,6 +50,7 @@ import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguagePar
 import com.neuronrobotics.bowlerkernel.scripting.parser.ScriptLanguageParser
 import javafx.application.Platform
 import org.greenrobot.eventbus.EventBus
+import org.jlleitschuh.guice.getInstance
 import org.jlleitschuh.guice.key
 import org.jlleitschuh.guice.module
 import org.kohsuke.github.GHGist
@@ -119,6 +131,26 @@ class MainWindowController
                         DefaultGitScriptFactory.Factory::class.java
                     )
             )
+
+            install(GitScriptFactoryModule())
+
+            bind<LinkFactory>().to<DefaultLinkFactory>()
+            bind<LimbFactory>().to<DefaultLimbFactory>()
+            bind<KinematicBaseFactory>().to<DefaultKinematicBaseFactory>()
+
+            bind<RobotFactory>().to<DefaultRobotFactory>()
+        }
+
+        private class GitScriptFactoryModule : AbstractModule() {
+            override fun configure() {
+            }
+
+            @Provides
+            fun provideGitScriptFactory(): GitScriptFactory {
+                return getInstanceOf<MainWindowController>().gitFS.map {
+                    injector.getInstance<DefaultGitScriptFactory.Factory>().create(it)
+                }.getOrElse { throw it }
+            }
         }
 
         val injector: Injector = Guice.createInjector(mainModule())

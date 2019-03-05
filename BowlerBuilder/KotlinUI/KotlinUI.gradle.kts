@@ -10,7 +10,7 @@ application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 
 object Versions {
     const val arrow_version = "0.8.1"
-    const val kernel_version = "0.0.10"
+    const val kernel_version = "0.0.13"
 }
 
 repositories {
@@ -41,6 +41,11 @@ dependencies {
     implementation(
         group = "com.google.inject.extensions",
         name = "guice-assistedinject",
+        version = "4.1.0"
+    )
+    implementation(
+        group = "com.google.inject.extensions",
+        name = "guice-grapher",
         version = "4.1.0"
     )
     implementation(group = "org.jlleitschuh.guice", name = "kotlin-guiced-core", version = "0.0.5")
