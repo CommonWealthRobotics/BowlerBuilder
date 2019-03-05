@@ -59,10 +59,7 @@ class LoginManager {
             GitHub.connectUsingPassword(username, password).also {
                 val token = try {
                     it.createToken(
-                        setOf(
-                            "repo",
-                            "gist"
-                        ),
+                        setOf("repo", "gist"),
                         "BowlerBuilder",
                         ""
                     )

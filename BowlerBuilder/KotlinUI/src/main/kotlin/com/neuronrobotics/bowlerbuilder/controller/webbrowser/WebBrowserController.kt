@@ -18,7 +18,6 @@ package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
 import arrow.core.Try
 import arrow.core.getOrElse
-import arrow.core.recover
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
@@ -81,10 +80,7 @@ class WebBrowserController
                 files.map {
                     WebBrowserScript(
                         currentUrl,
-                        GistFileOnDisk(
-                            Gist(url, gistId, ""),
-                            it
-                        )
+                        GistFileOnDisk(Gist(url, gistId, ""), it)
                     )
                 }
             }.filter {
@@ -120,20 +116,10 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        val mwc = getInstanceOf<MainWindowController>()
-        mwc.gitHub.map { gitHub ->
-            gitScriptRunner.runScript(
-                currentScript.gistFile.gist.gitUrl,
-                currentScript.gistFile.file.name
-            )
-        }.recover {
-            LOGGER.warning {
-                """
-                |Error while retrieving GitHub:
-                |$it
-                """.trimMargin()
-            }
-        }
+        gitScriptRunner.runScript(
+            currentScript.gistFile.gist.gitUrl,
+            currentScript.gistFile.file.name
+        )
     }
 
     /**
@@ -154,13 +140,12 @@ class WebBrowserController
                 """.trimMargin()
             )
 
-            cadScriptEditorFactory
-                .createAndOpenScriptEditor(
-                    it.gistFile.gist.gitUrl,
-                    it.gistFile.file
-                ).apply {
-                    runLater { editor.gotoLine(0) }
-                }
+            cadScriptEditorFactory.createAndOpenScriptEditor(
+                it.gistFile.gist.gitUrl,
+                it.gistFile.file
+            ).apply {
+                runLater { editor.gotoLine(0) }
+            }
         }
     }
 
