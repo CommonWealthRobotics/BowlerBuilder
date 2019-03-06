@@ -31,7 +31,7 @@ dependencies {
         name = "bowler-kernel-config",
         version = kernel_version
     )
-    implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.2")
+    implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.5")
 
     implementation(
         group = "org.eclipse.jgit",

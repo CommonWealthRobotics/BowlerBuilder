@@ -24,10 +24,10 @@ import com.neuronrobotics.bowlercad.cadgenerator.CadGenerator
 import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBase
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
-import org.octogonapus.guavautil.collections.immutableSetOf
-import org.octogonapus.guavautil.collections.plus
-import org.octogonapus.guavautil.collections.toImmutableList
-import org.octogonapus.guavautil.collections.toImmutableSet
+import org.octogonapus.ktguava.collections.immutableSetOf
+import org.octogonapus.ktguava.collections.plus
+import org.octogonapus.ktguava.collections.toImmutableList
+import org.octogonapus.ktguava.collections.toImmutableSet
 
 /**
  * A utility class to interpret the result from running a script.

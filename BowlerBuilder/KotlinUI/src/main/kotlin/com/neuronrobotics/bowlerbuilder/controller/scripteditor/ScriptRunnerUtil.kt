@@ -21,7 +21,7 @@ import arrow.core.recover
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerkernel.hardware.Script
-import org.octogonapus.guavautil.collections.emptyImmutableList
+import org.octogonapus.ktguava.collections.emptyImmutableList
 import java.util.logging.Logger
 
 /**

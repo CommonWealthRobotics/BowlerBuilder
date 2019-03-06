@@ -43,7 +43,7 @@ import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 import org.greenrobot.eventbus.Subscribe
-import org.octogonapus.guavautil.collections.toImmutableList
+import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
 import javax.inject.Singleton
 import kotlin.concurrent.thread

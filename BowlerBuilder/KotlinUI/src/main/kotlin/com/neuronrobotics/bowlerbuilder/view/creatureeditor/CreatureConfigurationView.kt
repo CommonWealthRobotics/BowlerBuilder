@@ -26,7 +26,7 @@ import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
 import javafx.scene.Node
 import org.controlsfx.glyphfont.FontAwesome
-import org.octogonapus.guavautil.collections.toImmutableList
+import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
 
 class CreatureConfigurationView(
