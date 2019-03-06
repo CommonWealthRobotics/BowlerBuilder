@@ -16,7 +16,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.model.robot
 
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.CadGenerator
+import com.neuronrobotics.bowlercad.cadgenerator.CadGenerator
 import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBase
 
 data class Robot(

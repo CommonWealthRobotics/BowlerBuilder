@@ -10,7 +10,7 @@ application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 
 object Versions {
     const val arrow_version = "0.8.1"
-    const val kernel_version = "0.0.13"
+    const val kernel_version = "0.0.16"
 }
 
 repositories {
@@ -22,8 +22,8 @@ repositories {
 
 dependencies {
     api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
+    api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.1")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
-    api(group = "com.neuronrobotics", name = "JavaCad", version = "0.18.1")
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 
     implementation(

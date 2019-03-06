@@ -19,9 +19,9 @@ package com.neuronrobotics.bowlerbuilder.controller.robot
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.CadGenerator
 import com.neuronrobotics.bowlerbuilder.model.robot.Robot
 import com.neuronrobotics.bowlerbuilder.model.robot.RobotData
+import com.neuronrobotics.bowlercad.cadgenerator.CadGenerator
 import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBaseFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.GitScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.getInstanceFromGit

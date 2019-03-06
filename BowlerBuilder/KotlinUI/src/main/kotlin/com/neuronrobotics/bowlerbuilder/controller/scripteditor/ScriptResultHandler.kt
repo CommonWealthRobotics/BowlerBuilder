@@ -16,65 +16,17 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
-import com.google.common.collect.ImmutableSet
-import com.google.common.collect.ImmutableSetMultimap
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
+import com.neuronrobotics.bowlercad.cadgenerator.CadGenerator
 import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBase
-import com.neuronrobotics.bowlerkernel.kinematics.limb.limbid.LimbId
 import eu.mihosoft.vrl.v3d.CSG
-import eu.mihosoft.vrl.v3d.Cube
 import javafx.scene.control.Tab
-import javafx.scene.paint.Color
 import org.octogonapus.guavautil.collections.immutableSetOf
 import org.octogonapus.guavautil.collections.plus
 import org.octogonapus.guavautil.collections.toImmutableList
 import org.octogonapus.guavautil.collections.toImmutableSet
-import org.octogonapus.guavautil.collections.toImmutableSetMultimap
-
-/**
- * A CAD generator which can generate the CSGs for a [KinematicBase].
- */
-interface CadGenerator {
-
-    /**
-     * Generates the CSG for the body (the part which the limbs attach to).
-     *
-     * @param base The [KinematicBase].
-     * @return The body CSG.
-     */
-    fun generateBody(base: KinematicBase): CSG
-
-    /**
-     * Generates the CSGs for the limbs.
-     *
-     * @param base The [KinematicBase].
-     * @return The CSGs for the limbs.
-     */
-    fun generateLimbs(base: KinematicBase): ImmutableSetMultimap<LimbId, ImmutableSet<CSG>>
-}
-
-class DefaultCadGenerator : CadGenerator {
-
-    override fun generateBody(base: KinematicBase): CSG = Cube(10.0, 10.0, 10.0).toCSG()
-
-    override fun generateLimbs(base: KinematicBase): ImmutableSetMultimap<LimbId, ImmutableSet<CSG>> {
-        return base.limbs.map {
-            it.id to it.links.map {
-                val rLink = Cube(it.dhParam.r, 5.0, 5.0).toCSG().toXMax().apply {
-                    color = Color.RED
-                }
-
-                val dLink = Cube(5.0, 5.0, it.dhParam.d).toCSG().toZMin().apply {
-                    color = Color.GREEN
-                }
-
-                immutableSetOf(rLink, dLink)
-            }
-        }.toImmutableSetMultimap()
-    }
-}
 
 /**
  * A utility class to interpret the result from running a script.
