@@ -17,6 +17,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.model.robot.Robot
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
 import com.neuronrobotics.bowlercad.cadgenerator.CadGenerator
@@ -42,6 +43,7 @@ class ScriptResultHandler {
             is Collection<*> -> handleCollection(result)
             is Tab -> handleTab(result)
             is KinematicBase -> handleKinematicBase(result)
+            is Robot -> handleRobot(result)
         }
     }
 
@@ -93,4 +95,7 @@ class ScriptResultHandler {
             )
         )
     }
+
+    private fun handleRobot(robot: Robot) =
+        handleKinematicBaseWithCadGenerator(robot.kinematicBase, robot.cadGenerator)
 }
