@@ -17,11 +17,16 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.model.robot.Robot
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
+import com.neuronrobotics.bowlercad.cadgenerator.CadGenerator
+import com.neuronrobotics.bowlerkernel.kinematics.base.KinematicBase
 import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.control.Tab
 import org.octogonapus.guavautil.collections.immutableSetOf
+import org.octogonapus.guavautil.collections.plus
+import org.octogonapus.guavautil.collections.toImmutableList
 import org.octogonapus.guavautil.collections.toImmutableSet
 
 /**
@@ -35,28 +40,62 @@ class ScriptResultHandler {
     fun handleResult(result: Any?) {
         when (result) {
             is CSG -> handleCsg(result)
-            is Iterable<*> -> handleIterable(result)
+            is Collection<*> -> handleCollection(result)
             is Tab -> handleTab(result)
+            is KinematicBase -> handleKinematicBase(result)
+            is Robot -> handleRobot(result)
         }
     }
 
-    private fun handleIterable(result: Iterable<*>) {
-        @Suppress("UNCHECKED_CAST")
-        when (result.first()) {
-            is CSG -> handleCsg(result as Iterable<CSG>)
+    private fun handleCollection(result: Collection<*>) {
+        if (result.size == 2) {
+            val resultList = result.toImmutableList()
+            if (resultList[0] is KinematicBase && resultList[1] is CadGenerator) {
+                handleKinematicBaseWithCadGenerator(
+                    resultList[0] as KinematicBase,
+                    resultList[1] as CadGenerator
+                )
+            } else if (resultList[0] is CadGenerator && resultList[1] is KinematicBase) {
+                handleKinematicBaseWithCadGenerator(
+                    resultList[1] as KinematicBase,
+                    resultList[0] as CadGenerator
+                )
+            }
+        } else {
+            @Suppress("UNCHECKED_CAST")
+            when (result.first()) {
+                is CSG -> handleCsg(result as Collection<CSG>)
+            }
         }
     }
 
-    private fun handleCsg(result: CSG) = handleCsg(immutableSetOf(result))
+    private fun handleCsg(csg: CSG) = handleCsg(immutableSetOf(csg))
 
-    private fun handleCsg(result: Iterable<CSG>) =
+    private fun handleCsg(csgs: Iterable<CSG>) =
         MainWindowController.mainUIEventBus.post(
             SetCadObjectsToCurrentTabEvent(
-                result.toImmutableSet()
+                csgs.toImmutableSet()
             )
         )
 
-    private fun handleTab(result: Tab) = MainWindowController.mainUIEventBus.post(
-        AddTabEvent(result)
+    private fun handleTab(tab: Tab) = MainWindowController.mainUIEventBus.post(
+        AddTabEvent(tab)
     )
+
+    private fun handleKinematicBase(base: KinematicBase) {
+    }
+
+    private fun handleKinematicBaseWithCadGenerator(base: KinematicBase, cadGen: CadGenerator) {
+        val bodyCad = cadGen.generateBody(base)
+        val limbsCad = cadGen.generateLimbs(base)
+
+        MainWindowController.mainUIEventBus.post(
+            SetCadObjectsToCurrentTabEvent(
+                immutableSetOf(bodyCad) + limbsCad.values().flatten().toImmutableSet()
+            )
+        )
+    }
+
+    private fun handleRobot(robot: Robot) =
+        handleKinematicBaseWithCadGenerator(robot.kinematicBase, robot.cadGenerator)
 }

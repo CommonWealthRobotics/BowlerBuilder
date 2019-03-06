@@ -18,7 +18,7 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TextScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.model.WatchedFile
@@ -48,7 +48,7 @@ import kotlin.concurrent.thread
 class AceEditorView
 @Inject constructor(
     private val editor: AceWebEditorView,
-    private val controller: AceEditorController,
+    private val controller: TextScriptRunner,
     private val gitUrl: String,
     private val file: File
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
@@ -83,7 +83,7 @@ class AceEditorView
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
                     "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
                 ) {
-                    controller.runScript(FxUtil.returnFX { getFullText() })
+                    controller.runScript(FxUtil.returnFX { getFullText() }, file.extension)
                 }
             )
 
@@ -91,7 +91,8 @@ class AceEditorView
                 "Publish",
                 loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)
             ).action {
-                PublishView.create(file).openModal()
+                writeContentToFile()
+                PublishView(file).openModal()
             }
 
             urlTextField = textfield {
@@ -183,13 +184,19 @@ class AceEditorView
             while (true) {
                 // If the user has not typed a key for a half second
                 if (System.nanoTime() - lastEditTime >= 5e+8 && fileIsDirty) {
-                    val text = FxUtil.returnFX { getFullText() }
-                    watchedFile.writeText(text)
-                    fileIsDirty = false
+                    writeContentToFile()
                 }
 
                 Thread.sleep(100)
             }
+        }
+    }
+
+    private fun writeContentToFile() {
+        synchronized(watchedFile) {
+            val text = FxUtil.returnFX { getFullText() }
+            watchedFile.writeText(text)
+            fileIsDirty = false
         }
     }
 

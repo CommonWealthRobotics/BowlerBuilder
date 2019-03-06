@@ -17,14 +17,13 @@
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
 import arrow.core.Try
-import arrow.core.flatMap
 import arrow.core.getOrElse
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptResultHandler
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.GitScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
@@ -49,7 +48,7 @@ class WebBrowserController
 @Inject constructor(
     private val scriptFactory: DefaultGitScriptFactory.Factory,
     private val cadScriptEditorFactory: CadScriptEditorFactory,
-    private val scriptResultHandler: ScriptResultHandler
+    private val gitScriptRunner: GitScriptRunner
 ) : Controller() {
 
     val itemsOnPageProperty: ObservableList<WebBrowserScript> =
@@ -81,10 +80,7 @@ class WebBrowserController
                 files.map {
                     WebBrowserScript(
                         currentUrl,
-                        GistFileOnDisk(
-                            Gist(url, gistId, ""),
-                            it
-                        )
+                        GistFileOnDisk(Gist(url, gistId, ""), it)
                     )
                 }
             }.filter {
@@ -120,37 +116,10 @@ class WebBrowserController
             """.trimMargin()
         )
 
-        getInstanceOf<MainWindowController>().gitHub.map { gitHub ->
-            scriptFactory.create(
-                gitHub
-            ).createScriptFromGit(
-                currentScript.gistFile.gist.id,
-                currentScript.gistFile.file.name
-            ).flatMap {
-                it.runScript(emptyImmutableList())
-            }.bimap(
-                {
-                    LOGGER.warning {
-                        """
-                        |Error while running script:
-                        |$it
-                        """.trimMargin()
-                    }
-                    it
-                },
-                {
-                    scriptResultHandler.handleResult(it)
-                }
-            )
-        }.recoverWith {
-            LOGGER.warning {
-                """
-                |Error while retrieving GitHub:
-                |$it
-                """.trimMargin()
-            }
-            Try.raise(it)
-        }
+        gitScriptRunner.runScript(
+            currentScript.gistFile.gist.gitUrl,
+            currentScript.gistFile.file.name
+        )
     }
 
     /**
@@ -171,13 +140,12 @@ class WebBrowserController
                 """.trimMargin()
             )
 
-            cadScriptEditorFactory
-                .createAndOpenScriptEditor(
-                    it.gistFile.gist.gitUrl,
-                    it.gistFile.file
-                ).apply {
-                    runLater { editor.gotoLine(0) }
-                }
+            cadScriptEditorFactory.createAndOpenScriptEditor(
+                it.gistFile.gist.gitUrl,
+                it.gistFile.file
+            ).apply {
+                runLater { editor.gotoLine(0) }
+            }
         }
     }
 

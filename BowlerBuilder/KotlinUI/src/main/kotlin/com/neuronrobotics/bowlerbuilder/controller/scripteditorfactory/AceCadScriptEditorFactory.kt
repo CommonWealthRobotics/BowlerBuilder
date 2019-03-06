@@ -45,9 +45,9 @@ class AceCadScriptEditorFactory : CadScriptEditorFactory {
     }
 
     override fun createAndOpenScratchpad(): CadScriptEditor {
+        val scratchpad = AceScratchpadView.create()
+        val cadEditor = CadScriptEditor(scratchpad)
         return FxUtil.returnFX {
-            val scratchpad = AceScratchpadView.create()
-            val cadEditor = CadScriptEditor(scratchpad)
             MainWindowController.mainUIEventBus.post(
                 AddTabEvent(
                     CadScriptEditorTab("Scratchpad", scratchpad)

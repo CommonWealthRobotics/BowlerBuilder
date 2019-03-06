@@ -17,23 +17,22 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import arrow.core.Either
-import arrow.core.flatMap
 import arrow.core.left
+import arrow.core.right
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.hardware.Script
+import com.neuronrobotics.bowlerkernel.scripting.ScriptLanguage
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import org.greenrobot.eventbus.Subscribe
-import org.octogonapus.guavautil.collections.emptyImmutableList
-import tornadofx.*
 import javax.inject.Inject
 
-class AceEditorController
+class TextScriptRunner
 @Inject constructor(
     private val scriptFactory: TextScriptFactory,
     private val scriptResultHandler: ScriptResultHandler
-) : Controller() {
+) {
 
     private var currentScript: Either<String, Script> = "Not initialized.".left()
 
@@ -45,30 +44,43 @@ class AceEditorController
      * Runs a script by text using the injected [scriptFactory].
      *
      * @param scriptText The full text of the script.
+     * @param language A string representing the script language.
      */
-    fun runScript(scriptText: String) {
-        currentScript = scriptFactory.createScriptFromText(
-            "groovy",
-            scriptText
-        )
+    fun runScript(scriptText: String, language: String) {
+        currentScript = scriptFactory.createScriptFromText(language, scriptText)
 
-        val result = currentScript.flatMap {
-            it.addToInjector(MainWindowController.mainModule())
-            it.runScript(emptyImmutableList())
-        }
-
-        result.bimap(
+        currentScript.fold(
             {
                 LOGGER.warning {
                     """
-                    |Error running script:
+                    |Error creating script:
                     |$it
                     """.trimMargin()
                 }
             },
+            { runAndHandleScript(it, scriptResultHandler, LOGGER) }
+        )
+    }
+
+    /**
+     * Runs a script by text using the injected [scriptFactory].
+     *
+     * @param scriptText The full text of the script.
+     * @param language The language of the script.
+     */
+    fun runScript(scriptText: String, language: ScriptLanguage) {
+        currentScript = scriptFactory.createScriptFromText(language, scriptText).right()
+
+        currentScript.fold(
             {
-                scriptResultHandler.handleResult(it)
-            }
+                LOGGER.warning {
+                    """
+                    |Error creating script:
+                    |$it
+                    """.trimMargin()
+                }
+            },
+            { runAndHandleScript(it, scriptResultHandler, LOGGER) }
         )
     }
 
@@ -79,6 +91,6 @@ class AceEditorController
     }
 
     companion object {
-        private val LOGGER = LoggerUtilities.getLogger(AceEditorController::class.java.simpleName)
+        private val LOGGER = LoggerUtilities.getLogger(TextScriptRunner::class.java.simpleName)
     }
 }

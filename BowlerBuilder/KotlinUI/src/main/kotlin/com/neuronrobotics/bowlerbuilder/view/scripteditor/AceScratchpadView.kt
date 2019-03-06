@@ -18,7 +18,7 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.AceEditorController
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TextScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
@@ -27,9 +27,11 @@ import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.util.FxUtil
 import com.neuronrobotics.bowlerbuilder.view.util.ThreadMonitoringButton
 import com.neuronrobotics.bowlerbuilder.view.util.loadImageAsset
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import org.controlsfx.glyphfont.FontAwesome
+import org.octogonapus.guavautil.collections.immutableListOf
 import tornadofx.*
 import javax.inject.Inject
 
@@ -40,9 +42,12 @@ import javax.inject.Inject
 class AceScratchpadView
 @Inject constructor(
     private val editor: AceWebEditorView,
-    private val controller: AceEditorController,
+    private val controller: TextScriptRunner,
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
+
+    private val languageChoiceProperty = SimpleStringProperty("Groovy")
+    private var languageChoice by languageChoiceProperty
 
     val engineInitializingLatch
         get() = editor.engineInitializingLatch
@@ -63,13 +68,15 @@ class AceScratchpadView
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
                     "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
                 ) {
-                    controller.runScript(FxUtil.returnFX { getFullText() })
+                    controller.runScript(FxUtil.returnFX { getFullText() }, languageChoice)
                 }
             )
 
+            choicebox(languageChoiceProperty, immutableListOf("Groovy", "Kotlin"))
+
             button("Publish", loadImageAsset("Publish.png", FontAwesome.Glyph.CLOUD_UPLOAD)) {
                 action {
-                    val view = PublishNewGistView.create(getFullText()).apply {
+                    val view = PublishNewGistView(getFullText()).apply {
                         openModal(block = true)
                     }
 
@@ -91,7 +98,7 @@ class AceScratchpadView
 
     companion object {
         fun create() = AceScratchpadView(
-            AceWebEditorView(),
+            FxUtil.returnFX { AceWebEditorView() },
             getInstanceOf(),
             getInstanceOf()
         )
