@@ -10,7 +10,7 @@ application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
 
 object Versions {
     const val arrow_version = "0.8.1"
-    const val kernel_version = "0.0.16"
+    const val kernel_version = "0.0.17"
 }
 
 repositories {
