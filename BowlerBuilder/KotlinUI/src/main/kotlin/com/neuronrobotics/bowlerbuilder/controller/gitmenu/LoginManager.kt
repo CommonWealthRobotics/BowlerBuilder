@@ -21,6 +21,7 @@ import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.getNonLoopbackNIMacs
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
@@ -56,11 +57,13 @@ class LoginManager {
         }
 
         return Try {
-            GitHub.connectUsingPassword(username, password).also {
+            GitHub.connectUsingPassword(username, password).also { gitHub ->
+                val mac = getNonLoopbackNIMacs().firstOrNull() ?: "unknown-mac"
+
                 val token = try {
-                    it.createToken(
+                    gitHub.createToken(
                         setOf("repo", "gist"),
-                        "BowlerBuilder",
+                        "BowlerBuilder-$mac",
                         ""
                     )
                 } catch (ex: HttpException) {
