@@ -25,14 +25,14 @@ import kotlin.concurrent.thread
  * A button that runs [onRun] on another thread and monitors for that thread to stop on another
  * thread. Starts at the [primaryState] and transitions to the [secondaryState] when [onRun] is
  * running. Switches back to [primaryState] when [onRun] stops or is interrupted with
- * [Thread.interrupt].
+ * [Thread.interrupt] (calling [onStop] after interrupting).
  */
 @SuppressWarnings("SwallowedException")
-class ThreadMonitoringButton
-private constructor(
+class ThreadMonitoringButton(
     primaryState: Pair<String, Node>,
     secondaryState: Pair<String, Node>,
-    val onRun: () -> Unit
+    val onRun: () -> Unit,
+    val onStop: () -> Unit = {}
 ) : Button(primaryState.first, primaryState.second) {
     private var managedThread: Thread? = null
 
@@ -60,19 +60,12 @@ private constructor(
             } else {
                 managedThread?.interrupt()
                 managedThread = null
+                onStop()
                 runLater {
                     text = primaryState.first
                     graphic = primaryState.second
                 }
             }
         }
-    }
-
-    companion object {
-        fun create(
-            primaryState: Pair<String, Node>,
-            secondaryState: Pair<String, Node>,
-            onRun: () -> Unit
-        ) = ThreadMonitoringButton(primaryState, secondaryState, onRun)
     }
 }

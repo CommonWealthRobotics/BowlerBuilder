@@ -125,12 +125,12 @@ class WebBrowserView(
             alignment = Pos.CENTER_LEFT
 
             add(
-                ThreadMonitoringButton.create(
+                ThreadMonitoringButton(
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
-                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
-                ) {
-                    controller.runScript(currentScript)
-                }
+                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP),
+                    { controller.runScript(currentScript) },
+                    { controller.stopScript() }
+                )
             )
 
             button(

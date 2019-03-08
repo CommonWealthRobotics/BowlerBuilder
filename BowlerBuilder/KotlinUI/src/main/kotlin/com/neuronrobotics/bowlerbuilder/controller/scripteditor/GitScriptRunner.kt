@@ -45,7 +45,7 @@ class GitScriptRunner
      * @param filename The file name (including extension).
      */
     fun runScript(gitUrl: String, filename: String) {
-        currentScript.map { it.stopAndCleanUp() }
+        stopScript()
         currentScript = scriptFactory.createScriptFromGit(gitUrl, filename)
 
         currentScript.fold(
@@ -59,6 +59,13 @@ class GitScriptRunner
             },
             { runAndHandleScript(it, scriptResultHandler, LOGGER) }
         )
+    }
+
+    /**
+     * Calls [Script.stopAndCleanUp] on the [currentScript], if there is one.
+     */
+    fun stopScript() {
+        currentScript.map { it.stopAndCleanUp() }
     }
 
     @Subscribe

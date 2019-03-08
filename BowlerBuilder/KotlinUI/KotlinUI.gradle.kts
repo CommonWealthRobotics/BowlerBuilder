@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
-    api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.6")
+    api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.7")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
 

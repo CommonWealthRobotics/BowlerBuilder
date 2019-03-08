@@ -29,7 +29,6 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
@@ -46,7 +45,6 @@ import javax.xml.transform.stream.StreamResult
 
 class WebBrowserController
 @Inject constructor(
-    private val scriptFactory: DefaultGitScriptFactory.Factory,
     private val cadScriptEditorFactory: CadScriptEditorFactory,
     private val gitScriptRunner: GitScriptRunner
 ) : Controller() {
@@ -102,7 +100,9 @@ class WebBrowserController
         }
 
     /**
-     * Runs the [currentScript] with the injected [scriptFactory].
+     * Passes control through to [gitScriptRunner].
+     *
+     * @param currentScript The script to run.
      */
     fun runScript(currentScript: WebBrowserScript) {
         if (currentScript == WebBrowserScript.empty) {
@@ -121,6 +121,11 @@ class WebBrowserController
             currentScript.gistFile.file.name
         )
     }
+
+    /**
+     * Passes control through to [gitScriptRunner].
+     */
+    fun stopScript() = gitScriptRunner.stopScript()
 
     /**
      * Opens the [currentScript] in an editor.

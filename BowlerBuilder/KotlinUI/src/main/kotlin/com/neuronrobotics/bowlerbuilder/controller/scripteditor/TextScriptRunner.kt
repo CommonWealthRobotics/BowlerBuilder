@@ -47,7 +47,7 @@ class TextScriptRunner
      * @param language A string representing the script language.
      */
     fun runScript(scriptText: String, language: String) {
-        currentScript.map { it.stopAndCleanUp() }
+        stopScript()
         currentScript = scriptFactory.createScriptFromText(language, scriptText)
 
         currentScript.fold(
@@ -70,7 +70,7 @@ class TextScriptRunner
      * @param language The language of the script.
      */
     fun runScript(scriptText: String, language: ScriptLanguage) {
-        currentScript.map { it.stopAndCleanUp() }
+        stopScript()
         currentScript = scriptFactory.createScriptFromText(language, scriptText).right()
 
         currentScript.fold(
@@ -84,6 +84,13 @@ class TextScriptRunner
             },
             { runAndHandleScript(it, scriptResultHandler, LOGGER) }
         )
+    }
+
+    /**
+     * Calls [Script.stopAndCleanUp] on the [currentScript], if there is one.
+     */
+    fun stopScript() {
+        currentScript.map { it.stopAndCleanUp() }
     }
 
     @Subscribe

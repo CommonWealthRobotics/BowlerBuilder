@@ -64,12 +64,12 @@ class AceScratchpadView
             alignment = Pos.CENTER_LEFT
 
             add(
-                ThreadMonitoringButton.create(
+                ThreadMonitoringButton(
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
-                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
-                ) {
-                    controller.runScript(FxUtil.returnFX { getFullText() }, languageChoice)
-                }
+                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP),
+                    { controller.runScript(FxUtil.returnFX { getFullText() }, languageChoice) },
+                    { controller.stopScript() }
+                )
             )
 
             choicebox(languageChoiceProperty, immutableListOf("Groovy", "Kotlin"))

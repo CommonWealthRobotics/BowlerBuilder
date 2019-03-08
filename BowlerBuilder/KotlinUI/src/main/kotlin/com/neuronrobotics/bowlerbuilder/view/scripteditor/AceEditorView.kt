@@ -18,8 +18,8 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
-import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TextScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
+import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TextScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.model.WatchedFile
 import com.neuronrobotics.bowlerbuilder.model.WatchedFileChange
@@ -79,12 +79,12 @@ class AceEditorView
             alignment = Pos.CENTER_LEFT
 
             add(
-                ThreadMonitoringButton.create(
+                ThreadMonitoringButton(
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
-                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP)
-                ) {
-                    controller.runScript(FxUtil.returnFX { getFullText() }, file.extension)
-                }
+                    "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP),
+                    { controller.runScript(FxUtil.returnFX { getFullText() }, file.extension) },
+                    { controller.stopScript() }
+                )
             )
 
             button(
