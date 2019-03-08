@@ -40,7 +40,6 @@ import org.controlsfx.glyphfont.FontAwesome
 import org.octogonapus.ktguava.collections.immutableListOf
 import tornadofx.*
 import java.io.File
-import javax.inject.Inject
 import kotlin.concurrent.thread
 
 /**
@@ -48,8 +47,7 @@ import kotlin.concurrent.thread
  * push updates.
  */
 @SuppressWarnings("SwallowedException")
-class AceEditorView
-@Inject constructor(
+class AceEditorView(
     private val editor: AceWebEditorView,
     private val scriptRunner: TextScriptRunner,
     private val gitUrl: String,

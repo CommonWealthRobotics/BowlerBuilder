@@ -33,14 +33,12 @@ import javafx.geometry.Pos
 import org.controlsfx.glyphfont.FontAwesome
 import org.octogonapus.ktguava.collections.immutableListOf
 import tornadofx.*
-import javax.inject.Inject
 
 /**
  * An editor which operates entirely in memory and contains the controls to run the script and
  * create a new gist with the editor contents.
  */
-class AceScratchpadView
-@Inject constructor(
+class AceScratchpadView(
     private val editor: AceWebEditorView,
     private val scriptRunner: TextScriptRunner,
     private val cadScriptEditorFactory: CadScriptEditorFactory
