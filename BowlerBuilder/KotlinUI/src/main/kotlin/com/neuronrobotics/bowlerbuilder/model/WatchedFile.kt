@@ -16,6 +16,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.model
 
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Path
@@ -76,6 +77,15 @@ internal constructor(
                             it as WatchEvent<Path>
 
                             if (it.context().endsWith(file.name)) {
+                                LOGGER.fine {
+                                    """
+                                    |File modified:
+                                    |Kind: ${it.kind().name()}
+                                    |Count: ${it.count()}
+                                    |Context: ${it.context().fileName}
+                                    |Last Modified: ${file.lastModified()}
+                                    """.trimMargin()
+                                }
                                 lastEvent = it
                             }
                         }
@@ -138,4 +148,8 @@ internal constructor(
                 else -> throw IllegalStateException("Unknown event: $lastEvent")
             }
         }
+
+    companion object {
+        private val LOGGER = LoggerUtilities.getLogger(WatchedFile::class.java.simpleName)
+    }
 }
