@@ -275,6 +275,7 @@ class MainWindowView : View() {
     /**
      * Reloads the gists menu.
      */
+    @SuppressWarnings("LabeledExpression")
     fun reloadGists() {
         thread(isDaemon = true) {
             val gists = Try {
@@ -314,6 +315,7 @@ class MainWindowView : View() {
     /**
      * Reloads the organizations menu.
      */
+    @SuppressWarnings("LabeledExpression")
     fun reloadOrgs() {
         thread(isDaemon = true) {
             val orgs = Try {
@@ -351,6 +353,7 @@ class MainWindowView : View() {
     /**
      * Reloads the repositories menu.
      */
+    @SuppressWarnings("LabeledExpression")
     fun reloadRepos() {
         thread(isDaemon = true) {
             val repos = Try {
