@@ -83,6 +83,7 @@ class ScriptResultHandler {
     )
 
     private fun handleKinematicBase(base: KinematicBase) {
+        TODO()
     }
 
     private fun handleKinematicBaseWithCadGenerator(base: KinematicBase, cadGen: CadGenerator) {

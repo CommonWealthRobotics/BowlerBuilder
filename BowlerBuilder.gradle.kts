@@ -335,7 +335,7 @@ configure(kotlinProjects.intersect(javafxProjects)) {
             name = "kotlinx-coroutines-javafx",
             version = "1.0.0"
         )
-        "compile"(group = "no.tornado", name = "tornadofx", version = "1.7.17")
+        "compile"(group = "no.tornado", name = "tornadofx", version = "1.7.18")
     }
 }
 
