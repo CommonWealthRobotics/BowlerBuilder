@@ -16,6 +16,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
+import arrow.core.Try
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
@@ -272,28 +273,30 @@ class MainWindowView : View() {
      * Reloads the gists menu.
      */
     fun reloadGists() {
-        runLater {
-            gistsMenu.items.clear()
-            with(gistsMenu) {
-                runAsync {
-                    controller.gitHub.map {
-                        it.myself.listGists().toImmutableList()
-                    }
-                } success {
-                    it.map { gists ->
-                        gists.forEach { gist ->
-                            menu(gist.description) {
-                                gist.files.values.forEach { gistFile ->
-                                    item(gistFile.fileName).action {
-                                        thread(isDaemon = true) {
-                                            controller.openGistFile(gist, gistFile)
-                                        }
-                                    }
+        thread(isDaemon = true) {
+            val gists = Try {
+                controller.gitHub.map {
+                    it.myself.listGists().toImmutableList()
+                }
+            }.flatMap { it }
+
+            val items = gists.map {
+                it.map { gist ->
+                    Menu(gist.description).apply {
+                        gist.files.values.forEach { gistFile ->
+                            item(gistFile.fileName).action {
+                                thread(isDaemon = true) {
+                                    controller.openGistFile(gist, gistFile)
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            runLater {
+                gistsMenu.items.clear()
+                items.map { gistsMenu.items.addAll(it) }
             }
         }
     }
@@ -302,26 +305,28 @@ class MainWindowView : View() {
      * Reloads the organizations menu.
      */
     fun reloadOrgs() {
-        runLater {
-            orgsMenu.items.clear()
-            with(orgsMenu) {
-                runAsync {
-                    controller.gitHub.map {
-                        it.myself.organizations
-                    }
-                } success {
-                    it.map {
-                        it.forEach { org ->
-                            menu(org.login) {
-                                org.repositories.values.forEach { repo ->
-                                    item(repo.name).action {
-                                        addTab(WebBrowserTab(repo.httpTransportUrl))
-                                    }
-                                }
+        thread(isDaemon = true) {
+            val orgs = Try {
+                controller.gitHub.map {
+                    it.myself.organizations
+                }
+            }.flatMap { it }
+
+            val items = orgs.map {
+                it.map { org ->
+                    Menu(org.login).apply {
+                        org.repositories.values.forEach { repo ->
+                            item(repo.name).action {
+                                addTab(WebBrowserTab(repo.httpTransportUrl))
                             }
                         }
                     }
                 }
+            }
+
+            runLater {
+                orgsMenu.items.clear()
+                items.map { orgsMenu.items.addAll(it) }
             }
         }
     }
@@ -330,22 +335,26 @@ class MainWindowView : View() {
      * Reloads the repositories menu.
      */
     fun reloadRepos() {
-        runLater {
-            reposMenu.items.clear()
-            with(reposMenu) {
-                runAsync {
-                    controller.gitHub.map {
-                        it.myself.listRepositories().toImmutableList()
-                    }
-                } success {
-                    it.map {
-                        it.forEach { repo ->
-                            item(repo.name).action {
-                                addTab(WebBrowserTab(repo.httpTransportUrl))
-                            }
+        thread(isDaemon = true) {
+            val repos = Try {
+                controller.gitHub.map {
+                    it.myself.listRepositories().toImmutableList()
+                }
+            }.flatMap { it }
+
+            val items = repos.map {
+                it.map {
+                    MenuItem(it.name).apply {
+                        action {
+                            addTab(WebBrowserTab(it.httpTransportUrl))
                         }
                     }
                 }
+            }
+
+            runLater {
+                reposMenu.items.clear()
+                items.map { reposMenu.items.addAll(it) }
             }
         }
     }
