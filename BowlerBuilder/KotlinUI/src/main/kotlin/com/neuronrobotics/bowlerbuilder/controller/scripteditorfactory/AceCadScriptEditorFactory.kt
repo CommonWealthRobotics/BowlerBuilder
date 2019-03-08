@@ -31,11 +31,13 @@ class AceCadScriptEditorFactory : CadScriptEditorFactory {
         return FxUtil.returnFX {
             val editor = AceEditorView.create(url, file)
             val cadEditor = CadScriptEditor(editor)
-            MainWindowController.mainUIEventBus.post(
-                AddTabEvent(
-                    CadScriptEditorTab(file.name, editor)
-                )
-            )
+
+            val tab = CadScriptEditorTab(file.name, editor).apply {
+                setOnClosed { editor.stopThreads() }
+            }
+
+            MainWindowController.mainUIEventBus.post(AddTabEvent(tab))
+
             cadEditor to editor
         }.let {
             // Wait for the engine to finish loading the editor before returning
@@ -47,12 +49,12 @@ class AceCadScriptEditorFactory : CadScriptEditorFactory {
     override fun createAndOpenScratchpad(): CadScriptEditor {
         val scratchpad = AceScratchpadView.create()
         val cadEditor = CadScriptEditor(scratchpad)
+
         return FxUtil.returnFX {
-            MainWindowController.mainUIEventBus.post(
-                AddTabEvent(
-                    CadScriptEditorTab("Scratchpad", scratchpad)
-                )
-            )
+            val tab = CadScriptEditorTab("Scratchpad", scratchpad)
+
+            MainWindowController.mainUIEventBus.post(AddTabEvent(tab))
+
             cadEditor to scratchpad
         }.let {
             // Wait for the engine to finish loading the editor before returning

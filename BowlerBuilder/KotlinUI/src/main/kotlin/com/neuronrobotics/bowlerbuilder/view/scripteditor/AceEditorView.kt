@@ -16,6 +16,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.scripteditor
 
+import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
@@ -36,6 +37,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.text.Text
 import javafx.stage.Modality
 import org.controlsfx.glyphfont.FontAwesome
+import org.octogonapus.ktguava.collections.immutableListOf
 import tornadofx.*
 import java.io.File
 import javax.inject.Inject
@@ -45,10 +47,11 @@ import kotlin.concurrent.thread
  * An editor which operates on a specific file and contains the controls to run the script and
  * push updates.
  */
+@SuppressWarnings("SwallowedException")
 class AceEditorView
 @Inject constructor(
     private val editor: AceWebEditorView,
-    private val controller: TextScriptRunner,
+    private val scriptRunner: TextScriptRunner,
     private val gitUrl: String,
     private val file: File
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
@@ -60,6 +63,7 @@ class AceEditorView
     private var rootHoverProperty: ReadOnlyBooleanProperty by singleAssign()
     private var lastEditTime = Long.MAX_VALUE
     private var fileIsDirty = false
+    private val threads: ImmutableList<Thread>
 
     override val root = borderpane {
         id = "AceEditorView"
@@ -82,8 +86,8 @@ class AceEditorView
                 ThreadMonitoringButton(
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
                     "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP),
-                    { controller.runScript(FxUtil.returnFX { getFullText() }, file.extension) },
-                    { controller.stopScript() }
+                    { scriptRunner.runScript(FxUtil.returnFX { getFullText() }, file.extension) },
+                    { scriptRunner.stopScript() }
                 )
             )
 
@@ -133,8 +137,8 @@ class AceEditorView
             }
         }
 
-        thread(isDaemon = true, name = "Editor FileWatcher") {
-            while (true) {
+        val fileWatcherThread = thread(isDaemon = true, name = "Editor FileWatcher") {
+            while (!Thread.currentThread().isInterrupted) {
                 if (rootHoverProperty.value) {
                     when (watchedFile.wasFileChangedSinceLastCheck()) {
                         WatchedFileChange.MODIFIED -> runLater {
@@ -176,20 +180,38 @@ class AceEditorView
                     }
                 }
 
-                Thread.sleep(10)
+                try {
+                    Thread.sleep(10)
+                } catch (ex: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                }
             }
         }
 
-        thread(isDaemon = true, name = "Editor Autosave") {
-            while (true) {
+        val autosaveThread = thread(isDaemon = true, name = "Editor Autosave") {
+            while (!Thread.currentThread().isInterrupted) {
                 // If the user has not typed a key for a half second
                 if (System.nanoTime() - lastEditTime >= 5e+8 && fileIsDirty) {
                     writeContentToFile()
                 }
 
-                Thread.sleep(100)
+                try {
+                    Thread.sleep(100)
+                } catch (ex: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                }
             }
         }
+
+        threads = immutableListOf(fileWatcherThread, autosaveThread)
+    }
+
+    /**
+     * Stops this editor's threads and calls [TextScriptRunner.stopScript].
+     */
+    fun stopThreads() {
+        threads.forEach { it.interrupt() }
+        scriptRunner.stopScript()
     }
 
     private fun writeContentToFile() {

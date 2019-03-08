@@ -42,7 +42,7 @@ import javax.inject.Inject
 class AceScratchpadView
 @Inject constructor(
     private val editor: AceWebEditorView,
-    private val controller: TextScriptRunner,
+    private val scriptRunner: TextScriptRunner,
     private val cadScriptEditorFactory: CadScriptEditorFactory
 ) : Fragment(), ScriptEditor by editor, VisualScriptEditor {
 
@@ -67,8 +67,8 @@ class AceScratchpadView
                 ThreadMonitoringButton(
                     "Run" to loadImageAsset("Run.png", FontAwesome.Glyph.PLAY),
                     "Stop" to loadImageAsset("Stop.png", FontAwesome.Glyph.STOP),
-                    { controller.runScript(FxUtil.returnFX { getFullText() }, languageChoice) },
-                    { controller.stopScript() }
+                    { scriptRunner.runScript(FxUtil.returnFX { getFullText() }, languageChoice) },
+                    { scriptRunner.stopScript() }
                 )
             )
 
