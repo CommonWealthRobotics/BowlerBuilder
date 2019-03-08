@@ -17,11 +17,14 @@
 package com.neuronrobotics.bowlerbuilder.view.main
 
 import arrow.core.Try
+import arrow.core.getOrElse
+import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
 import com.neuronrobotics.bowlerbuilder.view.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.ReportIssueView
@@ -280,14 +283,21 @@ class MainWindowView : View() {
                 }
             }.flatMap { it }
 
-            val items = gists.map {
-                it.map { gist ->
-                    Menu(gist.description).apply {
-                        gist.files.values.forEach { gistFile ->
-                            item(gistFile.fileName).action {
-                                thread(isDaemon = true) {
-                                    controller.openGistFile(gist, gistFile)
-                                }
+            val items = gists.getOrElse {
+                LOGGER.warning {
+                    """
+                    |Could not reload gists:
+                    |${Throwables.getStackTraceAsString(it)}
+                    """.trimMargin()
+                }
+
+                return@thread
+            }.map { gist ->
+                Menu(gist.description).apply {
+                    gist.files.values.forEach { gistFile ->
+                        item(gistFile.fileName).action {
+                            thread(isDaemon = true) {
+                                controller.openGistFile(gist, gistFile)
                             }
                         }
                     }
@@ -296,7 +306,7 @@ class MainWindowView : View() {
 
             runLater {
                 gistsMenu.items.clear()
-                items.map { gistsMenu.items.addAll(it) }
+                gistsMenu.items.addAll(items)
             }
         }
     }
@@ -312,13 +322,20 @@ class MainWindowView : View() {
                 }
             }.flatMap { it }
 
-            val items = orgs.map {
-                it.map { org ->
-                    Menu(org.login).apply {
-                        org.repositories.values.forEach { repo ->
-                            item(repo.name).action {
-                                addTab(WebBrowserTab(repo.httpTransportUrl))
-                            }
+            val items = orgs.getOrElse {
+                LOGGER.warning {
+                    """
+                    |Could not reload organizations:
+                    |${Throwables.getStackTraceAsString(it)}
+                    """.trimMargin()
+                }
+
+                return@thread
+            }.map { org ->
+                Menu(org.login).apply {
+                    org.repositories.values.forEach { repo ->
+                        item(repo.name).action {
+                            addTab(WebBrowserTab(repo.httpTransportUrl))
                         }
                     }
                 }
@@ -326,7 +343,7 @@ class MainWindowView : View() {
 
             runLater {
                 orgsMenu.items.clear()
-                items.map { orgsMenu.items.addAll(it) }
+                orgsMenu.items.addAll(items)
             }
         }
     }
@@ -342,20 +359,31 @@ class MainWindowView : View() {
                 }
             }.flatMap { it }
 
-            val items = repos.map {
-                it.map {
-                    MenuItem(it.name).apply {
-                        action {
-                            addTab(WebBrowserTab(it.httpTransportUrl))
-                        }
+            val items = repos.getOrElse {
+                LOGGER.warning {
+                    """
+                    |Could not reload repositories:
+                    |${Throwables.getStackTraceAsString(it)}
+                    """.trimMargin()
+                }
+
+                return@thread
+            }.map { repo ->
+                MenuItem(repo.name).apply {
+                    action {
+                        addTab(WebBrowserTab(repo.httpTransportUrl))
                     }
                 }
             }
 
             runLater {
                 reposMenu.items.clear()
-                items.map { reposMenu.items.addAll(it) }
+                reposMenu.items.addAll(items)
             }
         }
+    }
+
+    companion object {
+        private val LOGGER = LoggerUtilities.getLogger(MainWindowView::class.java.simpleName)
     }
 }

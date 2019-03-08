@@ -136,10 +136,11 @@ class LoginManager {
         LOGGER.info("Logged out.")
     }
 
-    private fun readCredentials(): Try<Pair<String, String>> = Try {
-        val (username, password) = credentialFile.readText().split("\n")
-        username.trim().removePrefix("username=") to password.trim().removePrefix("token=")
-    }
+    private fun readCredentials(): Try<Pair<String, String>> =
+        Try { credentialFile.readText() }.map {
+            val (username, password) = it.split("\n")
+            username.trim().removePrefix("username=") to password.trim().removePrefix("token=")
+        }
 
     private fun writeCredentials(username: String, token: String) {
         credentialFile.writeText(
