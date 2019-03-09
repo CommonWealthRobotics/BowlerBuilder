@@ -52,8 +52,8 @@ class PublishView(
                     this@form.runAsyncWithOverlay(
                         overlayNode = MaskPane().apply {
                             center = progressindicator {
-                                scaleX = 0.5
-                                scaleY = 0.5
+                                scaleX = 0.3
+                                scaleY = 0.3
                             }
                         }
                     ) {
