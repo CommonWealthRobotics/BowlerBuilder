@@ -49,7 +49,14 @@ class PublishView(
         buttonbar {
             button("Push") {
                 action {
-                    runAsync {
+                    this@form.runAsyncWithOverlay(
+                        overlayNode = MaskPane().apply {
+                            center = progressindicator {
+                                scaleX = 0.5
+                                scaleY = 0.5
+                            }
+                        }
+                    ) {
                         controller.publish(file, commitMessage)
                     } success {
                         LOGGER.info { "Push successful." }
