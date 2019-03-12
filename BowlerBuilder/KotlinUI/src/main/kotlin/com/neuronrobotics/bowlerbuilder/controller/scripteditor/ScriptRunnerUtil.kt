@@ -36,6 +36,7 @@ internal fun runAndHandleScript(
     scriptResultHandler: ScriptResultHandler,
     logger: Logger
 ) {
+    // TODO: script.addToInjector(script.getDefaultModules())
     script.addToInjector(MainWindowController.mainModule())
 
     val result = Try {

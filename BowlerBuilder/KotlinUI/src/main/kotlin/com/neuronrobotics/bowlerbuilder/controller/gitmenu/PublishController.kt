@@ -29,7 +29,7 @@ class PublishController : Controller() {
     /**
      * Publish updates to a file.
      *
-     * @param file The file on disk to the updated [content] to.
+     * @param file The file on disk used to find the Git repo.
      * @param commitMessage The commit message.
      */
     fun publish(file: File, commitMessage: String) {
