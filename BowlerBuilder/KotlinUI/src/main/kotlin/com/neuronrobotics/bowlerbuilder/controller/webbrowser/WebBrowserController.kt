@@ -29,6 +29,8 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
@@ -109,17 +111,22 @@ class WebBrowserController
             return
         }
 
-        LOGGER.fine(
+        LOGGER.fine {
             """
             |Running script:
             |$currentScript
             """.trimMargin()
-        )
+        }
+
+        val scriptName = currentScript.name
+        MainWindowController.mainUIEventBus.post(ScriptRunningEvent(scriptName))
 
         gitScriptRunner.runScript(
             currentScript.gistFile.gist.gitUrl,
-            currentScript.gistFile.file.name
+            scriptName
         )
+
+        MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(scriptName))
     }
 
     /**
@@ -138,12 +145,12 @@ class WebBrowserController
         val scriptFork = forkScript(currentScript)
 
         scriptFork.map {
-            LOGGER.info(
+            LOGGER.info {
                 """
                 |Editing script:
                 |$it
                 """.trimMargin()
-            )
+            }
 
             cadScriptEditorFactory.createAndOpenScriptEditor(
                 it.gistFile.gist.gitUrl,
@@ -162,12 +169,12 @@ class WebBrowserController
             return Try.just(WebBrowserScript.empty)
         }
 
-        LOGGER.fine(
+        LOGGER.fine {
             """
             |Forking gist:
             |$currentScript
             """.trimMargin()
-        )
+        }
 
         return getInstanceOf<MainWindowController>().gitFS.flatMap {
             it.forkRepo(currentScript.gistFile.gist.gitUrl).map { gistForkUrl ->
@@ -180,22 +187,22 @@ class WebBrowserController
                     )
                 )
 
-                LOGGER.info(
+                LOGGER.info {
                     """
                     |Forked to:
                     |$scriptClone
                     """.trimMargin()
-                )
+                }
 
                 scriptClone
             }
         }.recoverWith {
-            LOGGER.severe(
+            LOGGER.severe {
                 """
                 |Failed to fork gist:
                 |${Throwables.getStackTraceAsString(it)}
                 """.trimMargin()
-            )
+            }
             Try.raise(it)
         }
     }

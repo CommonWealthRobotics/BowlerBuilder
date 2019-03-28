@@ -135,7 +135,11 @@ class MainWindowView : View() {
         center = splitpane(orientation = Orientation.VERTICAL) {
             setDividerPositions(0.8)
             mainTabPane = tabpane {}
-            bottomTabPane = tabpane {}
+
+            vbox {
+                bottomTabPane = tabpane {}
+                this += RunningScriptsView()
+            }
         }
     }
 

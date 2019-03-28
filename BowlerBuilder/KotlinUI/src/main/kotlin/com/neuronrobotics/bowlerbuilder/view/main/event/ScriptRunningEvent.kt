@@ -14,20 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BowlerBuilder.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.neuronrobotics.bowlerbuilder.model
+package com.neuronrobotics.bowlerbuilder.view.main.event
 
-import arrow.optics.optics
-import java.io.File
-
-@optics
-data class WebBrowserScript(
-    val pageUrl: String,
-    val gistFile: GistFileOnDisk
-) {
-
-    val name: String = gistFile.file.name
-
-    companion object {
-        val empty = WebBrowserScript("", GistFileOnDisk(Gist("", "", ""), File("")))
-    }
-}
+/**
+ * A notification that a new script is running.
+ */
+data class ScriptRunningEvent(
+    val scriptName: String
+)
