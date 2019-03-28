@@ -25,12 +25,17 @@ import org.greenrobot.eventbus.Subscribe
 import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
 
+private class ZeroScriptView : View() {
+
+    override val root = hbox {}
+}
+
 private class OneScriptView(
     private val scriptName: String
 ) : View() {
 
     override val root = hbox {
-        text(scriptName)
+        text("Running $scriptName")
     }
 }
 
@@ -46,12 +51,10 @@ private class MultipleScriptsView(
 
 class RunningScriptsView : Fragment() {
 
-    private var runningScriptView: View = OneScriptView("")
     private val scripts = mutableListOf<Script>()
 
     override val root = hbox {
-        text("Running Script: ")
-        this += runningScriptView
+        this += ZeroScriptView()
     }
 
     init {
@@ -75,7 +78,7 @@ class RunningScriptsView : Fragment() {
             when {
                 scripts.isEmpty() -> {
                     root.children.remove(root.children.last())
-                    root.children.add(OneScriptView("").root)
+                    root.children.add(ZeroScriptView().root)
                 }
 
                 scripts.size == 1 -> {
