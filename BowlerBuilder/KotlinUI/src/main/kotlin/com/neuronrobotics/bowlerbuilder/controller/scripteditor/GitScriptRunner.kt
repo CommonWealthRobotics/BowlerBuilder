@@ -57,7 +57,7 @@ class GitScriptRunner
                     """.trimMargin()
                 }
             },
-            { runAndHandleScript(it, scriptResultHandler, LOGGER) }
+            { runAndHandleScript(it, scriptResultHandler, LOGGER, filename) }
         )
     }
 

@@ -32,16 +32,18 @@ import java.util.logging.Logger
  * @param script The script to run.
  * @param scriptResultHandler The handler to give the script result to.
  * @param logger The logger to log to.
+ * @param displayName The name to display for the script when it is running.
  */
 internal fun runAndHandleScript(
     script: Script,
     scriptResultHandler: ScriptResultHandler,
-    logger: Logger
+    logger: Logger,
+    displayName: String = ""
 ) {
     // TODO: script.addToInjector(script.getDefaultModules())
     script.addToInjector(MainWindowController.mainModule())
 
-    MainWindowController.mainUIEventBus.post(ScriptRunningEvent(script))
+    MainWindowController.mainUIEventBus.post(ScriptRunningEvent(script, displayName))
 
     val result = Try {
         script.runScript(emptyImmutableList())

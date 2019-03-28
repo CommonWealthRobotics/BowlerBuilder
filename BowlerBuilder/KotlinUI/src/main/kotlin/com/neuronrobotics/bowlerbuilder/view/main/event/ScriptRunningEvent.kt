@@ -22,5 +22,6 @@ import com.neuronrobotics.bowlerkernel.hardware.Script
  * A notification that a new script is running.
  */
 data class ScriptRunningEvent(
-    val script: Script
+    val script: Script,
+    val displayName: String
 )

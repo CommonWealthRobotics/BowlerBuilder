@@ -49,9 +49,14 @@ private class MultipleScriptsView(
     }
 }
 
+/**
+ * Displays which scripts are currently running. Send a [ScriptRunningEvent] when a script starts
+ * running and send a [ScriptStoppedEvent] when a script stops running.
+ */
 class RunningScriptsView : Fragment() {
 
     private val scripts = mutableListOf<Script>()
+    private val scriptNames = mutableMapOf<Script, String>()
 
     override val root = hbox {
         this += ZeroScriptView()
@@ -64,12 +69,19 @@ class RunningScriptsView : Fragment() {
     @Subscribe
     fun onScriptRunningEvent(event: ScriptRunningEvent) {
         scripts.add(event.script)
+
+        scriptNames[event.script] = if (event.displayName.isEmpty())
+            event.script::class.java.simpleName
+        else
+            event.displayName
+
         fixScriptView()
     }
 
     @Subscribe
     fun onScriptStoppedEvent(event: ScriptStoppedEvent) {
         scripts.remove(event.script)
+        scriptNames.remove(event.script)
         fixScriptView()
     }
 
@@ -83,7 +95,11 @@ class RunningScriptsView : Fragment() {
 
                 scripts.size == 1 -> {
                     root.children.remove(root.children.last())
-                    root.children.add(OneScriptView(scripts.first()::class.java.simpleName).root)
+                    root.children.add(
+                        OneScriptView(
+                            scriptNames[scripts.first()] ?: "Unable to find script name."
+                        ).root
+                    )
                 }
 
                 else -> {
