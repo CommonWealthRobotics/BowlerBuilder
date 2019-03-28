@@ -29,8 +29,6 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
-import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
-import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
@@ -118,15 +116,7 @@ class WebBrowserController
             """.trimMargin()
         }
 
-        val scriptName = currentScript.name
-        MainWindowController.mainUIEventBus.post(ScriptRunningEvent(scriptName))
-
-        gitScriptRunner.runScript(
-            currentScript.gistFile.gist.gitUrl,
-            scriptName
-        )
-
-        MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(scriptName))
+        gitScriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.name)
     }
 
     /**

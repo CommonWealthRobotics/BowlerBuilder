@@ -16,21 +16,42 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
+import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
-import javafx.beans.property.SimpleStringProperty
+import com.neuronrobotics.bowlerkernel.hardware.Script
 import org.greenrobot.eventbus.Subscribe
+import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
+
+private class OneScriptView(
+    private val scriptName: String
+) : View() {
+
+    override val root = hbox {
+        text(scriptName)
+    }
+}
+
+private class MultipleScriptsView(
+    private val scripts: ImmutableList<Script>
+) : View() {
+
+    override val root = hbox {
+        text("${scripts.size} running")
+        progressbar()
+    }
+}
 
 class RunningScriptsView : Fragment() {
 
-    private val runningScriptNameProperty = SimpleStringProperty("")
-    private var runningScriptName by runningScriptNameProperty
+    private var runningScriptView: View = OneScriptView("")
+    private val scripts = mutableListOf<Script>()
 
     override val root = hbox {
         text("Running Script: ")
-        text(runningScriptNameProperty)
+        this += runningScriptView
     }
 
     init {
@@ -39,11 +60,34 @@ class RunningScriptsView : Fragment() {
 
     @Subscribe
     fun onScriptRunningEvent(event: ScriptRunningEvent) {
-        runningScriptName = event.scriptName
+        scripts.add(event.script)
+        fixScriptView()
     }
 
     @Subscribe
     fun onScriptStoppedEvent(event: ScriptStoppedEvent) {
-        runningScriptName = ""
+        scripts.remove(event.script)
+        fixScriptView()
+    }
+
+    private fun fixScriptView() {
+        runLater {
+            when {
+                scripts.isEmpty() -> {
+                    root.children.remove(root.children.last())
+                    root.children.add(OneScriptView("").root)
+                }
+
+                scripts.size == 1 -> {
+                    root.children.remove(root.children.last())
+                    root.children.add(OneScriptView(scripts.first()::class.java.simpleName).root)
+                }
+
+                else -> {
+                    root.children.remove(root.children.last())
+                    root.children.add(MultipleScriptsView(scripts.toImmutableList()).root)
+                }
+            }
+        }
     }
 }

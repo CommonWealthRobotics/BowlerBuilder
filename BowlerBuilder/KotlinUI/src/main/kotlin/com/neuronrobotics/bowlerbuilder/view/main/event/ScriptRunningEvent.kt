@@ -16,9 +16,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main.event
 
+import com.neuronrobotics.bowlerkernel.hardware.Script
+
 /**
  * A notification that a new script is running.
  */
 data class ScriptRunningEvent(
-    val scriptName: String
+    val script: Script
 )

@@ -16,9 +16,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main.event
 
+import com.neuronrobotics.bowlerkernel.hardware.Script
+
 /**
  * A notification that a running script has been stopped.
  */
 data class ScriptStoppedEvent(
-    val scriptName: String
+    val script: Script
 )

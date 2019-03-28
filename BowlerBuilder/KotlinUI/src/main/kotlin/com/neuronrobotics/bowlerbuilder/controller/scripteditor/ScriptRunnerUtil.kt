@@ -20,6 +20,8 @@ import arrow.core.Try
 import arrow.core.recover
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
 import com.neuronrobotics.bowlerkernel.hardware.Script
 import org.octogonapus.ktguava.collections.emptyImmutableList
 import java.util.logging.Logger
@@ -39,6 +41,8 @@ internal fun runAndHandleScript(
     // TODO: script.addToInjector(script.getDefaultModules())
     script.addToInjector(MainWindowController.mainModule())
 
+    MainWindowController.mainUIEventBus.post(ScriptRunningEvent(script))
+
     val result = Try {
         script.runScript(emptyImmutableList())
     }
@@ -53,6 +57,8 @@ internal fun runAndHandleScript(
             },
             { scriptResultHandler.handleResult(it) }
         )
+
+        MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(script))
     }.recover {
         logger.warning {
             """
@@ -60,5 +66,7 @@ internal fun runAndHandleScript(
             |${Throwables.getStackTraceAsString(it)}
             """.trimMargin()
         }
+
+        MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(script))
     }
 }
