@@ -16,36 +16,44 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
-import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
+import com.neuronrobotics.bowlerbuilder.view.util.getFontAwesomeGlyph
 import com.neuronrobotics.bowlerkernel.hardware.Script
+import javafx.geometry.Pos
+import javafx.scene.control.CustomMenuItem
+import org.controlsfx.glyphfont.FontAwesome
 import org.greenrobot.eventbus.Subscribe
-import org.octogonapus.ktguava.collections.toImmutableList
+import org.octogonapus.ktguava.collections.emptyImmutableMap
+import org.octogonapus.ktguava.collections.toImmutableMap
 import tornadofx.*
 
-private class ZeroScriptView : View() {
-
-    override val root = hbox {}
-}
-
-private class OneScriptView(
-    private val scriptName: String
-) : View() {
-
-    override val root = hbox {
-        text("Running $scriptName")
-    }
-}
-
 private class MultipleScriptsView(
-    private val scripts: ImmutableList<Script>
+    private val scripts: ImmutableMap<Script, String>
 ) : View() {
 
     override val root = hbox {
-        text("${scripts.size} running")
-        progressbar()
+        text("${scripts.size} scripts running") {
+            contextmenu {
+                scripts.forEach { script, name ->
+                    this@contextmenu += CustomMenuItem().apply {
+                        content = hbox {
+                            spacing = 5.0
+                            alignment = Pos.CENTER_LEFT
+
+                            text(name)
+                            button(
+                                graphic = getFontAwesomeGlyph(FontAwesome.Glyph.TIMES_CIRCLE)
+                            ).setOnAction {
+                                runAsync { script.stopAndCleanUp() }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -55,58 +63,39 @@ private class MultipleScriptsView(
  */
 class RunningScriptsView : Fragment() {
 
-    private val scripts = mutableListOf<Script>()
-    private val scriptNames = mutableMapOf<Script, String>()
+    private val scripts = mutableMapOf<Script, String>()
 
     override val root = hbox {
-        this += ZeroScriptView()
+        this += MultipleScriptsView(emptyImmutableMap())
     }
 
     init {
         MainWindowController.mainUIEventBus.register(this)
     }
 
+    private fun ScriptRunningEvent.nonEmptyDisplayName() =
+        if (displayName.isEmpty())
+            script::class.java.simpleName
+        else
+            displayName
+
     @Subscribe
     fun onScriptRunningEvent(event: ScriptRunningEvent) {
-        scripts.add(event.script)
-
-        scriptNames[event.script] = if (event.displayName.isEmpty())
-            event.script::class.java.simpleName
-        else
-            event.displayName
-
+        scripts[event.script] = event.nonEmptyDisplayName()
         fixScriptView()
     }
 
     @Subscribe
     fun onScriptStoppedEvent(event: ScriptStoppedEvent) {
         scripts.remove(event.script)
-        scriptNames.remove(event.script)
         fixScriptView()
     }
 
     private fun fixScriptView() {
         runLater {
-            when {
-                scripts.isEmpty() -> {
-                    root.children.remove(root.children.last())
-                    root.children.add(ZeroScriptView().root)
-                }
-
-                scripts.size == 1 -> {
-                    root.children.remove(root.children.last())
-                    root.children.add(
-                        OneScriptView(
-                            scriptNames[scripts.first()] ?: "Unable to find script name."
-                        ).root
-                    )
-                }
-
-                else -> {
-                    root.children.remove(root.children.last())
-                    root.children.add(MultipleScriptsView(scripts.toImmutableList()).root)
-                }
-            }
+            // Refresh the context menu items
+            root.children.remove(root.children.last())
+            root.children.add(MultipleScriptsView(scripts.toImmutableMap()).root)
         }
     }
 }
