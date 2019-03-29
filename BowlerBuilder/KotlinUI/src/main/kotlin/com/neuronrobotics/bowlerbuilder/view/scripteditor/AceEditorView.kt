@@ -22,6 +22,7 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Com
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.ScriptEditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.TextScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
+import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.WatchedFile
 import com.neuronrobotics.bowlerbuilder.model.WatchedFileChange
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.PublishView
@@ -140,6 +141,8 @@ class AceEditorView(
                 if (rootHoverProperty.value) {
                     when (watchedFile.wasFileChangedSinceLastCheck()) {
                         WatchedFileChange.MODIFIED -> runLater {
+                            LOGGER.fine { "Showing file dialog (modified)." }
+
                             FileModifiedOnDiskView(
                                 {
                                     val text = getFullText()
@@ -157,6 +160,8 @@ class AceEditorView(
                         }
 
                         WatchedFileChange.DELETED -> runLater {
+                            LOGGER.fine { "Showing file dialog (deleted)." }
+
                             FileDeletedOnDiskView(
                                 {
                                     val text = getFullText()
@@ -221,6 +226,9 @@ class AceEditorView(
     }
 
     companion object {
+
+        private val LOGGER = LoggerUtilities.getLogger(AceEditorView::class.java.simpleName)
+
         fun create(url: String, file: File) = AceEditorView(
             AceWebEditorView(),
             getInstanceOf(),
