@@ -116,6 +116,7 @@ internal constructor(
      */
     fun writeText(text: String, charset: Charset = Charsets.UTF_8) {
         synchronized(file) {
+            LOGGER.fine { "Start writing." }
             lastEvent = null
 
             file.writeText(text, charset)
@@ -125,6 +126,7 @@ internal constructor(
             }
 
             lastEvent = null
+            LOGGER.fine { "Done writing." }
         }
     }
 
