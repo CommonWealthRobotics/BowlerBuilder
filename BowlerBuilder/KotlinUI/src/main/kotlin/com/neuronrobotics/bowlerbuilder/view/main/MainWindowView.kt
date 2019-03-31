@@ -47,6 +47,7 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.layout.Priority
 import org.greenrobot.eventbus.Subscribe
 import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
@@ -137,7 +138,14 @@ class MainWindowView : View() {
         center = splitpane(orientation = Orientation.VERTICAL) {
             setDividerPositions(0.8)
             mainTabPane = tabpane {}
-            bottomTabPane = tabpane {}
+
+            vbox {
+                bottomTabPane = tabpane {
+                    vgrow = Priority.ALWAYS
+                }
+
+                this += RunningScriptsView()
+            }
         }
     }
 

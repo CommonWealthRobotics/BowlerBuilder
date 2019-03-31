@@ -20,6 +20,8 @@ import arrow.core.Try
 import arrow.core.recover
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
 import com.neuronrobotics.bowlerkernel.hardware.Script
 import org.octogonapus.ktguava.collections.emptyImmutableList
 import java.util.logging.Logger
@@ -30,14 +32,18 @@ import java.util.logging.Logger
  * @param script The script to run.
  * @param scriptResultHandler The handler to give the script result to.
  * @param logger The logger to log to.
+ * @param displayName The name to display for the script when it is running.
  */
 internal fun runAndHandleScript(
     script: Script,
     scriptResultHandler: ScriptResultHandler,
-    logger: Logger
+    logger: Logger,
+    displayName: String = ""
 ) {
     // TODO: script.addToInjector(script.getDefaultModules())
     script.addToInjector(MainWindowController.mainModule())
+
+    MainWindowController.mainUIEventBus.post(ScriptRunningEvent(script, displayName))
 
     val result = Try {
         script.runScript(emptyImmutableList())
@@ -53,6 +59,8 @@ internal fun runAndHandleScript(
             },
             { scriptResultHandler.handleResult(it) }
         )
+
+        MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(script))
     }.recover {
         logger.warning {
             """
@@ -60,5 +68,7 @@ internal fun runAndHandleScript(
             |${Throwables.getStackTraceAsString(it)}
             """.trimMargin()
         }
+
+        MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(script))
     }
 }

@@ -109,17 +109,14 @@ class WebBrowserController
             return
         }
 
-        LOGGER.fine(
+        LOGGER.fine {
             """
             |Running script:
             |$currentScript
             """.trimMargin()
-        )
+        }
 
-        gitScriptRunner.runScript(
-            currentScript.gistFile.gist.gitUrl,
-            currentScript.gistFile.file.name
-        )
+        gitScriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.name)
     }
 
     /**
@@ -138,12 +135,12 @@ class WebBrowserController
         val scriptFork = forkScript(currentScript)
 
         scriptFork.map {
-            LOGGER.info(
+            LOGGER.info {
                 """
                 |Editing script:
                 |$it
                 """.trimMargin()
-            )
+            }
 
             cadScriptEditorFactory.createAndOpenScriptEditor(
                 it.gistFile.gist.gitUrl,
@@ -162,12 +159,12 @@ class WebBrowserController
             return Try.just(WebBrowserScript.empty)
         }
 
-        LOGGER.fine(
+        LOGGER.fine {
             """
             |Forking gist:
             |$currentScript
             """.trimMargin()
-        )
+        }
 
         return getInstanceOf<MainWindowController>().gitFS.flatMap {
             it.forkRepo(currentScript.gistFile.gist.gitUrl).map { gistForkUrl ->
@@ -180,22 +177,22 @@ class WebBrowserController
                     )
                 )
 
-                LOGGER.info(
+                LOGGER.info {
                     """
                     |Forked to:
                     |$scriptClone
                     """.trimMargin()
-                )
+                }
 
                 scriptClone
             }
         }.recoverWith {
-            LOGGER.severe(
+            LOGGER.severe {
                 """
                 |Failed to fork gist:
                 |${Throwables.getStackTraceAsString(it)}
                 """.trimMargin()
-            )
+            }
             Try.raise(it)
         }
     }

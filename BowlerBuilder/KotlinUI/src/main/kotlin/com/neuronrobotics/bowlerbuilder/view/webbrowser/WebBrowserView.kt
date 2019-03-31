@@ -142,7 +142,7 @@ class WebBrowserView(
 
             combobox<WebBrowserScript> {
                 cellFormat {
-                    text = it.gistFile.file.name
+                    text = it.name
                 }
 
                 valueProperty().addListener { _, _, new ->

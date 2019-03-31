@@ -45,8 +45,9 @@ class TextScriptRunner
      *
      * @param scriptText The full text of the script.
      * @param language A string representing the script language.
+     * @param displayName The name to display for the script when it is running.
      */
-    fun runScript(scriptText: String, language: String) {
+    fun runScript(scriptText: String, language: String, displayName: String? = null) {
         stopScript()
         currentScript = scriptFactory.createScriptFromText(language, scriptText)
 
@@ -59,7 +60,7 @@ class TextScriptRunner
                     """.trimMargin()
                 }
             },
-            { runAndHandleScript(it, scriptResultHandler, LOGGER) }
+            { runAndHandleScript(it, scriptResultHandler, LOGGER, displayName ?: language) }
         )
     }
 
@@ -68,8 +69,9 @@ class TextScriptRunner
      *
      * @param scriptText The full text of the script.
      * @param language The language of the script.
+     * @param displayName The name to display for the script when it is running.
      */
-    fun runScript(scriptText: String, language: ScriptLanguage) {
+    fun runScript(scriptText: String, language: ScriptLanguage, displayName: String? = null) {
         stopScript()
         currentScript = scriptFactory.createScriptFromText(language, scriptText).right()
 
@@ -82,7 +84,14 @@ class TextScriptRunner
                     """.trimMargin()
                 }
             },
-            { runAndHandleScript(it, scriptResultHandler, LOGGER) }
+            {
+                runAndHandleScript(
+                    it,
+                    scriptResultHandler,
+                    LOGGER,
+                    displayName ?: language.toString()
+                )
+            }
         )
     }
 
