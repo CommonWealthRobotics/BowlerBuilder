@@ -19,19 +19,44 @@ package com.neuronrobotics.bowlerbuilder.view.scripteditor
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.VisualScriptEditor
 import com.neuronrobotics.bowlerbuilder.view.cad.CadView
 import javafx.geometry.Orientation
+import javafx.scene.control.SplitPane
 import tornadofx.*
 import javax.inject.Inject
 
+@SuppressWarnings("SpreadOperator")
 class CadScriptEditor
 @Inject constructor(
     val editor: VisualScriptEditor
 ) : Fragment() {
 
-    val cadView = CadView()
+    private var regenRoot = false
+    var cadView = CadView()
 
-    @SuppressWarnings("SpreadOperator")
-    override val root = splitpane(
+    private var lastRoot: SplitPane = splitpane(
         orientation = Orientation.HORIZONTAL,
         nodes = *arrayOf(editor.root, cadView.root)
     )
+
+    override val root: SplitPane
+        get() {
+            if (regenRoot) {
+                regenRoot = false
+
+                lastRoot = splitpane(
+                    orientation = Orientation.HORIZONTAL,
+                    nodes = *arrayOf(editor.root, cadView.root)
+                )
+            }
+
+            return lastRoot
+        }
+
+    /**
+     * Sets a flag that the next time [root] is accessed it should be regenerated so that the
+     * [newCadView] is used instead of the old one.
+     */
+    fun setRegenerateRoot(newCadView: CadView) {
+        regenRoot = true
+        cadView = newCadView
+    }
 }
