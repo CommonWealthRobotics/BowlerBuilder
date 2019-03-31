@@ -36,6 +36,7 @@ class PublishView(
     private val commitMessageProperty = SimpleStringProperty("")
     private var commitMessage by commitMessageProperty
 
+    @SuppressWarnings("LabeledExpression")
     override val root = form {
         fieldset("Commit", labelPosition = Orientation.VERTICAL) {
             field("Commit Message", Orientation.VERTICAL) {

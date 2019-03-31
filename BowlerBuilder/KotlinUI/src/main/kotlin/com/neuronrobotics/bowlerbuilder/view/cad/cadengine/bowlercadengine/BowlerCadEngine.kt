@@ -74,7 +74,7 @@ import kotlin.concurrent.thread
 /**
  * CAD Engine from BowlerStudio.
  */
-@SuppressWarnings("TooGenericExceptionCaught")
+@SuppressWarnings("TooGenericExceptionCaught", "TooManyFunctions", "LargeClass")
 class BowlerCadEngine : Pane() {
 
     private val csgManager = CSGManager()
@@ -333,6 +333,7 @@ class BowlerCadEngine : Pane() {
      *
      * @param csg CSG to add
      */
+    @SuppressWarnings("ComplexMethod")
     fun addCSG(csg: CSG) {
         if (csgManager.has(csg)) {
             return

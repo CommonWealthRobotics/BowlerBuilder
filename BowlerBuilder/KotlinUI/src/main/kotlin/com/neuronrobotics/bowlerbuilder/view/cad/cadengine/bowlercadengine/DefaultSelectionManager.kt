@@ -30,10 +30,14 @@ import javafx.scene.input.ScrollEvent
 import javafx.scene.paint.Color
 import javafx.scene.paint.PhongMaterial
 import javafx.scene.transform.Affine
+import javafx.util.Duration
 import tornadofx.*
 import java.io.File
 import java.util.Optional
 import java.util.function.BiConsumer
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.sin
 
 class DefaultSelectionManager
 /**
@@ -83,6 +87,7 @@ class DefaultSelectionManager
      *
      * @param selection CSG to select
      */
+    @SuppressWarnings("ComplexMethod", "LongMethod")
     override fun selectCSG(selection: CSG) {
         if (selectedCSG.value.isPresent && selection == selectedCSG.value.get()) {
             return
@@ -114,7 +119,8 @@ class DefaultSelectionManager
         val centering = TransformFactory.nrToAffine(poseToMove)
 
         // this section keeps the camera oriented the same way to avoid whipping around
-        val rotationOnlyComponentOfManipulator = TransformFactory.affineToNr(selection.manipulator)
+        val manipCopy = Affine(selection.manipulator)
+        val rotationOnlyComponentOfManipulator = TransformFactory.affineToNr(manipCopy)
         rotationOnlyComponentOfManipulator.x = 0.0
         rotationOnlyComponentOfManipulator.y = 0.0
         rotationOnlyComponentOfManipulator.z = 0.0
@@ -123,7 +129,7 @@ class DefaultSelectionManager
         // TODO: Issue #32
         val startSelectNr = previousTarget.copy()
         val targetNR = if (checkManipulator(selection)) {
-            TransformFactory.affineToNr(selection.manipulator)
+            TransformFactory.affineToNr(manipCopy)
         } else {
             TransformFactory.affineToNr(centering)
         }
@@ -139,7 +145,7 @@ class DefaultSelectionManager
             focusGroup.transforms.add(interpolator)
 
             if (checkManipulator(selection)) {
-                focusGroup.transforms.add(selection.manipulator)
+                focusGroup.transforms.add(manipCopy)
                 focusGroup.transforms.add(correction)
             } else {
                 focusGroup.transforms.add(centering)
@@ -158,7 +164,7 @@ class DefaultSelectionManager
         selection.forEach { csg ->
             val meshView = csgManager.getMeshView(csg)
             if (meshView != null) {
-                runLater(javafx.util.Duration.millis(20.0)) {
+                runLater(Duration.millis(20.0)) {
                     meshView.material = PhongMaterial(Color.GOLD)
                 }
             }
@@ -167,8 +173,8 @@ class DefaultSelectionManager
 
     /** De-select the selection.  */
     override fun cancelSelection() {
-        for (key in csgManager.getCSGs()) {
-            runLater {
+        runLater {
+            for (key in csgManager.getCSGs()) {
                 csgManager.getMeshView(key)?.material = PhongMaterial(key.color)
             }
         }
@@ -275,7 +281,7 @@ class DefaultSelectionManager
         interpolator: Affine
     ) {
         val depthScale = 1 - depth.toDouble() / targetDepth.toDouble()
-        val sinusoidalScale = Math.sin(depthScale * (Math.PI / 2))
+        val sinusoidalScale = sin(depthScale * (PI / 2))
 
         val difference = start.x - target.x
 
@@ -290,7 +296,7 @@ class DefaultSelectionManager
         }
 
         if (depth < targetDepth) {
-            runLater(javafx.util.Duration.millis(20.0)) {
+            runLater(Duration.millis(20.0)) {
                 focusInterpolate(start, target, depth + 1, targetDepth, interpolator)
             }
         } else {
@@ -306,7 +312,7 @@ class DefaultSelectionManager
     private fun removeAllFocusTransforms() = focusGroup.transforms.clear()
 
     private fun checkManipulator(csg: CSG) =
-        Math.abs(csg.manipulator.tx) > 0.1 ||
-            Math.abs(csg.manipulator.ty) > 0.1 ||
-            Math.abs(csg.manipulator.tz) > 0.1
+        abs(csg.manipulator.tx) > 0.1 ||
+            abs(csg.manipulator.ty) > 0.1 ||
+            abs(csg.manipulator.tz) > 0.1
 }

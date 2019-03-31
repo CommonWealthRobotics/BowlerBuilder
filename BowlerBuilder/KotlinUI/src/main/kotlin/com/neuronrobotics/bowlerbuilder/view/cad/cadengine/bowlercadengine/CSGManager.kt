@@ -21,6 +21,7 @@ import eu.mihosoft.vrl.v3d.CSG
 import javafx.scene.shape.MeshView
 import java.util.concurrent.ConcurrentHashMap
 
+@SuppressWarnings("TooManyFunctions")
 class CSGManager {
     private val csgToMeshView: MutableMap<CSG, MeshView>
     private val csgNameToMeshView: MutableMap<String, MeshView>
