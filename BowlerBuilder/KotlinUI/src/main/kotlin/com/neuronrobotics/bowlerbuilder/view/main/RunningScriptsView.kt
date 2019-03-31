@@ -38,7 +38,7 @@ private class MultipleScriptsView(
         text("${scripts.size} scripts running") {
             contextmenu {
                 scripts.forEach { script, name ->
-                    this@contextmenu += CustomMenuItem().apply {
+                    this += CustomMenuItem().apply {
                         content = hbox {
                             spacing = 5.0
                             alignment = Pos.CENTER_LEFT
