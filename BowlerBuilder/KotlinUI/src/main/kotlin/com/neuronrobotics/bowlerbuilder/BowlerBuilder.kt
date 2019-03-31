@@ -20,6 +20,7 @@ import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.event.CadViewExplodedEvent
 import tornadofx.*
 
 fun main(args: Array<String>) {
@@ -32,7 +33,24 @@ class BowlerBuilder : App(MainWindowView::class) {
         runLater {
             // Log uncaught exceptions on the FX thread
             Thread.currentThread().setUncaughtExceptionHandler { _, exception ->
-                LOGGER.severe(Throwables.getStackTraceAsString(exception))
+                when (exception) {
+                    is NullPointerException,
+                    is ArrayIndexOutOfBoundsException ->
+                        @SuppressWarnings("ComplexCondition")
+                        if (exception.stackTrace == null ||
+                            exception.stackTrace.isEmpty() ||
+                            exception.stackTrace.map { it.methodName }.any {
+                                it == "updateCachedBounds" || it == "synchronizeSceneNodes"
+                            }
+                        ) {
+                            LOGGER.info("JavaFX Exploded")
+                            MainWindowController.mainUIEventBus.post(CadViewExplodedEvent)
+                        } else {
+                            LOGGER.severe(Throwables.getStackTraceAsString(exception))
+                        }
+
+                    else -> LOGGER.severe(Throwables.getStackTraceAsString(exception))
+                }
             }
         }
 

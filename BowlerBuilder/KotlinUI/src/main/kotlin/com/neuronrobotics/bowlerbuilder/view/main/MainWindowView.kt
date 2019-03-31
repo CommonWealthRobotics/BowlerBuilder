@@ -33,6 +33,7 @@ import com.neuronrobotics.bowlerbuilder.view.gitmenu.GistFileSelectionView
 import com.neuronrobotics.bowlerbuilder.view.gitmenu.LogInView
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddCadObjectsToCurrentTabEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.AddTabEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.CadViewExplodedEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.CloseTabByContentEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.SetCadObjectsToCurrentTabEvent
 import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
@@ -52,6 +53,7 @@ import tornadofx.*
 import javax.inject.Singleton
 import kotlin.concurrent.thread
 
+@SuppressWarnings("TooManyFunctions", "LargeClass")
 @Singleton
 class MainWindowView : View() {
 
@@ -181,6 +183,17 @@ class MainWindowView : View() {
     @Subscribe
     fun onSetCadObjectsToCurrentTabEvent(event: SetCadObjectsToCurrentTabEvent) =
         setCadObjectsToCurrentTab(event.cad)
+
+    @Subscribe
+    fun onCadViewExplodedEvent(event: CadViewExplodedEvent) {
+        val selection = mainTabPane.selectionModel.selectedItem
+        if (selection is CadScriptEditorTab) {
+            val newCadView = CadView()
+            newCadView.engine.addAllCSGs(selection.editor.cadView.engine.getCsgMap().keys)
+            selection.editor.cadView.replaceWith(newCadView)
+            selection.editor.setRegenerateRoot(newCadView)
+        }
+    }
 
     /**
      * Adds a tab to the [mainTabPane] and selects it.
