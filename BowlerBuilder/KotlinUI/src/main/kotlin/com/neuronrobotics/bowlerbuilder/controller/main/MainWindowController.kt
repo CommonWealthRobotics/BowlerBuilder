@@ -125,14 +125,10 @@ class MainWindowController
             bind<ScriptLanguageParser>().to<DefaultScriptLanguageParser>()
             bind<TextScriptFactory>().to<DefaultTextScriptFactory>()
             install(
-                FactoryModuleBuilder()
-                    .implement(
-                        GitScriptFactory::class.java,
-                        DefaultGitScriptFactory::class.java
-                    )
-                    .build(
-                        DefaultGitScriptFactory.Factory::class.java
-                    )
+                FactoryModuleBuilder().implement(
+                    GitScriptFactory::class.java,
+                    DefaultGitScriptFactory::class.java
+                ).build(DefaultGitScriptFactory.Factory::class.java)
             )
 
             install(GitScriptFactoryModule())
