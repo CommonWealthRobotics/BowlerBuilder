@@ -43,6 +43,8 @@ internal constructor(
 ) {
 
     private var lastEvent: WatchEvent<Path>? = null
+    private var lastModifyTime: Long = 0
+    private var discardNextEvent = false
 
     init {
         require(file.isFile) {
@@ -86,7 +88,17 @@ internal constructor(
                                     |Last Modified: ${file.lastModified()}
                                     """.trimMargin()
                                 }
-                                lastEvent = it
+
+                                if (discardNextEvent) {
+                                    // Do nothing so the event is discarded
+                                    discardNextEvent = false
+                                } else {
+                                    if (file.lastModified() != lastModifyTime) {
+                                        lastModifyTime = file.lastModified()
+                                        lastEvent = it
+                                        LOGGER.fine { "Wrote to lastEvent." }
+                                    }
+                                }
                             }
                         }
                     }
@@ -117,15 +129,11 @@ internal constructor(
     fun writeText(text: String, charset: Charset = Charsets.UTF_8) {
         synchronized(file) {
             LOGGER.fine { "Start writing." }
-            lastEvent = null
 
+            discardNextEvent = true
             file.writeText(text, charset)
-
-            while (lastEvent == null) {
-                Thread.sleep(1)
-            }
-
             lastEvent = null
+
             LOGGER.fine { "Done writing." }
         }
     }
