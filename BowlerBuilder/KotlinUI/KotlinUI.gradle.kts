@@ -6,11 +6,18 @@ plugins {
     application
 }
 
-application.mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
-
 object Versions {
     const val arrow_version = "0.8.1"
     const val kernel_version = "0.0.21"
+}
+
+application {
+    mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
+}
+
+tasks.withType<CreateStartScripts> {
+    (windowsStartScriptGenerator as TemplateBasedScriptGenerator).template =
+        resources.text.fromFile("${rootProject.rootDir}/config/windowsStartScriptTemplate.txt")
 }
 
 repositories {
@@ -25,13 +32,13 @@ dependencies {
     api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.9")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
+    api(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.5")
 
     implementation(
         group = "com.neuronrobotics",
         name = "bowler-kernel-config",
         version = kernel_version
     )
-    implementation(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.5")
 
     implementation(
         group = "org.eclipse.jgit",

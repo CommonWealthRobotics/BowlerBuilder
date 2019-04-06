@@ -1,10 +1,10 @@
 import BowlerBuilder_gradle.Strings.spotlessLicenseHeaderDelimiter
+import BowlerBuilder_gradle.Versions.bowlerBuilderVersion
 import BowlerBuilder_gradle.Versions.ktlintVersion
 import com.adarshr.gradle.testlogger.theme.ThemeType
 import com.github.spotbugs.SpotBugsTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.util.GFileUtils
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Paths
 import java.util.Properties
@@ -19,8 +19,17 @@ plugins {
     id("com.adarshr.test-logger") version "1.6.0"
 }
 
+object Versions {
+    const val bowlerBuilderVersion = "0.2.0"
+    const val ktlintVersion = "0.29.0"
+}
+
+object Strings {
+    const val spotlessLicenseHeaderDelimiter = "(@|package|import)"
+}
+
 allprojects {
-    version = "0.2.0"
+    version = bowlerBuilderVersion
     group = "com.neuronrobotics"
 }
 
@@ -38,14 +47,6 @@ val javafxProjects = setOf(
     bowlerBuilderProject,
     bowlerBuilderKotlinUIProject
 )
-
-object Versions {
-    const val ktlintVersion = "0.29.0"
-}
-
-object Strings {
-    const val spotlessLicenseHeaderDelimiter = "(@|package|import)"
-}
 
 buildscript {
     repositories {
@@ -369,25 +370,8 @@ configure(javaProjects + kotlinProjects) {
 }
 
 tasks.wrapper {
-    gradleVersion = "5.2.1"
+    gradleVersion = "5.3.1"
     distributionType = Wrapper.DistributionType.ALL
-
-    doLast {
-        /*
-         * Copy the properties file into the buildSrc project.
-         * Related issues:
-         *
-         * https://youtrack.jetbrains.com/issue/KT-14895
-         * https://youtrack.jetbrains.com/issue/IDEA-169717
-         * https://youtrack.jetbrains.com/issue/IDEA-153336
-         */
-        val buildSrcWrapperDir = File(rootDir, "buildSrc/gradle/wrapper")
-        GFileUtils.mkdirs(buildSrcWrapperDir)
-        copy {
-            from(propertiesFile)
-            into(buildSrcWrapperDir)
-        }
-    }
 }
 
 /**
