@@ -40,7 +40,7 @@ internal fun runAndHandleScript(
     logger: Logger,
     displayName: String = ""
 ) {
-    // TODO: script.addToInjector(script.getDefaultModules())
+    script.addToInjector(Script.getDefaultModules())
     script.addToInjector(MainWindowController.mainModule())
 
     MainWindowController.mainUIEventBus.post(ScriptRunningEvent(script, displayName))

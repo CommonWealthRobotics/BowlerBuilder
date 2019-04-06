@@ -48,7 +48,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.limb.LimbFactory
 import com.neuronrobotics.bowlerkernel.kinematics.limb.link.DefaultLinkFactory
 import com.neuronrobotics.bowlerkernel.kinematics.limb.link.LinkFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultGitScriptFactory
-import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultTextScriptFactory
+import com.neuronrobotics.bowlerkernel.scripting.factory.DefaultScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.GitScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.factory.TextScriptFactory
 import com.neuronrobotics.bowlerkernel.scripting.parser.DefaultScriptLanguageParser
@@ -145,7 +145,7 @@ class MainWindowController
 
             // Kernel dependencies
             bind<ScriptLanguageParser>().to<DefaultScriptLanguageParser>()
-            bind<TextScriptFactory>().to<DefaultTextScriptFactory>()
+            bind<TextScriptFactory>().to<DefaultScriptFactory>()
             install(
                 FactoryModuleBuilder().implement(
                     GitScriptFactory::class.java,
