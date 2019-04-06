@@ -3,6 +3,7 @@
 ### Gradle ###
 .gradle
 build/
+build-cache/
 *.class
 
 # Ignore Gradle GUI config
@@ -23,3 +24,5 @@ networktables.ini
 networktables.ini.bak
 CSGdatabase.json
 lib/
+conf/
+.attach_pid*
