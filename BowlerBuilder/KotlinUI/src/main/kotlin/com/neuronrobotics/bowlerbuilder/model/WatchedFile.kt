@@ -44,7 +44,6 @@ internal constructor(
 
     private var lastEvent: WatchEvent<Path>? = null
     private var lastModifyTime: Long = 0
-    private var discardNextEvent = false
 
     init {
         require(file.isFile) {
@@ -89,15 +88,10 @@ internal constructor(
                                     """.trimMargin()
                                 }
 
-                                if (discardNextEvent) {
-                                    // Do nothing so the event is discarded
-                                    discardNextEvent = false
-                                } else {
-                                    if (file.lastModified() != lastModifyTime) {
-                                        lastModifyTime = file.lastModified()
-                                        lastEvent = it
-                                        LOGGER.fine { "Wrote to lastEvent." }
-                                    }
+                                if (file.lastModified() > lastModifyTime + modifyTimeout) {
+                                    lastModifyTime = file.lastModified()
+                                    lastEvent = it
+                                    LOGGER.fine { "Wrote to lastEvent." }
                                 }
                             }
                         }
@@ -130,8 +124,8 @@ internal constructor(
         synchronized(file) {
             LOGGER.fine { "Start writing." }
 
-            discardNextEvent = true
             file.writeText(text, charset)
+            lastModifyTime = System.currentTimeMillis()
             lastEvent = null
 
             LOGGER.fine { "Done writing." }
@@ -161,5 +155,6 @@ internal constructor(
 
     companion object {
         private val LOGGER = LoggerUtilities.getLogger(WatchedFile::class.java.simpleName)
+        private const val modifyTimeout = 500 // Timeout ms after writing to file to discard events
     }
 }

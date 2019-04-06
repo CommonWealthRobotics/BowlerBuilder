@@ -69,7 +69,7 @@ class AceEditorView(
         center = editor.root
         rootHoverProperty = hoverProperty()
 
-        editor.root.setOnKeyPressed {
+        editor.root.setOnKeyTyped {
             // Keep track of time for autosave
             lastEditTime = System.nanoTime()
             fileIsDirty = true
