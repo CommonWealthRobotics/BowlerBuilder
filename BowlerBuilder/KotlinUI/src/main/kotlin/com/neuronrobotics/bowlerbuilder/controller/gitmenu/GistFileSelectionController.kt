@@ -39,8 +39,12 @@ class GistFileSelectionController
      */
     fun loadFilesInGist(gistUrl: String) {
         LOGGER.info("Loading files for: $gistUrl")
-        getInstanceOf<MainWindowController>().gitFS.flatMap {
-            it.cloneRepoAndGetFiles(gistUrl)
+        getInstanceOf<MainWindowController>().let { controller ->
+            controller.ideAction("Cloning $gistUrl") {
+                controller.gitFS.flatMap {
+                    it.cloneRepoAndGetFiles(gistUrl)
+                }
+            }
         }.toEither().bimap(
             {
                 LOGGER.warning(

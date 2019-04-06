@@ -35,6 +35,8 @@ import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScr
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
+import com.neuronrobotics.bowlerbuilder.view.main.event.ActionRunningEvent
+import com.neuronrobotics.bowlerbuilder.view.main.event.ActionStoppedEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
 import com.neuronrobotics.bowlerkernel.gitfs.GitFS
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
@@ -74,6 +76,24 @@ class MainWindowController
     var gitFS: Try<GitFS> = Try.raise(IllegalStateException("Not logged in."))
 
     /**
+     * Runs the [action] by:
+     * 1. Posting an [ActionRunningEvent] with [name]
+     * 2. Running the [action]
+     * 3. Posting an [ActionStoppedEvent] with [name]
+     *
+     * @param name The name of the action.
+     * @param action The action to run.
+     * @return The return value of [action].
+     */
+    inline fun <T> ideAction(
+        name: String,
+        action: () -> T
+    ): T {
+        mainUIEventBus.post(ActionRunningEvent(name))
+        return action().also { mainUIEventBus.post(ActionStoppedEvent(name)) }
+    }
+
+    /**
      * Opens a Gist file in an editor.
      */
     fun openGistFile(gist: GHGist, gistFile: GHGistFile) {
@@ -81,11 +101,13 @@ class MainWindowController
             gist, gistFile
         ).recoverWith {
             gitFS.flatMap { gitFS ->
-                gitFS.cloneRepoAndGetFiles(
-                    gist.gitPullUrl
-                ).flatMap { files ->
-                    Try {
-                        files.first { it.name == gistFile.fileName }
+                ideAction("Cloning ${gist.gitPullUrl}") {
+                    gitFS.cloneRepoAndGetFiles(
+                        gist.gitPullUrl
+                    ).flatMap { files ->
+                        Try {
+                            files.first { it.name == gistFile.fileName }
+                        }
                     }
                 }
             }

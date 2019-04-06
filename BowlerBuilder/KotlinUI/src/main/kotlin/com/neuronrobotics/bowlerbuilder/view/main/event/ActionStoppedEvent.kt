@@ -16,11 +16,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main.event
 
-import com.neuronrobotics.bowlerkernel.hardware.Script
-
 /**
- * A notification that a running script stopped or finished.
+ * A notification that an IDE action stopped or finished.
  */
-data class ScriptStoppedEvent(
-    val script: Script
+data class ActionStoppedEvent(
+    val name: String
 )

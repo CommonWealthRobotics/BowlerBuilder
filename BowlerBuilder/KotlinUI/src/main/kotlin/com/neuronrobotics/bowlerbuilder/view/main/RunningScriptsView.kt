@@ -16,61 +16,45 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
-import com.google.common.collect.ImmutableMap
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptStoppedEvent
 import com.neuronrobotics.bowlerbuilder.view.util.getFontAwesomeGlyph
 import com.neuronrobotics.bowlerkernel.hardware.Script
-import javafx.geometry.Pos
-import javafx.scene.control.CustomMenuItem
 import org.controlsfx.glyphfont.FontAwesome
 import org.greenrobot.eventbus.Subscribe
-import org.octogonapus.ktguava.collections.emptyImmutableMap
-import org.octogonapus.ktguava.collections.toImmutableMap
 import tornadofx.*
 
-private class MultipleScriptsView(
-    private val scripts: ImmutableMap<Script, String>
-) : View() {
-
-    override val root = hbox {
-        text("${scripts.size} scripts running") {
-            contextmenu {
-                scripts.forEach { script, name ->
-                    this += CustomMenuItem().apply {
-                        content = hbox {
-                            spacing = 5.0
-                            alignment = Pos.CENTER_LEFT
-
-                            text(name)
-                            button(
-                                graphic = getFontAwesomeGlyph(FontAwesome.Glyph.TIMES_CIRCLE)
-                            ).setOnAction {
-                                runAsync { script.stopAndCleanUp() }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 /**
- * Displays which scripts are currently running. Send a [ScriptRunningEvent] when a script starts
- * running and send a [ScriptStoppedEvent] when a script stops running.
+ * Displays which scripts are currently running. Send a [ScriptRunningEvent] when a scripts starts
+ * running and send a [ScriptStoppedEvent] when a scripts stops running.
  */
 class RunningScriptsView : Fragment() {
 
-    private val scripts = mutableMapOf<Script, String>()
-
-    override val root = hbox {
-        this += MultipleScriptsView(emptyImmutableMap())
+    private val processView = RunningProcessView<Script>(
+        "scripts"
+    ) { script ->
+        button(
+            graphic = getFontAwesomeGlyph(FontAwesome.Glyph.TIMES_CIRCLE)
+        ).setOnAction {
+            runAsync { script.stopAndCleanUp() }
+        }
     }
+
+    override val root = processView.root
 
     init {
         MainWindowController.mainUIEventBus.register(this)
+    }
+
+    @Subscribe
+    fun onScriptRunningEvent(event: ScriptRunningEvent) {
+        processView.addProcess(event.script, event.nonEmptyDisplayName())
+    }
+
+    @Subscribe
+    fun onScriptStoppedEvent(event: ScriptStoppedEvent) {
+        processView.removeProcess(event.script)
     }
 
     private fun ScriptRunningEvent.nonEmptyDisplayName() =
@@ -78,24 +62,4 @@ class RunningScriptsView : Fragment() {
             script::class.java.simpleName
         else
             displayName
-
-    @Subscribe
-    fun onScriptRunningEvent(event: ScriptRunningEvent) {
-        scripts[event.script] = event.nonEmptyDisplayName()
-        fixScriptView()
-    }
-
-    @Subscribe
-    fun onScriptStoppedEvent(event: ScriptStoppedEvent) {
-        scripts.remove(event.script)
-        fixScriptView()
-    }
-
-    private fun fixScriptView() {
-        runLater {
-            // Refresh the context menu items
-            root.children.remove(root.children.last())
-            root.children.add(MultipleScriptsView(scripts.toImmutableMap()).root)
-        }
-    }
 }

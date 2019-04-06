@@ -68,12 +68,16 @@ class WebBrowserController
         } else {
             getCurrentGistId(engine).flatMap { gistId ->
                 val url = getGitUrlFromPageUrl(currentUrl, gistId)
-                val files = getInstanceOf<MainWindowController>().gitFS.flatMap {
-                    it.cloneRepoAndGetFiles(url)
-                }.fold(
-                    { emptyImmutableList<File>() },
-                    { it }
-                )
+                val files = getInstanceOf<MainWindowController>().let { controller ->
+                    controller.ideAction("Cloning $url") {
+                        controller.gitFS.flatMap {
+                            it.cloneRepoAndGetFiles(url)
+                        }.fold(
+                            { emptyImmutableList<File>() },
+                            { it }
+                        )
+                    }
+                }
 
                 files.map {
                     WebBrowserScript(
@@ -142,11 +146,13 @@ class WebBrowserController
                 """.trimMargin()
             }
 
-            cadScriptEditorFactory.createAndOpenScriptEditor(
-                it.gistFile.gist.gitUrl,
-                it.gistFile.file
-            ).apply {
-                runLater { editor.gotoLine(0) }
+            getInstanceOf<MainWindowController>().ideAction("Opening Script Editor") {
+                cadScriptEditorFactory.createAndOpenScriptEditor(
+                    it.gistFile.gist.gitUrl,
+                    it.gistFile.file
+                ).apply {
+                    runLater { editor.gotoLine(0) }
+                }
             }
         }
     }
@@ -166,34 +172,34 @@ class WebBrowserController
             """.trimMargin()
         }
 
-        return getInstanceOf<MainWindowController>().gitFS.flatMap {
-            it.forkRepo(currentScript.gistFile.gist.gitUrl).map { gistForkUrl ->
-                val scriptClone = currentScript.copy(
-                    pageUrl = gistForkUrl,
-                    gistFile = currentScript.gistFile.copy(
-                        gist = currentScript.gistFile.gist.copy(
-                            gitUrl = gistForkUrl
-                        )
-                    )
-                )
-
-                LOGGER.info {
+        return getInstanceOf<MainWindowController>().let { controller ->
+            controller.gitFS.flatMap {
+                controller.ideAction("Forking $currentScript.gistFile.gist.gitUrl") {
+                    it.forkRepo(currentScript.gistFile.gist.gitUrl).map { gistForkUrl ->
+                        currentScript.copy(
+                            pageUrl = gistForkUrl,
+                            gistFile = currentScript.gistFile.copy(
+                                gist = currentScript.gistFile.gist.copy(gitUrl = gistForkUrl)
+                            )
+                        ).also {
+                            LOGGER.info {
+                                """
+                                |Forked to:
+                                |$it
+                                """.trimMargin()
+                            }
+                        }
+                    }
+                }
+            }.recoverWith {
+                LOGGER.severe {
                     """
-                    |Forked to:
-                    |$scriptClone
+                    |Failed to fork gist:
+                    |${Throwables.getStackTraceAsString(it)}
                     """.trimMargin()
                 }
-
-                scriptClone
+                Try.raise(it)
             }
-        }.recoverWith {
-            LOGGER.severe {
-                """
-                |Failed to fork gist:
-                |${Throwables.getStackTraceAsString(it)}
-                """.trimMargin()
-            }
-            Try.raise(it)
         }
     }
 

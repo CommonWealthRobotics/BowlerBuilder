@@ -30,9 +30,13 @@ const val BOWLER_ASSET_REPO = "https://github.com/madhephaestus/BowlerStudioImag
  * @return The asset file.
  */
 fun loadBowlerAsset(filename: String): Try<File> =
-    getInstanceOf<MainWindowController>().gitFS.flatMap {
-        it.cloneRepoAndGetFiles(BOWLER_ASSET_REPO).flatMap {
-            Try { it.first { it.name == filename } }
+    getInstanceOf<MainWindowController>().let { controller ->
+        controller.ideAction("Cloning $BOWLER_ASSET_REPO") {
+            controller.gitFS.flatMap {
+                it.cloneRepoAndGetFiles(BOWLER_ASSET_REPO).flatMap {
+                    Try { it.first { it.name == filename } }
+                }
+            }
         }
     }
 
@@ -40,7 +44,11 @@ fun loadBowlerAsset(filename: String): Try<File> =
  * Clones the [BOWLER_ASSET_REPO].
  */
 fun cloneAssetRepo() {
-    getInstanceOf<MainWindowController>().gitFS.flatMap {
-        it.cloneRepo(BOWLER_ASSET_REPO)
+    getInstanceOf<MainWindowController>().let { controller ->
+        controller.ideAction("Cloning $BOWLER_ASSET_REPO") {
+            controller.gitFS.flatMap {
+                it.cloneRepo(BOWLER_ASSET_REPO)
+            }
+        }
     }
 }

@@ -18,6 +18,8 @@ package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.PublishController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
+import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
@@ -58,7 +60,11 @@ class PublishView(
                             }
                         }
                     ) {
-                        controller.publish(file, commitMessage)
+                        getInstanceOf<MainWindowController>().let {
+                            it.ideAction("Publishing ${file.name}") {
+                                controller.publish(file, commitMessage)
+                            }
+                        }
                     } success {
                         LOGGER.info { "Push successful." }
                         close()

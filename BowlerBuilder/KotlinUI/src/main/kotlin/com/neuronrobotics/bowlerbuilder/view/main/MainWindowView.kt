@@ -40,6 +40,7 @@ import com.neuronrobotics.bowlerbuilder.view.newtab.NewTabTab
 import com.neuronrobotics.bowlerbuilder.view.scripteditor.CadScriptEditorTab
 import com.neuronrobotics.bowlerbuilder.view.webbrowser.WebBrowserTab
 import eu.mihosoft.vrl.v3d.CSG
+import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.control.ButtonType
@@ -144,7 +145,13 @@ class MainWindowView : View() {
                     vgrow = Priority.ALWAYS
                 }
 
-                this += RunningScriptsView()
+                hbox {
+                    padding = Insets(0.0, 0.0, 0.0, 2.0)
+                    spacing = 5.0
+
+                    this += RunningActionsView()
+                    this += RunningScriptsView()
+                }
             }
         }
     }
@@ -299,36 +306,38 @@ class MainWindowView : View() {
     @SuppressWarnings("LabeledExpression")
     fun reloadGists() {
         thread(isDaemon = true) {
-            val gists = Try {
-                controller.gitHub.map {
-                    it.myself.listGists().toImmutableList()
-                }
-            }.flatMap { it }
+            controller.ideAction("Reload Gists") {
+                val gists = Try {
+                    controller.gitHub.map {
+                        it.myself.listGists().toImmutableList()
+                    }
+                }.flatMap { it }
 
-            val items = gists.getOrElse {
-                LOGGER.warning {
-                    """
+                val items = gists.getOrElse {
+                    LOGGER.warning {
+                        """
                     |Could not reload gists:
                     |${Throwables.getStackTraceAsString(it)}
                     """.trimMargin()
-                }
+                    }
 
-                return@thread
-            }.map { gist ->
-                Menu(gist.description).apply {
-                    gist.files.values.forEach { gistFile ->
-                        item(gistFile.fileName).action {
-                            thread(isDaemon = true) {
-                                controller.openGistFile(gist, gistFile)
+                    return@thread
+                }.map { gist ->
+                    Menu(gist.description).apply {
+                        gist.files.values.forEach { gistFile ->
+                            item(gistFile.fileName).action {
+                                thread(isDaemon = true) {
+                                    controller.openGistFile(gist, gistFile)
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            runLater {
-                gistsMenu.items.clear()
-                gistsMenu.items.addAll(items)
+                runLater {
+                    gistsMenu.items.clear()
+                    gistsMenu.items.addAll(items)
+                }
             }
         }
     }
@@ -339,34 +348,36 @@ class MainWindowView : View() {
     @SuppressWarnings("LabeledExpression")
     fun reloadOrgs() {
         thread(isDaemon = true) {
-            val orgs = Try {
-                controller.gitHub.map {
-                    it.myself.organizations
-                }
-            }.flatMap { it }
+            controller.ideAction("Reload Orgs") {
+                val orgs = Try {
+                    controller.gitHub.map {
+                        it.myself.organizations
+                    }
+                }.flatMap { it }
 
-            val items = orgs.getOrElse {
-                LOGGER.warning {
-                    """
+                val items = orgs.getOrElse {
+                    LOGGER.warning {
+                        """
                     |Could not reload organizations:
                     |${Throwables.getStackTraceAsString(it)}
                     """.trimMargin()
-                }
+                    }
 
-                return@thread
-            }.map { org ->
-                Menu(org.login).apply {
-                    org.repositories.values.forEach { repo ->
-                        item(repo.name).action {
-                            addTab(WebBrowserTab(repo.httpTransportUrl))
+                    return@thread
+                }.map { org ->
+                    Menu(org.login).apply {
+                        org.repositories.values.forEach { repo ->
+                            item(repo.name).action {
+                                addTab(WebBrowserTab(repo.httpTransportUrl))
+                            }
                         }
                     }
                 }
-            }
 
-            runLater {
-                orgsMenu.items.clear()
-                orgsMenu.items.addAll(items)
+                runLater {
+                    orgsMenu.items.clear()
+                    orgsMenu.items.addAll(items)
+                }
             }
         }
     }
@@ -377,32 +388,34 @@ class MainWindowView : View() {
     @SuppressWarnings("LabeledExpression")
     fun reloadRepos() {
         thread(isDaemon = true) {
-            val repos = Try {
-                controller.gitHub.map {
-                    it.myself.listRepositories().toImmutableList()
-                }
-            }.flatMap { it }
+            controller.ideAction("Reload Repos") {
+                val repos = Try {
+                    controller.gitHub.map {
+                        it.myself.listRepositories().toImmutableList()
+                    }
+                }.flatMap { it }
 
-            val items = repos.getOrElse {
-                LOGGER.warning {
-                    """
+                val items = repos.getOrElse {
+                    LOGGER.warning {
+                        """
                     |Could not reload repositories:
                     |${Throwables.getStackTraceAsString(it)}
                     """.trimMargin()
-                }
+                    }
 
-                return@thread
-            }.map { repo ->
-                MenuItem(repo.name).apply {
-                    action {
-                        addTab(WebBrowserTab(repo.httpTransportUrl))
+                    return@thread
+                }.map { repo ->
+                    MenuItem(repo.name).apply {
+                        action {
+                            addTab(WebBrowserTab(repo.httpTransportUrl))
+                        }
                     }
                 }
-            }
 
-            runLater {
-                reposMenu.items.clear()
-                reposMenu.items.addAll(items)
+                runLater {
+                    reposMenu.items.clear()
+                    reposMenu.items.addAll(items)
+                }
             }
         }
     }
