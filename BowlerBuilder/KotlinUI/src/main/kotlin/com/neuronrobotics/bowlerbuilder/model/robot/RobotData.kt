@@ -21,5 +21,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.base.model.KinematicBaseData
 data class RobotData(
     val kinematicBase: KinematicBaseData,
     val cadGeneratorPullURL: String,
-    val cadGeneratorFilename: String
+    val cadGeneratorFilename: String,
+    val robotScriptPullURL: String,
+    val robotScriptFilename: String
 )
