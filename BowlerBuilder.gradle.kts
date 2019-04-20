@@ -12,7 +12,7 @@ import java.util.Properties
 plugins {
     jacoco
     pmd
-    id("com.diffplug.gradle.spotless") version "3.16.0"
+    id("com.diffplug.gradle.spotless") version "3.22.0"
     id("org.jlleitschuh.gradle.ktlint") version "6.2.1"
     id("com.github.spotbugs") version "1.7.1"
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
