@@ -17,6 +17,7 @@ plugins {
     id("com.github.spotbugs") version "1.6.4"
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
     id("com.adarshr.test-logger") version "1.6.0"
+    id("org.openjfx.javafxplugin") version "0.0.7"
 }
 
 object Versions {
@@ -322,6 +323,19 @@ configure(kotlinProjects) {
         )
         parallel = true
         config = files("${rootProject.rootDir}/config/detekt/config.yml")
+    }
+}
+
+configure(javafxProjects) {
+    apply {
+        plugin("org.openjfx.javafxplugin")
+    }
+
+    javafx {
+        version = "11.0.2"
+        modules = listOf(
+            "javafx.base", "javafx.controls", "javafx.fxml", "javafx.graphics", "javafx.web"
+        )
     }
 }
 
