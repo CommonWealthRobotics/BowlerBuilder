@@ -76,7 +76,7 @@ allprojects {
     pluginManager.withPlugin("jacoco") {
         // If this project has the plugin applied, configure the tool version.
         jacoco {
-            toolVersion = "0.8.0"
+            toolVersion = "0.8.3"
         }
     }
 
