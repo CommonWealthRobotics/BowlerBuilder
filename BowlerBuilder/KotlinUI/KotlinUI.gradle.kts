@@ -10,6 +10,31 @@ fun DependencyHandler.arrow(name: String) =
 
 application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
+    applicationDefaultJvmArgs += listOf(
+        // For various usages of TraversalEngine
+        "--add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+        "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
+        // For FontAwesome Style
+        "--add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
+        // For various behaviors across controls
+        "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+        // For ReadOnlyUnbackedObservableList across files
+        "--add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+        // For InputMap used in behavior classes
+        "--add-exports=javafx.controls/com.sun.javafx.scene.control.inputmap=ALL-UNNAMED",
+        // For EventHandlerManager in AutoCompletionBinding
+        "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+        // For MappingChange, NonIterableChange across files
+        "--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED",
+        // For VersionInfo in VersionChecker
+        "--add-exports=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED",
+        // For WebPage in SVGLoader
+        "--add-exports=javafx.web/com.sun.webkit=ALL-UNNAMED",
+        // For enabling FontAwesome
+        "--add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED"
+        // TODO: Remove this option when Guice is moved to ByteBuddy https://github.com/google/guice/issues/1133
+//        "--add-opens java.base/java.lang=ALL-UNNAMED"
+    )
 }
 
 tasks.withType<CreateStartScripts> {
@@ -50,8 +75,8 @@ dependencies {
     )
     implementation(group = "org.jsoup", name = "jsoup", version = "1.11.3")
     implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
-    implementation(group = "org.controlsfx", name = "controlsfx", version = "8.40.14")
-    implementation(group = "com.google.inject", name = "guice", version = "4.1.0")
+    implementation(group = "org.controlsfx", name = "controlsfx", version = "11.0.0")
+    implementation(group = "com.google.inject", name = "guice", version = "4.2.2")
     implementation(
         group = "com.google.inject.extensions",
         name = "guice-assistedinject",
