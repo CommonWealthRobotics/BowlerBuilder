@@ -329,7 +329,7 @@ configure(javafxProjects) {
     javafx {
         version = "11.0.2"
         modules = listOf(
-            "javafx.base", "javafx.controls", "javafx.fxml", "javafx.graphics", "javafx.web", 
+            "javafx.base", "javafx.controls", "javafx.fxml", "javafx.graphics", "javafx.web",
             "javafx.swing"
         )
     }

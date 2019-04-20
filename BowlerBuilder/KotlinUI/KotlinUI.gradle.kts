@@ -31,9 +31,9 @@ application {
         // For WebPage in SVGLoader
         "--add-exports=javafx.web/com.sun.webkit=ALL-UNNAMED",
         // For enabling FontAwesome
-        "--add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED"
+        "--add-exports=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
         // TODO: Remove this option when Guice is moved to ByteBuddy https://github.com/google/guice/issues/1133
-//        "--add-opens java.base/java.lang=ALL-UNNAMED"
+        "--add-opens=java.base/java.lang=ALL-UNNAMED"
     )
 }
 
