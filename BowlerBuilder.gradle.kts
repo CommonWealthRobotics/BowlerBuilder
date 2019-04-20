@@ -100,11 +100,6 @@ allprojects {
             ktlint(ktlintVersion)
             trimTrailingWhitespace()
         }
-        freshmark {
-            trimTrailingWhitespace()
-            indentWithSpaces(2)
-            endWithNewline()
-        }
         format("extraneous") {
             target("src/**/*.fxml")
             trimTrailingWhitespace()
