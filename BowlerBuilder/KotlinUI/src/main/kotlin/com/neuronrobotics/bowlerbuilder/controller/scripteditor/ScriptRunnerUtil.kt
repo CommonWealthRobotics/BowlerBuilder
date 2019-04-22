@@ -49,6 +49,8 @@ internal fun runAndHandleScript(
         script.startScript(emptyImmutableList()).also { script.stopAndCleanUp() }
     }
 
+    MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(script))
+
     result.map {
         it.fold(
             {

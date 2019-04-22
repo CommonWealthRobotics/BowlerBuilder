@@ -174,8 +174,9 @@ class MainWindowController
                     injector.getInstance<DefaultGitScriptFactory.Factory>().create(it)
                 }.getOrElse {
                     object : GitScriptFactory {
-                        override fun createScriptFromGit(gitFile: GitFile): Either<String, Script> =
-                            ("Please log in and restart." +
+                        override fun createScriptFromGit(gitFile: GitFile
+                        ): Either<String, Script> =
+                            ("Please log in and restart. " +
                                 "If you have just logged in, please restart.").left()
                     }
                 }

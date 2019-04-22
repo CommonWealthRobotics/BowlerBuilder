@@ -47,6 +47,7 @@ repositories {
     maven(url = "https://jitpack.io")
     maven(url = "https://dl.bintray.com/s1m0nw1/KtsRunner")
     jcenter()
+    mavenLocal()
 }
 
 dependencies {
@@ -54,6 +55,8 @@ dependencies {
     api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.9")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(group = "org.octogonapus", name = "kt-guava-core", version = "0.2.1")
+    api(group = "io.ktor", name = "ktor-server-core", version = "1.1.4")
+    api(group = "io.ktor", name = "ktor-server-netty", version = "1.1.4")
 
     implementation(arrow("arrow-core-data"))
     implementation(arrow("arrow-core-extensions"))
