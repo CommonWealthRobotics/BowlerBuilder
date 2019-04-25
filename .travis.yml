@@ -12,6 +12,7 @@ env:
   - TERM=dumb
 
 before_install:
+  - sudo apt update
   - sudo apt install -y libopenjfx-java=8u161-b12-1ubuntu2 libopenjfx-java-doc=8u161-b12-1ubuntu2 libopenjfx-jni=8u161-b12-1ubuntu2 openjfx=8u161-b12-1ubuntu2
 install:
   - ./gradlew assemble --stacktrace
