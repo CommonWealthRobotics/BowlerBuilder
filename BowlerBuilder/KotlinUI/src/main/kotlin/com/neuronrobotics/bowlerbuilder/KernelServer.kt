@@ -77,6 +77,10 @@ class KernelServer {
                             )
                         )
                     }
+
+                    get("/robots.obj") {
+                        call.respondText(File("/home/salmon/Downloads/untitled.obj").readText())
+                    }
                 }
             }
         ).apply { start(wait = true) }
