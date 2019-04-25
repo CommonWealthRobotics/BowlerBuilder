@@ -13,8 +13,8 @@ env:
 
 before_install:
   - echo $TRAVIS_OS_NAME
-  - if [[ "$TRAVIS_OS_NAME" == "linux/amd64" ]]; sudo apt update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux/amd64" ]]; sudo apt install -y openjfx; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt install -y openjfx; fi
 install:
   - ./gradlew assemble --stacktrace
 
