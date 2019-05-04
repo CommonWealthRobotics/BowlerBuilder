@@ -123,15 +123,13 @@ configure(javaProjects) {
     }
 
     dependencies {
-        fun junitJupiter(name: String, version: String = "5.2.0") =
+        fun junitJupiter(name: String, version: String = "5.4.0") =
             create(group = "org.junit.jupiter", name = name, version = version)
 
         fun testFx(name: String, version: String = "4.0.+") =
             create(group = "org.testfx", name = name, version = version)
 
-        "testCompile"(junitJupiter(name = "junit-jupiter-api"))
-        "testCompile"(junitJupiter(name = "junit-jupiter-engine"))
-        "testCompile"(junitJupiter(name = "junit-jupiter-params"))
+        "testCompile"(junitJupiter(name = "junit-jupiter"))
         "testCompile"(testFx(name = "testfx-core", version = "4.0.7-alpha"))
         "testCompile"(testFx(name = "testfx-junit5", version = "4.0.6-alpha"))
 
@@ -268,9 +266,6 @@ configure(kotlinProjects) {
             name = "kotlinx-coroutines-core",
             version = "1.0.0"
         )
-
-        "testCompile"(kotlin("test", kotlinVersion))
-        "testCompile"(kotlin("test-junit", kotlinVersion))
     }
 
     tasks.withType<KotlinCompile> {
@@ -370,7 +365,7 @@ configure(javaProjects + kotlinProjects) {
 }
 
 tasks.wrapper {
-    gradleVersion = "5.3.1"
+    gradleVersion = "5.4.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 

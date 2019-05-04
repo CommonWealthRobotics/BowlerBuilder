@@ -16,8 +16,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 internal class AceWebViewCommandMapperTest {
 
