@@ -28,7 +28,7 @@ dependencies {
     api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
     api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.9")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
-    api(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.5")
+    api(group = "org.octogonapus", name = "kt-guava-core", version = "0.2.1")
 
     implementation(arrow("arrow-core-data"))
     implementation(arrow("arrow-core-extensions"))

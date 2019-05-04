@@ -261,6 +261,7 @@ configure(kotlinProjects) {
         // Weird syntax, see: https://github.com/gradle/kotlin-dsl/issues/894
         "compile"(kotlin("stdlib-jdk8", kotlinVersion))
         "compile"(kotlin("reflect", kotlinVersion))
+        "compile"(kotlin("script-runtime", kotlinVersion))
         "compile"(
             group = "org.jetbrains.kotlinx",
             name = "kotlinx-coroutines-core",
