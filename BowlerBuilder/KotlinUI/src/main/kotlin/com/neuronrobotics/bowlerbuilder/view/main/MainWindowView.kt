@@ -18,7 +18,6 @@ package com.neuronrobotics.bowlerbuilder.view.main
 
 import arrow.core.extensions.`try`.monadThrow.bindingCatch
 import arrow.core.handleError
-import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
@@ -26,6 +25,7 @@ import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Com
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.cloneAssetRepo
+import com.neuronrobotics.bowlerbuilder.controller.util.warningShort
 import com.neuronrobotics.bowlerbuilder.view.ConsoleTab
 import com.neuronrobotics.bowlerbuilder.view.ReportIssueView
 import com.neuronrobotics.bowlerbuilder.view.cad.CadView
@@ -52,7 +52,6 @@ import javafx.scene.layout.Priority
 import org.greenrobot.eventbus.Subscribe
 import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
-import java.io.FileNotFoundException
 import javax.inject.Singleton
 import kotlin.concurrent.thread
 
@@ -333,16 +332,10 @@ class MainWindowView : View() {
                         gistsMenu.items.addAll(items)
                     }
                 }.handleError {
-                    // FileNotFoundException is typically a failure to log in
-                    val exceptionString = when (it) {
-                        is FileNotFoundException -> it.localizedMessage
-                        else -> Throwables.getStackTraceAsString(it)
-                    }
-
-                    LOGGER.warning {
+                    LOGGER.warningShort(it) {
                         """
                         |Could not reload gists:
-                        |$exceptionString
+                        |${it.localizedMessage}
                         """.trimMargin()
                     }
                 }
@@ -375,16 +368,10 @@ class MainWindowView : View() {
                         orgsMenu.items.addAll(items)
                     }
                 }.handleError {
-                    // FileNotFoundException is typically a failure to log in
-                    val exceptionString = when (it) {
-                        is FileNotFoundException -> it.localizedMessage
-                        else -> Throwables.getStackTraceAsString(it)
-                    }
-
-                    LOGGER.warning {
+                    LOGGER.warningShort(it) {
                         """
                         |Could not reload organizations:
-                        |$exceptionString
+                        |${it.localizedMessage}
                         """.trimMargin()
                     }
                 }
@@ -415,16 +402,10 @@ class MainWindowView : View() {
                         reposMenu.items.addAll(items)
                     }
                 }.handleError {
-                    // FileNotFoundException is typically a failure to log in
-                    val exceptionString = when (it) {
-                        is FileNotFoundException -> it.localizedMessage
-                        else -> Throwables.getStackTraceAsString(it)
-                    }
-
-                    LOGGER.warning {
+                    LOGGER.warningShort(it) {
                         """
                         |Could not reload repositories:
-                        |$exceptionString
+                        |${it.localizedMessage}
                         """.trimMargin()
                     }
                 }

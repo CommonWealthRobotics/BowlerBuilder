@@ -20,14 +20,14 @@ import arrow.core.Try
 import arrow.core.Try.Companion.raiseError
 import arrow.core.getOrElse
 import arrow.core.handleErrorWith
-import arrow.core.recoverWith
-import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.scripteditor.GitScriptRunner
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.severeShort
+import com.neuronrobotics.bowlerbuilder.controller.util.warningShort
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
@@ -63,7 +63,8 @@ class WebBrowserController
      */
     @SuppressWarnings("TooGenericExceptionCaught")
     fun loadItemsOnPage(currentUrl: String, engine: WebEngine) {
-        LOGGER.fine("Loading items for: $currentUrl")
+        LOGGER.fine { "Loading items for: $currentUrl" }
+
         if (currentUrl.split("//").size < 2) {
             // Don't call getCurrentGistId() with less than two elements because it throws an
             // exception
@@ -187,20 +188,21 @@ class WebBrowserController
                         ).also {
                             LOGGER.info {
                                 """
-                                        |Forked to:
-                                        |$it
-                                        """.trimMargin()
+                                |Forked to:
+                                |$it
+                                """.trimMargin()
                             }
                         }
                     }
                 }
             }.handleErrorWith {
-                LOGGER.severe {
+                LOGGER.severeShort(it) {
                     """
-                            |Failed to fork gist:
-                            |${Throwables.getStackTraceAsString(it)}
-                            """.trimMargin()
+                    |Failed to fork gist:
+                    |${it.localizedMessage}
+                    """.trimMargin()
                 }
+
                 raiseError(it)
             }
         }
@@ -259,12 +261,13 @@ class WebBrowserController
                     }
                 }.toImmutableList()
         }.getOrElse {
-            LOGGER.warning {
+            LOGGER.warningShort(it) {
                 """
                 |Failure while parsing gist id's from document:
-                |${Throwables.getStackTraceAsString(it)}
+                |${it.localizedMessage}
                 """.trimMargin()
             }
+
             emptyImmutableList()
         }
     }

@@ -19,14 +19,15 @@ package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 import arrow.core.Try
 import arrow.core.Try.Companion.raiseError
 import arrow.core.extensions.`try`.monadThrow.bindingCatch
-import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.getNonLoopbackNIMacs
+import com.neuronrobotics.bowlerbuilder.controller.util.severeShort
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
+import org.kohsuke.github.HttpException
 import tornadofx.*
 import java.nio.file.Paths
 import javax.inject.Singleton
@@ -66,11 +67,18 @@ class LoginManager {
         }
 
         when (tokenGitHub) {
-            is Try.Failure -> LOGGER.severe {
-                """
-                |Failed to generate token:
-                |${Throwables.getStackTraceAsString(tokenGitHub.exception)}
-                """.trimMargin()
+            is Try.Failure -> {
+                LOGGER.severeShort(tokenGitHub.exception) {
+                    val message = when (val ex = tokenGitHub.exception) {
+                        is HttpException -> "${ex.responseCode} ${ex.responseMessage}"
+                        else -> ex.localizedMessage
+                    }
+
+                    """
+                    |Failed to generate token:
+                    |$message
+                    """.trimMargin()
+                }
             }
         }
 
@@ -122,7 +130,7 @@ class LoginManager {
             IllegalStateException("User is logged out.")
         )
 
-        LOGGER.info("Logged out.")
+        LOGGER.info { "Logged out." }
     }
 
     private fun readCredentials(): Try<Pair<String, String>> =

@@ -22,7 +22,6 @@ import arrow.core.Try.Companion.raiseError
 import arrow.core.getOrElse
 import arrow.core.handleErrorWith
 import arrow.core.left
-import com.google.common.base.Throwables
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Injector
@@ -35,6 +34,7 @@ import com.neuronrobotics.bowlerbuilder.controller.robot.RobotFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.AceCadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.scripteditorfactory.CadScriptEditorFactory
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.warningShort
 import com.neuronrobotics.bowlerbuilder.view.main.MainWindowView
 import com.neuronrobotics.bowlerbuilder.view.main.event.ActionRunningEvent
 import com.neuronrobotics.bowlerbuilder.view.main.event.ActionStoppedEvent
@@ -123,10 +123,10 @@ class MainWindowController
      */
     fun deleteGitCache() {
         gitFS.toEither {
-            LOGGER.warning {
+            LOGGER.warningShort(it) {
                 """
                 |Cannot delete Git cache:
-                |${Throwables.getStackTraceAsString(it)}
+                |${it.localizedMessage}
                 """.trimMargin()
             }
         }.map {

@@ -19,6 +19,7 @@ package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
+import com.neuronrobotics.bowlerbuilder.controller.util.warningShort
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsSliderWidget
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.camera.TransformableGroup
@@ -522,8 +523,9 @@ class BowlerCadEngine : Pane() {
                     meshViewGroup.children.add(mesh)
                 }
             } catch (e: IllegalArgumentException) {
-                LOGGER.warning { "Possible duplicate child added to CAD engine." }
-                LOGGER.fine { Throwables.getStackTraceAsString(e) }
+                LOGGER.warningShort(e) {
+                    "Possible duplicate child added to CAD engine."
+                }
             }
         }
 
@@ -539,7 +541,12 @@ class BowlerCadEngine : Pane() {
         try {
             FxUtil.runFXAndWait { meshViewGroup.children.clear() }
         } catch (e: InterruptedException) {
-            LOGGER.fine(Throwables.getStackTraceAsString(e))
+            LOGGER.warningShort(e) {
+                """
+                |Exception trying to clear CSGs:
+                |${e.localizedMessage}
+                """.trimMargin()
+            }
         }
 
         csgManager.clearCSGs()

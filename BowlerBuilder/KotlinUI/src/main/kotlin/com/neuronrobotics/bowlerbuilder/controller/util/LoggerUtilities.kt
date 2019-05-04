@@ -16,6 +16,7 @@
  */
 package com.neuronrobotics.bowlerbuilder.controller.util
 
+import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerkernel.settings.BOWLER_DIRECTORY
 import com.neuronrobotics.bowlerkernel.settings.LOGS_DIRECTORY
 import java.io.File
@@ -141,4 +142,37 @@ internal class LoggerUtilities private constructor() {
             return prop["version"] as String
         }
     }
+}
+
+/**
+ * Logs a [Logger.severe] message and logs the full exception with [Logger.fine].
+ *
+ * @param ex The exception.
+ * @param message The message supplier.
+ */
+fun Logger.severeShort(ex: Throwable, message: () -> String) {
+    severe(message)
+    fine(Throwables.getStackTraceAsString(ex))
+}
+
+/**
+ * Logs a [Logger.warning] message and logs the full exception with [Logger.fine].
+ *
+ * @param ex The exception.
+ * @param message The message supplier.
+ */
+fun Logger.warningShort(ex: Throwable, message: () -> String) {
+    warning(message)
+    fine(Throwables.getStackTraceAsString(ex))
+}
+
+/**
+ * Logs a [Logger.info] message and logs the full exception with [Logger.fine].
+ *
+ * @param ex The exception.
+ * @param message The message supplier.
+ */
+fun Logger.infoShort(ex: Throwable, message: () -> String) {
+    info(message)
+    fine(Throwables.getStackTraceAsString(ex))
 }

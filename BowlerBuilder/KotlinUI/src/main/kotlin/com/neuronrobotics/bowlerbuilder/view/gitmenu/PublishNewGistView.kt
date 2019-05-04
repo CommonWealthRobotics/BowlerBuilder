@@ -18,10 +18,10 @@ package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import arrow.core.getOrElse
 import arrow.core.handleError
-import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
+import com.neuronrobotics.bowlerbuilder.controller.util.severeShort
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -106,12 +106,13 @@ class PublishNewGistView(
                         close()
                     } fail {
                         publishSuccessful = false
-                        LOGGER.severe {
+                        LOGGER.severeShort(it) {
                             """
                             |Failed to push!
-                            |${Throwables.getStackTraceAsString(it)}
+                            |${it.localizedMessage}
                             """.trimMargin()
                         }
+
                         close()
                     }
                 }
