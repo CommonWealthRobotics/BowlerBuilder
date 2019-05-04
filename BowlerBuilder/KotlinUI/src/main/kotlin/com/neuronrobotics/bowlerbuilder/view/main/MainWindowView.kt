@@ -16,8 +16,8 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.main
 
-import arrow.core.Try
-import arrow.core.getOrElse
+import arrow.core.extensions.`try`.monadThrow.bindingCatch
+import arrow.core.handleError
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableSet
 import com.neuronrobotics.bowlerbuilder.controller.gitmenu.LoginManager
@@ -52,6 +52,7 @@ import javafx.scene.layout.Priority
 import org.greenrobot.eventbus.Subscribe
 import org.octogonapus.ktguava.collections.toImmutableList
 import tornadofx.*
+import java.io.FileNotFoundException
 import javax.inject.Singleton
 import kotlin.concurrent.thread
 
@@ -312,36 +313,38 @@ class MainWindowView : View() {
     fun reloadGists() {
         thread(isDaemon = true) {
             controller.ideAction("Reload Gists") {
-                val gists = Try {
-                    controller.gitHub.map {
-                        it.myself.listGists().toImmutableList()
-                    }
-                }.flatMap { it }
-
-                val items = gists.getOrElse {
-                    LOGGER.warning {
-                        """
-                    |Could not reload gists:
-                    |${Throwables.getStackTraceAsString(it)}
-                    """.trimMargin()
-                    }
-
-                    return@thread
-                }.map { gist ->
-                    Menu(gist.description).apply {
-                        gist.files.values.forEach { gistFile ->
-                            item(gistFile.fileName).action {
-                                thread(isDaemon = true) {
-                                    controller.openGistFile(gist, gistFile)
+                bindingCatch {
+                    val (gitHub) = controller.gitHub
+                    val gists = gitHub.myself.listGists().toImmutableList()
+                    val items = gists.map { gist ->
+                        Menu(gist.description).apply {
+                            gist.files.values.forEach { gistFile ->
+                                item(gistFile.fileName).action {
+                                    thread(isDaemon = true) {
+                                        controller.openGistFile(gist, gistFile)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                runLater {
-                    gistsMenu.items.clear()
-                    gistsMenu.items.addAll(items)
+                    runLater {
+                        gistsMenu.items.clear()
+                        gistsMenu.items.addAll(items)
+                    }
+                }.handleError {
+                    // FileNotFoundException is typically a failure to log in
+                    val exceptionString = when (it) {
+                        is FileNotFoundException -> it.localizedMessage
+                        else -> Throwables.getStackTraceAsString(it)
+                    }
+
+                    LOGGER.warning {
+                        """
+                        |Could not reload gists:
+                        |$exceptionString
+                        """.trimMargin()
+                    }
                 }
             }
         }
@@ -354,34 +357,36 @@ class MainWindowView : View() {
     fun reloadOrgs() {
         thread(isDaemon = true) {
             controller.ideAction("Reload Orgs") {
-                val orgs = Try {
-                    controller.gitHub.map {
-                        it.myself.organizations
-                    }
-                }.flatMap { it }
-
-                val items = orgs.getOrElse {
-                    LOGGER.warning {
-                        """
-                    |Could not reload organizations:
-                    |${Throwables.getStackTraceAsString(it)}
-                    """.trimMargin()
-                    }
-
-                    return@thread
-                }.map { org ->
-                    Menu(org.login).apply {
-                        org.repositories.values.forEach { repo ->
-                            item(repo.name).action {
-                                addTab(WebBrowserTab(repo.httpTransportUrl))
+                bindingCatch {
+                    val (gitHub) = controller.gitHub
+                    val orgs = gitHub.myself.organizations
+                    val items = orgs.map { org ->
+                        Menu(org.login).apply {
+                            org.repositories.values.forEach { repo ->
+                                item(repo.name).action {
+                                    addTab(WebBrowserTab(repo.httpTransportUrl))
+                                }
                             }
                         }
                     }
-                }
 
-                runLater {
-                    orgsMenu.items.clear()
-                    orgsMenu.items.addAll(items)
+                    runLater {
+                        orgsMenu.items.clear()
+                        orgsMenu.items.addAll(items)
+                    }
+                }.handleError {
+                    // FileNotFoundException is typically a failure to log in
+                    val exceptionString = when (it) {
+                        is FileNotFoundException -> it.localizedMessage
+                        else -> Throwables.getStackTraceAsString(it)
+                    }
+
+                    LOGGER.warning {
+                        """
+                        |Could not reload organizations:
+                        |$exceptionString
+                        """.trimMargin()
+                    }
                 }
             }
         }
@@ -394,32 +399,34 @@ class MainWindowView : View() {
     fun reloadRepos() {
         thread(isDaemon = true) {
             controller.ideAction("Reload Repos") {
-                val repos = Try {
-                    controller.gitHub.map {
-                        it.myself.listRepositories().toImmutableList()
-                    }
-                }.flatMap { it }
-
-                val items = repos.getOrElse {
-                    LOGGER.warning {
-                        """
-                    |Could not reload repositories:
-                    |${Throwables.getStackTraceAsString(it)}
-                    """.trimMargin()
-                    }
-
-                    return@thread
-                }.map { repo ->
-                    MenuItem(repo.name).apply {
-                        action {
-                            addTab(WebBrowserTab(repo.httpTransportUrl))
+                bindingCatch {
+                    val (gitHub) = controller.gitHub
+                    val repos = gitHub.myself.listRepositories().toImmutableList()
+                    val items = repos.map { repo ->
+                        MenuItem(repo.name).apply {
+                            action {
+                                addTab(WebBrowserTab(repo.httpTransportUrl))
+                            }
                         }
                     }
-                }
 
-                runLater {
-                    reposMenu.items.clear()
-                    reposMenu.items.addAll(items)
+                    runLater {
+                        reposMenu.items.clear()
+                        reposMenu.items.addAll(items)
+                    }
+                }.handleError {
+                    // FileNotFoundException is typically a failure to log in
+                    val exceptionString = when (it) {
+                        is FileNotFoundException -> it.localizedMessage
+                        else -> Throwables.getStackTraceAsString(it)
+                    }
+
+                    LOGGER.warning {
+                        """
+                        |Could not reload repositories:
+                        |$exceptionString
+                        """.trimMargin()
+                    }
                 }
             }
         }

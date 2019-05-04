@@ -18,6 +18,7 @@ package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import arrow.core.Try
 import arrow.core.Try.Companion.raiseError
+import arrow.core.extensions.`try`.monadThrow.bindingCatch
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
@@ -26,7 +27,6 @@ import com.neuronrobotics.bowlerbuilder.controller.util.getNonLoopbackNIMacs
 import com.neuronrobotics.bowlerkernel.gitfs.GitHubFS
 import javafx.beans.property.SimpleBooleanProperty
 import org.kohsuke.github.GitHub
-import org.kohsuke.github.HttpException
 import tornadofx.*
 import java.nio.file.Paths
 import javax.inject.Singleton
@@ -57,39 +57,24 @@ class LoginManager {
             return raiseError(IllegalStateException("Invalid login credentials."))
         }
 
-        return Try {
-            GitHub.connectUsingPassword(username, password).also { gitHub ->
-                val mac = getNonLoopbackNIMacs().firstOrNull() ?: "unknown-mac"
+        val tokenGitHub = bindingCatch {
+            val gitHub = GitHub.connectUsingPassword(username, password)
+            val mac = getNonLoopbackNIMacs().firstOrNull() ?: "unknown-mac"
+            val token = gitHub.createToken(setOf("repo", "gist"), "BowlerBuilder-$mac", "")
+            val (tokenGitHub) = loginToken(username, token.token)
+            tokenGitHub
+        }
 
-                val token = try {
-                    gitHub.createToken(
-                        setOf("repo", "gist"),
-                        "BowlerBuilder-$mac",
-                        ""
-                    )
-                } catch (ex: HttpException) {
-                    LOGGER.warning {
-                        """
-                        |Failed to generate token:
-                        |${Throwables.getStackTraceAsString(ex)}
-                        """.trimMargin()
-                    }
-
-                    throw ex
-                }
-
-                loginToken(username, token.token)
-            }
-        }.also {
-            if (it is HttpException) {
-                LOGGER.warning {
-                    """
-                    |Failed to generate token:
-                    |${Throwables.getStackTraceAsString(it)}
-                    """.trimMargin()
-                }
+        when (tokenGitHub) {
+            is Try.Failure -> LOGGER.severe {
+                """
+                |Failed to generate token:
+                |${Throwables.getStackTraceAsString(tokenGitHub.exception)}
+                """.trimMargin()
             }
         }
+
+        return tokenGitHub
     }
 
     /**
