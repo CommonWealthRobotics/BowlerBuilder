@@ -1,15 +1,12 @@
-import KotlinUI_gradle.Versions.arrow_version
-import KotlinUI_gradle.Versions.kernel_version
-
 plugins {
     `java-library`
     application
 }
 
-object Versions {
-    const val arrow_version = "0.8.1"
-    const val kernel_version = "0.0.21"
-}
+val kernel_version = "0.0.26"
+
+fun DependencyHandler.arrow(name: String) =
+    create(group = "io.arrow-kt", name = name, version = property("arrow.version") as String)
 
 application {
     mainClassName = "com.neuronrobotics.bowlerbuilder.BowlerBuilder"
@@ -31,8 +28,14 @@ dependencies {
     api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
     api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.9")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
-    api(group = "io.arrow-kt", name = "arrow-core", version = arrow_version)
     api(group = "org.octogonapus", name = "kt-guava-core", version = "0.0.5")
+
+    implementation(arrow("arrow-core-data"))
+    implementation(arrow("arrow-core-extensions"))
+    implementation(arrow("arrow-syntax"))
+    implementation(arrow("arrow-typeclasses"))
+    implementation(arrow("arrow-extras-data"))
+    implementation(arrow("arrow-extras-extensions"))
 
     implementation(
         group = "com.neuronrobotics",

@@ -213,6 +213,7 @@ class MainWindowView : View() {
     /**
      * Adds a tab to the [mainTabPane] and selects it.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun addTab(tab: Tab) {
         runLater {
             mainTabPane.tabs.add(mainTabPane.tabs.size - 1, tab)
@@ -223,6 +224,7 @@ class MainWindowView : View() {
     /**
      * Adds a tab to the [bottomTabPane] and selects it.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun addBottomTab(tab: Tab) {
         runLater {
             bottomTabPane.tabs.add(tab)
@@ -236,6 +238,7 @@ class MainWindowView : View() {
      *
      * @param cmp The [Tab.content] to search for.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun closeTabByContent(cmp: Node) {
         fun removeMatches(tabPane: TabPane) {
             fun findMatchInChildren(node: Node): Boolean =
@@ -255,9 +258,9 @@ class MainWindowView : View() {
      * Adds the [cad] objects to the current CAD editor. If there is no CAD viewer open, then a
      * new one is opened.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun addCadObjectsToCurrentTab(cad: ImmutableSet<CSG>) {
-        val selection = mainTabPane.selectionModel.selectedItem
-        when (selection) {
+        when (val selection = mainTabPane.selectionModel.selectedItem) {
             is CadScriptEditorTab -> selection.editor.cadView.engine.addAllCSGs(cad)
             else -> addTab(Tab("CAD", CadView().let {
                 it.engine.addAllCSGs(cad)
@@ -270,9 +273,9 @@ class MainWindowView : View() {
      * Sets the [cad] objects to the current CAD editor. If there is no CAD viewer open, then a
      * new one is opened.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun setCadObjectsToCurrentTab(cad: ImmutableSet<CSG>) {
-        val selection = mainTabPane.selectionModel.selectedItem
-        when (selection) {
+        when (val selection = mainTabPane.selectionModel.selectedItem) {
             is CadScriptEditorTab -> {
                 selection.editor.cadView.engine.clearCSGs()
                 selection.editor.cadView.engine.addAllCSGs(cad)
@@ -289,11 +292,13 @@ class MainWindowView : View() {
     /**
      * Returns the currently selected tab.
      */
-    fun getSelectedTab() = mainTabPane.selectionModel.selectedItem
+    @Suppress("unused")
+    fun getSelectedTab(): Tab = mainTabPane.selectionModel.selectedItem
 
     /**
      * Reloads the git-dependent menus.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     fun reloadMenus() {
         reloadGists()
         reloadOrgs()

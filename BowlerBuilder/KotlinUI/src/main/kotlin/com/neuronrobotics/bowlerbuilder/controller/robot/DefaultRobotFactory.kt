@@ -17,6 +17,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.robot
 
 import arrow.core.Either
+import arrow.core.getOrHandle
 import arrow.core.left
 import arrow.core.right
 import com.neuronrobotics.bowlerbuilder.model.robot.Robot
@@ -39,9 +40,8 @@ class DefaultRobotFactory
         )
 
         val cadGenerator = scriptFactory.getInstanceFromGit<CadGenerator>(
-            robotData.cadGeneratorPullURL,
-            robotData.cadGeneratorFilename
-        ).fold({ return it.left() }, { it })
+            robotData.cadGenerator
+        ).getOrHandle { return it.left() }
 
         return Robot(kinematicBase, cadGenerator).right()
     }

@@ -17,7 +17,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.scripteditor
 
 import arrow.core.Try
-import arrow.core.recover
+import arrow.core.handleError
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.view.main.event.ScriptRunningEvent
@@ -46,7 +46,7 @@ internal fun runAndHandleScript(
     MainWindowController.mainUIEventBus.post(ScriptRunningEvent(script, displayName))
 
     val result = Try {
-        script.runScript(emptyImmutableList())
+        script.startScript(emptyImmutableList()).also { script.stopAndCleanUp() }
     }
 
     result.map {
@@ -61,7 +61,7 @@ internal fun runAndHandleScript(
         )
 
         MainWindowController.mainUIEventBus.post(ScriptStoppedEvent(script))
-    }.recover {
+    }.handleError {
         logger.warning {
             """
             |Exception running script:

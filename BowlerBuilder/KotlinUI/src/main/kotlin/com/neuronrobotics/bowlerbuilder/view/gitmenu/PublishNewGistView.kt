@@ -17,7 +17,7 @@
 package com.neuronrobotics.bowlerbuilder.view.gitmenu
 
 import arrow.core.getOrElse
-import arrow.core.recover
+import arrow.core.handleError
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
@@ -50,14 +50,14 @@ class PublishNewGistView(
     private val gistIsPublicProperty = SimpleBooleanProperty(true)
     private var gistIsPublic by gistIsPublicProperty
 
-    val gistFilenameProperty = SimpleStringProperty("")
-    var gistFilename by gistFilenameProperty
-    val gitUrlProperty = SimpleStringProperty("")
-    var gitUrl by gitUrlProperty
-    val publishSuccessfulProperty = SimpleBooleanProperty(false)
+    private val gistFilenameProperty = SimpleStringProperty("")
+    private var gistFilename by gistFilenameProperty
+    private val gitUrlProperty = SimpleStringProperty("")
+    var gitUrl: String by gitUrlProperty
+    private val publishSuccessfulProperty = SimpleBooleanProperty(false)
     var publishSuccessful by publishSuccessfulProperty
-    val publishedFileProperty = SimpleObjectProperty<File>()
-    var publishedFile by publishedFileProperty
+    private val publishedFileProperty = SimpleObjectProperty<File>()
+    var publishedFile: File by publishedFileProperty
 
     override val root = form {
         fieldset("Gist Configuration", labelPosition = Orientation.VERTICAL) {
@@ -79,8 +79,8 @@ class PublishNewGistView(
                 action {
                     runAsync {
                         val mwc = getInstanceOf<MainWindowController>()
-                        mwc.gitHub.map {
-                            val gist = it.createGist()
+                        mwc.gitHub.map { gitHub ->
+                            val gist = gitHub.createGist()
                                 .file(gistFilename, scriptContent)
                                 .description(gistDescription)
                                 .public_(gistIsPublic)
@@ -88,7 +88,7 @@ class PublishNewGistView(
 
                             mwc.gitFS.map {
                                 it.cloneRepo(gist.gitPullUrl)
-                            }.recover {
+                            }.handleError {
                                 throw IllegalStateException("Failed to clone the gist.", it)
                             }
 

@@ -21,6 +21,7 @@ import arrow.core.left
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.view.main.event.ApplicationClosingEvent
+import com.neuronrobotics.bowlerkernel.gitfs.GitFile
 import com.neuronrobotics.bowlerkernel.hardware.Script
 import com.neuronrobotics.bowlerkernel.scripting.factory.GitScriptFactory
 import org.greenrobot.eventbus.Subscribe
@@ -41,12 +42,11 @@ class GitScriptRunner
     /**
      * Runs a script by text using the injected [scriptFactory].
      *
-     * @param gitUrl The Git url.
-     * @param filename The file name (including extension).
+     * @param gitFile The Git file.
      */
-    fun runScript(gitUrl: String, filename: String) {
+    fun runScript(gitFile: GitFile) {
         stopScript()
-        currentScript = scriptFactory.createScriptFromGit(gitUrl, filename)
+        currentScript = scriptFactory.createScriptFromGit(gitFile)
 
         currentScript.fold(
             {
@@ -57,7 +57,7 @@ class GitScriptRunner
                     """.trimMargin()
                 }
             },
-            { runAndHandleScript(it, scriptResultHandler, LOGGER, filename) }
+            { runAndHandleScript(it, scriptResultHandler, LOGGER, gitFile.filename) }
         )
     }
 

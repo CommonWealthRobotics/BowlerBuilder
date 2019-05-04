@@ -17,7 +17,9 @@
 package com.neuronrobotics.bowlerbuilder.controller.webbrowser
 
 import arrow.core.Try
+import arrow.core.Try.Companion.raiseError
 import arrow.core.getOrElse
+import arrow.core.handleErrorWith
 import arrow.core.recoverWith
 import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableList
@@ -29,6 +31,7 @@ import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.model.Gist
 import com.neuronrobotics.bowlerbuilder.model.GistFileOnDisk
 import com.neuronrobotics.bowlerbuilder.model.WebBrowserScript
+import com.neuronrobotics.bowlerkernel.gitfs.GitFile
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.web.WebEngine
@@ -120,7 +123,7 @@ class WebBrowserController
             """.trimMargin()
         }
 
-        gitScriptRunner.runScript(currentScript.gistFile.gist.gitUrl, currentScript.name)
+        gitScriptRunner.runScript(GitFile(currentScript.gistFile.gist.gitUrl, currentScript.name))
     }
 
     /**
@@ -184,21 +187,21 @@ class WebBrowserController
                         ).also {
                             LOGGER.info {
                                 """
-                                |Forked to:
-                                |$it
-                                """.trimMargin()
+                                        |Forked to:
+                                        |$it
+                                        """.trimMargin()
                             }
                         }
                     }
                 }
-            }.recoverWith {
+            }.handleErrorWith {
                 LOGGER.severe {
                     """
-                    |Failed to fork gist:
-                    |${Throwables.getStackTraceAsString(it)}
-                    """.trimMargin()
+                            |Failed to fork gist:
+                            |${Throwables.getStackTraceAsString(it)}
+                            """.trimMargin()
                 }
-                Try.raise(it)
+                raiseError(it)
             }
         }
     }

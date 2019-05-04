@@ -17,6 +17,7 @@
 package com.neuronrobotics.bowlerbuilder.controller.gitmenu
 
 import arrow.core.Try
+import arrow.core.Try.Companion.raiseError
 import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController
 import com.neuronrobotics.bowlerbuilder.controller.main.MainWindowController.Companion.getInstanceOf
@@ -53,7 +54,7 @@ class LoginManager {
      */
     fun login(username: String, password: String): Try<GitHub> {
         if (precheckCredentials(username, password)) {
-            return Try.raise(IllegalStateException("Invalid login credentials."))
+            return raiseError(IllegalStateException("Invalid login credentials."))
         }
 
         return Try {
@@ -96,7 +97,7 @@ class LoginManager {
      */
     fun loginToken(username: String, token: String): Try<GitHub> {
         if (precheckCredentials(username, token)) {
-            return Try.raise(IllegalStateException("Invalid login credentials."))
+            return raiseError(IllegalStateException("Invalid login credentials."))
         }
 
         return Try {
@@ -112,7 +113,7 @@ class LoginManager {
                     isLoggedIn = true
                     LOGGER.info { "Logged in." }
                 } else {
-                    getInstanceOf<MainWindowController>().gitHub = Try.raise(
+                    getInstanceOf<MainWindowController>().gitHub = raiseError(
                         IllegalStateException("Invalid login credentials.")
                     )
 
@@ -132,7 +133,7 @@ class LoginManager {
         isLoggedIn = false
         credentialFile.delete()
 
-        getInstanceOf<MainWindowController>().gitHub = Try.raise(
+        getInstanceOf<MainWindowController>().gitHub = raiseError(
             IllegalStateException("User is logged out.")
         )
 

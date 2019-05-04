@@ -16,12 +16,11 @@
  */
 package com.neuronrobotics.bowlerbuilder.model.robot
 
+import com.neuronrobotics.bowlerkernel.gitfs.GitFile
 import com.neuronrobotics.bowlerkernel.kinematics.base.model.KinematicBaseData
 
 data class RobotData(
     val kinematicBase: KinematicBaseData,
-    val cadGeneratorPullURL: String,
-    val cadGeneratorFilename: String,
-    val robotScriptPullURL: String,
-    val robotScriptFilename: String
+    val cadGenerator: GitFile,
+    val robotScript: GitFile
 )
