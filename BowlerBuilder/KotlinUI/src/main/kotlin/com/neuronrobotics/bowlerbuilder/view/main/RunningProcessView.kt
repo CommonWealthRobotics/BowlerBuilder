@@ -92,12 +92,13 @@ class RunningProcessView<T>(
     }
 
     private fun fixScriptView() {
+        val processesCopy = processes.toImmutableMap()
         runLater {
             // Refresh the context menu items
             root.children.remove(root.children.last())
             root.children.add(
                 MultipleProcessView(
-                    processes.toImmutableMap(),
+                    processesCopy,
                     processName,
                     extraConfiguration
                 ).root
