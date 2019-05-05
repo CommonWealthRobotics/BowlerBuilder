@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @SuppressWarnings("TooManyFunctions")
 class CSGManager {
+
     private val csgToMeshView: MutableMap<CSG, MeshView>
     private val csgNameToMeshView: MutableMap<String, MeshView>
     private val csgNameToCSG: MutableMap<String, CSG>

@@ -16,9 +16,9 @@
  */
 package com.neuronrobotics.bowlerbuilder.view.cad.cadengine.bowlercadengine
 
-import com.google.common.base.Throwables
 import com.neuronrobotics.bowlerbuilder.controller.util.LoggerUtilities
 import com.neuronrobotics.bowlerbuilder.controller.util.loadBowlerAsset
+import com.neuronrobotics.bowlerbuilder.controller.util.severeShort
 import com.neuronrobotics.bowlerbuilder.controller.util.warningShort
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsChangeListener
 import com.neuronrobotics.bowlerbuilder.view.cad.cadengine.EngineeringUnitsSliderWidget
@@ -69,7 +69,6 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
-import java.util.logging.Level
 import kotlin.concurrent.thread
 
 /**
@@ -258,12 +257,12 @@ class BowlerCadEngine : Pane() {
                 world.children.addAll(lookGroup, axisGroup)
             }
         } catch (e: Exception) {
-            LOGGER.log(
-                Level.WARNING,
-                "Could not load ruler/ground assets for CAD view.\n" + Throwables.getStackTraceAsString(
-                    e
-                )
-            )
+            LOGGER.warningShort(e) {
+                """
+                |Could not load ruler/ground assets for CAD view:
+                |${e.localizedMessage}
+                """.trimMargin()
+            }
         }
     }
 
@@ -415,11 +414,12 @@ class BowlerCadEngine : Pane() {
                                         try {
                                             csg.setParameterNewValue(key, newAngleDegrees)
                                         } catch (e: Exception) {
-                                            LOGGER.log(
-                                                Level.SEVERE,
-                                                "Could not set new parameter value.\n"
-                                                    + Throwables.getStackTraceAsString(e)
-                                            )
+                                            LOGGER.warningShort(e) {
+                                                """|
+                                                |Could not set new parameter value:
+                                                |${e.localizedMessage}
+                                                """.trimMargin()
+                                            }
                                         }
                                     }
 
@@ -444,24 +444,22 @@ class BowlerCadEngine : Pane() {
                             if (param != null) {
                                 val paramTypes = Menu(param.name + " " + param.strValue)
 
-                                param
-                                    .options
-                                    .forEach { option ->
-                                        val customMenuItem = MenuItem(option)
-                                        customMenuItem.setOnAction {
-                                            param.strValue = option
-                                            CSGDatabase.get(param.name).strValue = option
-                                            CSGDatabase.getParamListeners(param.name)
-                                                .forEach { listener ->
-                                                    listener.parameterChanged(
-                                                        param.name, param
-                                                    )
-                                                }
-                                            regenerateObjects()
-                                        }
-
-                                        paramTypes.items.add(customMenuItem)
+                                param.options.forEach { option ->
+                                    val customMenuItem = MenuItem(option)
+                                    customMenuItem.setOnAction {
+                                        param.strValue = option
+                                        CSGDatabase.get(param.name).strValue = option
+                                        CSGDatabase.getParamListeners(param.name)
+                                            .forEach { listener ->
+                                                listener.parameterChanged(
+                                                    param.name, param
+                                                )
+                                            }
+                                        regenerateObjects()
                                     }
+
+                                    paramTypes.items.add(customMenuItem)
+                                }
 
                                 parameters.items.add(paramTypes)
                             }
@@ -484,12 +482,12 @@ class BowlerCadEngine : Pane() {
                         try {
                             FileUtils.write(save, readyCSG.toStlString())
                         } catch (e: IOException) {
-                            LOGGER.log(
-                                Level.SEVERE,
-                                "Could not write CSG STL String.\n" + Throwables.getStackTraceAsString(
-                                    e
-                                )
-                            )
+                            LOGGER.severeShort(e) {
+                                """
+                                |Could not write CSG STL string:
+                                |${e.localizedMessage}
+                                """.trimMargin()
+                            }
                         }
                     }
                 }
