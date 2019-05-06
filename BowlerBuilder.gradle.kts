@@ -20,7 +20,7 @@ plugins {
 }
 
 object Versions {
-    const val bowlerBuilderVersion = "0.2.0"
+    const val bowlerBuilderVersion = "0.2.1"
     const val ktlintVersion = "0.29.0"
 }
 
