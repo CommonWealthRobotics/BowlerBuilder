@@ -16,7 +16,6 @@
  */
 import com.neuronrobotics.bowlerbuilder.KernelServer
 import com.neuronrobotics.bowlercad.cadgenerator.DefaultCadGenerator
-import com.neuronrobotics.bowlerkernel.kinematics.Limits
 import com.neuronrobotics.bowlerkernel.kinematics.base.DefaultKinematicBase
 import com.neuronrobotics.bowlerkernel.kinematics.base.baseid.SimpleKinematicBaseId
 import com.neuronrobotics.bowlerkernel.kinematics.closedloop.JointAngleController
@@ -34,6 +33,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.motion.NoopInertialStateEstima
 import com.neuronrobotics.bowlerkernel.kinematics.motion.NoopInverseKinematicsSolver
 import com.neuronrobotics.bowlerkernel.kinematics.motion.plan.NoopLimbMotionPlanFollower
 import com.neuronrobotics.bowlerkernel.kinematics.motion.plan.NoopLimbMotionPlanGenerator
+import com.neuronrobotics.bowlerkernel.util.Limits
 import org.junit.jupiter.api.Test
 import org.octogonapus.ktguava.collections.immutableListOf
 import org.octogonapus.ktguava.collections.toImmutableList
