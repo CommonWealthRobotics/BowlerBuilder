@@ -29,9 +29,21 @@ dependencies {
     api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
     api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.0.9")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
-    api(group = "org.octogonapus", name = "kt-guava-core", version = "0.2.1")
-    api(group = "io.ktor", name = "ktor-server-core", version = "1.1.4")
-    api(group = "io.ktor", name = "ktor-server-netty", version = "1.1.4")
+    api(
+        group = "org.octogonapus",
+        name = "kt-guava-core",
+        version = property("kt-guava-core.version") as String
+    )
+    api(
+        group = "io.ktor",
+        name = "ktor-server-core",
+        version = property("ktor-server.version") as String
+    )
+    api(
+        group = "io.ktor",
+        name = "ktor-server-netty",
+        version = property("ktor-server.version") as String
+    )
 
     implementation(arrow("arrow-core-data"))
     implementation(arrow("arrow-core-extensions"))
@@ -52,18 +64,26 @@ dependencies {
         version = "5.2.0.201812061821-r"
     )
     implementation(group = "org.jsoup", name = "jsoup", version = "1.11.3")
-    implementation(group = "com.google.guava", name = "guava", version = "27.0.1-jre")
+    implementation(
+        group = "com.google.guava",
+        name = "guava",
+        version = property("guava.version") as String
+    )
     implementation(group = "org.controlsfx", name = "controlsfx", version = "8.40.14")
-    implementation(group = "com.google.inject", name = "guice", version = "4.2.2")
+    implementation(
+        group = "com.google.inject",
+        name = "guice",
+        version = property("guice.version") as String
+    )
     implementation(
         group = "com.google.inject.extensions",
         name = "guice-assistedinject",
-        version = "4.1.0"
+        version = property("guice.version") as String
     )
     implementation(
         group = "com.google.inject.extensions",
         name = "guice-grapher",
-        version = "4.1.0"
+        version = property("guice.version") as String
     )
     implementation(group = "org.jlleitschuh.guice", name = "kotlin-guiced-core", version = "0.0.5")
     implementation(group = "org.greenrobot", name = "eventbus", version = "3.1.1")
