@@ -34,6 +34,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.motion.NoopInverseKinematicsSo
 import com.neuronrobotics.bowlerkernel.kinematics.motion.plan.NoopLimbMotionPlanFollower
 import com.neuronrobotics.bowlerkernel.kinematics.motion.plan.NoopLimbMotionPlanGenerator
 import com.neuronrobotics.bowlerkernel.util.Limits
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.octogonapus.ktguava.collections.immutableListOf
 import org.octogonapus.ktguava.collections.toImmutableList
@@ -66,6 +67,7 @@ internal class KernelServerTest {
     }
 
     @Test
+    @Disabled
     fun `test talking to server`() {
         val cmmArm = DefaultLimb(
             SimpleLimbId("My Test Limb"),
