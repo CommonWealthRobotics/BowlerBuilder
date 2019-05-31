@@ -27,6 +27,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.limb.link.DefaultLink
 import com.neuronrobotics.bowlerkernel.kinematics.limb.link.DhParam
 import com.neuronrobotics.bowlerkernel.kinematics.limb.link.LinkType
 import com.neuronrobotics.bowlerkernel.kinematics.motion.FrameTransformation
+import com.neuronrobotics.bowlerkernel.kinematics.motion.LengthBasedReachabilityCalculator
 import com.neuronrobotics.bowlerkernel.kinematics.motion.MotionConstraints
 import com.neuronrobotics.bowlerkernel.kinematics.motion.NoopForwardKinematicsSolver
 import com.neuronrobotics.bowlerkernel.kinematics.motion.NoopInertialStateEstimator
@@ -81,6 +82,7 @@ internal class KernelServerTest {
             }.toImmutableList(),
             NoopForwardKinematicsSolver,
             NoopInverseKinematicsSolver,
+            LengthBasedReachabilityCalculator(),
             NoopLimbMotionPlanGenerator,
             NoopLimbMotionPlanFollower,
             immutableListOf(
