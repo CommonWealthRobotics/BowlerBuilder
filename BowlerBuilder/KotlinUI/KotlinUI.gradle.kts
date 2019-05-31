@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-val kernel_version = "0.0.26"
+val kernel_version = "0.1.2"
 
 fun DependencyHandler.arrow(name: String) =
     create(group = "io.arrow-kt", name = name, version = property("arrow.version") as String)
