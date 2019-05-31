@@ -24,6 +24,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.base.model.KinematicBaseData
 import com.neuronrobotics.bowlerkernel.kinematics.limb.model.DhParamData
 import com.neuronrobotics.bowlerkernel.kinematics.limb.model.LimbData
 import com.neuronrobotics.bowlerkernel.kinematics.limb.model.LinkData
+import com.neuronrobotics.bowlerkernel.kinematics.motion.FrameTransformation
 import eu.mihosoft.vrl.v3d.CSG
 import io.ktor.application.call
 import io.ktor.response.respondText
@@ -33,7 +34,6 @@ import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import org.octogonapus.ktguava.collections.emptyImmutableList
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class KernelServer {
@@ -59,7 +59,9 @@ class KernelServer {
             Netty,
             port = 8080,
             module = {
-                val klaxon = Klaxon()
+                val klaxon = Klaxon().apply {
+                    converter(FrameTransformation.converter)
+                }
 
                 routing {
                     get("/robots") {
@@ -69,17 +71,12 @@ class KernelServer {
                                     Robot(
                                         it.toKinematicBaseData(),
                                         (robotCad[it] ?: emptyImmutableList()).map {
-                                            // it.toObjString()
-                                            File("/home/salmon/Downloads/untitled.obj").readText()
+                                            it.toObjString()
                                         }
                                     )
                                 })
                             )
                         )
-                    }
-
-                    get("/robots.obj") {
-                        call.respondText(File("/home/salmon/Downloads/untitled.obj").readText())
                     }
                 }
             }
