@@ -83,7 +83,7 @@ class KernelServer {
                         val csg = robotCad.entries.first {
                             it.key.id.toString() == call.parameters["id"]!!
                         }.value[call.parameters["index"]!!.toInt()]
-                        call.respondText { csg.toStlString() }
+                        call.respondText { csg.toObjString() }
                     }
                 }
             }
