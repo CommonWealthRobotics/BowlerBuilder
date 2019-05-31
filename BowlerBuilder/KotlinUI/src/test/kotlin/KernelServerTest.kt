@@ -71,7 +71,7 @@ internal class KernelServerTest {
     @Disabled
     fun `test talking to server`() {
         val cmmArm = DefaultLimb(
-            SimpleLimbId("My Test Limb"),
+            SimpleLimbId("MyTestLimb"),
             cmmInputArmDhParams.map { dhParam ->
                 DefaultLink(
                     LinkType.Rotary,
@@ -99,7 +99,7 @@ internal class KernelServerTest {
         val limbs = immutableListOf(cmmArm)
 
         val base = DefaultKinematicBase(
-            SimpleKinematicBaseId("My Test Robot"),
+            SimpleKinematicBaseId("MyTestRobot"),
             limbs,
             limbs.map { it.id to FrameTransformation.identity }.toImmutableMap(),
             NoopBodyController

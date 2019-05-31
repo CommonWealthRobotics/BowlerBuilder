@@ -67,16 +67,23 @@ class KernelServer {
                     get("/robots") {
                         call.respondText(
                             klaxon.toJsonString(
-                                Robots(robots.map {
+                                Robots(robots.map { base ->
                                     Robot(
-                                        it.toKinematicBaseData(),
-                                        (robotCad[it] ?: emptyImmutableList()).map {
-                                            it.toObjString()
-                                        }
+                                        base.toKinematicBaseData(),
+                                        robotCad[base]?.mapIndexed { index, _ ->
+                                            "/robot/${base.id}/$index"
+                                        } ?: emptyImmutableList()
                                     )
                                 })
                             )
                         )
+                    }
+
+                    get("/robot/{id}/{index}") {
+                        val csg = robotCad.entries.first {
+                            it.key.id.toString() == call.parameters["id"]!!
+                        }.value[call.parameters["index"]!!.toInt()]
+                        call.respondText { csg.toStlString() }
                     }
                 }
             }
