@@ -1,31 +1,60 @@
+class webSocketHandler {
+	ws = null;
+	robot = null;
+	constructor(robot, wsuri) {
+		var obj = this;
+		this.robot = robot;
+		this.ws = new WebSocket(wsuri);
+		this.ws.binaryType = 'arraybuffer';
+		this.ws.onmessage = function (j) {
+			obj.handleData(j);
+		};
+	}
+	connect(wsconnect) {
+		console.log("Websocket Open");
+	}
+
+	handleData(e) {
+		console.log("web-socket-handler: Got Data!" + e.data);
+		console.log("web-socket-handler: Data length: " + e.data.byteLength);
+		// data is little endian
+		var dv = new DataView(e.data);
+		var command = dv.getUint32(0, true);
+		console.log("web-socket-handler: command: " + command);
+		switch (command) {
+		case 1:
+			// Position Update
+			this.positionUpdate(dv);
+			break;
+		case 2:
+			// Dummy Command
 
 
-// setup threejs
-var objexample = "# Group\ng v3d.csg\n\n# Vertices\nv 0.0 2.5 15.5\nv 0.0 -2.4999999999999996 15.5\nv 0.0 -2.5 10.5\nv 0.0 2.5 10.5\nv -32.0 2.5000000000000036 15.5\nv -32.0 2.500000000000004 10.5\nv -32.0 -2.4999999999999964 10.5\nv -32.0 -2.499999999999996 15.5\n\n# Faces\n\n# End Group v3d.csg\n";
-var scene = new THREE.Scene();
-//var loader = new THREE.STLLoader();
-var loader = new THREE.OBJLoader();
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+			break;
+		}
+	}
+	positionUpdate(dv) {
 
-var renderer = new THREE.WebGLRenderer();
-const material = new THREE.MeshStandardMaterial();
+		var transform = [];
+		var rlink = dv.getUint32(4, true);
+		console.log("web-socket-handler: positionUpdate: rlink: " + rlink);
+			for (var i = 0; i < 16; i++) {
+				let elem = dv.getFloat32((i + 2) * 4, true);
+				console.log("web-socket-handler: positionUpdate: elem: " + elem);
+				transform.push(elem);
+			}
+		var m = new THREE.Matrix4();
+		m.elements = transform;
+		console.log("web-socket-handler: robot: " + robot.linkObjects);
+		this.robot.linkObjects[rlink].transform = m;
+		this.robot.linkObjects[rlink].update=true;
+		console.log("web-socket-handler: Position for link " + rlink + "! " + transform);
 
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-camera.position.z = 200;
-var amblight = new THREE.AmbientLight( 0x404040 ); // soft white light
-scene.background = new THREE.Color( 0x8FBCD4 );
-scene.add( amblight );
-
-  // Create a directional light
-  const light = new THREE.DirectionalLight( 0xffffff, 5.0 );
-
-  // move the light back and up a bit
-  light.position.set( 10, 10, 10 );
-
-  // remember to add the light to the scene
-  scene.add( light );
+	}
+	dummyCommand(dv) {
+		console.log("Dummy Command!");
+	}
+}
 
 // robot object
 class robotLink {
@@ -41,6 +70,8 @@ class robotLink {
 	}
 	index = null;
 	sceneobject = null;
+	transform = null;
+	update=false;
 	addToScene(mesh) {
 		console.log("display-links: Object " + this.index + " loaded");
 
@@ -63,7 +94,7 @@ class robot {
 		console.log("display-links: New Robot '" + uri + "'");
 		//kick off async request for robots file.
 		$.getJSON(uri, function (j) {
-			// register our function as a callback upon completion 
+			// register our function as a callback upon completion
 			obj.loadCad(j);
 		});
 		this.linkObjects = [];
@@ -82,18 +113,56 @@ class robot {
 
 		}
 	}
-	objectLoaded(event) {}
-};
+	applyTransforms() {
+		var lojb = this.linkObjects;
+		
+		for (var i = 0; i < lojb.length; i++) {
+			if (lojb[i].transform != null && lojb[i].sceneobject != null && lojb[i].update) {
+				console.log("display-links: Updating matrix");
+				lojb[i].sceneobject.applyMatrix(lojb[i].transform);
+				lojb[i].update=false;
+			}
+		}
+	}
+	};
 
-var myRobot = new robot("/robots");
+		var scene = new THREE.Scene();
+	//var loader = new THREE.STLLoader();
+	var loader = new THREE.OBJLoader();
+	var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-var updateLoop = function () {
-	requestAnimationFrame(updateLoop);
-				scene.rotation.x += 0.01;
-				scene.rotation.y += 0.01;
-	renderer.render(scene, camera);
-};
+	var renderer = new THREE.WebGLRenderer();
+	const material = new THREE.MeshStandardMaterial();
 
-// We do the async request to get the robots file.
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	document.body.appendChild(renderer.domElement);
+	camera.position.z = 200;
+	var amblight = new THREE.AmbientLight(0x404040); // soft white light
+	scene.background = new THREE.Color(0x8FBCD4);
+	scene.add(amblight);
 
-updateLoop();
+	// Create a directional light
+	const light = new THREE.DirectionalLight(0xffffff, 5.0);
+
+	// move the light back and up a bit
+	light.position.set(10, 10, 10);
+
+	// remember to add the light to the scene
+	scene.add(light);
+
+	var myRobot = new robot("/robots");
+	let wsuri = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/robot/socket/MyTestRobot";
+	console.log("connecting to: " + wsuri);
+	var wshandle = new webSocketHandler(myRobot, wsuri);
+
+	var updateLoop = function () {
+		myRobot.applyTransforms();
+		requestAnimationFrame(updateLoop);
+		scene.rotation.x += 0.01;
+		scene.rotation.y += 0.01;
+		renderer.render(scene, camera);
+	};
+
+	// We do the async request to get the robots file.
+
+	updateLoop();

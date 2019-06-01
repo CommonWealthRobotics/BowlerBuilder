@@ -28,6 +28,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.motion.FrameTransformation
 import eu.mihosoft.vrl.v3d.CSG
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.content.resource
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
@@ -40,6 +41,8 @@ import io.ktor.server.netty.Netty
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import org.octogonapus.ktguava.collections.emptyImmutableList
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.concurrent.TimeUnit
 
 class KernelServer {
@@ -88,14 +91,45 @@ class KernelServer {
                     }
 
                     get("/robot/cad/{id}/{index}") {
-                        val csg = robotCad.entries.first {
-                            it.key.id.toString() == call.parameters["id"]!!
-                        }.value[call.parameters["index"]!!.toInt()]
+                        val csg = getCadForBaseId(
+                            call.parameters["id"]!!
+                        )[call.parameters["index"]!!.toInt()]
                         call.respondText { csg.toObjString() }
                     }
 
                     webSocket("/robot/socket/{id}") {
-                        println("onConnect")
+                        //                        while (true) {
+                        val command = 1
+                        val linkIndex = 1
+
+                        val affine = getCadForBaseId(call.parameters["id"]!!)[linkIndex].manipulator
+
+                        val messageBuffer =
+                            ByteBuffer.allocate(2 * Int.SIZE_BYTES + 16 * 4).apply {
+                                order(ByteOrder.LITTLE_ENDIAN)
+                                putInt(command)
+                                putInt(linkIndex)
+                                putFloat(affine.mxx.toFloat())
+                                putFloat(affine.mxy.toFloat())
+                                putFloat(affine.mxz.toFloat())
+                                putFloat(affine.tx.toFloat())
+                                putFloat(affine.myx.toFloat())
+                                putFloat(affine.myy.toFloat())
+                                putFloat(affine.myz.toFloat())
+                                putFloat(affine.ty.toFloat())
+                                putFloat(affine.mzx.toFloat())
+                                putFloat(affine.mzy.toFloat())
+                                putFloat(affine.mzz.toFloat())
+                                putFloat(affine.tz.toFloat())
+                                putFloat(0f)
+                                putFloat(0f)
+                                putFloat(0f)
+                                putFloat(1f)
+                                rewind()
+                            }
+
+                        outgoing.send(Frame.Binary(true, messageBuffer))
+//                        }
                     }
 
                     static {
@@ -109,6 +143,9 @@ class KernelServer {
             }
         ).apply { start(wait = true) }
     }
+
+    private fun getCadForBaseId(id: String) =
+        robotCad.entries.first { it.key.id.toString() == id }.value
 
     fun stop() {
         server?.stop(1, 5, TimeUnit.SECONDS)
