@@ -27,6 +27,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.limb.model.LinkData
 import com.neuronrobotics.bowlerkernel.kinematics.motion.FrameTransformation
 import eu.mihosoft.vrl.v3d.CSG
 import io.ktor.application.call
+import io.ktor.application.install
 import io.ktor.http.content.resource
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
@@ -36,6 +37,8 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.websocket.WebSockets
+import io.ktor.websocket.webSocket
 import org.octogonapus.ktguava.collections.emptyImmutableList
 import java.util.concurrent.TimeUnit
 
@@ -66,6 +69,8 @@ class KernelServer {
                     converter(FrameTransformation.converter)
                 }
 
+                install(WebSockets)
+
                 routing {
                     get("/robots") {
                         call.respondText(
@@ -74,7 +79,7 @@ class KernelServer {
                                     Robot(
                                         base.toKinematicBaseData(),
                                         robotCad[base]?.mapIndexed { index, _ ->
-                                            "/robot/${base.id}/$index"
+                                            "/robot/cad/${base.id}/$index"
                                         } ?: emptyImmutableList()
                                     )
                                 })
@@ -82,11 +87,15 @@ class KernelServer {
                         )
                     }
 
-                    get("/robot/{id}/{index}") {
+                    get("/robot/cad/{id}/{index}") {
                         val csg = robotCad.entries.first {
                             it.key.id.toString() == call.parameters["id"]!!
                         }.value[call.parameters["index"]!!.toInt()]
                         call.respondText { csg.toObjString() }
+                    }
+
+                    webSocket("/robot/socket/{id}") {
+                        println("onConnect")
                     }
 
                     static {

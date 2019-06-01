@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-val kernel_version = "0.1.2"
+val kernel_version = "0.1.5"
 
 fun DependencyHandler.arrow(name: String) =
     create(group = "io.arrow-kt", name = name, version = property("arrow.version") as String)
@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
     api(group = "com.neuronrobotics", name = "bowler-kernel-kinematics", version = kernel_version)
-    api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.2.0")
+    api(group = "com.neuronrobotics", name = "bowler-cad-core", version = "0.2.1")
     api(group = "com.neuronrobotics", name = "java-bowler", version = "3.26.2")
     api(
         group = "org.octogonapus",
@@ -42,6 +42,11 @@ dependencies {
     api(
         group = "io.ktor",
         name = "ktor-server-netty",
+        version = property("ktor-server.version") as String
+    )
+    api(
+        group = "io.ktor",
+        name = "ktor-websockets",
         version = property("ktor-server.version") as String
     )
 
@@ -100,5 +105,13 @@ dependencies {
         group = "name.neuhalfen.projects.crypto.bouncycastle.openpgp",
         name = "bouncy-gpg",
         version = "2.1.2"
+    ) {
+        exclude(group = "ch.qos.logback", module = "logback-classic")
+    }
+
+    runtimeOnly(
+        group = "org.slf4j",
+        name = "slf4j-simple",
+        version = property("slf4j-simple.version") as String
     )
 }
