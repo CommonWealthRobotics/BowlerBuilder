@@ -27,6 +27,9 @@ import com.neuronrobotics.bowlerkernel.kinematics.limb.model.LinkData
 import com.neuronrobotics.bowlerkernel.kinematics.motion.FrameTransformation
 import eu.mihosoft.vrl.v3d.CSG
 import io.ktor.application.call
+import io.ktor.http.content.resource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.routing
@@ -84,6 +87,14 @@ class KernelServer {
                             it.key.id.toString() == call.parameters["id"]!!
                         }.value[call.parameters["index"]!!.toInt()]
                         call.respondText { csg.toObjString() }
+                    }
+
+                    static {
+                        resource("/", "display.html")
+                        resource("*", "display.html")
+                        static("js") {
+                            resources("static/js")
+                        }
                     }
                 }
             }
