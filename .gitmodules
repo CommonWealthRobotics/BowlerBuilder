@@ -1,3 +1,6 @@
 [submodule "lib/src/jbullet"]
 	path = lib/src/jbullet
 	url = https://github.com/bubblecloud/jbullet.git
+[submodule "BowlerBuilder/KotlinUI/src/main/resources/threejs-link-visualizer"]
+	path = BowlerBuilder/KotlinUI/src/main/resources/threejs-link-visualizer
+	url = https://github.com/CommonWealthRobotics/threejs-link-visualizer.git

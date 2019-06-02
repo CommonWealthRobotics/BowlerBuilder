@@ -141,10 +141,10 @@ class KernelServer {
                     }
 
                     static {
-                        resource("/", "display.html")
-                        resource("*", "display.html")
+                        resource("/", "threejs-link-visualizer/display.html")
+                        resource("*", "threejs-link-visualizer/display.html")
                         static("js") {
-                            resources("static/js")
+                            resources("threejs-link-visualizer/js")
                         }
                     }
                 }
