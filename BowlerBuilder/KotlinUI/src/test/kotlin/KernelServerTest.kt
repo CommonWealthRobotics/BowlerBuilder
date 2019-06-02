@@ -20,6 +20,7 @@ import com.neuronrobotics.bowlerkernel.kinematics.base.DefaultKinematicBase
 import com.neuronrobotics.bowlerkernel.kinematics.base.baseid.SimpleKinematicBaseId
 import com.neuronrobotics.bowlerkernel.kinematics.closedloop.JointAngleController
 import com.neuronrobotics.bowlerkernel.kinematics.closedloop.NoopBodyController
+import com.neuronrobotics.bowlerkernel.kinematics.closedloop.NoopJointAngleController
 import com.neuronrobotics.bowlerkernel.kinematics.limb.DefaultLimb
 import com.neuronrobotics.bowlerkernel.kinematics.limb.Limb
 import com.neuronrobotics.bowlerkernel.kinematics.limb.limbid.SimpleLimbId
@@ -86,12 +87,18 @@ internal class KernelServerTest {
             NoopLimbMotionPlanGenerator,
             NoopLimbMotionPlanFollower,
             immutableListOf(
-                increasingController,
-                increasingController,
-                increasingController,
-                increasingController,
-                increasingController,
-                increasingController
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController
+//                increasingController,
+//                increasingController,
+//                increasingController,
+//                increasingController,
+//                increasingController,
+//                increasingController
             ),
             NoopInertialStateEstimator
         ) as Limb
@@ -105,7 +112,8 @@ internal class KernelServerTest {
             NoopBodyController
         )
 
-        val (bodyCad, limbCad) = DefaultCadGenerator().let {
+        val cadGenerator = DefaultCadGenerator()
+        val (bodyCad, limbCad) = cadGenerator.let {
             it.generateBody(base) to it.generateLimbs(base)
         }
 
@@ -113,7 +121,8 @@ internal class KernelServerTest {
         server.addRobot(base)
         server.addRobotCad(base, (limbCad.values().flatten() + bodyCad).toImmutableList())
         server.start()
-        Thread.sleep(3000)
-        server.stop()
+        while (true) {
+            Thread.sleep(1000)
+        }
     }
 }

@@ -108,7 +108,7 @@ class KernelServer {
 
                             val messageBuffer =
                                 ByteBuffer.allocate(2 * Int.SIZE_BYTES + 16 * 4).apply {
-                                    order(ByteOrder.LITTLE_ENDIAN)
+                                    order(ByteOrder.BIG_ENDIAN)
                                     putInt(command)
                                     putInt(linkIndex)
                                     putFloat(affine.mxx.toFloat())
@@ -135,9 +135,8 @@ class KernelServer {
                             linkIndex++
                             if (linkIndex >= cadList.size) {
                                 linkIndex = 0
+                                delay(500)
                             }
-
-                            delay(500)
                         }
                     }
 
