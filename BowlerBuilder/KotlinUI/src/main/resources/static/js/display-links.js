@@ -16,11 +16,9 @@ class webSocketHandler {
 
 	handleData(e) {
 		console.log("web-socket-handler: Got Data!" + e.data);
-		console.log("web-socket-handler: Data length: " + e.data.byteLength);
 		// data is little endian
 		var dv = new DataView(e.data);
-		var command = dv.getUint32(0, true);
-		console.log("web-socket-handler: command: " + command);
+		var command = dv.getUint32(0);
 		switch (command) {
 		case 1:
 			// Position Update
@@ -36,16 +34,13 @@ class webSocketHandler {
 	positionUpdate(dv) {
 
 		var transform = [];
-		var rlink = dv.getUint32(4, true);
-		console.log("web-socket-handler: positionUpdate: rlink: " + rlink);
+		var rlink = dv.getUint32(4)
 			for (var i = 0; i < 16; i++) {
-				let elem = dv.getFloat32((i + 2) * 4, true);
-				console.log("web-socket-handler: positionUpdate: elem: " + elem);
-				transform.push(elem);
+				transform.push(dv.getFloat32((i + 2) * 4));
 			}
-		var m = new THREE.Matrix4();
+			var m = new THREE.Matrix4();
 		m.elements = transform;
-		console.log("web-socket-handler: robot: " + robot.linkObjects);
+		//debugger;
 		this.robot.linkObjects[rlink].transform = m;
 		this.robot.linkObjects[rlink].update=true;
 		console.log("web-socket-handler: Position for link " + rlink + "! " + transform);
@@ -152,11 +147,10 @@ class robot {
 
 	var myRobot = new robot("/robots");
 	let wsuri = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/robot/socket/MyTestRobot";
-	console.log("connecting to: " + wsuri);
 	var wshandle = new webSocketHandler(myRobot, wsuri);
 
 	var updateLoop = function () {
-		myRobot.applyTransforms();
+		myRobot.applyTransforms()
 		requestAnimationFrame(updateLoop);
 		scene.rotation.x += 0.01;
 		scene.rotation.y += 0.01;
