@@ -16,10 +16,9 @@ class webSocketHandler {
 
 	handleData(e) {
 		console.log("web-socket-handler: Got Data!" + e.data);
-		// data is little endian
+		// data is big endian
 		var dv = new DataView(e.data);
 		var command = dv.getUint32(0);
-		// console.log("command: " + command);
 		switch (command) {
 		case 1:
 			// Position Update
@@ -42,10 +41,11 @@ class webSocketHandler {
 			var m = new THREE.Matrix4();
 		m.elements = transform;
 		//debugger;
-		this.robot.linkObjects[rlink].transform = m;
-		this.robot.linkObjects[rlink].update=true;
-		// console.log("web-socket-handler: Position for link " + rlink + "! " + transform);
-
+		if (this.robot.linkObjects[rlink] != null) {
+			this.robot.linkObjects[rlink].applyMatrix(m);
+			this.robot.linkObjects[rlink].update = true;
+			console.log("web-socket-handler: Position for link " + rlink + "! " + transform);
+		}
 	}
 	dummyCommand(dv) {
 		console.log("Dummy Command!");
@@ -67,7 +67,7 @@ class robotLink {
 	index = null;
 	sceneobject = null;
 	transform = null;
-	update=false;
+	update = false;
 	addToScene(mesh) {
 		console.log("display-links: Object " + this.index + " loaded");
 
@@ -111,53 +111,53 @@ class robot {
 	}
 	applyTransforms() {
 		var lojb = this.linkObjects;
-		
+
 		for (var i = 0; i < lojb.length; i++) {
 			if (lojb[i].transform != null && lojb[i].sceneobject != null && lojb[i].update) {
-				// console.log("display-links: Updating matrix");
+				console.log("display-links: Updating matrix");
 				lojb[i].sceneobject.applyMatrix(lojb[i].transform);
-				lojb[i].update=false;
+				lojb[i].update = false;
 			}
 		}
 	}
-	};
+};
 
-		var scene = new THREE.Scene();
-	//var loader = new THREE.STLLoader();
-	var loader = new THREE.OBJLoader();
-	var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+var scene = new THREE.Scene();
+//var loader = new THREE.STLLoader();
+var loader = new THREE.OBJLoader();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-	var renderer = new THREE.WebGLRenderer();
-	const material = new THREE.MeshStandardMaterial();
+var renderer = new THREE.WebGLRenderer();
+const material = new THREE.MeshStandardMaterial();
 
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	document.body.appendChild(renderer.domElement);
-	camera.position.z = 200;
-	var amblight = new THREE.AmbientLight(0x404040); // soft white light
-	scene.background = new THREE.Color(0x8FBCD4);
-	scene.add(amblight);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+camera.position.z = 200;
+var amblight = new THREE.AmbientLight(0x404040); // soft white light
+scene.background = new THREE.Color(0x777777);
+scene.add(amblight);
 
-	// Create a directional light
-	const light = new THREE.DirectionalLight(0xffffff, 5.0);
+// Create a directional light
+const light = new THREE.DirectionalLight(0xffffff, 5.0);
 
-	// move the light back and up a bit
-	light.position.set(10, 10, 10);
+// move the light back and up a bit
+light.position.set(10, 10, 10);
 
-	// remember to add the light to the scene
-	scene.add(light);
+// remember to add the light to the scene
+scene.add(light);
 
-	var myRobot = new robot("/robots");
-	let wsuri = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/robot/socket/MyTestRobot";
-	var wshandle = new webSocketHandler(myRobot, wsuri);
+var myRobot = new robot("/robots");
+let wsuri = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/robot/socket/MyTestRobot";
+var wshandle = new webSocketHandler(myRobot, wsuri);
 
-	var updateLoop = function () {
-		myRobot.applyTransforms()
-		requestAnimationFrame(updateLoop);
-		scene.rotation.x += 0.01;
-		scene.rotation.y += 0.01;
-		renderer.render(scene, camera);
-	};
+var updateLoop = function () {
+	myRobot.applyTransforms()
+	requestAnimationFrame(updateLoop);
+	scene.rotation.x += 0.01;
+	scene.rotation.y += 0.01;
+	renderer.render(scene, camera);
+};
 
-	// We do the async request to get the robots file.
+// We do the async request to get the robots file.
 
-	updateLoop();
+updateLoop();
