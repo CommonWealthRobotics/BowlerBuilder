@@ -40,6 +40,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.delay
 import org.octogonapus.ktguava.collections.emptyImmutableList
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -98,38 +99,46 @@ class KernelServer {
                     }
 
                     webSocket("/robot/socket/{id}") {
-                        //                        while (true) {
-                        val command = 1
-                        val linkIndex = 1
+                        var linkIndex = 0
+                        while (true) {
+                            val command = 1
 
-                        val affine = getCadForBaseId(call.parameters["id"]!!)[linkIndex].manipulator
+                            val cadList = getCadForBaseId(call.parameters["id"]!!)
+                            val affine = cadList[linkIndex].manipulator
 
-                        val messageBuffer =
-                            ByteBuffer.allocate(2 * Int.SIZE_BYTES + 16 * 4).apply {
-                                order(ByteOrder.LITTLE_ENDIAN)
-                                putInt(command)
-                                putInt(linkIndex)
-                                putFloat(affine.mxx.toFloat())
-                                putFloat(affine.mxy.toFloat())
-                                putFloat(affine.mxz.toFloat())
-                                putFloat(affine.tx.toFloat())
-                                putFloat(affine.myx.toFloat())
-                                putFloat(affine.myy.toFloat())
-                                putFloat(affine.myz.toFloat())
-                                putFloat(affine.ty.toFloat())
-                                putFloat(affine.mzx.toFloat())
-                                putFloat(affine.mzy.toFloat())
-                                putFloat(affine.mzz.toFloat())
-                                putFloat(affine.tz.toFloat())
-                                putFloat(0f)
-                                putFloat(0f)
-                                putFloat(0f)
-                                putFloat(1f)
-                                rewind()
+                            val messageBuffer =
+                                ByteBuffer.allocate(2 * Int.SIZE_BYTES + 16 * 4).apply {
+                                    order(ByteOrder.LITTLE_ENDIAN)
+                                    putInt(command)
+                                    putInt(linkIndex)
+                                    putFloat(affine.mxx.toFloat())
+                                    putFloat(affine.mxy.toFloat())
+                                    putFloat(affine.mxz.toFloat())
+                                    putFloat(affine.tx.toFloat())
+                                    putFloat(affine.myx.toFloat())
+                                    putFloat(affine.myy.toFloat())
+                                    putFloat(affine.myz.toFloat())
+                                    putFloat(affine.ty.toFloat())
+                                    putFloat(affine.mzx.toFloat())
+                                    putFloat(affine.mzy.toFloat())
+                                    putFloat(affine.mzz.toFloat())
+                                    putFloat(affine.tz.toFloat())
+                                    putFloat(0f)
+                                    putFloat(0f)
+                                    putFloat(0f)
+                                    putFloat(1f)
+                                    rewind()
+                                }
+
+                            outgoing.send(Frame.Binary(true, messageBuffer))
+
+                            linkIndex++
+                            if (linkIndex >= cadList.size) {
+                                linkIndex = 0
                             }
 
-                        outgoing.send(Frame.Binary(true, messageBuffer))
-//                        }
+                            delay(500)
+                        }
                     }
 
                     static {
