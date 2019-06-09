@@ -87,7 +87,7 @@ internal class KernelServerTest {
             NoopLimbMotionPlanGenerator,
             NoopLimbMotionPlanFollower,
             immutableListOf(
-                NoopJointAngleController,
+                    increasingController,
                 NoopJointAngleController,
                 NoopJointAngleController,
                 NoopJointAngleController,
@@ -108,7 +108,10 @@ internal class KernelServerTest {
         val base = DefaultKinematicBase(
             SimpleKinematicBaseId("MyTestRobot"),
             limbs,
-            limbs.map { it.id to FrameTransformation.identity }.toImmutableMap(),
+            limbs.map {
+                it.id to FrameTransformation.fromTranslation(10, 0, 0) *
+                        FrameTransformation.fromRotation(0, 0, 45)
+            }.toImmutableMap(),
             NoopBodyController
         )
 
