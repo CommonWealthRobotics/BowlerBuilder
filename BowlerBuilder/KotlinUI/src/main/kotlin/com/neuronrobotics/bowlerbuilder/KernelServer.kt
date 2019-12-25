@@ -67,7 +67,7 @@ class KernelServer {
     fun start() {
         server = embeddedServer(
             Netty,
-            port = 8080,
+            port = 8000,
             module = {
                 val klaxon = Klaxon().apply {
                     converter(FrameTransformation.converter)
@@ -135,7 +135,7 @@ class KernelServer {
                             linkIndex++
                             if (linkIndex >= cadList.size) {
                                 linkIndex = 0
-                                delay(500)
+                                delay(17)
                             }
                         }
                     }

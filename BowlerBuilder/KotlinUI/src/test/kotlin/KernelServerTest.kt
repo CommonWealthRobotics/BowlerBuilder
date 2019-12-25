@@ -57,7 +57,7 @@ internal class KernelServerTest {
         var angle = 0.0
 
         override fun getCurrentAngle(): Double {
-            angle += 0.5
+            angle += 0.01
             return angle
         }
 
@@ -88,17 +88,17 @@ internal class KernelServerTest {
             NoopLimbMotionPlanFollower,
             immutableListOf(
                     increasingController,
-                NoopJointAngleController,
-                NoopJointAngleController,
-                NoopJointAngleController,
-                NoopJointAngleController,
-                NoopJointAngleController
+//                NoopJointAngleController,
+//                NoopJointAngleController,
+//                NoopJointAngleController,
+//                NoopJointAngleController,
+//                NoopJointAngleController
 //                increasingController,
-//                increasingController,
-//                increasingController,
-//                increasingController,
-//                increasingController,
-//                increasingController
+                increasingController,
+                increasingController,
+                increasingController,
+                increasingController,
+                increasingController
             ),
             NoopInertialStateEstimator
         ) as Limb
