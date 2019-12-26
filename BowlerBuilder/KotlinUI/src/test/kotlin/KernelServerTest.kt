@@ -87,18 +87,19 @@ internal class KernelServerTest {
             NoopLimbMotionPlanGenerator,
             NoopLimbMotionPlanFollower,
             immutableListOf(
-                    increasingController,
-//                NoopJointAngleController,
-//                NoopJointAngleController,
-//                NoopJointAngleController,
-//                NoopJointAngleController,
-//                NoopJointAngleController
+//                    increasingController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController,
+                NoopJointAngleController
 //                increasingController,
-                increasingController,
-                increasingController,
-                increasingController,
-                increasingController,
-                increasingController
+//                increasingController,
+//                increasingController,
+//                increasingController,
+//                increasingController,
+//                increasingController
             ),
             NoopInertialStateEstimator
         ) as Limb
@@ -109,8 +110,8 @@ internal class KernelServerTest {
             SimpleKinematicBaseId("MyTestRobot"),
             limbs,
             limbs.map {
-                it.id to FrameTransformation.fromTranslation(10, 0, 0) *
-                        FrameTransformation.fromRotation(0, 0, 45)
+                it.id to FrameTransformation.fromTranslation(0, 0, 0) *
+                        FrameTransformation.fromRotation(0, 0, 0)
             }.toImmutableMap(),
             NoopBodyController
         )
@@ -119,7 +120,7 @@ internal class KernelServerTest {
         val (bodyCad, limbCad) = cadGenerator.let {
             it.generateBody(base) to it.generateLimbs(base)
         }
-
+        
         val server = KernelServer()
         server.addRobot(base)
         server.addRobotCad(base, (limbCad.values().flatten() + bodyCad).toImmutableList())

@@ -135,7 +135,7 @@ class KernelServer {
                             linkIndex++
                             if (linkIndex >= cadList.size) {
                                 linkIndex = 0
-                                delay(17)
+                                delay(17*2)
                             }
                         }
                     }
